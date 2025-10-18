@@ -557,7 +557,7 @@ Github 사이트에 가서 Repository 하나를 우리의 폴더 이름이랑 �
 
 한번 보면 사라지니까요.
 
-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
+g_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 이제 Github Token을 얻었으니까 Fly.io에 알려줘야 합니다.
 
@@ -572,7 +572,7 @@ flyctl secrets set GITHUB_TOKEN={GITHUB_TOKEN}
 위 명령어에서 `{}` 부분을 빼고 아래와 같이 입력하시면 됩니다.
 
 ```bash
-flyctl secrets set GITHUB_TOKEN=ghp_UVurta8f0YEVasdfasdf7zGI561Qpl73OYQD7
+flyctl secrets set GITHUB_TOKEN=g_~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## 실행 결과
 Secrets are staged for the first deployment%
