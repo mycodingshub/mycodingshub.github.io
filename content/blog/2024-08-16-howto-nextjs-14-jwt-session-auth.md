@@ -14,19 +14,19 @@ draft: false
 
 참고로 로그인 구현하기 시리즈 전체 강좌 리스트입니다.
 
-- [Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기](https://mycodings.fly.dev/blog/2024-07-24-cloudflare-hono-oauth-naver-login)
+- [Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기](https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login)
 
-- [Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodings.fly.dev/blog/2024-07-21-cloudflare-hono-google-login)
+- [Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login)
 
-- [Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)](https://mycodings.fly.dev/blog/2024-07-27-cloudflare-hono-oauth-kakao-login)
+- [Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)](https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login)
 
-- [Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현](https://mycodings.fly.dev/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login)
+- [Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현](https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login)
 
-- [Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기](https://mycodings.fly.dev/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db)
+- [Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기](https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db)
 
-- [Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기](https://mycodings.fly.dev/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login)
+- [Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기](https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login)
 
-- [네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth](https://mycodings.fly.dev/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login)
+- [네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth](https://mycodingshub.github.io/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login)
 
 ---
 

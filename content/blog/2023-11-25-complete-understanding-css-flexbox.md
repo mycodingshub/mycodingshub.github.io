@@ -24,15 +24,15 @@ Flexbox는 CSS에 있어 매우 강력한 레이아웃 모드입니다.
 
 전체 강의 리스트입니다. 
 
-1. [CSS 강의 1편. Flexbox 완벽 이해](https://mycodings.fly.dev/blog/2023-11-25-complete-understanding-css-flexbox)
+1. [CSS 강의 1편. Flexbox 완벽 이해](https://mycodingshub.github.io/blog/2023-11-25-complete-understanding-css-flexbox)
 
-2. [CSS 강의 2편. Flexbox Growing, Shrinking, Gaps, Wrapping 이해](https://mycodings.fly.dev/blog/2023-11-26-css-tutorial-understanding-css-flexbox-the-second)
+2. [CSS 강의 2편. Flexbox Growing, Shrinking, Gaps, Wrapping 이해](https://mycodingshub.github.io/blog/2023-11-26-css-tutorial-understanding-css-flexbox-the-second)
 
-3. [CSS 강의 3편. Grid Layout 완벽 이해](https://mycodings.fly.dev/blog/2023-11-27-understand-css-grid-completely)
+3. [CSS 강의 3편. Grid Layout 완벽 이해](https://mycodingshub.github.io/blog/2023-11-27-understand-css-grid-completely)
 
-4. [CSS 강의 4편. CSS Variables와 calc 함수 완벽 이해](https://mycodings.fly.dev/blog/2023-11-30-all-about-css-variables-and-calc-function)
+4. [CSS 강의 4편. CSS Variables와 calc 함수 완벽 이해](https://mycodingshub.github.io/blog/2023-11-30-all-about-css-variables-and-calc-function)
 
-5. [CSS 강의 5편. CSS에서 div를 중앙에 위치시키는 방법](https://mycodings.fly.dev/blog/2024-02-14-how-to-center-div-in-css)
+5. [CSS 강의 5편. CSS에서 div를 중앙에 위치시키는 방법](https://mycodingshub.github.io/blog/2024-02-14-how-to-center-div-in-css)
 
 ---
 

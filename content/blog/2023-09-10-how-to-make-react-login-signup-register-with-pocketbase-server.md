@@ -14,7 +14,7 @@ draft: false
 
 지난 시간 강좌 링크입니다.
 
-[PocketBase 활용법 1탄. 나만의 pocketbase 서버 만들기 in Fly.io](https://mycodings.fly.dev/blog/2023-09-09-build-my-own-pocketbase-server-on-flyio)
+[PocketBase 활용법 1탄. 나만의 pocketbase 서버 만들기 in Fly.io](https://mycodingshub.github.io/blog/2023-09-09-build-my-own-pocketbase-server-on-flyio)
 
 ---
 

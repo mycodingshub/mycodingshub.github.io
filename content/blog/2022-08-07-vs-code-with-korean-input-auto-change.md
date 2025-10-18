@@ -18,11 +18,11 @@ VS Code에서 Vim을 사용할 때 한글 사용이 많이 불편한데요.
 
 사진으로 보여드리면 아래와 같은 문제가 발생합니다.
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEh7FVU5-d0cSDWynmj4-NDrR0efPrBYO_W5A7RQQDhrpdQe-96IZNEuGvDmMRy1VLjNZlNl7W6a0t-fYJQvvcFR0pRKQGm2FFGpIdTrC7BDgQKAsp-Xy99TqZA08tvcLtVjfVUhQYVEvkimh0LGED0YC4AMskaNRKzJsylN9hI44OAcwrUDvf6Snb_i=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEh7FVU5-d0cSDWynmj4-NDrR0efPrBYO_W5A7RQQDhrpdQe-96IZNEuGvDmMRy1VLjNZlNl7W6a0t-fYJQvvcFR0pRKQGm2FFGpIdTrC7BDgQKAsp-Xy99TqZA08tvcLtVjfVUhQYVEvkimh0LGED0YC4AMskaNRKzJsylN9hI44OAcwrUDvf6Snb_i=s16000)
 
 일단 위와 같이 한글로 글을 썼고 그다음 ESC키를 누른 다음 hjkl키를 이용해서 커서를 이동시켰을 때 아래 그림처럼 한글이 깨져서 나옵니다.
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEg5mHqAmr6NFXh32cS6RHF4zjXoiDliEgiyAgkIqi5LdIHngyOHvAGHSAjTezb_Bf8H404oyUfjmw2lqTqQ9nvwgodn3qw_nu3-sJhT6av_1eTM_U6DrrwFrTS5EBTM0tAC7ulXd-3NlMJ8-4P94Q2_1191KH9JDGaytK9ufeg3SBDQ7asbFIwAkYpA=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEg5mHqAmr6NFXh32cS6RHF4zjXoiDliEgiyAgkIqi5LdIHngyOHvAGHSAjTezb_Bf8H404oyUfjmw2lqTqQ9nvwgodn3qw_nu3-sJhT6av_1eTM_U6DrrwFrTS5EBTM0tAC7ulXd-3NlMJ8-4P94Q2_1191KH9JDGaytK9ufeg3SBDQ7asbFIwAkYpA=s16000)
 
 왜냐하면 ESC키를 눌러 명령(command) 모드로 돌아왔어도 아직도 컴퓨터의 언어 입력 선택은 한글로 선택되어 있기 때문입니다.
 
@@ -32,7 +32,7 @@ VS Code에서 Vim을 사용할 때 한글 사용이 많이 불편한데요.
 
 [해당 주소](https://github.com/VSCodeVim/Vim)로 이동해서 중간쯤에 보시면 아래와 같이 나올 겁니다.
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEixW_pOvrpgCG3HsZRxtmSwxCTDUZ1A8F_u8yULMrb8MScqKDQCFF-HSOK3etpGyfx0YU9zYXGhy4dJNuZ07LEvi5Cfwln2UyEktjNOd-9U2J5XaTJ8niDP1tm9_gLNJUkK8cQSXwFBsCAb9ixp4iexSOdQgJZ71l1rOFFLSe2af_sh3QifCTzgsHdn=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEixW_pOvrpgCG3HsZRxtmSwxCTDUZ1A8F_u8yULMrb8MScqKDQCFF-HSOK3etpGyfx0YU9zYXGhy4dJNuZ07LEvi5Cfwln2UyEktjNOd-9U2J5XaTJ8niDP1tm9_gLNJUkK8cQSXwFBsCAb9ixp4iexSOdQgJZ71l1rOFFLSe2af_sh3QifCTzgsHdn=s16000)
 
 텍스트 찾기로 "Input Method"라고 치시면 해당 위치가 나옵니다.
 
@@ -64,13 +64,13 @@ brew tap daipeihust/tap && brew install im-select
 which im-select
 ```
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEgH1v4L6fNQcZOUimV-fDjWasGfMobnsitd_yk9iqCGJqYhqlevGTG11WTrg0nwfcihX8aetmnJZJEms95TWuzXr6EyZopJ9iwNcpBrL4jaGMk9G8w4skQ8r9CirPmVO8Bv9O-qo6q4tiQlvIlG3OCs4QdlG7JXdcDxHIA7dgBbQ0-YV2qgagpSCzBb=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEgH1v4L6fNQcZOUimV-fDjWasGfMobnsitd_yk9iqCGJqYhqlevGTG11WTrg0nwfcihX8aetmnJZJEms95TWuzXr6EyZopJ9iwNcpBrL4jaGMk9G8w4skQ8r9CirPmVO8Bv9O-qo6q4tiQlvIlG3OCs4QdlG7JXdcDxHIA7dgBbQ0-YV2qgagpSCzBb=s16000)
 
 그리고 나서 설치된 im-select 프로그램이 어디에 위치해 있는지 which 명령어로 확인했습니다.
 
 이제 VS Code에서 Vim을 설치합시다.
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEjhplYCDa8pk1HUE59rPdngyLOWt2g2oXl-aptyxNU6lTx0WBjxU2DupYNL4ZRHLXLsZSH2Y61gDpqsYVC0ujlKUTTEkteQ3IXCAFjBjQWZWEY27Mas2v4HkTU3B8QS9OlpHKsVN8ioLeBFQ6Nu4J34menKlwxLuBRFVFSURLQl2jv6HCtgY5-73DKn=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEjhplYCDa8pk1HUE59rPdngyLOWt2g2oXl-aptyxNU6lTx0WBjxU2DupYNL4ZRHLXLsZSH2Y61gDpqsYVC0ujlKUTTEkteQ3IXCAFjBjQWZWEY27Mas2v4HkTU3B8QS9OlpHKsVN8ioLeBFQ6Nu4J34menKlwxLuBRFVFSURLQl2jv6HCtgY5-73DKn=s16000)
 
 설치할 때는 위 그림에서 나오는 것과 똑같은 걸 고르면 됩니다.
 
@@ -80,7 +80,7 @@ which im-select
 
 우리가 찾아야 할 부분은 아래 그림과 같습니다.
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEhb5WbdLC7QOhOuWGqr5Gg4V1V1Z_geXtPamNmCW6L5QoGrA-p6XPldPX2NjRvWEWriVLUAlVmi0GYxbdhFayjW3mBShZrzOIZ47aDvJGha8g9NoVk5ALUWzYQB4mPV6yNQs-oKJwttzQ3H7gFpyHH0N7SKtJWd5Vsq7PS3gs5EjooAXgFL2w4YftxQ=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEhb5WbdLC7QOhOuWGqr5Gg4V1V1Z_geXtPamNmCW6L5QoGrA-p6XPldPX2NjRvWEWriVLUAlVmi0GYxbdhFayjW3mBShZrzOIZ47aDvJGha8g9NoVk5ALUWzYQB4mPV6yNQs-oKJwttzQ3H7gFpyHH0N7SKtJWd5Vsq7PS3gs5EjooAXgFL2w4YftxQ=s16000)
 
 첫 번째 Default IM 부분에 아래 코드를 붙입니다.
 
@@ -100,7 +100,7 @@ com.apple.keylayout.ABC
 
 그 이유는 "com.apple.keylayout.ABC" 부분인데요.
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEhisK2HF7_x13-BaQg2umF6fPr_qLKXzQSsRMzsngxnlTDNfJy6qlzOildOo_UZliXIClrWcJGW6uCG8bvVwfPJ6iPlxUeRe7ezyNAcztlehLWgQ9hHZfr0-aARcFiCuqB1NYsM_NxmsMNMQf6nl6ZA8vokL2_hv2EDMP17KFxPsdFz4QOQWSgD33r7=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEhisK2HF7_x13-BaQg2umF6fPr_qLKXzQSsRMzsngxnlTDNfJy6qlzOildOo_UZliXIClrWcJGW6uCG8bvVwfPJ6iPlxUeRe7ezyNAcztlehLWgQ9hHZfr0-aARcFiCuqB1NYsM_NxmsMNMQf6nl6ZA8vokL2_hv2EDMP17KFxPsdFz4QOQWSgD33r7=s16000)
 
 위 그림과 같이 여러 키보드를 넣어서 테스트해 보면 됩니다.
 
@@ -114,7 +114,7 @@ com.apple.keylayout.ABC
 
 [여기](https://github.com/daipeihust/im-select#windows)서 받으시면 됩니다.
 
-![mycodings.fly.dev-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEhHC_rW5S5q5yY7CJeyAJa2At9YZ3Sggzcu4NIA_9UCPFSpfjh4P416pnU_WaA04yaUeack7hhZuc9SkfDaj6FfOZqKyj2qKLO5_8rNo_NRK45YM9YWt8gYQxYp1nhlj5Y4vRZhDYtTAujh3_sMxbSJTxeLCkkdqfeSAg0GFZtqu_I1VxB2AxSUZMG6=s16000)
+![mycodingshub.github.io-vs-code-with-korean-input-auto-change](https://blogger.googleusercontent.com/img/a/AVvXsEhHC_rW5S5q5yY7CJeyAJa2At9YZ3Sggzcu4NIA_9UCPFSpfjh4P416pnU_WaA04yaUeack7hhZuc9SkfDaj6FfOZqKyj2qKLO5_8rNo_NRK45YM9YWt8gYQxYp1nhlj5Y4vRZhDYtTAujh3_sMxbSJTxeLCkkdqfeSAg0GFZtqu_I1VxB2AxSUZMG6=s16000)
 
 위 그림에서 밑줄 친 부분을 다운하여 어디 적당한 곳에 저장하면 됩니다.
 

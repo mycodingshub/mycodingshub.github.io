@@ -24,7 +24,7 @@ TanStack Query는 버전 3까지 React Query라고 불렸지만 버전 4가 되�
 
 제가 예전에 작성한 React Query 강좌는 React Query 기능을 거의 전부 살펴본 거라 한 번 꼭 보시는게 좋을 듯 싶습니다.
 
-예전 강의 [링크](https://mycodings.fly.dev/blog/2023-09-17-how-to-use-react-query-and-usequery)입니다.
+예전 강의 [링크](https://mycodingshub.github.io/blog/2023-09-17-how-to-use-react-query-and-usequery)입니다.
 
 오늘은 V5 기준하에 TanStack Query의 가장 기본이 되는 기능을 살펴보겠습니다.
 

@@ -26,7 +26,7 @@ draft: false
 
 지난 시간에 React Router V7을 이용한 가장 기본적인 유저 로그인 구현을 알아보았는데요.
 
-[React Router V7 유저 Auth(로그인) 구현하기](https://mycodings.fly.dev/blog/2024-12-25-tutorial-react-router-v-7-user-auth)
+[React Router V7 유저 Auth(로그인) 구현하기](https://mycodingshub.github.io/blog/2024-12-25-tutorial-react-router-v-7-user-auth)
 
 이번 시간에는 Cloudflare 네트워크상에 배포할 수 있는 Pages 서비스를 이용할 수 있게 React Router 템플릿을 개조해 보겠습니다.
 

@@ -32,11 +32,11 @@ React Router V7 관련 강좌 네 번째 글입니다.
 
 참고로, 이 글을 읽기 전에 지난 시간의 글들도 한 번 읽어 보시는 걸 추천 드립니다.
 
-- [React Router V7 유저 Auth(로그인) 구현하기](https://mycodings.fly.dev/blog/2024-12-25-tutorial-react-router-v-7-user-auth)
+- [React Router V7 유저 Auth(로그인) 구현하기](https://mycodingshub.github.io/blog/2024-12-25-tutorial-react-router-v-7-user-auth)
 
-- [React Router V7과 Cloudflare Pages 그리고 D1 Database 사용](https://mycodings.fly.dev/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db)
+- [React Router V7과 Cloudflare Pages 그리고 D1 Database 사용](https://mycodingshub.github.io/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db)
 
-- [React Router V7과 Supabase로 유저 가입, 로그인, 로그아웃(Auth) 구현하기](https://mycodings.fly.dev/blog/2024-12-28-react-router-v-7-supabase-user-auth-login-signup-logout)
+- [React Router V7과 Supabase로 유저 가입, 로그인, 로그아웃(Auth) 구현하기](https://mycodingshub.github.io/blog/2024-12-28-react-router-v-7-supabase-user-auth-login-signup-logout)
 
 ---
 

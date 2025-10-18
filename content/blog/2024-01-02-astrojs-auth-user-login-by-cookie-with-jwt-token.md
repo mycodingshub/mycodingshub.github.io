@@ -16,27 +16,27 @@ draft: false
 
 전체 astrojs 강좌 목록입니다.
 
-1. [astrojs 강좌 1편. astrojs에서 데이터 가져오기](https://mycodings.fly.dev/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs)
+1. [astrojs 강좌 1편. astrojs에서 데이터 가져오기](https://mycodingshub.github.io/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs)
 
-2. [astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법](https://mycodings.fly.dev/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme)
+2. [astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법](https://mycodingshub.github.io/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme)
 
-3. [astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기](https://mycodings.fly.dev/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component)
+3. [astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기](https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component)
 
-4. [astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석](https://mycodings.fly.dev/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture)
+4. [astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석](https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture)
 
-5. [astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)](https://mycodings.fly.dev/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing)
+5. [astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)](https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing)
 
-6. [astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기](https://mycodings.fly.dev/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing)
+6. [astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기](https://mycodingshub.github.io/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing)
 
-7. [astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석](https://mycodings.fly.dev/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering)
+7. [astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석](https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering)
 
-8. [astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현](https://mycodings.fly.dev/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session)
+8. [astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현](https://mycodingshub.github.io/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session)
 
-9. [astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현](https://mycodings.fly.dev/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr)
+9. [astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현](https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr)
 
-10. [astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현](https://mycodings.fly.dev/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token)
+10. [astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현](https://mycodingshub.github.io/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token)
 
-11. [astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현](https://mycodings.fly.dev/blog/2024-01-16-astrojs-tutorial-auth-with-lucia)
+11. [astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현](https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia)
 
 ---
 
@@ -127,7 +127,7 @@ Ok to proceed? (y)
 
 쿠키 관련 Astro 문법은 예전 강좌 7편에 소개했던 적이 있습니다.
 
-[astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석](https://mycodings.fly.dev/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering)
+[astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석](https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering)
 
 예전 문서를 보시면 서버 사이드 렌더링에 대해 잘 알 수 있는데요.
 

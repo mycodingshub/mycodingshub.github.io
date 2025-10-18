@@ -10,7 +10,7 @@ draft: false
 
 안녕하세요?
 
-티스토리 블로그를 점진적으로 Remix Framework의 Speen Metal Stack으로 만든 [나만의 블로그](https://mycodings.fly.dev)로 옮기는 중입니다.
+티스토리 블로그를 점진적으로 Remix Framework의 Speen Metal Stack으로 만든 [나만의 블로그](https://mycodingshub.github.io)로 옮기는 중입니다.
 
 기존 티스토리 글을 복사해서 넣으면 구글이나 네이버, 다음에서 기존에 수집된 글과 중복이라 표절로 오해할 수 있어,
 

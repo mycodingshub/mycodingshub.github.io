@@ -293,7 +293,7 @@ JSX는 HTML 코드로 변환되는데요.
 ```js
 return (
     <p>
-      Welcome to mycodings.fly.dev!
+      Welcome to mycodingshub.github.io!
       <a href="/login">Log in to continue</a>
     </p>
   );
@@ -306,7 +306,7 @@ a 태그 앞에 빈칸을 넣고 싶다면 어떻게 할까요?
 a 태그 앞에 아무리 많은 빈칸을 넣어도 아래와 같이 나옵니다.
 
 ```bash
-Welcome to mycodings.fly.dev!Log in to continue
+Welcome to mycodingshub.github.io!Log in to continue
 ```
 
 이럴 때는 아래와 같이 하시면 됩니다.
@@ -314,7 +314,7 @@ Welcome to mycodings.fly.dev!Log in to continue
 ```js
 return (
     <p>
-      Welcome to mycodings.fly.dev!
+      Welcome to mycodingshub.github.io!
       {' '}
       <a href="/login">Log in to continue</a>
     </p>

@@ -112,7 +112,7 @@ console.log(typeof parseFloat(`123.456`)) // returns "number"
 ```js
 console.log(typeof '') // returns "string"
 console.log(typeof 'mycodings') // returns "string"
-console.log(typeof 'mycodings.fly.dev blog site is good') // returns "string"
+console.log(typeof 'mycodingshub.github.io blog site is good') // returns "string"
 console.log(typeof '123') // returns "string"
 console.log(typeof String(123)) // returns "string"
 ```

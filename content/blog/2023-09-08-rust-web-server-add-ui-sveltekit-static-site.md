@@ -16,11 +16,11 @@ Rust 웹 서버 만들기 4편까지 왔습니다.
 
 지난 시간까지의 글 목록입니다.
 
-[Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기](https://mycodings.fly.dev/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web)
+[Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기](https://mycodingshub.github.io/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web)
 
-[Rust 웹 서버 만들기 2편. Rust에서 Reqwest를 이용해서 HTTP 요청(Request)하기](https://mycodings.fly.dev/blog/2023-09-04-how-to-use-rust-reqwest-http-get-post)
+[Rust 웹 서버 만들기 2편. Rust에서 Reqwest를 이용해서 HTTP 요청(Request)하기](https://mycodingshub.github.io/blog/2023-09-04-how-to-use-rust-reqwest-http-get-post)
 
-[Rust 웹 서버 만들기 3편. scraper를 이용해서 러스트로 웹 스크래핑하기](https://mycodings.fly.dev/blog/2023-09-07-rust-web-server-how-to-use-scraper)
+[Rust 웹 서버 만들기 3편. scraper를 이용해서 러스트로 웹 스크래핑하기](https://mycodingshub.github.io/blog/2023-09-07-rust-web-server-how-to-use-scraper)
 
 ---
 

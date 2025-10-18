@@ -12,7 +12,7 @@ draft: false
 
 지난 시간에 이어 Rust로 크로스플랫폼 데스크탑 앱 만들기 2편을 시작하겠습니다.
 
-1편. [Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기](https://mycodings.fly.dev/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs)
+1편. [Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기](https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs)
 
 ---
 

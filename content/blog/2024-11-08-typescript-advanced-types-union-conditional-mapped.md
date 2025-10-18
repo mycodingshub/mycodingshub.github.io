@@ -10,11 +10,11 @@ draft: false
 
 이번 글은 아래 시리즈 글의 후속편인데요.
 
-1. [TypeScript 타입 기초 완전 정복! 1편 - 프리미티브, 객체, 함수, 배열](https://mycodings.fly.dev/blog/2024-10-21-typescript-type-basics-first)
+1. [TypeScript 타입 기초 완전 정복! 1편 - 프리미티브, 객체, 함수, 배열](https://mycodingshub.github.io/blog/2024-10-21-typescript-type-basics-first)
 
-2. [TypeScript 타입 기초 완전 정복! 2편 - 제네릭, 튜플, 유니언, never, 교차 타입](https://mycodings.fly.dev/blog/2024-10-21-typescript-type-advanced-second)
+2. [TypeScript 타입 기초 완전 정복! 2편 - 제네릭, 튜플, 유니언, never, 교차 타입](https://mycodingshub.github.io/blog/2024-10-21-typescript-type-advanced-second)
 
-3. [TypeScript 타입 기초 완전 정복! 3편 - as const, unknown, Mapped, Conditional 타입 완벽 분석](https://mycodings.fly.dev/blog/2024-10-21-typescript-type-master-third)
+3. [TypeScript 타입 기초 완전 정복! 3편 - as const, unknown, Mapped, Conditional 타입 완벽 분석](https://mycodingshub.github.io/blog/2024-10-21-typescript-type-master-third)
 
 
 이번 글에서는 TypeScript의 타입을 입문에서 다룬 기본 개념을 넘어서 조금 더 실용적으로 활용할 수 있는 방법들을 알아보겠습니다.

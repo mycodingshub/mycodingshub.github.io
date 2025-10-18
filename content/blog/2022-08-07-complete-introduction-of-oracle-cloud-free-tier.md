@@ -34,11 +34,11 @@ draft: false
 
 아래 그림처럼 "무료로 시작하기" 버튼을 누르면 가입이 되는데요.
 
-![mycodings.fly.dev-complete-introduction-of-oracle-cloud-free-tier](https://blogger.googleusercontent.com/img/a/AVvXsEiMyPUHuBF2Uwiar8tSNmIsH1wpxKAAfSUqqbuFc_bWYZx7_mtIphZlv1HujpAbqT-0482Ohx8OfewdwTpl39eOAnNbnxF5NyJxa05Fc3mtojyLZNIV_QFJiJNy2r_RnHs8v0TmmviyovbUPQ-2qnbg7cQlwRGRo7O4pWBRyBvUShr2-ceDafkoCDeQ=s16000)
+![mycodingshub.github.io-complete-introduction-of-oracle-cloud-free-tier](https://blogger.googleusercontent.com/img/a/AVvXsEiMyPUHuBF2Uwiar8tSNmIsH1wpxKAAfSUqqbuFc_bWYZx7_mtIphZlv1HujpAbqT-0482Ohx8OfewdwTpl39eOAnNbnxF5NyJxa05Fc3mtojyLZNIV_QFJiJNy2r_RnHs8v0TmmviyovbUPQ-2qnbg7cQlwRGRo7O4pWBRyBvUShr2-ceDafkoCDeQ=s16000)
 
 전자메일 확인하는 부분이 있습니다.
 
-![mycodings.fly.dev-complete-introduction-of-oracle-cloud-free-tier](https://blogger.googleusercontent.com/img/a/AVvXsEiTSkfYtef7PifDsq7207mBBWwF4tZEJpscDK2A2duRB9EpkNjKSwfagQViZe7pXFfYGqxiO2OpbTr5AYzWR9vpAKDHtZW1HpMSDqX6HfRF7UCuh3IXk88XHDP-o221P0zS6-JWToWvcgbg2-bHqAKXvlhmXmeTqtsogZFYllgFcigoY0UddGXUPPzN=s16000)
+![mycodingshub.github.io-complete-introduction-of-oracle-cloud-free-tier](https://blogger.googleusercontent.com/img/a/AVvXsEiTSkfYtef7PifDsq7207mBBWwF4tZEJpscDK2A2duRB9EpkNjKSwfagQViZe7pXFfYGqxiO2OpbTr5AYzWR9vpAKDHtZW1HpMSDqX6HfRF7UCuh3IXk88XHDP-o221P0zS6-JWToWvcgbg2-bHqAKXvlhmXmeTqtsogZFYllgFcigoY0UddGXUPPzN=s16000)
 
 계속 진행하다 보면 확인 이메일이 오는데요.
 
@@ -60,7 +60,7 @@ draft: false
 
 다 되었으면 아래와 같이 가입 완료되었다는 이메일이 옵니다.
 
-![mycodings.fly.dev-complete-introduction-of-oracle-cloud-free-tier](https://blogger.googleusercontent.com/img/a/AVvXsEgMjR_inepTtUPro1_WkMxFjhka2I1a-hYZ70y2xYxLE6nB3BNBhGkpN_v3ezzyamEHauIGHyGbVIO7aigUCsx303IKJ5GtA-IVJusL8e7PchS-J8Ox1Haw1CxtpV61pUMEAqKAKNONphHKHWvrGGxqBZgVAKMrT9VhRcQYMZ9g1D8X_pyW-8boTSFu=s16000)
+![mycodingshub.github.io-complete-introduction-of-oracle-cloud-free-tier](https://blogger.googleusercontent.com/img/a/AVvXsEgMjR_inepTtUPro1_WkMxFjhka2I1a-hYZ70y2xYxLE6nB3BNBhGkpN_v3ezzyamEHauIGHyGbVIO7aigUCsx303IKJ5GtA-IVJusL8e7PchS-J8Ox1Haw1CxtpV61pUMEAqKAKNONphHKHWvrGGxqBZgVAKMrT9VhRcQYMZ9g1D8X_pyW-8boTSFu=s16000)
 
 이메일로 계정 가입이 끝나면 드디어 "Start my free trial" 버튼을 눌러 오라클 클라우드 Free Tier를 사용할 수 있는데요.
 

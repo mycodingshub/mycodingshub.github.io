@@ -62,7 +62,7 @@ function greeting(message) {
 greeting();
 // undefined
 ```
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEjF2pgG5UHLk_69Q9MbKUyureMGmPDQT587UDMtCgL8OxR6wSp6JU3a3tseoxpjFl5dk-PaMTqDgee6RHvf5o1JBiMyhZXBFNneAfSH4N5bWdHakpjOPCb-tvdlZGDs3Ij5VNMKvatbGyjFkSjr8IkS9gTMCfUfvUq07O4LNMZD_PcxHCZTG0CsVdME=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEjF2pgG5UHLk_69Q9MbKUyureMGmPDQT587UDMtCgL8OxR6wSp6JU3a3tseoxpjFl5dk-PaMTqDgee6RHvf5o1JBiMyhZXBFNneAfSH4N5bWdHakpjOPCb-tvdlZGDs3Ij5VNMKvatbGyjFkSjr8IkS9gTMCfUfvUq07O4LNMZD_PcxHCZTG0CsVdME=s16000)
 
 위 코드에서 보듯이 우리가 만든 greeting() 함수는 message 파라미터를 가지고 있는데요.
 
@@ -80,7 +80,7 @@ greeting();
 // Hi
 ```
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEilFMv-tNoFwj-zzWy6LnKf5Ge4C1D4Ly4g01KSCTGOBRPOVf1shApFlTO3QypMlHH9BJ2ikVsyHUvzx0JvLVOJnzzAJCuLrvem4J1Iinmuc3oDdTQXz9rLrPAAPKl-xKaBku3w6PgtyK_N2XM0mH4SUMP_HVwFr7FJL1F1KnFUVAD5YM1T2dMoBU1N=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEilFMv-tNoFwj-zzWy6LnKf5Ge4C1D4Ly4g01KSCTGOBRPOVf1shApFlTO3QypMlHH9BJ2ikVsyHUvzx0JvLVOJnzzAJCuLrvem4J1Iinmuc3oDdTQXz9rLrPAAPKl-xKaBku3w6PgtyK_N2XM0mH4SUMP_HVwFr7FJL1F1KnFUVAD5YM1T2dMoBU1N=s16000)
 
 greeting() 함수에 아무것도 인자로 넣지 않았을 때 디폴트 파라미터의 역할을 하게 만들었습니다.
 
@@ -109,7 +109,7 @@ greeting(); // Hi
 greeting(undefined); // Hi
 greeting('Hello'); // Hello
 ```
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEgEb14Tu452pQKPHUmectr0ktCx3sUC36F5JkIMNlNRxwAOGgV0OaUbL298ipnZqioYOx7Y-nA9cSM2XYMR0rCBND3V8NKEudahZZ4VzE1oYWIMybg9X7HN2mx5mYxHSFMuxkMZiZAEVoYqztxuZakPzcg5cSubMmpIwDRB06BIcesw0NR4Js5d23je=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEgEb14Tu452pQKPHUmectr0ktCx3sUC36F5JkIMNlNRxwAOGgV0OaUbL298ipnZqioYOx7Y-nA9cSM2XYMR0rCBND3V8NKEudahZZ4VzE1oYWIMybg9X7HN2mx5mYxHSFMuxkMZiZAEVoYqztxuZakPzcg5cSubMmpIwDRB06BIcesw0NR4Js5d23je=s16000)
 
 함수 인자(arguments)에 'undefined' 타입을 넣으면 함수의 파라미터는 'undefined' 타입이 되는 게 아니라 디폴트 파라미터가 됩니다.
 
@@ -121,7 +121,7 @@ greeting('Hello'); // Hello
 
 자바스크립트는 타입이 유동적이라서 한번 테스트해 볼까요?
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEhcsBC0MkWLs7bEz5kn6jUuaP_vD0hynV-HYDXZkSZDhrcOOkeAieAHVOTPicQ32FbpGLH1tYIzuBqLv2AlCFUArY0IrgnEWD57Bu1Y1FBUV_cU_L34B74yVP1w_aP7acauG3c7uzy0yFBGma5_8c77-nXqsnq2-CyyuyjXGIYVtPzHuDlpRjZD0s5x=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEhcsBC0MkWLs7bEz5kn6jUuaP_vD0hynV-HYDXZkSZDhrcOOkeAieAHVOTPicQ32FbpGLH1tYIzuBqLv2AlCFUArY0IrgnEWD57Bu1Y1FBUV_cU_L34B74yVP1w_aP7acauG3c7uzy0yFBGma5_8c77-nXqsnq2-CyyuyjXGIYVtPzHuDlpRjZD0s5x=s16000)
 
 정상적으로 100이 출력되었습니다.
 
@@ -186,7 +186,7 @@ console.log(put('Teddy Bear'));
 // -> ['Teddy Bear'], not ['Toy Car','Teddy Bear']
 ```
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEjE-FyW70JRBS0xuESPK3prLbhzGgw8m_DpVuDGvszI33_ixbD92WmrTShjbXslSvXkov4eiSywgzDcjsAc2WCAahowIB1edQpWeh8YMK55YWoYkbEQypWtZjqG_fkI1-Ls7WJUvadbAi5E4DOv4gLODaYQXjVdHa9QvzxBLdibiZy5t2i_kZYdHLx2)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEjE-FyW70JRBS0xuESPK3prLbhzGgw8m_DpVuDGvszI33_ixbD92WmrTShjbXslSvXkov4eiSywgzDcjsAc2WCAahowIB1edQpWeh8YMK55YWoYkbEQypWtZjqG_fkI1-Ls7WJUvadbAi5E4DOv4gLODaYQXjVdHa9QvzxBLdibiZy5t2i_kZYdHLx2)
 
 위 코드에서 보면 toyBox 변수는 빈 배열인데요.
 
@@ -212,7 +212,7 @@ function today() {
 date();
 ```
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEhzep8z7aYk6rEsjfjYoOf_dzRGL64I6tomztK9WjZiXqxymmRfLgZ47RDQPLrP3EpZ4lau8ygzSLujExy6SkpO4ZKODggY03oy5-WVntmh2H4Z9FTgM8UQSERLdpqawKVGxaR5eUKrWy8Z29OCzu4FgeY1eDnmSq0envpEuZ8woynHVw0ohhE3_vWY=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEhzep8z7aYk6rEsjfjYoOf_dzRGL64I6tomztK9WjZiXqxymmRfLgZ47RDQPLrP3EpZ4lau8ygzSLujExy6SkpO4ZKODggY03oy5-WVntmh2H4Z9FTgM8UQSERLdpqawKVGxaR5eUKrWy8Z29OCzu4FgeY1eDnmSq0envpEuZ8woynHVw0ohhE3_vWY=s16000)
 
 
 date() 함수의 파라미터 d의 디폴트 파라미터는 today()라는 함수입니다.
@@ -229,7 +229,7 @@ date() 함수를 선언(정의)할 때 today() 함수가 실행되는 건 아닙
 
 마지막에 date() 함수 호출을 빼고 실행해 보면 아무것도 출력하지 않을 겁니다.
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEgzygnVNQ3jxDdrLznHfgKJnUzoVUYVb3Vezgcinj8B5W1lfWsjSOX-NXn9Wpri9T2423mWB2JMLYIWInapMuVia13oAJ9JDROEY1NC_OY33iGoJTN_zcqr_rVc4q-9-s-FOJDPcUwuxTXuwbspxnEp08QTy3VvChY-q1WCsg4vqF2YidhzvWuPuPxu=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEgzygnVNQ3jxDdrLznHfgKJnUzoVUYVb3Vezgcinj8B5W1lfWsjSOX-NXn9Wpri9T2423mWB2JMLYIWInapMuVia13oAJ9JDROEY1NC_OY33iGoJTN_zcqr_rVc4q-9-s-FOJDPcUwuxTXuwbspxnEp08QTy3VvChY-q1WCsg4vqF2YidhzvWuPuPxu=s16000)
 
 위 그림에서 보듯이 아무것도 출력되지 않습니다.
 
@@ -255,7 +255,7 @@ requiredArg() 함수는 강제로 Error 코드를 발생하는데요.
 
 위에서 처럼 에러가 발생됩니다.
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEgUrBaTxESSOJ9Iq1e4RaZabb54mfB3U-BM_7dag5OA8TbTqtxko-Y2yQQcPMvStiP53FOyXAMjYsWc_UkQr0rq0n0B05TMW2gTNLVq6gkBCwLnR5hApnZLaZLHAkfBxbJTh19DuCgcKwORcoEDMcUKGg2poHMR1KprnNzMiSKfnJJCCZpfixznMYI9=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEgUrBaTxESSOJ9Iq1e4RaZabb54mfB3U-BM_7dag5OA8TbTqtxko-Y2yQQcPMvStiP53FOyXAMjYsWc_UkQr0rq0n0B05TMW2gTNLVq6gkBCwLnR5hApnZLaZLHAkfBxbJTh19DuCgcKwORcoEDMcUKGg2poHMR1KprnNzMiSKfnJJCCZpfixznMYI9=s16000)
 
 아주 효과적인 함수 인자 검출기인데요.
 
@@ -271,7 +271,7 @@ function plus(x = 1, y = x, z = x + y) {
 console.log(plus()); // 4
 ```
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEg08bs8kpZzg9EESrWATC06JRbzRsZoBARHwHDJrbkUjvwC83NS5nbHf3RTCqb1do8IKG2uU8KuKI5fvF6IVA31jNXoIElcFr6nC2DS8cxbnTMTXoJ6J3j_Rj4GX42Imcj3SRsSs7rqNWzzSHvPOykkUzlhX0G9apnaensmJQnYOLU8qsUPyibAyqaA=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEg08bs8kpZzg9EESrWATC06JRbzRsZoBARHwHDJrbkUjvwC83NS5nbHf3RTCqb1do8IKG2uU8KuKI5fvF6IVA31jNXoIElcFr6nC2DS8cxbnTMTXoJ6J3j_Rj4GX42Imcj3SRsSs7rqNWzzSHvPOykkUzlhX0G9apnaensmJQnYOLU8qsUPyibAyqaA=s16000)
 
 코드를 실행하면 x = 1이 되고 y = x에 의해 y 도 1이 되고, z = x + y에 의해 z = 2 가 됩니다.
 
@@ -291,7 +291,7 @@ let fullPrice = getPrice(100);
 console.log(fullPrice); // 110
 ```
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEg_sRXTA4xudD2sc_auIOYBTAAyrPvUVIr1CmwFjYqy21m5ifKRbCtfTPWoxbLRkINmYs7dN0YGQ2YPhk3R0Rqjv5DOB6BJkIrMZ8k8uT8MYd06_r8NI1SAYqgH6Bjc9cWv7npc2Tu63XexLGfIGGCcauMZJkaNLd1UEElTpXn5Wua9BPL23wiigWJo=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEg_sRXTA4xudD2sc_auIOYBTAAyrPvUVIr1CmwFjYqy21m5ifKRbCtfTPWoxbLRkINmYs7dN0YGQ2YPhk3R0Rqjv5DOB6BJkIrMZ8k8uT8MYd06_r8NI1SAYqgH6Bjc9cWv7npc2Tu63XexLGfIGGCcauMZJkaNLd1UEElTpXn5Wua9BPL23wiigWJo=s16000)
 
 ### Arguments(인자) 객체(Object)
 
@@ -311,7 +311,7 @@ add(10, 20); // 2
 add(10, 20, 30); // 3
 ```
 
-![mycodings.fly.dev-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEiP1uyK5B7oN1QwBPJ5Elz4S6cXKuch6xxriiSMIK3wbz_L0UHRETx1CLvFw6aEfX7bjFnTVsPvDd9NCCQIBTgLyhu1TJd8p-9q99PfIo_275K4YEGagqtphi2wgk6VSWJVEqeGKFn8rImMZ2WOvbDFJfr9xe2Js-BXTM9thrAYLV5QF7k6n4tS7vei=s16000)
+![mycodingshub.github.io-understanding-javascript-es-6-default-parameters](https://blogger.googleusercontent.com/img/a/AVvXsEiP1uyK5B7oN1QwBPJ5Elz4S6cXKuch6xxriiSMIK3wbz_L0UHRETx1CLvFw6aEfX7bjFnTVsPvDd9NCCQIBTgLyhu1TJd8p-9q99PfIo_275K4YEGagqtphi2wgk6VSWJVEqeGKFn8rImMZ2WOvbDFJfr9xe2Js-BXTM9thrAYLV5QF7k6n4tS7vei=s16000)
 
 위 그림을 보시면 실제 arguments 객체가 표시되고 있습니다.
 

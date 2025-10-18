@@ -53,7 +53,7 @@ Lorem ipsum dolor sit amet...
 
 근데, 고급 VIM 기술에는 "daw"와 "diw" 명령어를 쓸 수 있습니다.
 
-![mycodings.fly.dev-advanced-vim-tutorial](https://blogger.googleusercontent.com/img/a/AVvXsEg4s5Wf-5uIaDyRDYPvheanAHBBGOxpfX3xMpquzL_b5JWkMGdyEYtVbHcq89J5H6Lpy-q6fOIYE5N1ePfLFCqavxwaOupzauDhr_P6D-BHlZEer3mFyDBNWX8pNtSNuW_Dxogd2VqSzpT2Rt3NxfK0jAN1r_Z7tNUdxrccXPNoHaYr_wrcCfvaDNyn)
+![mycodingshub.github.io-advanced-vim-tutorial](https://blogger.googleusercontent.com/img/a/AVvXsEg4s5Wf-5uIaDyRDYPvheanAHBBGOxpfX3xMpquzL_b5JWkMGdyEYtVbHcq89J5H6Lpy-q6fOIYE5N1ePfLFCqavxwaOupzauDhr_P6D-BHlZEer3mFyDBNWX8pNtSNuW_Dxogd2VqSzpT2Rt3NxfK0jAN1r_Z7tNUdxrccXPNoHaYr_wrcCfvaDNyn)
 
 위 GIF 그림에서 보시면 ipsum 단어의 "s"자에 커서를 놓은 상태에서 "daw" 명령어를 쳤습니다.
 
@@ -65,7 +65,7 @@ Lorem ipsum dolor sit amet...
 
 아래 그림을 보십시오.
 
-![mycodings.fly.dev-advanced-vim-tutorial](https://blogger.googleusercontent.com/img/a/AVvXsEh_wAoNENVYjesxkXyCz7O98qP1O88eewdVNUXuIDhReyQxSmoxsbrH8HBYqzJR0zQzlUV0lSk1ywMTKFHvfb5SuOqR47BJ7KXDqarXYZoPGaEt9suzRPt6f37Z9WhBfpWZEGMEk_7lmZtf2QQeVPlsvpXBhb91P9g_yPvLJUMxx3NFKONsp5kxGeH8)
+![mycodingshub.github.io-advanced-vim-tutorial](https://blogger.googleusercontent.com/img/a/AVvXsEh_wAoNENVYjesxkXyCz7O98qP1O88eewdVNUXuIDhReyQxSmoxsbrH8HBYqzJR0zQzlUV0lSk1ywMTKFHvfb5SuOqR47BJ7KXDqarXYZoPGaEt9suzRPt6f37Z9WhBfpWZEGMEk_7lmZtf2QQeVPlsvpXBhb91P9g_yPvLJUMxx3NFKONsp5kxGeH8)
 
 "diw" 명령어를 입력하면 "delete inner word"가 되어 ipsum 단어의 앞뒤 공백은 그대로 나 두고 단어만 삭제되었습니다.
 
@@ -80,7 +80,7 @@ Vim의 Text Objects는 word 말고 다른 것도 많습니다.
 
 Sentence에도 똑같이 적용됩니다.
 
-![mycodings.fly.dev-advanced-vim-tutorial](https://blogger.googleusercontent.com/img/a/AVvXsEjfqGPtLTNp7rPPPEaMQt6CIbnNoxiwgwlQmNL5CHInNJmNK2hwzuuUwRBQXJe7sbWQ1A0Dy4PU44szBBNDasitYx2euFMLN82p1DVJOphEUBiGOtAzHVHEBqdZAdLiGTWGlEN0tPrcfvU_LhfnF-CyG3ND3n2hJuZBZuwv_fZ3zKp-aliI_xsgpwci)
+![mycodingshub.github.io-advanced-vim-tutorial](https://blogger.googleusercontent.com/img/a/AVvXsEjfqGPtLTNp7rPPPEaMQt6CIbnNoxiwgwlQmNL5CHInNJmNK2hwzuuUwRBQXJe7sbWQ1A0Dy4PU44szBBNDasitYx2euFMLN82p1DVJOphEUBiGOtAzHVHEBqdZAdLiGTWGlEN0tPrcfvU_LhfnF-CyG3ND3n2hJuZBZuwv_fZ3zKp-aliI_xsgpwci)
 
 위 GIF 그림을 보시면 "das" 명령어를 입력하고 그다음 undo 명령어를 실행했고, 마지막으로 "dis" 명령어를 실행한 결과입니다.
 

@@ -14,17 +14,17 @@ draft: false
 
 전체적인 강좌 리스트입니다.
 
-1. [Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기](https://mycodings.fly.dev/blog/2024-04-06-docker-tutorial-understanding-virtualization-and-docker)
+1. [Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기](https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-virtualization-and-docker)
 
-2. [Docker 강좌 2편. 실무에서 쓰이는 Docker 컨테이너 완벽 가이드](https://mycodings.fly.dev/blog/2024-04-06-docker-tutorial-docker-container-comprehensive-guide)
+2. [Docker 강좌 2편. 실무에서 쓰이는 Docker 컨테이너 완벽 가이드](https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-docker-container-comprehensive-guide)
 
-3. [Docker 강좌 3편. Docker 이미지 및 Dockerfile 기초](https://mycodings.fly.dev/blog/2024-04-06-docker-tutorial-understanding-docker-image-and-dockerfile)
+3. [Docker 강좌 3편. Docker 이미지 및 Dockerfile 기초](https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-docker-image-and-dockerfile)
 
-4. [Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리](https://mycodings.fly.dev/blog/2024-04-06-docker-volume-usage-and-principles)
+4. [Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리](https://mycodingshub.github.io/blog/2024-04-06-docker-volume-usage-and-principles)
 
-5. [Docker 강좌 5편. Docker 바인드 마운트와 포트 publish](https://mycodings.fly.dev/blog/2024-04-06-docker-tutorial-understanding-bind-mount-and-port-publish)
+5. [Docker 강좌 5편. Docker 바인드 마운트와 포트 publish](https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-bind-mount-and-port-publish)
 
-6. [Docker 강좌 6편. Docker Compose 완벽 가이드](https://mycodings.fly.dev/blog/2024-04-06-docker-tutorial-docker-compose-complete-guide)
+6. [Docker 강좌 6편. Docker Compose 완벽 가이드](https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-docker-compose-complete-guide)
 
 ---
 

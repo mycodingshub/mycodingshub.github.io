@@ -23,7 +23,7 @@ API를 Hono로 작성하는 방법과 Remix에서 Hono를 이용하는 방법, �
 
 아래는 지난 시간 강좌 링크입니다.
 
-[Cloudflare에서 Remix Framework과 Hono의 RPC 기능을 활용한 API Endpoint 구축하기](https://mycodings.fly.dev/blog/2024-10-14-cloudflare-remix-framework-hono-rpc-api-endpoint)
+[Cloudflare에서 Remix Framework과 Hono의 RPC 기능을 활용한 API Endpoint 구축하기](https://mycodingshub.github.io/blog/2024-10-14-cloudflare-remix-framework-hono-rpc-api-endpoint)
 
 ---
 

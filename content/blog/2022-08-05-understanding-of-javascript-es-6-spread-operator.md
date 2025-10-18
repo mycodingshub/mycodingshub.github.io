@@ -8,7 +8,7 @@ contributors: []
 draft: false
 ---
 
-![mycodings.fly.dev-understanding-of-javascript-es-6-spread-operator](https://blogger.googleusercontent.com/img/a/AVvXsEgJaHZo3k4PSGs020LUbWkfxq-RFDJVUoQl2yrYffa32IAUGc79ltM2BMsVgr-wwuFhoKYyF9yHKFwaZ-z2U8K0N4dG-Cc_ekp-wI7vAIASM_JdtLsTlhkot0VdupLEvhWWvuZti1exHE1QqydXNdP6oxkWN9dDfkkQFUlBXEo0nl-czjwTD7SmQ4L3=s16000)
+![mycodingshub.github.io-understanding-of-javascript-es-6-spread-operator](https://blogger.googleusercontent.com/img/a/AVvXsEgJaHZo3k4PSGs020LUbWkfxq-RFDJVUoQl2yrYffa32IAUGc79ltM2BMsVgr-wwuFhoKYyF9yHKFwaZ-z2U8K0N4dG-Cc_ekp-wI7vAIASM_JdtLsTlhkot0VdupLEvhWWvuZti1exHE1QqydXNdP6oxkWN9dDfkkQFUlBXEo0nl-czjwTD7SmQ4L3=s16000)
 
 안녕하세요?
 
@@ -113,7 +113,7 @@ let moreRivers = ['Danube', 'Amazon'];
 [].push.apply(rivers, moreRivers);
 console.log(rivers);
 ```
-~[mycodings.fly.dev-understanding-of-javascript-es-6-spread-operator](https://blogger.googleusercontent.com/img/a/AVvXsEjlAauaJDFrCguHg0Cl2RITErYeGCWgMlg2ZdsF6kerC-mwRjcwX0nY3_S8gRanjgk7uCWprA5lOhX7uiKj4SXIcS58J-F0YImLfm_c8RaGYMjq9o8j5i9bRSr6ROcgLf4nR0Ugy80oTxVssU_9YF9udx5vEGbUiqboBye9Nu4VVXeouqgVoLrk5Ka6=s16000)
+~[mycodingshub.github.io-understanding-of-javascript-es-6-spread-operator](https://blogger.googleusercontent.com/img/a/AVvXsEjlAauaJDFrCguHg0Cl2RITErYeGCWgMlg2ZdsF6kerC-mwRjcwX0nY3_S8gRanjgk7uCWprA5lOhX7uiKj4SXIcS58J-F0YImLfm_c8RaGYMjq9o8j5i9bRSr6ROcgLf4nR0Ugy80oTxVssU_9YF9udx5vEGbUiqboBye9Nu4VVXeouqgVoLrk5Ka6=s16000)
 
 ES5에서의 방법은 뭔가 이해가 어려운데요.
 
@@ -126,7 +126,7 @@ rivers.push(...moreRivers);
 console.log(rivers);
 ```
 
-![mycodings.fly.dev-understanding-of-javascript-es-6-spread-operator](https://blogger.googleusercontent.com/img/a/AVvXsEjccuBDQkOcVkUNBAHEQ9hJ4mYWnDzJYspfQUxiohNsX3cj1qZggf7c6Iooa6-qAjhZ1WE2BidNsnqv_VBBTLrlclJE2ndC-K2dM8jiIR0bZ3AeaQANhswyXnFLN6HFJG7xe2iDTxyQ7DdWPBtMxh0RcePqQuYx_m4jogd_Zd6h8-T9sZsibhy7TCiA=s16000)
+![mycodingshub.github.io-understanding-of-javascript-es-6-spread-operator](https://blogger.googleusercontent.com/img/a/AVvXsEjccuBDQkOcVkUNBAHEQ9hJ4mYWnDzJYspfQUxiohNsX3cj1qZggf7c6Iooa6-qAjhZ1WE2BidNsnqv_VBBTLrlclJE2ndC-K2dM8jiIR0bZ3AeaQANhswyXnFLN6HFJG7xe2iDTxyQ7DdWPBtMxh0RcePqQuYx_m4jogd_Zd6h8-T9sZsibhy7TCiA=s16000)
 
 어떤가요?
 

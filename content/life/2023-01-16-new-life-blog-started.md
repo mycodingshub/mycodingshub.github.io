@@ -10,7 +10,7 @@ draft: false
 
 안녕하세요?
 
-mycodings.fly.dev 사이트의 주인장입니다.
+mycodingshub.github.io 사이트의 주인장입니다.
 
 코딩 이야기로만 블로그를 꾸밀려고 했는데 간혹 하고 싶은 얘기가 생기면 어떡할까 해서 전체 블로그 사이트를 개편했습니다.
 

@@ -16,11 +16,11 @@ draft: false
 
 지난 강좌 링크는 아래와 같습니다.
 
-1편. [Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기](https://mycodings.fly.dev/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs)
+1편. [Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기](https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs)
 
-2편. [Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성](https://mycodings.fly.dev/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte)
+2편. [Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성](https://mycodingshub.github.io/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte)
 
-3편. [Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기](https://mycodings.fly.dev/blog/2023-08-28-tauri-dialog-open-read-local-file)
+3편. [Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기](https://mycodingshub.github.io/blog/2023-08-28-tauri-dialog-open-read-local-file)
 
 ---
 

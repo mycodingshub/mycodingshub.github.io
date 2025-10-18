@@ -11,7 +11,7 @@ contributors: []
 
 안녕하세요?
 
-이 사이트 즉, mycodings.fly.dev 사이트는 예전에 Remix Framework과 Github Action을 이용해서 Fly.io의 VPS 머신 속 sqlite DB에 블로그 내용을 저장했던 방식을 사용했었는데요.
+이 사이트 즉, mycodingshub.github.io 사이트는 예전에 Remix Framework과 Github Action을 이용해서 Fly.io의 VPS 머신 속 sqlite DB에 블로그 내용을 저장했던 방식을 사용했었는데요.
 
 얼마전에는 Remix 에서 React Router V7으로 홈페이지 완전 개편까지 했었습니다.
 
@@ -426,9 +426,9 @@ Updating existing machines in 'mycodings' with rolling strategy
  ✔ [1/2] Cleared lease for 28607298
  ✔ [2/2] Cleared lease for 3d3e2148
 -------
-Checking DNS configuration for mycodings.fly.dev
+Checking DNS configuration for mycodingshub.github.io
 
-Visit your newly deployed app at https://mycodings.fly.dev/
+Visit your newly deployed app at https://mycodingshub.github.io/
 ✅ 배포가 완료되었습니다!
 ```
 

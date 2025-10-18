@@ -10,7 +10,7 @@ draft: false
 
 안녕하세요?
 
-제 블로그 사이트인 mycodings.fly.dev가 Remix Framework으로 만들어졌다는 건 다들 아셨을 텐데요.
+제 블로그 사이트인 mycodingshub.github.io가 Remix Framework으로 만들어졌다는 건 다들 아셨을 텐데요.
 
 React 프레임워크입니다.
 

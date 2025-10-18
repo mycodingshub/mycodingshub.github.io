@@ -14,7 +14,7 @@ draft: false
 
 이번 시간에는 useFormState와 Next.js 미들웨어를 적용해서 좀 더 코드를 완성시켜 나가 보겠습니다.
 
-[지난 시간 강의](https://mycodings.fly.dev/blog/2024-08-16-nextjs-lucia-auth-with-cloudflare-d-1-db) 링크입니다.
+[지난 시간 강의](https://mycodingshub.github.io/blog/2024-08-16-nextjs-lucia-auth-with-cloudflare-d-1-db) 링크입니다.
 
 ---
 

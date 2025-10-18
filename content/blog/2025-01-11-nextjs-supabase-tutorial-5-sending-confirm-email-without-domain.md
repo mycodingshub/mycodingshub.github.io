@@ -25,14 +25,14 @@ Next.js 15, Supabase 강좌 5편입니다.
 
 참고로, 지난 시간 강좌 리스트입니다.
 
-[Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기](https://mycodings.fly.dev/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware)
+[Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기](https://mycodingshub.github.io/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware)
 
 
-[Next.js 15, Supabase 강좌 2편. Google OAuth를 이용한 로그인 구현](https://mycodings.fly.dev/blog/2025-01-01-nextjs-supabase-tutorial-2-login-with-google-id-oauth)
+[Next.js 15, Supabase 강좌 2편. Google OAuth를 이용한 로그인 구현](https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-2-login-with-google-id-oauth)
 
-[Next.js 15, Supabase 강좌 3편. Github OAuth를 이용한 로그인 구현](https://mycodings.fly.dev/blog/2025-01-01-nextjs-supabase-tutorial-3-login-with-github-id-oauth)
+[Next.js 15, Supabase 강좌 3편. Github OAuth를 이용한 로그인 구현](https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-3-login-with-github-id-oauth)
 
-[Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현](https://mycodings.fly.dev/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate)
+[Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현](https://mycodingshub.github.io/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate)
 
 ---
 

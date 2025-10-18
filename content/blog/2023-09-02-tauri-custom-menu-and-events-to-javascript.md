@@ -12,13 +12,13 @@ draft: false
 
 Tauri 관련 블로그를 몇 개만 하려고 했는데 벌써 5편까지 왔네요.
 
-1편. [Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기](https://mycodings.fly.dev/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs)
+1편. [Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기](https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs)
 
-2편. [Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성](https://mycodings.fly.dev/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte)
+2편. [Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성](https://mycodingshub.github.io/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte)
 
-3편. [Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기](https://mycodings.fly.dev/blog/2023-08-28-tauri-dialog-open-read-local-file)
+3편. [Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기](https://mycodingshub.github.io/blog/2023-08-28-tauri-dialog-open-read-local-file)
 
-4편. [Tauri 실전 코딩 4편 - Tauri에서 dialog save 또는 writeTextFile 함수로 로컬에 파일 쓰기](https://mycodings.fly.dev/blog/2023-08-30-tauri-dialog-save-to-local-file)
+4편. [Tauri 실전 코딩 4편 - Tauri에서 dialog save 또는 writeTextFile 함수로 로컬에 파일 쓰기](https://mycodingshub.github.io/blog/2023-08-30-tauri-dialog-save-to-local-file)
 
 ---
 

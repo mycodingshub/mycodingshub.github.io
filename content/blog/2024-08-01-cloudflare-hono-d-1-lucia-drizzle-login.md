@@ -14,11 +14,11 @@ draft: false
 
 먼저, 지난 시간 강의 링크입니다.
 
-- [Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기](https://mycodings.fly.dev/blog/2024-07-24-cloudflare-hono-oauth-naver-login)
+- [Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기](https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login)
 
-- [Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodings.fly.dev/blog/2024-07-21-cloudflare-hono-google-login)
+- [Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login)
 
-- [Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)](https://mycodings.fly.dev/blog/2024-07-27-cloudflare-hono-oauth-kakao-login)
+- [Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)](https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login)
 
 오늘은 좀 더 깊게 들어가기 위해 전문 인증 패키지를 사용해서 로그인을 구현해 보겠습니다.
 

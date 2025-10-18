@@ -172,7 +172,7 @@ tmpl.Execute(w,nil)
 
 즉, index.html 파일에서 데이터 값에 접근할 수 있다는 겁니다.
 
-Go 언어의 템플릿 언어에 대해 공부하려면 이전에 작성했던 글인 [Go 템플릿 완벽 가이드 - 문법과 내부 동작](https://mycodings.fly.dev/blog/2024-05-18-go-templates-complete-guide)를 참조하시기 바랍니다.
+Go 언어의 템플릿 언어에 대해 공부하려면 이전에 작성했던 글인 [Go 템플릿 완벽 가이드 - 문법과 내부 동작](https://mycodingshub.github.io/blog/2024-05-18-go-templates-complete-guide)를 참조하시기 바랍니다.
 
 먼저, Todo 구조체를 만듭니다.
 

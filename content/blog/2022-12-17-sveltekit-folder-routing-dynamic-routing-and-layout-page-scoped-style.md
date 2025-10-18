@@ -84,7 +84,7 @@ SvelteKit은 /src/routes 폴더 밑에 있는 걸 라우팅 하는데요.
 
 ```js
 <!-- about/+page.svelte -->
-<h1>Hi, I'm from mycodings.fly.dev</h1>
+<h1>Hi, I'm from mycodingshub.github.io</h1>
 
 <p>This is my about page.</p>
 ```
@@ -332,7 +332,7 @@ svelte 파일은 원래 그냥 HTML 파일이거든요.
 여기서 직접 Header 컴포넌트처럼 Footer 컴포넌트도 작성해 보십시오.
 
 ```js
-<footer>Copyright@2022, mycodings.fly.dev</footer>
+<footer>Copyright@2022, mycodingshub.github.io</footer>
 
 <style>
   footer {

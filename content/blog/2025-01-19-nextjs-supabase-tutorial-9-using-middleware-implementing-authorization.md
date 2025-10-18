@@ -22,22 +22,22 @@ Next.js 15, Supabase 강좌 8편입니다.
 
 아래는 지금까지의 강좌 리스트 전체입니다.
 
-[Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기](https://mycodings.fly.dev/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware)
+[Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기](https://mycodingshub.github.io/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware)
 
-[Next.js 15, Supabase 강좌 2편. Google OAuth를 이용한 로그인 구현](https://mycodings.fly.dev/blog/2025-01-01-nextjs-supabase-tutorial-2-login-with-google-id-oauth)
+[Next.js 15, Supabase 강좌 2편. Google OAuth를 이용한 로그인 구현](https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-2-login-with-google-id-oauth)
 
-[Next.js 15, Supabase 강좌 3편. Github OAuth를 이용한 로그인 구현](https://mycodings.fly.dev/blog/2025-01-01-nextjs-supabase-tutorial-3-login-with-github-id-oauth)
+[Next.js 15, Supabase 강좌 3편. Github OAuth를 이용한 로그인 구현](https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-3-login-with-github-id-oauth)
 
-[Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현](https://mycodings.fly.dev/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate)
+[Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현](https://mycodingshub.github.io/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate)
 
 [Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 컨펌 이메일 보내기
-](https://mycodings.fly.dev/blog/2025-01-11-nextjs-supabase-tutorial-5-sending-confirm-email-without-domain)
+](https://mycodingshub.github.io/blog/2025-01-11-nextjs-supabase-tutorial-5-sending-confirm-email-without-domain)
 
-[Next.js 15, Supabase 강좌 6편. 이메일로 Reset Password 링크 보내기와 Update Password 로직 구현하기](https://mycodings.fly.dev/blog/2025-01-12-nextjs-supabase-tutorial-6-send-email-of-reset-password-and-implementing-reset-password)
+[Next.js 15, Supabase 강좌 6편. 이메일로 Reset Password 링크 보내기와 Update Password 로직 구현하기](https://mycodingshub.github.io/blog/2025-01-12-nextjs-supabase-tutorial-6-send-email-of-reset-password-and-implementing-reset-password)
 
-[Next.js 15, Supabase 강좌 7편. 이메일로 Magic Link를 보내서 로그인 구현하기](https://mycodings.fly.dev/blog/2025-01-13-nextjs-supabase-tutorial-7-send-magic-link-and-login-with-supabase-brevo)
+[Next.js 15, Supabase 강좌 7편. 이메일로 Magic Link를 보내서 로그인 구현하기](https://mycodingshub.github.io/blog/2025-01-13-nextjs-supabase-tutorial-7-send-magic-link-and-login-with-supabase-brevo)
 
-[Next.js 15, Supabase 강좌 8편. 이메일로 OTP를 보내서 로그인 구현하기](https://mycodings.fly.dev/blog/2025-01-19-nextjs-supabase-tutorial-8-send-otp-number-and-login-with-otp)
+[Next.js 15, Supabase 강좌 8편. 이메일로 OTP를 보내서 로그인 구현하기](https://mycodingshub.github.io/blog/2025-01-19-nextjs-supabase-tutorial-8-send-otp-number-and-login-with-otp)
 
 ---
 

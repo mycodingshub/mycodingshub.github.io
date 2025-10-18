@@ -48,7 +48,7 @@ Port 여는 방법은 아래 그림을 보시면 이해하실 수 있는데요.
 
 예전 PostgreSQL 설치할 때 자세히 설명해 놨으니 링크로 대체하겠습니다.
 
-[https://mycodings.fly.dev/blog/2023-02-15-install-postgresql-on-oracle-cloud-free-tier-ubuntu-22-04](https://mycodings.fly.dev/blog/2023-02-15-install-postgresql-on-oracle-cloud-free-tier-ubuntu-22-04)
+[https://mycodingshub.github.io/blog/2023-02-15-install-postgresql-on-oracle-cloud-free-tier-ubuntu-22-04](https://mycodingshub.github.io/blog/2023-02-15-install-postgresql-on-oracle-cloud-free-tier-ubuntu-22-04)
 
 ---
 

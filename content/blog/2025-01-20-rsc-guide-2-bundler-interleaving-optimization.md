@@ -95,7 +95,7 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <main>
-      <h1>mycodings.fly.dev</h1>
+      <h1>mycodingshub.github.io</h1>
       <Counter />
       <Suspense fallback={<p>Loading...</p>}>
         <DelayedMessage />
@@ -129,7 +129,7 @@ export default function Home() {
      "type": "h1",
      "key": null,
      "props": {
-      "children": "mycodings.fly.dev"
+      "children": "mycodingshub.github.io"
      }
     },
     {
@@ -264,7 +264,7 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <main>
-      <h1>mycodings.fly.dev</h1>
+      <h1>mycodingshub.github.io</h1>
       <Counter>
         <p>Server Text</p>
       </Counter>
@@ -291,7 +291,7 @@ export default function Home() {
      "type": "h1",
      "key": null,
      "props": {
-      "children": "mycodings.fly.dev"
+      "children": "mycodingshub.github.io"
      }
     },
     {

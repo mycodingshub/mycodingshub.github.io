@@ -20,11 +20,11 @@ TypeScript는 JavaScript에 타입을 추가하여 코드의 안정성과 유지
 
 전체 강좌 링크는 아래와 같습니다.
 
-1. [TypeScript 타입 기초 완전 정복! 1편 - 프리미티브, 객체, 함수, 배열](https://mycodings.fly.dev/blog/2024-10-21-typescript-type-basics-first)
+1. [TypeScript 타입 기초 완전 정복! 1편 - 프리미티브, 객체, 함수, 배열](https://mycodingshub.github.io/blog/2024-10-21-typescript-type-basics-first)
 
-2. [TypeScript 타입 기초 완전 정복! 2편 - 제네릭, 튜플, 유니언, never, 교차 타입](https://mycodings.fly.dev/blog/2024-10-21-typescript-type-advanced-second)
+2. [TypeScript 타입 기초 완전 정복! 2편 - 제네릭, 튜플, 유니언, never, 교차 타입](https://mycodingshub.github.io/blog/2024-10-21-typescript-type-advanced-second)
 
-3. [TypeScript 타입 기초 완전 정복! 3편 - as const, unknown, Mapped, Conditional 타입 완벽 분석](https://mycodings.fly.dev/blog/2024-10-21-typescript-type-master-third)
+3. [TypeScript 타입 기초 완전 정복! 3편 - as const, unknown, Mapped, Conditional 타입 완벽 분석](https://mycodingshub.github.io/blog/2024-10-21-typescript-type-master-third)
 
 ---
 

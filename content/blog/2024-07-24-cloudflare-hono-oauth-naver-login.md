@@ -14,7 +14,7 @@ draft: false
 
 지난 시간 링크입니다.
 
-[Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodings.fly.dev/blog/2024-07-21-cloudflare-hono-google-login)
+[Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login)
 
 오늘은 국내 제1의 포털인 네이버 아이디를 이용한 로그인을 구현해 보겠습니다.
 

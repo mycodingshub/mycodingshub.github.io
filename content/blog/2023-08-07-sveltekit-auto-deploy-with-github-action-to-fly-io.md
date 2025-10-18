@@ -14,9 +14,9 @@ draft: false
 
 **-지난 시간 강좌 보기-**
 
-[SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링](https://mycodings.fly.dev/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering)
+[SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링](https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering)
 
-[SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기](https://mycodings.fly.dev/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy)
+[SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기](https://mycodingshub.github.io/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy)
 
 그러면 시작하겠습니다.
 

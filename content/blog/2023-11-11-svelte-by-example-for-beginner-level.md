@@ -10,9 +10,9 @@ draft: false
 
 전체 강좌 목록입니다.
 
-1. [예제로 배우는 Svelte - 초급편](https://mycodings.fly.dev/blog/2023-11-11-svelte-by-example-for-beginner-level)
+1. [예제로 배우는 Svelte - 초급편](https://mycodingshub.github.io/blog/2023-11-11-svelte-by-example-for-beginner-level)
 
-2. [예제로 배우는 Svelte와 SvelteKit - 고급편](https://mycodings.fly.dev/blog/2023-11-12-advanced-svelte-tutorial-by-svelte-example)
+2. [예제로 배우는 Svelte와 SvelteKit - 고급편](https://mycodingshub.github.io/blog/2023-11-12-advanced-svelte-tutorial-by-svelte-example)
 
 ** 목차 **
 

@@ -102,7 +102,7 @@ console.log(string1.length) // 9
 (예제)
 
 ```js
-let string1 = 'myCodings.fly.dev'
+let string1 = 'mycodingshub.github.io'
 let string2 = 'myCodings'
 
 console.log(string1.length > string2.length) // true

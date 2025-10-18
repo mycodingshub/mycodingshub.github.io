@@ -12,7 +12,7 @@ draft: false
 
 작년쯤인가 아랫글을 작성했었는데요.
 
-[오라클 클라우드(Oracle Cloud)로 무료로 웹 서버 구축하기](https://mycodings.fly.dev/blog/2022-08-07-complete-introduction-of-oracle-cloud-free-tier)
+[오라클 클라우드(Oracle Cloud)로 무료로 웹 서버 구축하기](https://mycodingshub.github.io/blog/2022-08-07-complete-introduction-of-oracle-cloud-free-tier)
 
 평생 무료 서버 구축해 놓고 쓰고 있지 않아서 아까웠는데요.
 

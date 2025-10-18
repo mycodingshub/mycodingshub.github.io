@@ -349,7 +349,7 @@ formData에서 'name' 부분을 가져오고 그게 'string' 타입이면 DB에 
 
 제가 예전에 강의한 Drizzle ORM 글은 아래 링크에 있으니 꼭 한 번 읽어 보시기 바랍니다.
 
-[Drizzle ORM 쉽게 이해하기](https://mycodings.fly.dev/blog/2023-12-09-quick-understanding-of-drizzle-orm)
+[Drizzle ORM 쉽게 이해하기](https://mycodingshub.github.io/blog/2023-12-09-quick-understanding-of-drizzle-orm)
 
 이제 API 로직을 완성했으니까 Form UI를 작성해야 합니다.
 

@@ -12,7 +12,7 @@ draft: false
 
 오늘은 지난 시간에 이어 Rust의 clap 크레이트 공부를 계속해 보겠습니다.
 
-지난 시간 강좌는 [여기](https://mycodings.fly.dev/blog/2023-08-19-beyond-chatgpt-how-to-use-rust-clap-crate)를 누르시면 됩니다.
+지난 시간 강좌는 [여기](https://mycodingshub.github.io/blog/2023-08-19-beyond-chatgpt-how-to-use-rust-clap-crate)를 누르시면 됩니다.
 
 ```rust
 use clap::{ Parser, Subcommand, Args };

@@ -12,7 +12,7 @@ draft: false
 
 지난 시간에 이어 Rust로 웹 서버 만들기 강좌를 계속 이어 나가겠습니다.
 
-[Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기](https://mycodings.fly.dev/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web)
+[Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기](https://mycodingshub.github.io/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web)
 
 ---
 

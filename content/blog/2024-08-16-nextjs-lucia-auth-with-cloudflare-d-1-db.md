@@ -17,7 +17,7 @@ DB는 Cloudflare D1을 사용할 거고, ORM은 가벼운 Drizzle ORM, 그리고
 전체적인 구조는 지난번에 만들었던 Hono Framework을 이용한 유저로그인 방식과 같습니다.
 
 [Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현
-](https://mycodings.fly.dev/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login)
+](https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login)
 
 다만 Next.js를 이용한다는 것 뿐입니다.
 

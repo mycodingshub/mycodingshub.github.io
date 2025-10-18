@@ -8,7 +8,7 @@ contributors: []
 draft: false
 ---
 
-![mycodings.fly.dev-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEjrn2lGsq7w2ZADFBh-Vv6Y8aiH-Pld8hVbqiZ0luMao_r6_3PzTvtm2e8KDJ3872rE683lBZoKjZDqQuHreosGWSeAJwdGFF06Oi8nyJBhDdyFERDHsNoI8-V5dkFC3oReAOAfAtHExTKtArQpjswFrlNlLDnYcSagXIkRWHtNAEb4YYF5PKa6WX30=s16000)
+![mycodingshub.github.io-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEjrn2lGsq7w2ZADFBh-Vv6Y8aiH-Pld8hVbqiZ0luMao_r6_3PzTvtm2e8KDJ3872rE683lBZoKjZDqQuHreosGWSeAJwdGFF06Oi8nyJBhDdyFERDHsNoI8-V5dkFC3oReAOAfAtHExTKtArQpjswFrlNlLDnYcSagXIkRWHtNAEb4YYF5PKa6WX30=s16000)
 
 안녕하세요?
 
@@ -133,7 +133,7 @@ console.log(middleName); // 'C.'
 console.log(age); // 28
 ```
 
-![mycodings.fly.dev-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEgMOkfzKuHWBCTfgsNEIjEZmOFgkoCGReiHKZpSZqNf9_6giKLKjh5Q7lo1t2n6H-EPwGb5jkrN6HxIUq1EZzCXISRYux2XSKXfcTjntpiOOZQOIIgpzOXD0XgDq91th1OO4AqmDOZ4e4tCkf15kdhTQYtwfbWDkAow1Jg74lCTjWbn1sMdT_2O6JZL=s16000)
+![mycodingshub.github.io-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEgMOkfzKuHWBCTfgsNEIjEZmOFgkoCGReiHKZpSZqNf9_6giKLKjh5Q7lo1t2n6H-EPwGb5jkrN6HxIUq1EZzCXISRYux2XSKXfcTjntpiOOZQOIIgpzOXD0XgDq91th1OO4AqmDOZ4e4tCkf15kdhTQYtwfbWDkAow1Jg74lCTjWbn1sMdT_2O6JZL=s16000)
 
 ---
 
@@ -153,7 +153,7 @@ console.log(firstName, lastName);
 
 위 코드를 실행하면 아래 그림과 같이 TypeError가 발생합니다.
 
-![mycodings.fly.dev-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEg9nszk7-r8r3ZgBeeyM_wlKIIHo6-c0X9rQ89PZLygTBQyQ7QExRBnZLRm4MV_8ttuDiecMOtrTnfJDtZwLZOGA5Fr1y6X9ilQoAB1jJyC_GtM_O2B2WJUIL_Oip8ObEUuZR_w3FLZsNxldf6ibEYvlRcGzZewDqIwSU90AJrR39C-u7iW5M4AbiVn=s16000)
+![mycodingshub.github.io-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEg9nszk7-r8r3ZgBeeyM_wlKIIHo6-c0X9rQ89PZLygTBQyQ7QExRBnZLRm4MV_8ttuDiecMOtrTnfJDtZwLZOGA5Fr1y6X9ilQoAB1jJyC_GtM_O2B2WJUIL_Oip8ObEUuZR_w3FLZsNxldf6ibEYvlRcGzZewDqIwSU90AJrR39C-u7iW5M4AbiVn=s16000)
 
 ```js
 Uncaught TypeError: Cannot destructure property 'firstName' of 'getPerson(...)' as it is null.
@@ -169,7 +169,7 @@ let { firstName, lastName } = getPerson() || {};
 
 아래 그림을 보시면 'undefined'가 나오는 게 보이시죠?
 
-![mycodings.fly.dev-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEh9NjBsEeQ4Y6mfwj9kAj7uQKvKlzWZH4bf8wZVTPgd9jrSmVLrEAHEO_X85WwrATdLwCxueYlVfOJlib2KPFziY-I4B-UciTQCJWsPV5jCFEFpgrvEY8LwebHghLOj16iHCoFU7t9oHy7MsEqUM1HHQA_6bqQ0D0UBfh5Hlmhk_4MStzS-epB7TSNi=s16000)
+![mycodingshub.github.io-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEh9NjBsEeQ4Y6mfwj9kAj7uQKvKlzWZH4bf8wZVTPgd9jrSmVLrEAHEO_X85WwrATdLwCxueYlVfOJlib2KPFziY-I4B-UciTQCJWsPV5jCFEFpgrvEY8LwebHghLOj16iHCoFU7t9oHy7MsEqUM1HHQA_6bqQ0D0UBfh5Hlmhk_4MStzS-epB7TSNi=s16000)
 
 ---
 
@@ -203,7 +203,7 @@ console.log(firstName); // John
 console.log(lastName); // Doe
 ```
 
-~[mycodings.fly.dev-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEga3Ot4SGqG5rcaLlgnTgW7Qymx99vILMncqAQ3hzCuZpJxsZWnEV7RXUN0KpBLgM6TW0S36Kz7lNNFqnG3O3ic0nab5sY0e89jVyM0iFmoi1AEWEWYs0uqgaDEIWAiFEmmj6lrMIjGb0EzrbZjOAkWhyutW1z1cIPZikVF257Hs2TQNCrXcd-8wD8Q=s16000)
+~[mycodingshub.github.io-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEga3Ot4SGqG5rcaLlgnTgW7Qymx99vILMncqAQ3hzCuZpJxsZWnEV7RXUN0KpBLgM6TW0S36Kz7lNNFqnG3O3ic0nab5sY0e89jVyM0iFmoi1AEWEWYs0uqgaDEIWAiFEmmj6lrMIjGb0EzrbZjOAkWhyutW1z1cIPZikVF257Hs2TQNCrXcd-8wD8Q=s16000)
 
 
 실행 결과는 깔끔하게 나옵니다.
@@ -234,7 +234,7 @@ console.log(lastName); // Doe
 console.log(name); // { firstName: 'John', lastName: 'Doe' }
 ```
 
-![mycodings.fly.dev-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEg3VBkmG8wtgADzKxyBRsYxbISN_SNIEcsUmoMQYM6WKFSbFRkuMAgc_k099XW0xkHBSnlwRUaPIYpAJYz85W7WK8oDUEo1AYS-8fMFvjlSYucFDch1plpWf2UpKTRLEcAVr2l4ddnzcBI6iImW2DPqOEtLth4clBHElxcQYvUPaI-uXWLopyOBGZN-=s16000)
+![mycodingshub.github.io-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEg3VBkmG8wtgADzKxyBRsYxbISN_SNIEcsUmoMQYM6WKFSbFRkuMAgc_k099XW0xkHBSnlwRUaPIYpAJYz85W7WK8oDUEo1AYS-8fMFvjlSYucFDch1plpWf2UpKTRLEcAVr2l4ddnzcBI6iImW2DPqOEtLth4clBHElxcQYvUPaI-uXWLopyOBGZN-=s16000)
 
 어떤가요?
 
@@ -259,7 +259,7 @@ let person = {
 display(person);
 ```
 
-![mycodings.fly.dev-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEhrMhvxMeNIjngaQDq38Yp00fki938yl8R9BeVrfkpcHCIwGq-km4TrcL7YGdUkMa-Gu6if6xr3uhFyDsVArrt5xgIb9VzOlbVgK17RXLYqjmO97olTyNgwmmDdvWT0HYhmfHkYzUVmKHWNZxK4dOTwEhNzFQPblh702yVlzucPEcUU6K2uo5aJvHV1=s16000)
+![mycodingshub.github.io-destructuring-of-object-in-es6-javascript](https://blogger.googleusercontent.com/img/a/AVvXsEhrMhvxMeNIjngaQDq38Yp00fki938yl8R9BeVrfkpcHCIwGq-km4TrcL7YGdUkMa-Gu6if6xr3uhFyDsVArrt5xgIb9VzOlbVgK17RXLYqjmO97olTyNgwmmDdvWT0HYhmfHkYzUVmKHWNZxK4dOTwEhNzFQPblh702yVlzucPEcUU6K2uo5aJvHV1=s16000)
 
 display 함수의 기능은 간단합니다.
 

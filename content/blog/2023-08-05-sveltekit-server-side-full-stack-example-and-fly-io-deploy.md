@@ -14,7 +14,7 @@ draft: false
 
 서버 사이드 렌더링이 가능하게끔 Fly.io에 실제 배포까지 했었습니다.
 
-[지난 시간 강좌 보기](https://mycodings.fly.dev/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering)
+[지난 시간 강좌 보기](https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering)
 
 오늘은 지난 시간에 이어 SvelteKit을 이용해서 무비 앱을 만들어 보겠습니다.
 

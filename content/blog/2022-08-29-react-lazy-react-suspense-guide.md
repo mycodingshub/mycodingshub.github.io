@@ -20,7 +20,7 @@ create-react-app을 이용해서 간단한 React 앱을 만들어 보겠습니�
 npx create-react-app lazy-test
 ```
 
-![mycodings.fly.dev-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEjD71cu90hDWm0ZfbCuL31IGkWfRk4kzRFxkbKKViMXZJO57uf4nnbQSnKX57x6jZIzQsNFnwQYgDQ480hJT7MF860McYIQbp-9R7nlElXanTzK6ka74H4XZC9XeNYEZ3QVUxwjG9majRDmoMDcmjVTB6c7AOhLOOX9o0pM3u0LP-n2M2ffft140gi4)
+![mycodingshub.github.io-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEjD71cu90hDWm0ZfbCuL31IGkWfRk4kzRFxkbKKViMXZJO57uf4nnbQSnKX57x6jZIzQsNFnwQYgDQ480hJT7MF860McYIQbp-9R7nlElXanTzK6ka74H4XZC9XeNYEZ3QVUxwjG9majRDmoMDcmjVTB6c7AOhLOOX9o0pM3u0LP-n2M2ffft140gi4)
 
 이제 React Router가 필요하니 아래 패키지를 설치할 겁니다.
 
@@ -56,9 +56,9 @@ React Router Dom을 이용해서 라우팅을 설정했는데요.
 
 Home과 TinyMce 컴포넌트를 각각 주소 "/"와 "/edit"에 할당했습니다.
 
-![mycodings.fly.dev-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEgKWbRnVxAe-RW0R6lVjIcUeFwdmL5Zj2OHppIYu7IrVWVF5CVy64rsnY52roDarAReumcc4vEVbPCl6VSStLWL0-tHZpEvZ8ioTkZVrWPFDcf3wgPnhIDXMG62CXLSopssucIZEXOknmISBXRUSo3mAxcpLN64ZFKFgS3gTHg3eFdwksZbLfIKVtrT)
+![mycodingshub.github.io-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEgKWbRnVxAe-RW0R6lVjIcUeFwdmL5Zj2OHppIYu7IrVWVF5CVy64rsnY52roDarAReumcc4vEVbPCl6VSStLWL0-tHZpEvZ8ioTkZVrWPFDcf3wgPnhIDXMG62CXLSopssucIZEXOknmISBXRUSo3mAxcpLN64ZFKFgS3gTHg3eFdwksZbLfIKVtrT)
 
-![mycodings.fly.dev-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEjSOWLFfRb2QVP6hwDxICb1MGMBzd2AR3UsfpN_Aa2Mk1NhvWtZBwFskQBOh7iQ5D4DUDr1U0uGLic4giULvHqtwCyDufbDnadL64OXVypQezB_05hH5ZVzR0G3D6TTwd4uVqcmKBwBJzLp_X33lS6-poYVQ_mQdqweihXoIJW6qsaga_R-zclHxBC3)
+![mycodingshub.github.io-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEjSOWLFfRb2QVP6hwDxICb1MGMBzd2AR3UsfpN_Aa2Mk1NhvWtZBwFskQBOh7iQ5D4DUDr1U0uGLic4giULvHqtwCyDufbDnadL64OXVypQezB_05hH5ZVzR0G3D6TTwd4uVqcmKBwBJzLp_X33lS6-poYVQ_mQdqweihXoIJW6qsaga_R-zclHxBC3)
 
 일단은 해당 라우팅에 대해 잘 실행되는 게 보이실 겁니다.
 
@@ -127,7 +127,7 @@ TinyMce의 react 버전인 Editor를 불러와서 화면에 보여주는 컴포�
 
 이럴 때 쓰이는 게 React.lazy입니다.
 
-![mycodings.fly.dev-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEitCZvmiIe9MqA1zklaGz3nSHg7bqX-0_iQMD2jmsDFzebRp8_obKnOeYtC1cJvlTt4_U4BUbmzJUUu1t3fhj8CW7_zPvvsNyeMTtKc5axa6NU-STzTU69TgTMn9-1gg5PklgfvqYFnY8rqSph1gmgO1QCY4tu9kcHMDh4SRBS252m7SnMJ_ijrUBVD)
+![mycodingshub.github.io-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEitCZvmiIe9MqA1zklaGz3nSHg7bqX-0_iQMD2jmsDFzebRp8_obKnOeYtC1cJvlTt4_U4BUbmzJUUu1t3fhj8CW7_zPvvsNyeMTtKc5axa6NU-STzTU69TgTMn9-1gg5PklgfvqYFnY8rqSph1gmgO1QCY4tu9kcHMDh4SRBS252m7SnMJ_ijrUBVD)
 
 위 스크린숏을 보시면 React Dev 서버에서 불러오는 bundle.js 파일의 크기가 391kb인데요.
 
@@ -198,7 +198,7 @@ export default TinyMce
 
 이렇게 React.lazy로 로딩하면 어떻게 될까요?
 
-![mycodings.fly.dev-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEhXlpF8fpEUT0_WBohLCS9U3dg3H0IoDSLVzs0QEF2a01tolYY_EUG0a9I4Djb3juvVv4mGXFwvs9Qio7veBOUn8Y7Bp3udCl6q5o3jhL4jgzjK52UhnryI11pI1AviAUPW1u2F1Os66PQQjFJ7h_EudSJfg3JgyQ2bMEYhkLKVxHq_ciN-c85JpFx_)
+![mycodingshub.github.io-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEhXlpF8fpEUT0_WBohLCS9U3dg3H0IoDSLVzs0QEF2a01tolYY_EUG0a9I4Djb3juvVv4mGXFwvs9Qio7veBOUn8Y7Bp3udCl6q5o3jhL4jgzjK52UhnryI11pI1AviAUPW1u2F1Os66PQQjFJ7h_EudSJfg3JgyQ2bMEYhkLKVxHq_ciN-c85JpFx_)
 
 위 스크린숏을 보면 377kb로 나타납니다.
 
@@ -247,7 +247,7 @@ export default TinyMce
 
 위와 같이 하면 lazy 하게 import 하는 Editor 컴포넌트가 로딩이 완료되기 전에 fallback에 할당한 문구가 화면에 보이게 됩니다.
 
-![mycodings.fly.dev-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEjFrurk0od1oNLW3KJz_N3H2mH0728j7bk3GNNy4wo9jdhBZzCsiEJ48impp_pYOgVtr5-yTSnkkgPNbo-B9RY24ClMER6LcVGu9yt7DYoIO9BxML4N4l9H-RoFCPBwmZzcUZIlAjh_4r7D1taOPIyoohWXGqzmk2XihEfPlr96tnma5XqhosEu4kLq)
+![mycodingshub.github.io-react-lazy-react-suspense-guide](https://blogger.googleusercontent.com/img/a/AVvXsEjFrurk0od1oNLW3KJz_N3H2mH0728j7bk3GNNy4wo9jdhBZzCsiEJ48impp_pYOgVtr5-yTSnkkgPNbo-B9RY24ClMER6LcVGu9yt7DYoIO9BxML4N4l9H-RoFCPBwmZzcUZIlAjh_4r7D1taOPIyoohWXGqzmk2XihEfPlr96tnma5XqhosEu4kLq)
 
 위 스크린숏을 보시면 Loading... 이란 문구가 보이시죠.
 

@@ -10,7 +10,7 @@ draft: false
 
 안녕하세요?
 
-React 생태계에서 Next.js보다 Remix를 주로 사용했던 저로서는 이번 React Router V7의 출시에 있어 현재 읽고 계신 mycodings.fly.dev 사이트의 기존 Remix 코드베이스를 전부 뜯어 고치기가 너무 힘들었는데요.
+React 생태계에서 Next.js보다 Remix를 주로 사용했던 저로서는 이번 React Router V7의 출시에 있어 현재 읽고 계신 mycodingshub.github.io 사이트의 기존 Remix 코드베이스를 전부 뜯어 고치기가 너무 힘들었는데요.
 
 그래서 기초가 중요하다고 생각해서 이렇게 먼저, React Router V7을 공부해 볼까 하고 이번 강좌를 작성하게 되었습니다.
 

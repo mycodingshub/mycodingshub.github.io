@@ -14,15 +14,15 @@ draft: false
 
 **-지난 시간 강좌 보기-**
 
-[SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링](https://mycodings.fly.dev/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering)
+[SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링](https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering)
 
-[SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기](https://mycodings.fly.dev/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy)
+[SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기](https://mycodingshub.github.io/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy)
 
-[SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)](https://mycodings.fly.dev/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io)
+[SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)](https://mycodingshub.github.io/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io)
 
-[SvelteKit 실전 예제 4편 - Prisma 설치 후 백엔드 DB 세팅 및 클라우드에 자동 배포하기](https://mycodings.fly.dev/blog/2023-08-07-sveltekit-with-prisma-and-deploy-to-fly-io)
+[SvelteKit 실전 예제 4편 - Prisma 설치 후 백엔드 DB 세팅 및 클라우드에 자동 배포하기](https://mycodingshub.github.io/blog/2023-08-07-sveltekit-with-prisma-and-deploy-to-fly-io)
 
-[SvelteKit 실전 예제 5편 - SvelteKit으로 유저 로그인 구현하기(유저 인증)](https://mycodings.fly.dev/blog/2023-08-09-user-authentication-system-in-svetlekit)
+[SvelteKit 실전 예제 5편 - SvelteKit으로 유저 로그인 구현하기(유저 인증)](https://mycodingshub.github.io/blog/2023-08-09-user-authentication-system-in-svetlekit)
 
 
 그냥 기본값으로 배포했던 테스트 앱이 일정 시간 동안 사용자가 접속하지 않자 잠자기 모드로 돌입하게 되었습니다.

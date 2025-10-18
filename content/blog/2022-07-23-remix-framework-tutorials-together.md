@@ -8,11 +8,11 @@ contributors: []
 draft: false
 ---
 
-![mycodings.fly.dev-howto-code-with-remix-framework](https://blogger.googleusercontent.com/img/a/AVvXsEjg5h8WqvDMWiyPSJF4xvbG2QUwjCIVLeQlkV1SxGNxYlYxU3_kYeVAeghNNg1gycbmJfi_YO4ewhLMiGcUxxab1ylxHkbKLJSLxvNBw4SYVwLtWIpoY6kEdyUpceTk8Jb2y7gFqFqzZO2lEqWBquiREWyyjr2TSaANzyQys69nywDLFRkCxhle5vnZ)
+![mycodingshub.github.io-howto-code-with-remix-framework](https://blogger.googleusercontent.com/img/a/AVvXsEjg5h8WqvDMWiyPSJF4xvbG2QUwjCIVLeQlkV1SxGNxYlYxU3_kYeVAeghNNg1gycbmJfi_YO4ewhLMiGcUxxab1ylxHkbKLJSLxvNBw4SYVwLtWIpoY6kEdyUpceTk8Jb2y7gFqFqzZO2lEqWBquiREWyyjr2TSaANzyQys69nywDLFRkCxhle5vnZ)
 
 안녕하세요?
 
-제가 여기 [mycodings.fly.dev](https://mycodings.fly.dev) 블로그 사이트를 오픈하면서 기존 [티스토리](https://cpro95.tistory.com) 데이터를 어떻게 할지 고민했었는데요.
+제가 여기 [mycodingshub.github.io](https://mycodingshub.github.io) 블로그 사이트를 오픈하면서 기존 [티스토리](https://cpro95.tistory.com) 데이터를 어떻게 할지 고민했었는데요.
 
 티스토리 글이 전부 구글, 네이버 검색엔진에 등록되어 여기로 그대로 옮기는 거는 표절로 의심받을 수 있기 때문에 아쉽지만 그냥 링크로 대체하기로 했습니다.
 

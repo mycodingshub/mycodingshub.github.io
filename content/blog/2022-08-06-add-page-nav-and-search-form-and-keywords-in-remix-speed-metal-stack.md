@@ -26,15 +26,15 @@ Speed Metal Stack은 전체적인 구조만 보여주는 스택이라 세부적�
 
 먼저, 페이지 내비게이션입니다.
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhj9w4G2KRmMXJ71A2fHyENoXfTuUSoeXxlhA4FbyopKf0ozmSnowuuLGxHSB32tOD5WKaqDRtjnd9dt3aAZv_rk9wdQWQhNZSYOgOsLEcuWo3kx5a1GZQaxI6QktiODyPfdn-lB2YNfVBbm0Z8ibBEVl054BdTHkoPojQuhTtGVYzSlTF8uKrv_D0D=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhj9w4G2KRmMXJ71A2fHyENoXfTuUSoeXxlhA4FbyopKf0ozmSnowuuLGxHSB32tOD5WKaqDRtjnd9dt3aAZv_rk9wdQWQhNZSYOgOsLEcuWo3kx5a1GZQaxI6QktiODyPfdn-lB2YNfVBbm0Z8ibBEVl054BdTHkoPojQuhTtGVYzSlTF8uKrv_D0D=s16000)
 
 두 번째, 검색창입니다.
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhCPhK4B-bIaKA7yxkxkDUOual2PAT1ALQzZvvTT9P8yym_G9miupTerfWHN04YL_pi6ey3R8lwhdRzDxbyOyirIIN96SjCWbFIEfkEn8vgJk8QjQJgUq-6EEnfVnt-MUaYjikuj9xk6pczLz7OQsYNwr5kx241KQBTW2-k6IbrgN_9f2l100NMPgMR=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhCPhK4B-bIaKA7yxkxkDUOual2PAT1ALQzZvvTT9P8yym_G9miupTerfWHN04YL_pi6ey3R8lwhdRzDxbyOyirIIN96SjCWbFIEfkEn8vgJk8QjQJgUq-6EEnfVnt-MUaYjikuj9xk6pczLz7OQsYNwr5kx241KQBTW2-k6IbrgN_9f2l100NMPgMR=s16000)
 
 세 번째, 베스트 키워드 보여주기입니다.
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEj-wmM82RntoP4HTfhRPLChAXjUefZzUaJJFR3fIg8zHKTmmKPIp-DIz-kxSm1VoTVUPcy9P5mwoXXeYpm_Euzbma5nvfQPk9SQIIZK6Pr79_I5tRFu0CSlpy3akW2Q9VDK2sUQRXNT2ykc3DvzUCIYULNaz2LXUxz3WrUeDWRMIA0b-ssVqWXKqyVg=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEj-wmM82RntoP4HTfhRPLChAXjUefZzUaJJFR3fIg8zHKTmmKPIp-DIz-kxSm1VoTVUPcy9P5mwoXXeYpm_Euzbma5nvfQPk9SQIIZK6Pr79_I5tRFu0CSlpy3akW2Q9VDK2sUQRXNT2ykc3DvzUCIYULNaz2LXUxz3WrUeDWRMIA0b-ssVqWXKqyVg=s16000)
 
 ---
 
@@ -48,7 +48,7 @@ Speed Metal Stack은 전체적인 구조만 보여주는 스택이라 세부적�
 
 폴더 트리에서 `content/blog`에 들어가셔서 터미널에서 `cp` 명령어로 가짜 블로그 글을 계속 만들어 줍시다.
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEiIT1zrZVOYmctyjAHvqYK7751EDpiCVxqQYsRGPWlf2wfZja1JMdZ9-6F5oNSSOSx61bjjZLwS9oBg0fOTBHsYR9ZwFDGvaq9KATSQ4hphypF-mRlap-PVxcL5GkNEFeETQbWiYfprBLo-PDQsdcDfbRruBXN4FVhWqlUvw0GXJikVphbqyyBxrUsg=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEiIT1zrZVOYmctyjAHvqYK7751EDpiCVxqQYsRGPWlf2wfZja1JMdZ9-6F5oNSSOSx61bjjZLwS9oBg0fOTBHsYR9ZwFDGvaq9KATSQ4hphypF-mRlap-PVxcL5GkNEFeETQbWiYfprBLo-PDQsdcDfbRruBXN4FVhWqlUvw0GXJikVphbqyyBxrUsg=s16000)
 
 그리고 가짜로 만든 블로그 mdx 파일을 하나씩 불려 들어서 각각 내용이 틀리게 하는 게 나중에 검색창 만들 때 좋습니다.
 
@@ -84,7 +84,7 @@ test06
 
 'npm run dev'를 통해 개발 서버를 돌려 볼까요?
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhCjH9Eso64B47HWcS7TW7xT5fTAGgGIovmIn0wRMybp_JDDZGcbxZWONi-md2HtbQ33aiky1ZrWcn_3U6b1VcLUUiS1dlFIKyi4mqk1W924vQ-aENNQ0Hpivi33Y8QnjejHCYBqzkMOlSeo0SkPuIh43ejywBpvwsuMC-3vMqzwU0H1rdc11EezQOo=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhCjH9Eso64B47HWcS7TW7xT5fTAGgGIovmIn0wRMybp_JDDZGcbxZWONi-md2HtbQ33aiky1ZrWcn_3U6b1VcLUUiS1dlFIKyi4mqk1W924vQ-aENNQ0Hpivi33Y8QnjejHCYBqzkMOlSeo0SkPuIh43ejywBpvwsuMC-3vMqzwU0H1rdc11EezQOo=s16000)
 
 여러 개의 블로그 글이 있는 게 보이실 겁니다.
 
@@ -776,14 +776,14 @@ getMdxCount는 q 없이 전체 블로그 숫자이고, getMdxCountWithQ는 q를 
 
 먼저, 페이지 부분입니다.
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEjuXnb9harF-lVS2_nVMCEBf8VvkB26_yrZDeRrzduDY6xavOi1HI3SdWvL6tsZTfydgHJqZIX-qpqRZV6eVWDO0T6caI297S_kTTGMjQ86IE1M_gp0Kp2ifmItsLOQYJD0M14WbM6a6Faq3OypW9R4aG2XQ4MvK9-a1U6rpb1tqpst_xviK6kCa15R=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEjuXnb9harF-lVS2_nVMCEBf8VvkB26_yrZDeRrzduDY6xavOi1HI3SdWvL6tsZTfydgHJqZIX-qpqRZV6eVWDO0T6caI297S_kTTGMjQ86IE1M_gp0Kp2ifmItsLOQYJD0M14WbM6a6Faq3OypW9R4aG2XQ4MvK9-a1U6rpb1tqpst_xviK6kCa15R=s16000)
 
 
 전체 블로그 숫자가 12개라서 1페이지, 2페이지만 보입니다.
 
 두번 째 페이지로 넘어가 볼까요?
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEiveY_DKYl_bD4dqwvxCzRq3i_O4AuIWzzKM8t6FpHchETaR8zSVoAg84QNPFh6tclOlrPHoPqPJBOV7KRZJegP3CT7U-K2rFJG8e1FY6aCiXLu1-tm7tKF_EH7d5uRJ1toMF1lFnL8Fffef1cjuzR-OvH0CDSdguqSvCqhlLsT9zlFiYYIq_POhj4G=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEiveY_DKYl_bD4dqwvxCzRq3i_O4AuIWzzKM8t6FpHchETaR8zSVoAg84QNPFh6tclOlrPHoPqPJBOV7KRZJegP3CT7U-K2rFJG8e1FY6aCiXLu1-tm7tKF_EH7d5uRJ1toMF1lFnL8Fffef1cjuzR-OvH0CDSdguqSvCqhlLsT9zlFiYYIq_POhj4G=s16000)
 
 주소창에도 관련 params 정보가 잘 전달되고 있습니다.
 
@@ -793,7 +793,7 @@ getMdxCount는 q 없이 전체 블로그 숫자이고, getMdxCountWithQ는 q를 
 
 일단 react라고 적어볼까요?
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEgNA1MXs4j4QO0TP6roF2xsFvzsGgDXXUEe9GEGrkNn7N_RhqdwP9qEJBnhKrJnkVHxEpOSyPE8pgP87eVaRGsni-76OzQ-1dlLu19_o8EG1VPhtW4N3X-IoUKf53lpxfmmyk5epyi5Z6-nTEf8gQtF6Tbm3G4tdwfE5bujZEsmC5INgRydyH-FLSlq=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEgNA1MXs4j4QO0TP6roF2xsFvzsGgDXXUEe9GEGrkNn7N_RhqdwP9qEJBnhKrJnkVHxEpOSyPE8pgP87eVaRGsni-76OzQ-1dlLu19_o8EG1VPhtW4N3X-IoUKf53lpxfmmyk5epyi5Z6-nTEf8gQtF6Tbm3G4tdwfE5bujZEsmC5INgRydyH-FLSlq=s16000)
 
 정말 잘 작동하고 있는데요.
 
@@ -807,7 +807,7 @@ getMdxCount는 q 없이 전체 블로그 숫자이고, getMdxCountWithQ는 q를 
 
 일단 완성형을 다시 보시죠!
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEj-wmM82RntoP4HTfhRPLChAXjUefZzUaJJFR3fIg8zHKTmmKPIp-DIz-kxSm1VoTVUPcy9P5mwoXXeYpm_Euzbma5nvfQPk9SQIIZK6Pr79_I5tRFu0CSlpy3akW2Q9VDK2sUQRXNT2ykc3DvzUCIYULNaz2LXUxz3WrUeDWRMIA0b-ssVqWXKqyVg=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEj-wmM82RntoP4HTfhRPLChAXjUefZzUaJJFR3fIg8zHKTmmKPIp-DIz-kxSm1VoTVUPcy9P5mwoXXeYpm_Euzbma5nvfQPk9SQIIZK6Pr79_I5tRFu0CSlpy3akW2Q9VDK2sUQRXNT2ykc3DvzUCIYULNaz2LXUxz3WrUeDWRMIA0b-ssVqWXKqyVg=s16000)
 
 다시 Blog() 컴포넌트에 BestTags 컴포넌트를 추가합시다.
 
@@ -947,11 +947,11 @@ const { blogList, blogCount, arrayOfBestPool } = useLoaderData()
 
 한번 테스트 결과를 볼까요?
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhCUc9TB2Vbm71sM5HP5i7LSNg0Gp-rgCGytyFfMEwNWuSTDHNssF9OOO9u2QtKwmmuncfmxpCMuQBGNZ--aZykzppfKN6kPQB6KRD0V-R2dgoBpzo2OpjSyp9Q_fOr7BxuXM0_n6b4MZhNJefwdO0PXzhn9yPyxMFlCaDR4JtaeFH3arNhzcXeKUp7=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEhCUc9TB2Vbm71sM5HP5i7LSNg0Gp-rgCGytyFfMEwNWuSTDHNssF9OOO9u2QtKwmmuncfmxpCMuQBGNZ--aZykzppfKN6kPQB6KRD0V-R2dgoBpzo2OpjSyp9Q_fOr7BxuXM0_n6b4MZhNJefwdO0PXzhn9yPyxMFlCaDR4JtaeFH3arNhzcXeKUp7=s16000)
 
 그리고 실제로 키워드 부분을 클릭해 볼까요?
 
-![mycodings.fly.dev-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEiAXMXCW6m3DX0OHQulG28bakjLlLkDVp2X4a8g9tqCyD0qCmjM4oC068MDKUSn9eu9gZeGKoUeCsAX08Ogi-DrGTTrLfQYWIUTI4XxBAOy9czLDJhYjy5smyZ2ybdQ9ZXMfE5iMUF63BlPVZFUWb8ovvsXUX6By-PKXEbhC-tw-HOW5obDrQ6HMQVx=s16000)
+![mycodingshub.github.io-add-page-nav-and-search-form-and-keywords-in-remix-speed-metal-stack](https://blogger.googleusercontent.com/img/a/AVvXsEiAXMXCW6m3DX0OHQulG28bakjLlLkDVp2X4a8g9tqCyD0qCmjM4oC068MDKUSn9eu9gZeGKoUeCsAX08Ogi-DrGTTrLfQYWIUTI4XxBAOy9czLDJhYjy5smyZ2ybdQ9ZXMfE5iMUF63BlPVZFUWb8ovvsXUX6By-PKXEbhC-tw-HOW5obDrQ6HMQVx=s16000)
 
 위 그림처럼 주소창을 보시면 "?q=speed-metal-stack"이라고 검색 조건이 달렸습니다.
 

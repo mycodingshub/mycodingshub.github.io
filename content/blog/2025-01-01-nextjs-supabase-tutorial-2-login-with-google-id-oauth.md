@@ -27,7 +27,7 @@ Next.js 15, Supabase 강좌 2편입니다.
 
 참고로, 지난 시간 강좌 리스트입니다.
 
-[Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기](https://mycodings.fly.dev/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware)
+[Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기](https://mycodingshub.github.io/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware)
 
 ---
 
@@ -310,7 +310,7 @@ export { signInWithGoogle };
 
 OAuth 방식은 모두 다 위와 같은 식으로 처리하면 됩니다.
 
-OAuth 방식은 예전에 제가 썼던 [Hono + Cloudflare 로그인 구현](https://mycodings.fly.dev/blog/2024-07-21-cloudflare-hono-google-login)하는 글을 보시면 OAuth 방식의 처리에 대한 상세한 설명이 나오는데요.
+OAuth 방식은 예전에 제가 썼던 [Hono + Cloudflare 로그인 구현](https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login)하는 글을 보시면 OAuth 방식의 처리에 대한 상세한 설명이 나오는데요.
 
 일단 위와 같이 만들고 나서 Sign in Google 버튼을 누르면 실제로 코드가 작동하면서 아래와 같이 나오는데요.
 

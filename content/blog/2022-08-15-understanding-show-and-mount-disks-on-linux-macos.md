@@ -24,7 +24,7 @@ draft: false
 
 컴퓨터에 연결된 디바이스는 리눅스의 /dev 폴더 밑에 있는데요.
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjt-OvQQEZG1iTv5Srb4_GHyUcuQwgICO8stEwXyZAwHvlALa3RZEVbuDvmoLngKqGWFZLXRBOT5dORXlTZkvYdEkKFpU5DUaMocu0-MAdTXaLnLjagYP02mhhcwZW5T4KvmdUUTz7USNHYPVd-wJ4zUwMNOuSCCNeSvqEqu3V9g3NF6Hvu3azL0YyR)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjt-OvQQEZG1iTv5Srb4_GHyUcuQwgICO8stEwXyZAwHvlALa3RZEVbuDvmoLngKqGWFZLXRBOT5dORXlTZkvYdEkKFpU5DUaMocu0-MAdTXaLnLjagYP02mhhcwZW5T4KvmdUUTz7USNHYPVd-wJ4zUwMNOuSCCNeSvqEqu3V9g3NF6Hvu3azL0YyR)
 
 위 스크린숏을 보시면 우분투 서버판의 /dev 폴더 내용입니다.
 
@@ -56,7 +56,7 @@ draft: false
 
 한 번 실행해 볼까요?
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEinBE2xSME7UHRvnJoTgtwGr6dHAnwts-x1Kotptc47eSUvDx4OCP59gjjAF2j8NN0mQH-H0TE4JawpHPZCO2JlonE5w4Dx4abEIDAvw6jdnqeoV6sV7u5nwWIYxVOz_OzrCfxltaDVpVFgKyA-CgUJKIoMniWkWk2BygJbfJAf_0dhdYlg8uVSpMW9)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEinBE2xSME7UHRvnJoTgtwGr6dHAnwts-x1Kotptc47eSUvDx4OCP59gjjAF2j8NN0mQH-H0TE4JawpHPZCO2JlonE5w4Dx4abEIDAvw6jdnqeoV6sV7u5nwWIYxVOz_OzrCfxltaDVpVFgKyA-CgUJKIoMniWkWk2BygJbfJAf_0dhdYlg8uVSpMW9)
 
 위 스크린숏을 보면 block device가 꽤 많이 나오는데요.
 
@@ -71,7 +71,7 @@ SATA 방식의 디스크란 얘기죠.
 sudo lsblk | grep sd
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEh7sDhG2Idv6HHJGCpLoWx0VL6ErBL631y8tu46W29eLuFOqUGJ2QVexMWrqgNd8qQ9WWz67-ZlKw1uVfpHGOyGyO0hIDc28WLb1_X8wmwVNpsuB3wuKDNmdQluCgC1LsVOtYhmA0xh8_PRyebTtPqkS3scWS5jFyf2TyBg4DT0qfK3_KAEB0H_0ctZ)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEh7sDhG2Idv6HHJGCpLoWx0VL6ErBL631y8tu46W29eLuFOqUGJ2QVexMWrqgNd8qQ9WWz67-ZlKw1uVfpHGOyGyO0hIDc28WLb1_X8wmwVNpsuB3wuKDNmdQluCgC1LsVOtYhmA0xh8_PRyebTtPqkS3scWS5jFyf2TyBg4DT0qfK3_KAEB0H_0ctZ)
 
 위와 같이 grep 명령어로 sd라는 이름으로 시작하는 것만 추려봤습니다.
 
@@ -81,7 +81,7 @@ sudo lsblk | grep sd
 sudo lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT | grep sd
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEhTR_2Wi9w10IuHvyQ4MK5CXkw4C0EcFYfXJfxY8bcBUgVPAqI2xXeU2NNIH5x0wthunRcT_W1kn5XT9oFNo-z8yud0TwsSjieHbBsaaaPNReO8nhTEetm3vOfXCV2Chg7tBEauCGa83Z3mQ7UEUWju4iZud5d70Ef2yJYVtNUO6UeMH8q2YQfTv06X)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEhTR_2Wi9w10IuHvyQ4MK5CXkw4C0EcFYfXJfxY8bcBUgVPAqI2xXeU2NNIH5x0wthunRcT_W1kn5XT9oFNo-z8yud0TwsSjieHbBsaaaPNReO8nhTEetm3vOfXCV2Chg7tBEauCGa83Z3mQ7UEUWju4iZud5d70Ef2yJYVtNUO6UeMH8q2YQfTv06X)
 
 어떤가요? 좀 더 쉽게 이해되시죠?
 
@@ -131,7 +131,7 @@ sudo mount -t exfat /dev/sdi1 ./imsi
 ls -l imsi
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjfjid5Y1L1BOeVgqJa2JC2Whsqv3Wo8oruK3ggrwZr85v-7H0ECfr7rnTBHZBv2UZ_hsKPOepNlzpgocyuZM_74f8Eya6l5HMRtEv-Uv4WW0Hi0RNmh8ZEuWTvGymKsugqS4OaexyDjViBOvjJ0kTmLGkh_oU55ktXgzPWnuxABED90x5KGT8NVsj0)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjfjid5Y1L1BOeVgqJa2JC2Whsqv3Wo8oruK3ggrwZr85v-7H0ECfr7rnTBHZBv2UZ_hsKPOepNlzpgocyuZM_74f8Eya6l5HMRtEv-Uv4WW0Hi0RNmh8ZEuWTvGymKsugqS4OaexyDjViBOvjJ0kTmLGkh_oU55ktXgzPWnuxABED90x5KGT8NVsj0)
 
 어떤가요?
 
@@ -149,7 +149,7 @@ sudo umount imsi
 ls -l imsi
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEhQHJS8Nh2nqpA66Hy1qttc7sI2u-2J54yptPdf5_pZOAA0G9J4hN-fkppHAJnCGL95eDnzopbGxvdp-1nKNUbkMvkJN7nl_p-qXYFzHz9Wt30aG81SeEaG5c8dnAMAxAV1AwWpQDfetGdZVYKYKb8Pa5ABG3JMXXI09rt2BNI1KqE_toOlYJy2kv2u)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEhQHJS8Nh2nqpA66Hy1qttc7sI2u-2J54yptPdf5_pZOAA0G9J4hN-fkppHAJnCGL95eDnzopbGxvdp-1nKNUbkMvkJN7nl_p-qXYFzHz9Wt30aG81SeEaG5c8dnAMAxAV1AwWpQDfetGdZVYKYKb8Pa5ABG3JMXXI09rt2BNI1KqE_toOlYJy2kv2u)
 
 umount 명령어가 바로 언마운트(un-mount) 명령어입니다.
 
@@ -159,7 +159,7 @@ lsblk 명령어로 좀 더 자세한 정보를 얻으려면 다음과 같이 하
 sudo lsblk -f -m | grep sd
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEhCmCFW14NLZdIvk2EqksXpzB17NUmeMdMoaur0P3wU_Gxd94bLXHivLrnOAheseJOetZ1qBVNkkFsW191CwUjHLQys7QfdiGVQhy8iYzrZa4ng_ewrBKLNbbpnjyJf97YXlSnd3AWjUNG0Tj6yzJy3dUZddstNsph7BIe5AhRNRXivUm9mp8JicXcL)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEhCmCFW14NLZdIvk2EqksXpzB17NUmeMdMoaur0P3wU_Gxd94bLXHivLrnOAheseJOetZ1qBVNkkFsW191CwUjHLQys7QfdiGVQhy8iYzrZa4ng_ewrBKLNbbpnjyJf97YXlSnd3AWjUNG0Tj6yzJy3dUZddstNsph7BIe5AhRNRXivUm9mp8JicXcL)
 
 디스크의 UUID 번호, 용량, 마운트 위치 등등이 아주 자세히 보입니다.
 
@@ -173,7 +173,7 @@ blkid 명령어도 lsblk 명령어처럼 디스크 정보를 보는 데 있어 �
 sudo blkid | grep sd
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEiS-s7a_lgna1syPRqMosIPduW-NbmuPNhdtxMEM44Pv_twKZh2Q3bO1XTjtPrJMbG6Pi57f_zNAPnwWH9X136tdo7rEU9s8dkhmrJMsEetYnQWXLse-Op8poIYMML6GdMuRJxmikvJ1Af4H8oSEeaEZXtFoXJfhUY3FQH4cLKhQaITsQx9Xw-eaxIc)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEiS-s7a_lgna1syPRqMosIPduW-NbmuPNhdtxMEM44Pv_twKZh2Q3bO1XTjtPrJMbG6Pi57f_zNAPnwWH9X136tdo7rEU9s8dkhmrJMsEetYnQWXLse-Op8poIYMML6GdMuRJxmikvJ1Af4H8oSEeaEZXtFoXJfhUY3FQH4cLKhQaITsQx9Xw-eaxIc)
 
 ---
 
@@ -195,7 +195,7 @@ sudo fdisk -l | grep sd
 
 그래서 결과는 좀 더 깔끔하게 아래와 같이 나옵니다.
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEiF0_tFwVT8eJ3_nb1cHtuRexRChrN7u0Hd192LRvhQBeoH_kuqGq61YnaIbsClb5bvAUlQNeOV81Sc8IP2-KSas1a1Uyx9W8A2QQkAdytaCAOyqQSEMB4AAHyNklkMEeTyynACG7hLTpgaVfo2BdEAlGEeJWhzMb1ICNmwlhP8nz1I93f_yDEV5u4j)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEiF0_tFwVT8eJ3_nb1cHtuRexRChrN7u0Hd192LRvhQBeoH_kuqGq61YnaIbsClb5bvAUlQNeOV81Sc8IP2-KSas1a1Uyx9W8A2QQkAdytaCAOyqQSEMB4AAHyNklkMEeTyynACG7hLTpgaVfo2BdEAlGEeJWhzMb1ICNmwlhP8nz1I93f_yDEV5u4j)
 
 뭔가 기계적인 모습이 많이 보입니다.
 
@@ -211,7 +211,7 @@ sudo fdisk -l /dev/sda
 sudo fdisk -l /dev/sdi
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjGyIP0Hlv_W0WRoePkVNH_Gdvu8W39yW04vUUrdmycoM0f3KgC2sclMTxIbc7jlr9wmyBoDdGv1j7GqkZFsdK05sCEg-2JPHc24dru5Kez3X-BG1ntQr8zXXVuXiqHUi3yt9A5qUlX1G-6DhM_m0qZYZ90Cz2QeoP34fZNUyRECyHXBsXJcLiWxOfY)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjGyIP0Hlv_W0WRoePkVNH_Gdvu8W39yW04vUUrdmycoM0f3KgC2sclMTxIbc7jlr9wmyBoDdGv1j7GqkZFsdK05sCEg-2JPHc24dru5Kez3X-BG1ntQr8zXXVuXiqHUi3yt9A5qUlX1G-6DhM_m0qZYZ90Cz2QeoP34fZNUyRECyHXBsXJcLiWxOfY)
 
 ---
 
@@ -225,7 +225,7 @@ fdisk 명령어는 아주 오래전에 만든 명령어라 2TB 이상의 디스�
 sudo parted /dev/sdb
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEiwntM0hEjuga48icS2wqt2SO6FdDL0pvk5xBkBctkZ2TuXJ_Uxg9L4ZJ39JaLor4dPbEcAUQh2DnbffRUSetZOj7bRPrim5BfwUll4P1y4Y1iGjCzp4SCzfwgYCjIGkuNEkk9jngF5ddbb9erNSRUmQMX_trR1WxwZ3Ovp1OUfLnGQlrdIWpirl8im)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEiwntM0hEjuga48icS2wqt2SO6FdDL0pvk5xBkBctkZ2TuXJ_Uxg9L4ZJ39JaLor4dPbEcAUQh2DnbffRUSetZOj7bRPrim5BfwUll4P1y4Y1iGjCzp4SCzfwgYCjIGkuNEkk9jngF5ddbb9erNSRUmQMX_trR1WxwZ3Ovp1OUfLnGQlrdIWpirl8im)
 
 위 스크린숏처럼 parted 명령어를 실행시키면 위와 같이 parted 프롬프트로 바뀌는데요.
 
@@ -241,7 +241,7 @@ print나 quit 명령어를 사용하시면 됩니다.
 sudo parted -l
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjOJM4h8n_5r2LAN5exCp786qRqkL3KvbpwMZWWk2Lr6sq8XzVSEJsSDrQea8mthgpTxMB_s8CPEq8prfklLVXA2jGPQsI0ymsnBxLP8yXF7yiUBQtbes6HNdHGbRfnMsyXsQE-gdgmXsYEKDX8QDThhzeuBT_fngtARDxJiWW0FMbDnXbAgzPJOzHu)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjOJM4h8n_5r2LAN5exCp786qRqkL3KvbpwMZWWk2Lr6sq8XzVSEJsSDrQea8mthgpTxMB_s8CPEq8prfklLVXA2jGPQsI0ymsnBxLP8yXF7yiUBQtbes6HNdHGbRfnMsyXsQE-gdgmXsYEKDX8QDThhzeuBT_fngtARDxJiWW0FMbDnXbAgzPJOzHu)
 
 어떤가요?
 
@@ -273,7 +273,7 @@ df -h
 
 그리고, df 명령어 뒤에 파일 또는 디렉터리가 지정될 경우, df 명령은 해당 파일이나 디렉토리가 상주하고 있는 파일 시스템에 대한 정보를 표시합니다.
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEgLYW3h2XfrJsTxVOuEuo1sR1tbmvUKtl8qvRec7iL5l585O_4mVYhNGp1-FfJsjlgWNJ4yexgZa_qfS_x8f6Oyu74Muy2lh0P6l28kBJg5xyp2omMfpMgJTqcy-2tOddbJluEn1GM3xv9rI33NmZCAB_zO-kqmmRfXMhlMQ0lgdNuU7pHhUkkTO5bv)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEgLYW3h2XfrJsTxVOuEuo1sR1tbmvUKtl8qvRec7iL5l585O_4mVYhNGp1-FfJsjlgWNJ4yexgZa_qfS_x8f6Oyu74Muy2lh0P6l28kBJg5xyp2omMfpMgJTqcy-2tOddbJluEn1GM3xv9rI33NmZCAB_zO-kqmmRfXMhlMQ0lgdNuU7pHhUkkTO5bv)
 
 위 스크린숏을 보면 그 차이를 쉽게 이해할 수 있을 겁니다.
 
@@ -289,7 +289,7 @@ macOS는 freeBSD 기반 위에 애플이 자체적으로 명령어를 개발했�
 diskutil
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjVT9-UR1IkjKTqW-Xifj-vMG6a4aGpxKdAnDBj63BSyaFq_UFkplU0YmaLL6iTgqytdIR2TzgzN9DxyAnOKoUKADZ0LbdRYYW0kI4oDNjGWQ8rui-COYqzwuUVK01wAkFGtp9D5DuYsFJAnDU9qIdFCWrTRlzmXMd0lbr5lKZKU7iyNx87XuXTP4rJ)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEjVT9-UR1IkjKTqW-Xifj-vMG6a4aGpxKdAnDBj63BSyaFq_UFkplU0YmaLL6iTgqytdIR2TzgzN9DxyAnOKoUKADZ0LbdRYYW0kI4oDNjGWQ8rui-COYqzwuUVK01wAkFGtp9D5DuYsFJAnDU9qIdFCWrTRlzmXMd0lbr5lKZKU7iyNx87XuXTP4rJ)
 
 옵션이 아주 많은데요.
 
@@ -299,7 +299,7 @@ diskutil
 diskutil list
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEie0p2kMjM0V3wE0a9qqZ3ys-DJ3e5zdCtnORSUUzdiWCXbs5Ci_LzrCDQ7P3TDzPUOQiU14rka398XNm-HBBOHcZQvS4_WU3kssP8mHRDE3FLN978OL-QetlqLlrz_aXGIU1rdhlxEAM189sWkfZNFip5JerrCr-3c1_jc0qZ7JT1yoH3ded9muxyr)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEie0p2kMjM0V3wE0a9qqZ3ys-DJ3e5zdCtnORSUUzdiWCXbs5Ci_LzrCDQ7P3TDzPUOQiU14rka398XNm-HBBOHcZQvS4_WU3kssP8mHRDE3FLN978OL-QetlqLlrz_aXGIU1rdhlxEAM189sWkfZNFip5JerrCr-3c1_jc0qZ7JT1yoH3ded9muxyr)
 
 제 macOS노트북의 디스크 정보를 다 알려 주고 있네요.
 
@@ -313,7 +313,7 @@ diskutil list
 diskutil info /dev/disk0
 ```
 
-![mycodings.fly.dev-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEgEaNsbVh3lGZJpruP2chpMMZjo0I4JT8hL98T40x8881dg_coBnk4i-LvDIqYD-QGx3FNMEf5SjxpoCMNNHuMooyi80j7yxI7osFhvJpowgdb3Sfp-pD1Q_fXAxnK-5Q17z1tQUOo7z37mYGSU-SerL0jX85f4CpgwF5Qz6xZPgJFJ-PQBtd4otRdR)
+![mycodingshub.github.io-understanding-show-and-mount-disks-on-linux-macos](https://blogger.googleusercontent.com/img/a/AVvXsEgEaNsbVh3lGZJpruP2chpMMZjo0I4JT8hL98T40x8881dg_coBnk4i-LvDIqYD-QGx3FNMEf5SjxpoCMNNHuMooyi80j7yxI7osFhvJpowgdb3Sfp-pD1Q_fXAxnK-5Q17z1tQUOo7z37mYGSU-SerL0jX85f4CpgwF5Qz6xZPgJFJ-PQBtd4otRdR)
 
 좀 더 자세한 설명이 나오고 있네요.
 

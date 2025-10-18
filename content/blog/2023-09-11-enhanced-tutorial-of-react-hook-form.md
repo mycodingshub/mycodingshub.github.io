@@ -14,7 +14,7 @@ react-hook-form 두 번째 강좌인 고급편입니다.
 
 지난 시간 강좌는 아래 링크입니다.
 
-[React Hook Form 사용법 완결판 - 초급편](https://mycodings.fly.dev/blog/2023-09-10-all-in-one-about-react-hook-form)
+[React Hook Form 사용법 완결판 - 초급편](https://mycodingshub.github.io/blog/2023-09-10-all-in-one-about-react-hook-form)
 
 ** 목차 **
 

@@ -131,11 +131,11 @@ export default function Page() {
       <meta property='og:type' content='website' />
       <meta
         property='og:url'
-        content='https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo'
+        content='https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo'
       />
       <meta
         property='og:image'
-        content='https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png'
+        content='https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png'
       />
       <meta property='og:image:alt' content='웹사이트 이미지 alt 텍스트' />
       <meta property='og:image:type' content='image/png' />
@@ -160,7 +160,7 @@ export default function Page() {
       <meta name='twitter:description' content='웹페이지 상세 설명' />
       <meta
         name='twitter:image'
-        content='https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png'
+        content='https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png'
       />
     </Head>
   )
@@ -191,9 +191,9 @@ export default function Page() {
     name: '웹사이트 타이틀',
     description: '웹페이지 상세 설명',
     keywords: '키워드 여러 개 나열',
-    url: 'https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo',
+    url: 'https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo',
     image:
-      'https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png',
+      'https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png',
     author: {
       '@type': 'Person',
       name: 'https://www.linkedin.com/in/myname',
@@ -211,12 +211,12 @@ export default function Page() {
     headline: '웹사이트 타이틀',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': 'https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo',
+      '@id': 'https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo',
     },
     articleSection: '섹션 이름',
     articleBody: '본문 내용',
     thumbnailUrl:
-      'https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png',
+      'https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png',
   }
 
   return (
@@ -253,7 +253,7 @@ npx next-sitemap
 ```xml
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 <url>
-  <loc>https://mycodings.fly.dev</loc>
+  <loc>https://mycodingshub.github.io</loc>
     <lastmod>2024-01-11T02:03:09.613Z</lastmod>
     <changefreq>daily</changefreq>
   <priority>0.7</priority>
@@ -273,8 +273,8 @@ Next.js 에서는 public 폴더 안에 두면 됩니다.
 ```bash
 User-agent: *
 Disallow:
-Sitemap: https://mycodings.fly.dev/sitemap.xml
-Sitemap: https://mycodings.fly.dev/sitemap-0.xml
+Sitemap: https://mycodingshub.github.io/sitemap.xml
+Sitemap: https://mycodingshub.github.io/sitemap-0.xml
 ```
 
 위 robots.txt 파일에서 두 번째에 있는 Disallow 항목이 있는데요.
@@ -315,7 +315,7 @@ export default function Page() {
   return (
     <Head>
       {/* 나머지 파트들 */}
-      <link rel="canonical" href="https://mycodings.fly.dev/blog/2014-01-14-all-about-nextjs-seo" />
+      <link rel="canonical" href="https://mycodingshub.github.io/blog/2014-01-14-all-about-nextjs-seo" />
       <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png" />
       <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
@@ -428,7 +428,7 @@ import Image from "next/image";
 export default function Page() {
   return (
     <Image
-      src="https://mycodings.fly.dev/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png"
+      src="https://mycodingshub.github.io/blog/2024-01-14-all-about-nextjs-seo/thumbnail.png"
       alt="Next.js에서 SEO 완벽하게 구축하기"
       width={1200}
       height={630}

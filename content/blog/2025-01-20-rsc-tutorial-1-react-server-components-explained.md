@@ -20,7 +20,7 @@ RSC를 이용하면 마치 모든 코드가 한 곳에서 실행되는 것처럼
 
 오늘은 왜 이런 논쟁이 일어나는지 RSC에 대해 자세히 살펴보는 시간을 갖도록 하겠습니다.
 
-이 글을 읽기 전에 제가 예전에 쓴 [React 작동 원리](https://mycodings.fly.dev/blog/2022-07-15-understanding-react-js)에 대해 먼저 읽어 보시는 걸 추천드립니다.
+이 글을 읽기 전에 제가 예전에 쓴 [React 작동 원리](https://mycodingshub.github.io/blog/2022-07-15-understanding-react-js)에 대해 먼저 읽어 보시는 걸 추천드립니다.
 
 그럼 여기저기 공부해서 제가 알고 있는 RSC 작동 원리에 대해 자세히 알아보겠습니다.
 
@@ -239,7 +239,7 @@ Next.js로 간단한 앱을 만들어서 가장 기본적인 RSC부터 시작해
 export default function Home() {
   return (
     <main>
-      <h1>mycodings.fly.dev</h1>
+      <h1>mycodingshub.github.io</h1>
     </main>
   );
 }
@@ -262,7 +262,7 @@ export default function Home() {
 아까 만든 함수 결과는 다음과 같이 직렬화될 수 있습니다.
 
 ```
-"[\"$\",\"main\",null,{\"children\":[\"$\",\"h1\",null,{\"children\":\"mycodings.fly.dev\"},\"$c\"]},\"$c\"]"
+"[\"$\",\"main\",null,{\"children\":[\"$\",\"h1\",null,{\"children\":\"mycodingshub.github.io\"},\"$c\"]},\"$c\"]"
 ```
 
 [Alvar Lagerlöf 님의 RSC 파서](https://github.com/alvarlagerlof/rsc-parser)를 이용해서 좀 더 자세히 살펴보도록 하겠습니다.
@@ -276,7 +276,7 @@ export default function Home() {
     "type": "h1",
     "key": null,
     "props": {
-      "children": "mycodings.fly.dev"
+      "children": "mycodingshub.github.io"
     }
 }
 ```
@@ -341,7 +341,7 @@ Next.js는 아래와 같은 HTML을 반환하고, 브라우저는 이를 사용�
 
 ```html
 <main>
-  <h1>mycodings.fly.dev</h1>
+  <h1>mycodingshub.github.io</h1>
 </main>
 ```
 
@@ -356,7 +356,7 @@ Next.js는 아래와 같은 HTML을 반환하고, 브라우저는 이를 사용�
     "type": "h1",
     "key": null,
     "props": {
-      "children": "mycodings.fly.dev"
+      "children": "mycodingshub.github.io"
     }
 }
 ```
@@ -454,7 +454,7 @@ import DelayedMessage from "./components/DelayedMessage";
 export default function Home() {
   return (
     <main>
-      <h1>mycodings.fly.dev</h1>
+      <h1>mycodingshub.github.io</h1>
       <DelayedMessage />
     </main>
   );
@@ -475,7 +475,7 @@ export default function Home() {
      "type": "h1",
      "key": null,
      "props": {
-      "children": "mycodings.fly.dev"
+      "children": "mycodingshub.github.io"
      }
     },
     {
@@ -504,7 +504,7 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <main>
-      <h1>mycodings.fly.dev</h1>
+      <h1>mycodingshub.github.io</h1>
       <Suspense fallback={<p>Loading...</p>}>
         <DelayedMessage />
       </Suspense>
@@ -535,7 +535,7 @@ export default function Home() {
      "type": "h1",
      "key": null,
      "props": {
-      "children": "mycodings.fly.dev"
+      "children": "mycodingshub.github.io"
      }
     },
     {
@@ -620,7 +620,7 @@ Next.js는 `ServerRoot`라는 컴포넌트를 컴포넌트 트리에서 `AppRout
 
 ```html
 <main>
-  <h1>mycodings.fly.dev</h1>
+  <h1>mycodingshub.github.io</h1>
   <!--$?-->
   <template id="B:0"></template>
   <p>Loading...</p>
@@ -678,7 +678,7 @@ $RC("B:0", "S:0")
 
 ```html
 <main>
-  <h1>mycodings.fly.dev</h1>
+  <h1>mycodingshub.github.io</h1>
   <!--$-->
   <p>This message was loaded after a 5 second delay!</p>
   <!--/$-->

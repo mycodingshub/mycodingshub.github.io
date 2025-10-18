@@ -6,9 +6,9 @@ date: 2023-09-07T16:33:54+02:00
 lastmod: 2023-09-07T16:33:54+02:00
 draft: false
 seo:
-  title: "mycodings.fly.dev" # custom title (optional)
+  title: "mycodingshub.github.io" # custom title (optional)
   description: "All about Web Development ..." # custom description (recommended)
-  canonical: "https://mycodings.fly.dev" # custom canonical URL (optional)
+  canonical: "https://mycodingshub.github.io" # custom canonical URL (optional)
   noindex: false # false (default) or true
 ---
 

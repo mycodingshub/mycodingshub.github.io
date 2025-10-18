@@ -22,13 +22,13 @@ Github ID로 로그인을 시도해 보겠습니다.
 
 먼저, 지난 시간 강의 링크입니다.
 
-- [Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기](https://mycodings.fly.dev/blog/2024-07-24-cloudflare-hono-oauth-naver-login)
+- [Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기](https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login)
 
-- [Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodings.fly.dev/blog/2024-07-21-cloudflare-hono-google-login)
+- [Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기](https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login)
 
-- [Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)](https://mycodings.fly.dev/blog/2024-07-27-cloudflare-hono-oauth-kakao-login)
+- [Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)](https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login)
 
-- [Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현](https://mycodings.fly.dev/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login)
+- [Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현](https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login)
 
 ---
 

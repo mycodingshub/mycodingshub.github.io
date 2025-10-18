@@ -329,7 +329,7 @@ res.redirect('/blog')
 res.redirect(301, '/blog')
 ```
 
-절대 경로(/blog)나 절대 URL(https://mycodings.fly.dev) 같은 형식으로 써도 되지만 상대 경로로도 쓸 수 있습니다.
+절대 경로(/blog)나 절대 URL(https://mycodingshub.github.io) 같은 형식으로 써도 되지만 상대 경로로도 쓸 수 있습니다.
 
 ```js
 res.redirect('../blog')
@@ -360,9 +360,9 @@ app.get('/', (req, res) => {
 
 좀 더 어려운 표현으로 가보면, 만약 URL에 파라미터를 넣고 싶다면 어떻게 할까요?
 
-즉, URL에 파라미터를 주는 형식은 https://mycodings.fly.dev/blog/:id 같은 형식이고요.
+즉, URL에 파라미터를 주는 형식은 https://mycodingshub.github.io/blog/:id 같은 형식이고요.
 
-URL 쿼리 스타일은 https://mycodings.fly.dev/?id=1 같은 형식입니다.
+URL 쿼리 스타일은 https://mycodingshub.github.io/?id=1 같은 형식입니다.
 
 URL 파라미터 형식을 쓰려면 다음과 같이 하면 됩니다.
 

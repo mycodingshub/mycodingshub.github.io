@@ -16,11 +16,11 @@ draft: false
 
 총 3개로 나누어서 올렸었는데요.
 
-1. [2022년 8월 기준 SvelteKit 1.0 pre-alpha 버전에서 바뀐 점 살펴보기](https://mycodings.fly.dev/blog/2022-12-15-sveltekit-breaking-changes-before-1-0)
+1. [2022년 8월 기준 SvelteKit 1.0 pre-alpha 버전에서 바뀐 점 살펴보기](https://mycodingshub.github.io/blog/2022-12-15-sveltekit-breaking-changes-before-1-0)
 
-2. [SvelteKit Tutorial 1 - 폴더 라우팅, 다이내믹 라우팅, 페이지 레이아웃, 스코프트 스타일](https://mycodings.fly.dev/blog/2022-12-17-sveltekit-folder-routing-dynamic-routing-and-layout-page-scoped-style)
+2. [SvelteKit Tutorial 1 - 폴더 라우팅, 다이내믹 라우팅, 페이지 레이아웃, 스코프트 스타일](https://mycodingshub.github.io/blog/2022-12-17-sveltekit-folder-routing-dynamic-routing-and-layout-page-scoped-style)
 
-3. [SvelteKit Tutorial 2 - 서버 렌더, 정적 사이트로 빌드하기, 페이지 트랜지션, rss feed 만들기](https://mycodings.fly.dev/blog/2022-12-18-sveltekit-server-rendering-prerendering-page-transition-rss-feed)
+3. [SvelteKit Tutorial 2 - 서버 렌더, 정적 사이트로 빌드하기, 페이지 트랜지션, rss feed 만들기](https://mycodingshub.github.io/blog/2022-12-18-sveltekit-server-rendering-prerendering-page-transition-rss-feed)
 
 한 번 꼭 읽어보셨으면 좋겠습니다.
 
