@@ -16,5 +16,4 @@ type: "legal"
 
 ## Serving with
 
-- Caddy
-- Fly.io
+- Github Pages

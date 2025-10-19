@@ -1,7 +1,7 @@
 ---
 title: "All About Web Development ..."
 description: ""
-lead: "Javascript, Typescript, React, Next.js, React Router, Go, Hugo 등 최신 웹 개발 트렌드를 같이 공부할 수 있는 블로그 입니다."
+lead:  "안녕하세요? <br />블로그 서버 이전했습니다.<br /> 기존 Fly.io에서 Github Pages로 이동했는데요.<br /> 기존 서버인 mycodings.fly.dev에서는 redirect 301 메서드로 mycodingshub.github.io로 자동 이동되게 했습니다."
 date: 2023-09-07T16:33:54+02:00
 lastmod: 2023-09-07T16:33:54+02:00
 draft: false
