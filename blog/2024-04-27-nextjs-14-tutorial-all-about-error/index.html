@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것</title>
+<meta name="description" content="Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-04-27-nextjs-14-tutorial-all-about-error/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것" />
+<meta property="og:description" content="Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-04-27-nextjs-14-tutorial-all-about-error/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-04-27T11:31:35Z" />
+<meta property="article:modified_time" content="2024-04-27T11:31:35Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="error" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것" />
+<meta name="twitter:description" content="Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것\"",
+  "description": "\"Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것\"",
+  "datePublished": "\"2024-04-27T11:31:35Z\"",
+  "dateModified": "\"2024-04-27T11:31:35Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-04-27-nextjs-14-tutorial-all-about-error/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것</h1>
+        <p>
+  <small>April 27, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Next.js 14 강좌 네 번째입니다.</p>
+<p>전체 강좌 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-13-nextjs-14-tutorial-1-all-about-routing">Next.js 14 강좌 1편. 라우팅의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-14-nextjs-14-tutorial-2-all-about-layout-and-link-component">Next.js 14 강좌 2편. 레이아웃의 모든 것 and Link 컴포넌트</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-20-nextjs-14-tutorial-template-and-loading-ui-special-files">Next.js 14 강좌 3편. Template과 Loading 스페셜 파일</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-27-nextjs-14-tutorial-all-about-error">Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-28">Next.js 14 강좌 5편. 병렬 라우팅(Parallel Routes), 일치하지 않는 라우팅(Unmatched Routes), 조건부 라우팅(Conditional Routes) 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-04-nextjs-14-tutorial-6-intercepting-routes-and-parallel-intercepting-routes">Next.js 14 강좌 6편. 인터셉팅 라우팅(Intercepting Routes)과 병렬 인터셉팅 라우팅(Parallel Intercepting Routes) 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-get-post-patch-delete-method-and-dynamic-route-handler">Next.js 14 강좌 7편. 라우트 핸들러의 기본(GET, POST, PATCH, DELETE)과 동적 라우트 핸들러 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-and-url-query-parameter-redirect-headers-cookies-caching">Next.js 14 강좌 8편, 라우트 핸들러에서 URL 쿼리 파라미터와 redirect, Headers, Cookies 그리고 캐싱 방식 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-middleware-and-rewrite-cookies-headers-in-middleware">Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-14-nextjs-14-tutorial-all-about-rendering-csr-ssr-rsc">Next.js 14 강좌 10편. CSR부터 SSR, RSC까지 React의 렌더링의 역사 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-rendering-lifecycle-static-dynamic-rendering-and-streaming">Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-server-component-patterns-server-only-third-party-package-context-provider">Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-client-component-patterns-client-only-client-component-placement-interleaving-server-and-client-components">Next.js 14 강좌 13편. 클라이언트 컴포넌트 패턴 - 클라이언트 전용 코드(client-only), 컴포넌트 배치, 서버-클라이언트 컴포넌트 섞어 활용하기</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#nextjs-14-%ea%b0%95%ec%a2%8c-4%ed%8e%b8-%ec%97%90%eb%9f%acerror-%ec%b2%98%eb%a6%ac%ec%9d%98-%eb%aa%a8%eb%93%a0-%ea%b2%83">Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것</a>
+<ul>
+<li><a href="#%ec%97%90%eb%9f%ac-%ed%95%b8%eb%93%a4%eb%a7%81error-handling">에러 핸들링(Error Handling)</a></li>
+<li><a href="#%ec%97%90%eb%9f%ac-%eb%a6%ac%ec%bb%a4%eb%b2%84%eb%a6%acerror-recovering">에러 리커버리(Error Recovering)</a></li>
+<li><a href="#%ec%a4%91%ec%b2%a9%eb%90%9c-%eb%9d%bc%ec%9a%b0%ed%8c%85%ec%97%90%ec%84%9c%ec%9d%98-errortsx">중첩된 라우팅에서의 error.tsx</a></li>
+<li><a href="#layouttsx-%ed%8c%8c%ec%9d%bc%ec%97%90%ec%84%9c-%ec%83%9d%ea%b8%b4-%ec%97%90%eb%9f%ac">layout.tsx 파일에서 생긴 에러</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="에러-핸들링error-handling">에러 핸들링(Error Handling)</h2>
+<p>지금까지 Next.js 14의 Special Files에 대해 다음과 같은 것을 배웠는데요.</p>
+<ul>
+<li>page.tsx</li>
+<li>layout.tsx</li>
+<li>not-found.tsx</li>
+<li>template.tsx</li>
+<li>loading.tsx</li>
+</ul>
+<p>이제 에러 핸들링 관련 &rsquo;error.tsx&rsquo;라는 스페셜 파일에 대해 알아보겠습니다.</p>
+<p>보통 웹페이지에서 에러는 서버 에러나 리퀘스트 에러 등 다양한 경우의 수가 나올 수 있는데요.</p>
+<p>서버가 에러가 나면 화면에는 Next.js의 고유 에러 화면이 나타납니다.</p>
+<p>테스트를 위해 기존에 만들었던 이중 중첩 다이내믹 라우팅에 강제로 에러를 발생시키는 코드를 만들고 Next.js 14의 에러 핸들링에 대해 알아보겠습니다.</p>
+<p>다음 파일을 열어보시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">src/app/products/<span class="o">[</span>productId<span class="o">]</span>/reviews/<span class="o">[</span>reviewId<span class="o">]</span>/page.tsx</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 파일에 랜덤 넘버에 따라 강제로 에러를 방출하는 코드를 아래와 같이 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// import { notFound } from &#34;next/navigation&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getRandomInt</span><span class="p">(</span><span class="nx">count</span><span class="o">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ReviewDetails</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">params</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">productId</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">reviewId</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">//  console.log(params);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">random</span> <span class="o">=</span> <span class="nx">getRandomInt</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">random</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Error occured when loading review ID&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//   if (parseInt(params.reviewId) &gt; 100) {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//      notFound();
+</span></span></span><span class="line"><span class="cl"><span class="c1">//   }
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Product</span> <span class="nx">Id</span> <span class="o">:</span> <span class="p">{</span><span class="nx">params</span><span class="p">.</span><span class="nx">productId</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Review</span> <span class="nx">Id</span> <span class="o">:</span> <span class="p">{</span><span class="nx">params</span><span class="p">.</span><span class="nx">reviewId</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>기존에 notFound() 테스트했었던 코드가 있는데 주석처리해도 됩니다.</p>
+<p>getRandomInt 함수로 0,1이 리턴되는 랜덤함수를 만들고 그 값이 1일 경우 강제로 에러를 방출하게 코드가 짜여 있습니다.</p>
+<p>브라우저에서 결과를 확인해 보면 정상으로 나올 수도 있는데요.</p>
+<p>새로고침을 몇 번 하면 랜덤 속성상 한 번은 에러가 발생합니다.</p>
+<p>브라우저에서 아래 주소로 이동해서 테스트해 보겠습니다.</p>
+<p>브라우저 주소는 <code>http://localhost:3000/products/1/reviews/10</code> 입니다.</p>
+<p>아래와 같이 두 가지로 나올 수 있는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEikDaSCPa8vKPAJ-15ZLPrWh-VCVUINPXBxWeU8dZAFE1ZglBbu3n6i530QyzF27BgM8yMw9_Nh3eNb48fcLsVaZi2PVW5IuQWbMJj5zUBjjqd3yBxL66opxZGtXfcLs2VeOwtv0ssmrbMv9iebXgetV3skqROQugZNB9IlhHVGZzxBFh-9Sgq3qpTLiIs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj-GN75PtWiCkpoZLUFMUqRHltKj0c-TKkqmUwhe-4GE3AA-7gBcfZJeDNyoiXjpEKMT6GKsYUVrSD8dMC8jLwZ8W5o59r8Pire_BAFYIvd3fe4uCfZh6S7IfJDDE1VNsV9NCLgd3u7EeeVimaRzM0LZ7R4lTpif5aU7gzGlD9isJAt2Q_4mueLqqGbBDw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>정상인 것과 에러 화면 두 가지입니다.</p>
+<p>여기서 주목할 것은 에러 화면인데요.</p>
+<p>코드까지 친절하게 보여주는데요.</p>
+<p>바로 개발 모드라서 그렇습니다.</p>
+<p>그러면 배포 모드에서는 어떻게 보일지 빌드 후 서버를 구동해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm run start</span></span></code></pre></div>
+  </figure>
+</div>
+<p>프로덕션 빌드 상태에서 서버를 실행해 보면 아래와 같이 나옵니다.</p>
+<p>Next.js 14가 기본적으로 제공하는 에러 화면입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhQWuoTfj21KEsDD8xhnX9Yu3sh987plF5gY0w6q9CQBvyKgueOAq3zPwPZJsr7wVFCJaHFWMefuH53hFaWyDuIWZUh47s3JV69oa2m2WmMmYdJ65x7XVnjsOpocfFJhcx0_IusGCsed63KiKSkNnP8HWmjJEAvnW2c9nmjaV6jooOWWf_pdMelQGhR53M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나오는데요.</p>
+<p>서버 구동을 했던 터미널 창에는 아래와 같이 우리가 지정한 에러 코드 메시지가 잘 보입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgqYTF040g2GboVyir4aKfoj9v_7N3bHCbxCu6q7YNGrB4vX075zqO8dUSFvdn1vu-2h3GolIJBysPC1o6XYgtzwbMxuzJ9c7k1KIMRfFDFuLcqPVTHwKH3j-pQwcV6BZnZcMMVcpki0v0Lq3YKgngvOf_2HYC6NW8Vr7NVxx5tKaEObvJjkP9EF7_DYnw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>먼저, 브라우저에 표시된 에러 화면을 보면 개발자라면 뭔 뜻인지 알겠지만 일반 사용자들은 위와 같은 화면을 끔찍이 싫어합니다.</p>
+<p>그래서 일반 사용자들이 친숙하게 볼 수 있는 에러 페이지를 만들어야 하는데요.</p>
+<p>이때 사용하는 스페셜 파일이 바로 &rsquo;error.tsx&rsquo; 파일입니다.</p>
+<p><code>[reviewId]</code> 폴더의 page.tsx 파일과 같은 위치에 &rsquo;error.tsx&rsquo; 파일을 아래와 같이 작성합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ErrorBoundary</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nb">Error</span> <span class="nx">Occured</span><span class="o">!</span> <span class="nx">Please</span> <span class="nx">go</span> <span class="nx">to</span> <span class="nx">root</span> <span class="nx">page</span><span class="o">!&lt;</span><span class="err">/div&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Next.js 14에서 에러 관련 함수 이름은 ErrorBoundary 이름입니다.</p>
+<p>위와 같이 단순하게 div 태그 안에 원하는 문구를 넣어 쉽게 작성할 수 있습니다.</p>
+<p>이제 테스트를 위해 개발 모드로 들어가 볼까요?</p>
+<p>몇 번 새로고침 하다 보면 아래와 같이 에러가 뜨는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhrRd7mHYaIjgje4ENsKPJB4chd_9uXtCIsUJ-uaK9VvsWCzjEkdErIClCJsjmF6WO_pb0Tw5RBBwz2Nsn3wmn65aCn5poPtoBH5TUT34hw98X71O9OySlBOzrNbcnTmVm4ECnFfYS7BQQpzmFEo97WevRSBIgGUs9WNPl-D6JB6m9y1mLgdm06IsqdP8U"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 &lsquo;use client&rsquo; 관련 에러 메시지가 떴습니다.</p>
+<p>error.tsx 파일은 무조건 클라이언트 파일로 작성해야 한다고 합니다.</p>
+<p>다시 error.tsx 파일 맨 처음에 &lsquo;use client&rsquo; 디렉티브를 추가하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ErrorBoundary</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nb">Error</span> <span class="nx">Occured</span><span class="o">!</span> <span class="nx">Please</span> <span class="nx">go</span> <span class="nx">to</span> <span class="nx">root</span> <span class="nx">page</span><span class="o">!&lt;</span><span class="err">/div&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 브라우저에서 몇 번 새로고침 하면 기존에 얘기했던 에러 화면이 아래와 같이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhGAUUjNztfFFGfxo3h4ZwRzQ4VqYVxyflk37FihkeSB5LUmsZPguTCfZVNe8FPkTPKney_RF2i00sZzQ_qSivWuLvqk6qgPAgxPmcNOvtUdC3yKHUVhGaI5X2NUPK2qNVVH7D472jUHEjRNUnE_ucQkc4Gbn_0ue6rr0M11fiRJ5nPfS4Ct6_M7hgtQPI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리가 지정했던 에러 메시지도 화면에 잘 나오고 있고 무엇보다도 중요한 것은 우리가 중첩 다이내믹으로 작성한 라우팅의 UI를 깨지 않고 내가 만든 레이아웃 안에 에러 메시지가 존재한다는 겁니다.</p>
+<p>이제 에러도 UI의 일종으로 취급할 수 있는 거죠.</p>
+<p>홈으로 가는 간단한 링크만 ErrorBoundary 함수 안에 넣으면 아주 유용한 UI가 될 수 있습니다.</p>
+<p>참고로 error.tsx 파일에 있는 ErrorBoundary 함수는 error 객체를 props로 받을 수 있는데요.</p>
+<p>아래와 같이 코드를 수정해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ErrorBoundary</span><span class="p">({</span> <span class="nx">error</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="nb">Error</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러면 아래와 같이 에러 메시지도 우리가 지정한, 즉, 에러가 발생한 시점 및 해당 에러에 대한 상세한 메시지 표현이 가능해집니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEggshKiatvMxKEHs6BFd3xDrva7bYRQdpCmEKml4b6ImUEXdwlpBsmOIvFlUy76j1rPW-DwUrPUj1OCuQIlrm4hSGndYiqeFDFmkgElEe3d-nECdFk2Ekdf0ondnp6qxbyAm132aPYjXTXjPrmmg5iRii0E7ms8chNaBUKS_HiGO5TfTq1EEPP43eDt-ck"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 볼 수 있듯이 에러 메시지는 우리가 강제로 발생시켰던 page.tsx 파일에 있던 그 에러 메시지입니다.</p>
+<p>아래 코드가 우리가 작성한 page.tsx 파일에 있던 에러 강제 배출 코드입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">random</span> <span class="o">=</span> <span class="nx">getRandomInt</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">random</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Error occured when loading review ID&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇듯 Next.js 14이 제공해 주는 error.tsx 파일은 화면의 풀 리로드 없이 UI를 깨지 않고 에러를 탈출할 수 있게 도와줄 수 있으며,</p>
+<p>또 React Error Boundary 내에서 해당 라우팅 및 중첩 라우팅을 감싸서(wrap) 작동하기 때문에 개발자가 에러 관리하기가 아주 쉬운데요.</p>
+<p>지금까지 배웠던 스페셜 파일을 모두 모아 놓은 컴포넌트 계층을 아래와 같이 이해할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj9HmplR36kK36EzFThQasw_IEo9yPafIOwOKEUjAAcHMJxJsY11eD0gh5fGZgZuRBVRcwm9ZF19YuB6MkHVi1ptxEJGpFheLZOUe4YQCAu9wEFNRcLB3oKysMbGHr7-26Bas-vL_7M4mwBh_98HSw0mH8pPu00zxCH6S8Z3hKMtLtm9XCyqWFQW3i8Ovk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보면 지금까지 배웠던 스페셜 파일이 Next.js에서 어떻게 React 컴포넌트로써 작동하는지 큰 틀에서 이해할 수 있을 겁니다.</p>
+<hr>
+<h2 id="에러-리커버리error-recovering">에러 리커버리(Error Recovering)</h2>
+<p>두 번째로 알아볼 내용은 에러가 발생했을 때 다시 Recovery 하는 방법인데요.</p>
+<p>Next.js의 ErrorBoundary에는 &lsquo;reset&rsquo;이라는 콜백 함수를 제공해 줍니다.</p>
+<p>먼저, 코드를 보고 설명해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ErrorBoundary</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">error</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">reset</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">error</span><span class="o">:</span> <span class="nb">Error</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">reset</span><span class="o">:</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border px-2 py-2 mx-2 bg-cyan-500 rounded-md&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">reset</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Recover</span> <span class="nx">From</span> <span class="nb">Error</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드처럼 ErrorBoundary에서 객체 디스트럭쳐링에서 error 객체와 함께 reset이라는 콜백함수를 받았습니다.</p>
+<p>그리고 이 콜백함수를 이용하기 위해 간단한 버튼을 만들었는데요.</p>
+<p>이론상 이 버튼을 누르면 해당 페이지가 리로딩됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjCbfXmmT8Wyia1IBq9WqDEbNOSr96N6g4WoyGozhba8KqRx-y873_sbyOPpM-8wXWsSmljegt8UYs7VAe6XJ0V3L97ur9CB3TUKe4h1sK4FnmPs37AngN91tSmtm1oi1rH33awwODVoenkxRuckH8Vu9yUJ6YzhTo7oAMmkWNafL7KxVoIxYQ_gGquNTw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 우리가 만든 버튼이 나옵니다.</p>
+<p>이 버튼을 누르면 해당 페이지가 리로드 되면서 에러 페이지를 벗어나게 되는 원리죠.</p>
+<p>테스트를 위해 버튼을 누르면 해당 라우팅인</p>
+<p><code>http://localhost:3000/products/1/reviews/10</code></p>
+<p>위 주소가 다시 리로드 됩니다.</p>
+<p>그런데 계속 버튼을 눌러도 아무런 변화가 없는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjpYuooD1EjAtbCBovpExobxSJ2of5yNJzuhz2YbdKGxlt2aSu7oJ8Qp32nJGc6GDsC8uZGqhp3ESIK7nsAVoPPAZGeOnP_E5Y06rS_7Tpt8ssYPROpaD0YMfIiALJ8yFrvTb1i7_LpsGDL37e_JWFovBTvZLnnhQ5M4bKR_o4WdPlAwDOVGd7UXfcYK30"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 맨 밑에 에러표시가 1개라는 표시가 계속 나오고 아무런 변화가 없습니다.</p>
+<p>아마도 우리가 강제로 만들었던 아래 코드 때문 인걸로 생각되는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">random</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Error occured when loading review ID&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>random은 0과 1이니까 확률이 50%입니다.</p>
+<p>그런데 아무리 reset 버튼을 눌러도 작동되지 않는데요.</p>
+<p>확률이 50%라 몇 번 누르면 정상적으로 페이지가 작동해야 됩니다.</p>
+<p>그런데도 계속 맨 밑에 에러 표시는 1로 나오는데요.</p>
+<p>이 뜻은 페이지가 리로드 되지 않았다는 뜻입니다.</p>
+<p>여기서 뭔가 눈치챌 수 있는 게 바로 reset 함수는 클라이언트 사이드에서 페이지를 리로드한다는 겁니다.</p>
+<p>error.tsx 파일의 맨 위에 분명히 &lsquo;use client&rsquo; 디렉티브를 넣었습니다.</p>
+<p>그런데도 작동이 안 되는 거는 바로 reset 함수가 다시 리로드 하는거는 page.tsx 파일이기 때문입니다.</p>
+<p>그래서 error.tsx 파일과 같은 위치에 있는 해당 라우팅의 page.tsx 파일도 &lsquo;use client&rsquo; 디렉티브를 사용해야 합니다.</p>
+<p>이제 다시 에러 리커버리 버튼을 눌러 보면 50% 확률 때문에 몇 번만 더 누르면 에러에서 리커버리해서 원래 라우팅의 정상적인 페이지가 나오게 될 겁니다.</p>
+<p>이번에 배웠던 reset 함수는 클라이언트 사이드에서만 작동한다는 걸 꼭 명심하시기를 바랍니다.</p>
+<hr>
+<h2 id="중첩된-라우팅에서의-errortsx">중첩된 라우팅에서의 error.tsx</h2>
+<p>우리가 테스트한 라우팅은 몇 번의 중첩된 라우팅인데요.</p>
+<p>products 라우팅 밑에 &lsquo;productId&rsquo;가 있고 그 밑에 review 라우팅도 있고 그렇습니다.</p>
+<p>Next.js 에서는 중첩된 라우팅에서 error.tsx 파일의 위치만으로도 중첩된 라우팅의 자식 라우팅까지 한꺼번에 적용되는 특성이 있습니다.</p>
+<p>그래서 우리가 만든 error.tsx 파일을 products 폴더에 옮겨 두어도 전혀 이상 없이 작동합니다.</p>
+<p>그런데 여기서 error.tsx 파일을 products 폴더에 두었다고 다 같이 똑같이 작동하는 건 아닙니다.</p>
+<p>테스트를 위해 기존에 <code>[productId]</code> 폴더 밑에 있던 layout.tsx 파일과 똑같은 걸 <code>[reviewId]</code> 폴더에도 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ProductDetailLayout</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">children</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">children</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Layout</span> <span class="k">of</span> <span class="nx">reviewId</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">children</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 테스트를 위해 작동되는 layout 구조를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgbGLLUvdjHmeEOEHpjbeXa6xL0_GF2V0zGEFCV1FTq7Z49XJv4R8nXOSgvAiPtgjUc3WpetBtky5aaq5ToOJrjvbbucQokchyQxt4s77NFy6uKuAi5srYkk8K4yw1noZ7nXkI2ILeI-44Xyj13aSCYBGWWSSKB-qMq6kDX8r9l9S_zTSO6LYxWjgsjl9Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 두 개의 layout 파일이 제대로 작동하고 있습니다.</p>
+<p>이제 error.tsx 파일이 <code>[reviewId]</code> 폴더 안에 있을 때의 에러 스크린샷을 보여드리겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiP-h0NEXUgjT20BcuDF89dDRItxdrQh5fBYjhoPGtglsutS7YkpyFxzqRt8seQ-OX-3qoBOce-sP8mQ9JC8ZOumrRySbU78Uezt2rcH2NvclkME26888GXC1z_vVN6fHj-TS_zxwFNc_SMetaUPXVMx3vCJTSj3-rr0I7izjFjmbK7pE_nPikntR9cz0U"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 에러가 발생하더라도 두 개의 layout이 제대로 작동되고 있습니다.</p>
+<p>왜냐하면 error.tsx 파일은 두 개의 layout.tsx 파일보다 한 참 밑에 존재하기 때문입니다.</p>
+<p>그러면 이번에는 error.tsx 파일을 products 폴더로 옮기겠습니다.</p>
+<p>Visual Studio Code에서 파일을 드래고 하면 쉽게 옮겨집니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg6qhgLV8KLjniKONMc-5NqKrangwlfWEE3yE5CR4Tdq9l9FBGTOOqYd06vVbMH3Do5FG7KM1DTpN_z-IXjHl-_1Xu6MGDcqJk_qII-YY40OtNQlByeHyprglrjHJ_MkQtsaNy_Jy-ly6S_R4Aj23HePKIwkJzzREwfVghvA3d42syMf9ChAqOV-NVbVbs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 error.tsx 파일이 products 폴더 밑으로 이동됐습니다.</p>
+<p>이제 다시 페이지를 여러번 새로고침해서 에러가 나올 때 까지 기다려 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhCvhCeAKH6qZggb5QTGWTJMu3dAYoUnuPpaibY8fwa-w9ELRfGgR88Rf-o4C7c7ISdUiHJsysex5pddVYQ-SdrrO1kVhlTQzoA3mN66ZkDiC_mda5mk_5DZyZPFpjq8OfJldF-KNSruIbN6c08WQm_zi-QvJkNY58eiPsppKrxizKzRl73iodZL99AxhI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 두 개의 layout.tsx에 있던 문구가 아예 안 나오고 있습니다.</p>
+<p>왜냐하면 error.tsx 파일은 products 폴더에 있고 두 개의 layout.tsx 파일은 products 폴더 밑에 있는 폴더에 있기 때문입니다.</p>
+<p>이렇듯 error.tsx 파일에 의해 에러가 발생했을 때 대체되는 화면이 어디까지인지 쉽게 유추할 수 있습니다.</p>
+<p>그렇다면 이번에 error.tsx 파일을 <code>[productId]</code> 폴더에 옮겨놓아 볼까요?</p>
+<p>현재 <code>[productId]</code> 이 폴더에는 layout.tsx 파일이 같이 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiN7NCFv2BrsCLkECdwC9wX2jfhW0hpHGaXxmVbtaxVCv1y2rSjj87KwBgElgBawY57HaeBMUfu4NLOL6EmdPcRo8Zs2j3xLaV3AdnbjiekcpToNi-LXKe2k9i96dXHBBXOzjdYjGm3MvI6tdCbmqBGSW2ip-pOXYM4EOv-rfdIvY1-_oGHz5JExmKNKrw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 <code>[productId]</code> 폴더에 있는 layout.tsx 파일은 반영되고 있습니다.</p>
+<p>이제 error.tsx 파일의 위치에 따른 그 효과를 이해하실 수 있을 겁니다.</p>
+<hr>
+<h2 id="layouttsx-파일에서-생긴-에러">layout.tsx 파일에서 생긴 에러</h2>
+<p>지금까지 배운대로 error.tsx 파일은 중첩 레이아웃의 모든 자식 세그먼트에 반영된다고 했었는데요.</p>
+<p>그러면 layout.tsx 파일에서 발생된 에러는 어떻게 되는지 테스트를 통해 알아보겠습니다.</p>
+<p>지금까지 테스트를 위해 <code>[reviewId]</code>폴더에 있는 page.tsx 파일에서 강제로 랜덤하게 애러를 발생했었는데요.</p>
+<p>이제 이 에러 발생 로직을 <code>[productId]</code> 폴더에 있는 layout.tsx 파일로 옮기겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getRandomInt</span><span class="p">(</span><span class="nx">count</span><span class="o">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ProductDetailLayout</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">random</span> <span class="o">=</span> <span class="nx">getRandomInt</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">random</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Error occured when loading review ID&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Layout</span> <span class="k">of</span> <span class="nx">productId</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">children</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 에러를 발생하는 곳을 layout.tsx로 만들었습니다.</p>
+<p>현재 error.tsx 파일의 위치는 바로 아래와 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEierIJ_lAKMsH4wR8wQFITOdOLgcaCrG3XE1i91EVgmfsr9LURG-3T8WC5mxWC11wmQUn-Qvozvvu-eyfra6N2I_7_sR5msw6h7YqXhwWrkeuLOFBGlhk3TEQkH5GXFml9Azdmt5iaPZDAa6a0NN52jfAxu4ALgGsWjs6P-D_ZpRT_tpFgouJ-FmuaDt0c"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>바로 에러가 발생하는 layout.tsx 와 같은 곳입니다.</p>
+<p>즉 <code>[productId]</code> 밑에 error.tsx 파일이 있습니다.</p>
+<p>이제 에러 발생을 위해 브라우저 새로고침을 몇 번 하다 보면 에러 페이지가 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhk-6YkOJ_tGZwUzn5sejFpGKwmiyptBTjRuk3YgJ_lfw8cT1X7dG8xPLx3mJI_l-zrvyX-cVlT5jvkItYtlivWimibbwd84w7GZNtTZNiU0XhAiI-tJizt4sBtgj33W1_ubSrn_8wufbDAG2v05BNrGxkvyPBQEjQHFqnEjN5_Pw0EgOCYbh-RstHZpzs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림은 Next.js 고유의 에러페이지이고, 우리가 만든 error.tsx 파일이 작동하지 않았을 때의 모습입니다.</p>
+<p>왜 그런 걸까요?</p>
+<p>현재 상황은 에러가 발생하는 layout.tsx 파일의 위치와 error.tsx 파일의 위치가 같은 상황입니다.</p>
+<p>이 상황에서 다음 그림을 보시면 error.tsx 파일이 작동하지 않는 이유를 가늠할 수 있는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj9HmplR36kK36EzFThQasw_IEo9yPafIOwOKEUjAAcHMJxJsY11eD0gh5fGZgZuRBVRcwm9ZF19YuB6MkHVi1ptxEJGpFheLZOUe4YQCAu9wEFNRcLB3oKysMbGHr7-26Bas-vL_7M4mwBh_98HSw0mH8pPu00zxCH6S8Z3hKMtLtm9XCyqWFQW3i8Ovk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 ErrorBoundary 는 분명히 Tempalte과 Layout 컴포넌트 안에 있습니다.</p>
+<p>그래서 error.tsx 파일이 작동하지 않게 되는 거죠.</p>
+<p>이걸 해결할 방법은 error.tsx 파일의 위치를 한 단계 위로 올리면 됩니다.</p>
+<p>현재 <code>[productId]</code> 폴더에 있던 걸 상위 페이지인 <code>products</code> 폴더로 옮기겠습니다.</p>
+<p>error.tsx 파일만 옮기는 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEieahFXJp19wkESJaAZ_tS_rE8T11s1KEtGq9-WAkdgBlpIMIeLrA0onzCvTQdA40n2_isFnROMYM2Fq7R5PfFtZlj1VMJeULAezkVBAaQ-43Z9pApkxAfsTu2MKyjaTNpVDBn1mbcF3zLLkvS59KWub_zYzwkz4NDx0eTlGetSoR52NciOMvM7Q4zctIY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 error.tsx 파일이 products 폴더 바로 안에 있습니다.</p>
+<p>그래서 에러가 발생하는 layout.tsx 파일 보다 한 단계 위에 있죠.</p>
+<p>그러면 에러가 발생한 경우의 브라우저를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiQDMmrIwf6n5F449Z_DnX8-pZ_ByIqDpFt3CAbg7CttV5EJDIpPaSYHGDHwwOSmbHgV0I8MrAzjhnoPR9SI4ZjqHYfDjvoWlyOPxabfBzsbomlUZfYr1EaQMSocM3kYewZ6lvePscu_gfMDGaI_GrLnPLcynPQEgrbNP5Z2GiAf7b24KSFiI3DXggFSsI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 <code>[productId]</code> 폴더의 layout.tsx 에서 지정한 아래 태그가 보이지 않습니다.</p>
+<p><code>&lt;h1&gt;Layout of productId&lt;/h1&gt;</code></p>
+<p>당연히 해당 layout.tsx에서 에러가 발생했고 상기 태그를 렌더링하기 전에 에러가 발생했기 때문입니다.</p>
+<p>그러나 우리가 만든 error.tsx 파일은 정상 작동하는 걸 볼 수 있을 겁니다.</p>
+<p>이렇듯 중첩된 라우팅일 경우 error.tsx 파일의 위치를 조정하면 좀 더 쉽게 에러 핸들링 및 처리를 할 수 있을 겁니다.</p>
+<p>그럼 이만.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/error/" role="button">error</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-25-3-ways-in-data-fetching-with-react/">옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기</a></h2>
+                  <p>이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다.</p>
+                  <p>
+  <small>August 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-19-refactoring-nextjs-lucia-auth-code-with-useformstate-and-useformstatus/">React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기</a></h2>
+                  <p>기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다.</p>
+                  <p>
+  <small>August 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

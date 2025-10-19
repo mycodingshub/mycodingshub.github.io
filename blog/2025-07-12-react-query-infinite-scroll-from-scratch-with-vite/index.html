@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>초보자 완벽 가이드 - React Query와 Vite로 무한 스크롤 구현하기 (`useInfiniteQuery` 완전 정복)</title>
+<meta name="description" content="Vite로 React 프로젝트를 시작하고, React Query를 설정한 뒤, useInfiniteQuery 훅을 사용하여 복잡한 무한 스크롤 UI를 얼마나 쉽고 강력하게 만들 수 있는지 단계별로 알아봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-07-12-react-query-infinite-scroll-from-scratch-with-vite/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="초보자 완벽 가이드 - React Query와 Vite로 무한 스크롤 구현하기 (`useInfiniteQuery` 완전 정복)" />
+<meta property="og:description" content="Vite로 React 프로젝트를 시작하고, React Query를 설정한 뒤, useInfiniteQuery 훅을 사용하여 복잡한 무한 스크롤 UI를 얼마나 쉽고 강력하게 만들 수 있는지 단계별로 알아봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-07-12-react-query-infinite-scroll-from-scratch-with-vite/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-07-12T09:47:29Z" />
+<meta property="article:modified_time" content="2025-07-12T09:47:29Z" />
+<meta property="article:tag" content="React Query" />
+<meta property="article:tag" content="useInfiniteQuery" />
+<meta property="article:tag" content="무한 스크롤" />
+<meta property="article:tag" content="Vite" />
+<meta property="article:tag" content="React" />
+<meta property="article:tag" content="Intersection Observer" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="초보자 완벽 가이드 - React Query와 Vite로 무한 스크롤 구현하기 (`useInfiniteQuery` 완전 정복)" />
+<meta name="twitter:description" content="Vite로 React 프로젝트를 시작하고, React Query를 설정한 뒤, useInfiniteQuery 훅을 사용하여 복잡한 무한 스크롤 UI를 얼마나 쉽고 강력하게 만들 수 있는지 단계별로 알아봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"초보자 완벽 가이드 - React Query와 Vite로 무한 스크롤 구현하기 (`useInfiniteQuery` 완전 정복)\"",
+  "description": "\"Vite로 React 프로젝트를 시작하고, React Query를 설정한 뒤, useInfiniteQuery 훅을 사용하여 복잡한 무한 스크롤 UI를 얼마나 쉽고 강력하게 만들 수 있는지 단계별로 알아봅니다.\"",
+  "datePublished": "\"2025-07-12T09:47:29Z\"",
+  "dateModified": "\"2025-07-12T09:47:29Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-07-12-react-query-infinite-scroll-from-scratch-with-vite/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>초보자 완벽 가이드 - React Query와 Vite로 무한 스크롤 구현하기 (`useInfiniteQuery` 완전 정복)</h1>
+        <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요!</p>
+<p>트위터나 인스타그램 같은 SNS 피드를 스크롤할 때, 우리는 콘텐츠가 끝없이 나타나는 경험에 익숙한데요.</p>
+<p>이러한 &lsquo;무한 스크롤&rsquo; UI는 현대 웹의 표준처럼 여겨지지만, 막상 직접 구현하려고 하면 생각보다 골치 아픈 문제들을 마주하게 됩니다.</p>
+<p>&lsquo;현재 몇 페이지를 보고 있지?&rsquo;, &lsquo;다음 페이지가 있긴 한가?&rsquo;, &lsquo;로딩 중일 때 중복 요청을 막아야지&rsquo; 등등&hellip;</p>
+<p>이 모든 상태를 수동으로 관리하다 보면 코드는 금세 스파게티처럼 엉켜버리기 일쑤입니다.</p>
+<p>하지만 걱정하지 마세요.</p>
+<p>우리에게는 React Query라는 강력한 구원자가 있습니다.</p>
+<p>특히 그중에서도 <code>useInfiniteQuery</code>라는 훅은 이 모든 복잡성을 마법처럼 해결해 줍니다.</p>
+<p>오늘은 Vite로 React 프로젝트를 처음부터 만들고, <code>useInfiniteQuery</code>를 사용해 전문가 수준의 무한 스크롤을 얼마나 쉽게 구현할 수 있는지 함께 정복해 보겠습니다.</p>
+<h2 id="1단계-프로젝트-생성-및-react-query-설정">1단계: 프로젝트 생성 및 React Query 설정</h2>
+<p>모든 것은 깨끗한 프로젝트에서 시작됩니다.</p>
+<p>최신 개발 도구인 Vite를 사용해 React와 TypeScript 기반의 프로젝트를 생성하겠습니다.</p>
+<p>터미널을 열고 다음 명령어를 입력하세요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm create vite@latest infinite-scroll-app -- --template react-ts</span></span></code></pre></div>
+  </figure>
+</div>
+<p>프로젝트가 생성되면, 해당 폴더로 이동하여 필요한 라이브러리들을 설치합니다.</p>
+<ul>
+<li><code>@tanstack/react-query</code>: React Query의 핵심 라이브러리입니다.</li>
+<li><code>axios</code>: 데이터 페칭을 위한 HTTP 클라이언트입니다. (fetch를 사용해도 무방합니다)</li>
+<li><code>@uidotdev/usehooks</code>: Intersection Observer를 편리하게 사용하기 위한 훅 라이브러리입니다.</li>
+</ul>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> infinite-scroll-app
+</span></span><span class="line"><span class="cl">npm install @tanstack/react-query axios @uidotdev/usehooks</span></span></code></pre></div>
+  </figure>
+</div>
+<p>라이브러리 설치가 끝났다면, 이제 React Query를 우리 앱 전체에서 사용할 수 있도록 설정해야 합니다.</p>
+<p>이것은 매우 중요한 단계입니다.</p>
+<p><strong><code>src/main.tsx</code></strong> 파일을 열고 아래와 같이 수정해 주세요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// src/main.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="kr">from</span> <span class="s1">&#39;react-dom/client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">App</span> <span class="kr">from</span> <span class="s1">&#39;./App.tsx&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="s1">&#39;./index.css&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">QueryClient</span><span class="p">,</span> <span class="nx">QueryClientProvider</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;@tanstack/react-query&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// QueryClient 인스턴스를 생성합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">QueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span><span class="o">!</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">React.StrictMode</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="cm">/* 앱 전체를 QueryClientProvider로 감싸줍니다. */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">QueryClientProvider</span> <span class="na">client</span><span class="o">=</span><span class="p">{</span><span class="nx">queryClient</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">App</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">QueryClientProvider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">React.StrictMode</span><span class="p">&gt;,</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>QueryClientProvider</code>로 <code>&lt;App /&gt;</code> 컴포넌트를 감싸줌으로써, 우리 앱의 모든 컴포넌트가 React Query의 강력한 캐싱 및 상태 관리 기능에 접근할 수 있게 되었습니다.</p>
+<p>이제 모든 준비가 끝났습니다.</p>
+<h2 id="2단계-useinfinitequery-깊이-이해하기">2단계: <code>useInfiniteQuery</code> 깊이 이해하기</h2>
+<p>본격적인 구현에 앞서, <code>useInfiniteQuery</code>의 핵심 개념부터 확실히 짚고 넘어가겠습니다.</p>
+<p>이 훅은 여러 페이지의 데이터를 순차적으로 불러와 하나의 목록으로 관리하는 모든 과정을 자동화합니다.</p>
+<p>개발자는 더 이상 <code>const [page, setPage] = useState(1);</code> 같은 코드를 작성할 필요가 없습니다.</p>
+<p>먼저, API 통신을 흉내 낼 가짜 <code>fetchPosts</code> 함수를 만들어 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// src/api.ts (새 파일을 만들어 관리하는 것을 추천합니다)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">axios</span> <span class="kr">from</span> <span class="s1">&#39;axios&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 가짜 API 함수: 페이지 번호를 받아 해당 페이지의 게시물 10개를 반환합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">fetchPosts</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">pageParam</span>: <span class="kt">number</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 5페이지가 넘어가면 빈 배열을 반환하여 &#39;더 이상 데이터 없음&#39;을 시뮬레이션합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="nx">pageParam</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="k">return</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">axios</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s1">&#39;https://jsonplaceholder.typicode.com/posts&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">params</span><span class="o">:</span> <span class="p">{</span> <span class="nx">_page</span>: <span class="kt">pageParam</span><span class="p">,</span> <span class="nx">_limit</span>: <span class="kt">10</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 실제 API처럼 약간의 지연 시간을 줍니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">await</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="mi">500</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 이 함수를 사용하는 <code>useInfiniteQuery</code> 훅을 만들어 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// src/hooks/usePosts.ts (커스텀 훅으로 분리하면 재사용성이 높아집니다)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">useInfiniteQuery</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;@tanstack/react-query&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">fetchPosts</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../api&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">usePosts() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useInfiniteQuery</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryFn</span><span class="o">:</span> <span class="p">({</span> <span class="nx">pageParam</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">fetchPosts</span><span class="p">(</span><span class="nx">pageParam</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">initialPageParam</span>: <span class="kt">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">getNextPageParam</span><span class="o">:</span> <span class="p">(</span><span class="nx">lastPage</span><span class="p">,</span> <span class="nx">allPages</span><span class="p">,</span> <span class="nx">lastPageParam</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">lastPage</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">lastPageParam</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드가 조금 복잡해 보이지만, 각 옵션의 역할을 이해하면 아주 간단합니다.</p>
+<ul>
+<li>
+<p><code>queryKey: ['posts']</code>: 이 쿼리의 고유한 이름표입니다.
+React Query는 이 키를 사용해 데이터를 캐싱하고 관리합니다.</p>
+</li>
+<li>
+<p><code>queryFn: ({ pageParam }) =&gt; fetchPosts(pageParam)</code>: 실제 데이터를 가져오는 함수입니다.
+여기서 <code>{ pageParam }</code> 객체를 인자로 받는데, 이 <code>pageParam</code> 값은 React Query가 <code>initialPageParam</code>과 <code>getNextPageParam</code>을 통해 자동으로 관리해 줍니다.</p>
+</li>
+<li>
+<p><code>initialPageParam: 1</code>: 가장 처음 로드할 페이지의 파라미터 값입니다.
+여기서는 1페이지부터 시작합니다.</p>
+</li>
+<li>
+<p><code>getNextPageParam</code>: 이 훅의 <strong>가장 핵심적인 부분</strong>입니다.
+이 함수는 &ldquo;다음 페이지를 불러올 때 <code>pageParam</code>을 뭘로 써야 할까?&ldquo;를 React Query에게 알려주는 역할을 합니다.</p>
+<ul>
+<li>
+<p><code>lastPage</code>는 방금 불러온 마지막 페이지의 데이터입니다.
+만약 <code>lastPage</code>의 길이가 0이라면, API가 더 이상 줄 데이터가 없다는 뜻이므로 <code>undefined</code>를 반환합니다.</p>
+</li>
+<li>
+<p><code>undefined</code>가 반환되면, React Query는 <code>hasNextPage</code> 상태를 <code>false</code>로 바꾸고 더 이상 데이터를 요청하지 않습니다.</p>
+</li>
+<li>
+<p>데이터가 있다면, <code>lastPageParam + 1</code>을 반환하여 다음 페이지 번호를 알려줍니다.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="3단계-무한-스크롤-ui-컴포넌트-만들기">3단계: 무한 스크롤 UI 컴포넌트 만들기</h2>
+<p>이제 위에서 만든 <code>usePosts</code> 훅을 사용하여 실제 UI를 만들어 보겠습니다.</p>
+<p><code>useInfiniteQuery</code>가 반환하는 값들을 활용하는 것이 핵심입니다.</p>
+<ul>
+<li><code>data</code>: 불러온 모든 데이터가 담겨 있습니다.
+<code>data.pages</code>는 <code>[[1페이지 데이터], [2페이지 데이터], ...]</code> 형태의 2차원 배열입니다.</li>
+<li><code>fetchNextPage</code>: 다음 페이지 데이터를 요청하는 함수입니다.</li>
+<li><code>hasNextPage</code>: 불러올 다음 페이지가 있는지 여부를 나타내는 boolean 값입니다.</li>
+<li><code>isFetchingNextPage</code>: 다음 페이지를 불러오는 중인지 여부를 나타내는 boolean 값입니다.</li>
+</ul>
+<p>이제 이 값들과 <code>Intersection Observer</code>를 결합하여 <code>InfinitePostList</code> 컴포넌트를 만들어 봅시다.</p>
+<p><strong><code>src/components/InfinitePostList.tsx</code></strong> 파일을 새로 만드세요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// src/components/InfinitePostList.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useIntersectionObserver</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;@uidotdev/usehooks&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">usePosts</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../hooks/usePosts&#39;</span><span class="p">;</span> <span class="c1">// 우리가 만든 커스텀 훅
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">PostCard</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">post</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">post</span>: <span class="kt">any</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">(</span> <span class="c1">// 간단한 게시물 카드 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">border</span><span class="o">:</span> <span class="s1">&#39;1px solid #ccc&#39;</span><span class="p">,</span> <span class="nx">padding</span><span class="o">:</span> <span class="s1">&#39;1rem&#39;</span><span class="p">,</span> <span class="nx">margin</span><span class="o">:</span> <span class="s1">&#39;1rem 0&#39;</span> <span class="p">}}&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;{</span><span class="nx">post</span><span class="p">.</span><span class="nx">id</span><span class="p">}.</span> <span class="p">{</span><span class="nx">post</span><span class="p">.</span><span class="nx">title</span><span class="p">}&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;{</span><span class="nx">post</span><span class="p">.</span><span class="nx">body</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">InfinitePostList() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">error</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fetchNextPage</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">hasNextPage</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">isFetching</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">isFetchingNextPage</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="o">=</span> <span class="nx">usePosts</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">ref</span><span class="p">,</span> <span class="nx">entry</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useIntersectionObserver</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">threshold</span>: <span class="kt">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">root</span>: <span class="kt">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">rootMargin</span><span class="o">:</span> <span class="s1">&#39;0px&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">React</span><span class="p">.</span><span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ref를 가진 요소가 화면에 보이고, 다음 페이지가 있으며, 로딩 중이 아닐 때
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span><span class="o">?</span><span class="p">.</span><span class="nx">isIntersecting</span> <span class="o">&amp;&amp;</span> <span class="nx">hasNextPage</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isFetchingNextPage</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">fetchNextPage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[</span><span class="nx">entry</span><span class="p">,</span> <span class="nx">hasNextPage</span><span class="p">,</span> <span class="nx">isFetchingNextPage</span><span class="p">,</span> <span class="nx">fetchNextPage</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 최초 로딩 시
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="nx">isFetching</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isFetchingNextPage</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="err">전체</span> <span class="err">데이터를</span> <span class="err">불러오는</span> <span class="err">중</span><span class="p">...&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="err">에러가</span> <span class="err">발생했습니다</span><span class="o">:</span> <span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="err">게시물</span> <span class="err">목록</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">pages</span><span class="p">.</span><span class="nx">flat</span><span class="p">().</span><span class="nx">map</span><span class="p">(</span><span class="nx">post</span> <span class="o">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">PostCard</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">post</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span> <span class="na">post</span><span class="o">=</span><span class="p">{</span><span class="nx">post</span><span class="p">}</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="cm">/* 이 div가 화면에 보이면 다음 페이지를 불러옵니다. */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}</span> <span class="na">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">height</span><span class="o">:</span> <span class="s1">&#39;50px&#39;</span><span class="p">,</span> <span class="nx">textAlign</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span> <span class="p">}}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">isFetchingNextPage</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="s1">&#39;더 많은 게시물을 불러오는 중...&#39;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">:</span> <span class="nx">hasNextPage</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="s1">&#39;아래로 스크롤하여 더 보기&#39;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">:</span> <span class="s1">&#39;모든 게시물을 불러왔습니다.&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 이 컴포넌트를 <strong><code>src/App.tsx</code></strong> 에서 렌더링하도록 수정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// src/App.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">InfinitePostList</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./components/InfinitePostList&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">maxWidth</span><span class="o">:</span> <span class="s1">&#39;800px&#39;</span><span class="p">,</span> <span class="nx">margin</span><span class="o">:</span> <span class="s1">&#39;0 auto&#39;</span> <span class="p">}}&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">InfinitePostList</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 <code>npm run dev</code>로 프로젝트를 실행하고 스크롤을 내려보세요.</p>
+<p>페이지 하단에 닿을 때마다 로딩 메시지가 나타나고 새로운 게시물들이 부드럽게 추가되는 것을 확인할 수 있을 것입니다.</p>
+<h2 id="4단계-고급-활용법-다양한-시나리오">4단계: 고급 활용법 (다양한 시나리오)</h2>
+<p><code>useInfiniteQuery</code>의 진정한 힘은 다양한 API 요구사항에 유연하게 대처할 수 있다는 점입니다.</p>
+<h3 id="커서cursor-기반-페이지네이션">커서(Cursor) 기반 페이지네이션</h3>
+<p>API가 페이지 번호 대신 다음 페이지를 가리키는 <code>nextCursor</code> 같은 값을 반환하는 경우, <code>getNextPageParam</code>만 살짝 바꿔주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">getNextPageParam</span><span class="o">:</span> <span class="p">(</span><span class="nx">lastPage</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// API 응답에 nextCursor가 있다면 그 값을, 없다면 undefined를 반환
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="nx">lastPage</span><span class="p">.</span><span class="nx">nextCursor</span> <span class="o">??</span> <span class="kc">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="메모리-사용량-제어하기">메모리 사용량 제어하기</h3>
+<p>사용자가 수백 페이지를 스크롤하면 캐시에 쌓이는 데이터 양이 부담될 수 있습니다.</p>
+<p>이때 <code>maxPages</code> 옵션을 사용하면 캐시에 유지할 최대 페이지 수를 제한할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="nx">useInfiniteQuery</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">maxPages</span>: <span class="kt">5</span> <span class="c1">// 캐시에 최대 5개의 페이지만 유지합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>새로운 6번째 페이지가 로드되면, 가장 오래된 1번째 페이지 데이터는 캐시에서 자동으로 제거됩니다.</p>
+<p>이를 통해 쾌적한 사용자 경험과 안정적인 메모리 관리 두 마리 토끼를 모두 잡을 수 있습니다.</p>
+<h2 id="복잡함은-라이브러리에게-맡기세요">복잡함은 라이브러리에게 맡기세요</h2>
+<p>오늘 우리는 빈 폴더에서 시작해 <code>useInfiniteQuery</code>를 사용하여 복잡한 무한 스크롤 기능을 얼마나 간단하고 선언적으로 구현할 수 있는지 직접 확인했습니다.</p>
+<p>페이지 상태, 로딩 상태, 데이터 누적 등 골치 아픈 모든 작업은 React Query에게 맡기고, 우리는 그저 &ldquo;다음 페이지를 어떻게 찾을지&quot;에 대한 규칙만 알려주면 되었습니다.</p>
+<p>이것이 바로 좋은 라이브러리가 개발자의 생산성을 어떻게 극대화하는지를 보여주는 완벽한 예시입니다.</p>
+<p>이제 여러분의 프로젝트에 무한 스크롤을 추가해야 할 때, 더 이상 망설이지 마세요.</p>
+<p><code>useInfiniteQuery</code>가 여러분의 든든한 지원군이 되어줄 것입니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react-query/" role="button">React Query</a>
+        <a class="btn btn-light" href="/tags/useinfinitequery/" role="button">useInfiniteQuery</a>
+        <a class="btn btn-light" href="/tags/%EB%AC%B4%ED%95%9C-%EC%8A%A4%ED%81%AC%EB%A1%A4/" role="button">무한 스크롤</a>
+        <a class="btn btn-light" href="/tags/vite/" role="button">Vite</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">React</a>
+        <a class="btn btn-light" href="/tags/intersection-observer/" role="button">Intersection Observer</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-09-20-bhvr-stack-cloudflare-workers-deployment-guide/">BHVR 풀스택 앱을 Cloudflare Workers에 배포하는 완벽 가이드</a></h2>
+                  <p>Bun, Hono, Vite, React로 구성된 BHVR 스택을 활용해 풀스택 앱을 만들고 Cloudflare Workers에 배포하는 방법을 실전 예제와 함께 상세히 설명합니다.</p>
+                  <p>
+  <small>September 21, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-25-golang-gorm-gin-tutorial-4-fullstack-react-frontend-ui-app/">Golang, Gin, GORM 실전 API 개발 4편 - 최첨단 Full-Stack 완성편 Vite, TanStack, Zustand, shadcn/ui</a></h2>
+                  <p>React 개발의 최신 트렌드를 모두 담아 프론트엔드를 재구축합니다. Vite의 빠른 개발 환경, TanStack의 강력한 라우팅 및 데이터 관리, Zustand의 간결한 상태 관리, shadcn/ui의 미려한 UI를 통해 프로덕션급 풀스택 애플리케이션을 완성합니다.</p>
+                  <p>
+  <small>July 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-15-tanstack-start-react-framework-deep-dive/">TanStack Start 깊이 파고들기 - React 프레임워크의 새로운 미래일까</a></h2>
+                  <p>Next.js의 대안으로 떠오르는 이 프레임워크의 설정부터 인증, 배포까지 모든 것을 다룹니다.</p>
+                  <p>
+  <small>July 15, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

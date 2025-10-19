@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>페이스북은 React를 어떻게 서빙할까? (코드 레벨로 보는 전 메타 엔지니어의 증언)</title>
+<meta name="description" content="페이스북은 Next.js를 쓸까요? 전직 메타 엔지니어들이 직접 밝히는 페이스북의 기술 스택. &lsquo;Hack&rsquo; 언어는 어떻게 생겼는지, 사내 번들러 &lsquo;MakeHaste&rsquo;는 왜 만들었는지, 코드와 함께 그 비밀을 파헤쳐 봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-07-12-how-facebook-serves-react-deep-dive/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="페이스북은 React를 어떻게 서빙할까? (코드 레벨로 보는 전 메타 엔지니어의 증언)" />
+<meta property="og:description" content="페이스북은 Next.js를 쓸까요? 전직 메타 엔지니어들이 직접 밝히는 페이스북의 기술 스택. &lsquo;Hack&rsquo; 언어는 어떻게 생겼는지, 사내 번들러 &lsquo;MakeHaste&rsquo;는 왜 만들었는지, 코드와 함께 그 비밀을 파헤쳐 봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-07-12-how-facebook-serves-react-deep-dive/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-07-12T09:55:27Z" />
+<meta property="article:modified_time" content="2025-07-12T09:55:27Z" />
+<meta property="article:tag" content="facebook" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="페이스북 기술 스택" />
+<meta property="article:tag" content="React" />
+<meta property="article:tag" content="Hack 언어" />
+<meta property="article:tag" content="HHVM" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="페이스북은 React를 어떻게 서빙할까? (코드 레벨로 보는 전 메타 엔지니어의 증언)" />
+<meta name="twitter:description" content="페이스북은 Next.js를 쓸까요? 전직 메타 엔지니어들이 직접 밝히는 페이스북의 기술 스택. &lsquo;Hack&rsquo; 언어는 어떻게 생겼는지, 사내 번들러 &lsquo;MakeHaste&rsquo;는 왜 만들었는지, 코드와 함께 그 비밀을 파헤쳐 봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"페이스북은 React를 어떻게 서빙할까? (코드 레벨로 보는 전 메타 엔지니어의 증언)\"",
+  "description": "\"페이스북은 Next.js를 쓸까요? 전직 메타 엔지니어들이 직접 밝히는 페이스북의 기술 스택. \\u0026lsquo;Hack\\u0026rsquo; 언어는 어떻게 생겼는지, 사내 번들러 \\u0026lsquo;MakeHaste\\u0026rsquo;는 왜 만들었는지, 코드와 함께 그 비밀을 파헤쳐 봅니다.\"",
+  "datePublished": "\"2025-07-12T09:55:27Z\"",
+  "dateModified": "\"2025-07-12T09:55:27Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-07-12-how-facebook-serves-react-deep-dive/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>페이스북은 React를 어떻게 서빙할까? (코드 레벨로 보는 전 메타 엔지니어의 증언)</h1>
+        <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>우리가 매일 사용하는 페이스북이나 인스타그램의 웹사이트는 모두 React로 만들어졌습니다.</p>
+<p>React를 만든 곳이 바로 페이스북(현 메타)이니 어찌 보면 당연한 일이죠.</p>
+<p>하지만 문득 이런 궁금증이 생깁니다.</p>
+<p>&lsquo;과연 페이스북은 그 거대한 규모의 React 애플리케이션을 어떤 방식으로 사용자에게 전달(서빙)할까?&rsquo;, &lsquo;Next.js나 Remix 같은 오픈소스 프레임워크를 사용할까, 아니면 완전히 다른 무언가가 있을까?&rsquo;</p>
+<p>최근 한 온라인 커뮤니티에서 이 질문에 대한 전직 메타 엔지니어들의 흥미로운 답변이 오고 갔습니다.</p>
+<p>오늘은 그들의 증언을 바탕으로, 단순한 이름 나열을 넘어 각 기술이 실제로 어떻게 생겼고 왜 사용되는지 코드와 함께 그 내부를 깊숙이 들여다보겠습니다.</p>
+<h2 id="두-가지-종류의-react-서빙-방식">두 가지 종류의 &lsquo;React&rsquo; 서빙 방식</h2>
+<p>한 전직 메타 엔지니어의 설명에 따르면, 페이스북은 크게 두 가지 종류의 &lsquo;React&rsquo; 결과물을 서빙한다고 합니다.</p>
+<p>하나는 &lsquo;정적인 JS(JavaScript)&lsquo;이고, 다른 하나는 &lsquo;동적인 HTML/JS&rsquo;입니다.</p>
+<h3 id="1-정적-js-makehaste와-cdn">1. 정적 JS: &lsquo;MakeHaste&rsquo;와 CDN</h3>
+<p>정적인 JS 파일들은 Babel을 통해 컴파일된 후, &lsquo;MakeHaste&rsquo;라는 이름의 자체 개발한 사내 번들러로 묶입니다.</p>
+<p>여기서 잠깐, 왜 Webpack이나 Vite 같은 훌륭한 오픈소스 대신 굳이 사내 번들러를 만들었을까요?</p>
+<p>이는 페이스북의 코드베이스가 상상 이상으로 거대하고, 수많은 팀이 의존성을 공유하는 독특한 환경이기 때문입니다.</p>
+<p>&lsquo;MakeHaste&rsquo;는 페이스북의 모노레포(monorepo) 구조와 고유한 의존성 관리 시스템에 극도로 최적화되어 있어, 수백만 개의 모듈을 믿을 수 없는 속도로 처리할 수 있습니다.</p>
+<p>이렇게 만들어진 최종 결과물은 CDN을 통해 전 세계 사용자에게 전달됩니다.</p>
+<h3 id="2-동적-콘텐츠-hack-hhvm-hermes의-삼중주">2. 동적 콘텐츠: &lsquo;Hack&rsquo;, &lsquo;HHVM&rsquo;, &lsquo;Hermes&rsquo;의 삼중주</h3>
+<p>사용자마다 다른 내용을 보여줘야 하는 동적인 웹 콘텐츠는 페이스북 기술 스택의 진수가 담긴 영역입니다.</p>
+<p>핵심은 &lsquo;Hack&rsquo; 언어와 &lsquo;HHVM&rsquo; 실행 환경, 그리고 &lsquo;Hermes&rsquo; 자바스크립트 엔진입니다.</p>
+<h4 id="hack-언어는-어떻게-생겼을까">&lsquo;Hack&rsquo; 언어는 어떻게 생겼을까?</h4>
+<p>&lsquo;Hack&rsquo;은 페이스북이 PHP의 단점을 보완하기 위해 만든 언어입니다.</p>
+<p>가장 큰 특징은 &lsquo;점진적 타입 시스템(Gradual Typing)&lsquo;을 도입했다는 점입니다.</p>
+<p>실제로 코드를 보면 그 차이가 더 명확해집니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// 일반적인 PHP 코드
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">function</span> <span class="nf">greet</span><span class="p">(</span><span class="nv">$name</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// $name이 문자열인지, 숫자인지 알 수 없습니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="s2">&#34;Hello, &#34;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 <code>$name</code> 변수에 어떤 타입의 값이 들어올지 알 수 없어 잠재적인 버그를 유발할 수 있습니다.</p>
+<p>이제 &lsquo;Hack&rsquo; 코드를 볼까요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// Hack 코드
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 함수의 인자와 반환값에 명확한 타입을 지정합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">function</span> <span class="nf">greet</span><span class="p">(</span><span class="nx">string</span> <span class="nv">$name</span><span class="p">)</span><span class="o">:</span> <span class="nx">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// $name은 반드시 문자열이어야 함을 컴파일 시점에 보장합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="s2">&#34;Hello, &#34;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이처럼 &lsquo;Hack&rsquo;은 타입 힌트를 통해 코드의 안정성과 가독성을 크게 높였습니다.</p>
+<p>전직 엔지니어들이 &ldquo;PHP에 대한 안 좋은 기억이 있었는데도 Hack은 정말 재밌었다&quot;고 말하는 이유를 짐작할 수 있는 부분입니다.</p>
+<h4 id="hhvm과-hermes의-역할-분담">&lsquo;HHVM&rsquo;과 &lsquo;Hermes&rsquo;의 역할 분담</h4>
+<p>&lsquo;HHVM(HipHop Virtual Machine)&lsquo;은 이 Hack 코드를 JIT(Just-In-Time) 컴파일하여 매우 빠르게 실행하는 가상 머신입니다.</p>
+<p>서버의 메인 엔진 역할을 하는 셈이죠.</p>
+<p>여기서 가장 흥미로운 부분은 &lsquo;서버 사이드 렌더링(SSR)&lsquo;입니다.</p>
+<p>서버에서 React 컴포넌트를 실행하여 HTML을 만드는 이 과정에는 &lsquo;Hermes&rsquo; 엔진이 사용됩니다.</p>
+<p>&lsquo;Hermes&rsquo;는 본래 React Native 앱의 시작 속도와 메모리 사용량을 최적화하기 위해 만들어진 경량 자바스크립트 엔진입니다.</p>
+<p>V8(Node.js가 사용하는) 같은 범용 엔진보다 특정 작업(React 렌더링)에 더 최적화되어 있어, 서버 환경에서도 빠르고 효율적인 SSR을 가능하게 합니다.</p>
+<p>즉, <strong>HHVM이 전체 요청을 처리하는 주체라면, 그 안에서 자바스크립트 코드(React) 실행이 필요할 때 &lsquo;Hermes&rsquo;라는 전문가를 호출하는 구조</strong>입니다.</p>
+<h2 id="react-서버-컴포넌트rsc는-왜-사용하지-않을까">React 서버 컴포넌트(RSC)는 왜 사용하지 않을까?</h2>
+<p>그렇다면 최신 React의 화두인 &lsquo;서버 컴포넌트&rsquo;는 어떨까요?</p>
+<p>한 전직 엔지니어는 놀라운 사실을 알려줍니다.</p>
+<p>페이스북은 이미 &lsquo;Relay&rsquo;라는 기술을 통해 RSC와 거의 동일한 이점을 누리고 있다는 것입니다.</p>
+<h4 id="relay는-어떻게-동작할까">&lsquo;Relay&rsquo;는 어떻게 동작할까?</h4>
+<p>&lsquo;Relay&rsquo;는 페이스북이 만든 또 다른 오픈소스 기술로, GraphQL과 함께 사용되는 데이터 페칭 라이브러리입니다.</p>
+<p>핵심은 **&lsquo;컴포넌트가 필요한 데이터를 스스로 선언한다&rsquo;**는 개념입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-graphql" data-lang="graphql"><span class="line"><span class="cl"><span class="c"># UserProfile.js 컴포넌트가 사용할 데이터 조각(Fragment)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">fragment</span><span class="w"> </span><span class="nc">UserProfile_user</span><span class="w"> </span><span class="kd">on</span><span class="w"> </span><span class="py">User</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="py">id</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="py">name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="py">profile_picture</span><span class="p">(</span><span class="py">scale</span><span class="p">:</span><span class="w"> </span><span class="nc">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="py">uri</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 GraphQL 프래그먼트를 정의한 뒤, React 컴포넌트 안에서 이 데이터를 사용합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// UserProfile.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span><span class="nx">graphql</span><span class="p">,</span> <span class="nx">useFragment</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-relay&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">UserProfile</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 프래그먼트를 통해 필요한 데이터만 정확히 받아옵니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">useFragment</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">graphql</span><span class="sb">`
+</span></span></span><span class="line"><span class="cl"><span class="sb">      fragment UserProfile_user on User { ... }
+</span></span></span><span class="line"><span class="cl"><span class="sb">    `</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">props</span><span class="p">.</span><span class="nx">user</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">img</span> <span class="nx">src</span><span class="o">=</span><span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">profile_picture</span><span class="p">.</span><span class="nx">uri</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이러한 &lsquo;데이터 요구사항의 컴포넌트 단위 분리&rsquo;가 서버 렌더링과 결합되면, 서버는 각 컴포넌트가 정확히 어떤 데이터를 필요로 하는지 알 수 있습니다.</p>
+<p>이를 통해 불필요한 데이터 페칭을 줄이고 렌더링을 최적화할 수 있는데, 이것이 바로 RSC가 해결하려는 핵심 문제 중 하나입니다.</p>
+<p>따라서 페이스북 입장에서는 이미 &lsquo;Relay + SSR&rsquo; 조합으로 충분한 성능을 내고 있기에, 막대한 비용을 들여 RSC로 전환할 필요성을 크게 느끼지 못하는 것입니다.</p>
+<h2 id="필요가-발명을-낳는다">필요가 발명을 낳는다</h2>
+<p>이번 엔지니어들의 증언을 통해, 우리는 페이스북이 단순히 기술을 소비하는 것을 넘어, 자신들의 문제를 해결하기 위해 언어, 가상 머신, 엔진, 번들러, 데이터 페칭 라이브러리까지 직접 창조해내는 &lsquo;기술 개척자&rsquo;의 모습을 엿볼 수 있었습니다.</p>
+<p>우리가 사용하는 React의 배경에는 이처럼 치열한 고민과 고도로 최적화된 기술 생태계가 존재하고 있었던 것이죠.</p>
+<p>이는 단순히 &lsquo;어떤 기술을 쓴다&rsquo;를 넘어, &lsquo;왜 그 기술을 만들고 선택했는가&rsquo;에 대한 깊은 통찰을 줍니다.</p>
+<p>다음에 페이스북을 스크롤할 때, 그 부드러운 화면 뒤에서 일어나는 이 거대한 기술의 협주를 한번 상상해 보는 것은 어떨까요.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/facebook/" role="button">facebook</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/%ED%8E%98%EC%9D%B4%EC%8A%A4%EB%B6%81-%EA%B8%B0%EC%88%A0-%EC%8A%A4%ED%83%9D/" role="button">페이스북 기술 스택</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">React</a>
+        <a class="btn btn-light" href="/tags/hack-%EC%96%B8%EC%96%B4/" role="button">Hack 언어</a>
+        <a class="btn btn-light" href="/tags/hhvm/" role="button">HHVM</a>
+        <a class="btn btn-light" href="/tags/hermes/" role="button">Hermes</a>
+        <a class="btn btn-light" href="/tags/relay/" role="button">Relay</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-10-12-react-19-2-core-features-deep-dive/">React 19.2가 드디어 출시됐습니다. 답답했던 문제들 이제 안녕</a></h2>
+                  <p>React 19.2의 핵심 기능 5가지를 소개합니다. Activity, useEffectEvent, 캐시 시그널 등 앱의 성능을 높이고 디버깅을 쉽게 만들어 줄 강력한 기능들을 자세히 살펴보세요.</p>
+                  <p>
+  <small>October 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-09-15-react-custom-hook-injection-pattern/">리액트 컴포넌트 아직도 UI와 로직을 섞어 쓰시나요</a></h2>
+                  <p>리액트 컴포넌트에서 UI와 비즈니스 로직을 완벽하게 분리하는 커스텀 훅 주입 패턴을 소개합니다. 테스트와 재사용성이 극대화되는 새로운 개발 경험을 만나보세요.</p>
+                  <p>
+  <small>September 16, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-15-tanstack-start-react-framework-deep-dive/">TanStack Start 깊이 파고들기 - React 프레임워크의 새로운 미래일까</a></h2>
+                  <p>Next.js의 대안으로 떠오르는 이 프레임워크의 설정부터 인증, 배포까지 모든 것을 다룹니다.</p>
+                  <p>
+  <small>July 15, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)</title>
+<meta name="description" content="Next.js의 세 가지 서버 렌더링 전략 - 정적, 동적(다이내믹) 그리고 스트리밍" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-rendering-lifecycle-static-dynamic-rendering-and-streaming/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)" />
+<meta property="og:description" content="Next.js의 세 가지 서버 렌더링 전략 - 정적, 동적(다이내믹) 그리고 스트리밍" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-rendering-lifecycle-static-dynamic-rendering-and-streaming/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-05-15T06:44:21Z" />
+<meta property="article:modified_time" content="2024-05-15T06:44:21Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="rendering lifecycle" />
+<meta property="article:tag" content="static rendering" />
+<meta property="article:tag" content="dynamic rendering" />
+<meta property="article:tag" content="streaming" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)" />
+<meta name="twitter:description" content="Next.js의 세 가지 서버 렌더링 전략 - 정적, 동적(다이내믹) 그리고 스트리밍" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)\"",
+  "description": "\"Next.js의 세 가지 서버 렌더링 전략 - 정적, 동적(다이내믹) 그리고 스트리밍\"",
+  "datePublished": "\"2024-05-15T06:44:21Z\"",
+  "dateModified": "\"2024-05-15T06:44:21Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-rendering-lifecycle-static-dynamic-rendering-and-streaming/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)</h1>
+        <p>
+  <small>May 15, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Next.js 14 강좌 열 한 번째입니다.</p>
+<p>전체 강좌 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-13-nextjs-14-tutorial-1-all-about-routing">Next.js 14 강좌 1편. 라우팅의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-14-nextjs-14-tutorial-2-all-about-layout-and-link-component">Next.js 14 강좌 2편. 레이아웃의 모든 것 and Link 컴포넌트</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-20-nextjs-14-tutorial-template-and-loading-ui-special-files">Next.js 14 강좌 3편. Template과 Loading 스페셜 파일</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-27-nextjs-14-tutorial-all-about-error">Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-28">Next.js 14 강좌 5편. 병렬 라우팅(Parallel Routes), 일치하지 않는 라우팅(Unmatched Routes), 조건부 라우팅(Conditional Routes) 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-04-nextjs-14-tutorial-6-intercepting-routes-and-parallel-intercepting-routes">Next.js 14 강좌 6편. 인터셉팅 라우팅(Intercepting Routes)과 병렬 인터셉팅 라우팅(Parallel Intercepting Routes) 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-get-post-patch-delete-method-and-dynamic-route-handler">Next.js 14 강좌 7편. 라우트 핸들러의 기본(GET, POST, PATCH, DELETE)과 동적 라우트 핸들러 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-and-url-query-parameter-redirect-headers-cookies-caching">Next.js 14 강좌 8편, 라우트 핸들러에서 URL 쿼리 파라미터와 redirect, Headers, Cookies 그리고 캐싱 방식 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-middleware-and-rewrite-cookies-headers-in-middleware">Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-14-nextjs-14-tutorial-all-about-rendering-csr-ssr-rsc">Next.js 14 강좌 10편. CSR부터 SSR, RSC까지 React의 렌더링의 역사 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-rendering-lifecycle-static-dynamic-rendering-and-streaming">Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-server-component-patterns-server-only-third-party-package-context-provider">Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-client-component-patterns-client-only-client-component-placement-interleaving-server-and-client-components">Next.js 14 강좌 13편. 클라이언트 컴포넌트 패턴 - 클라이언트 전용 코드(client-only), 컴포넌트 배치, 서버-클라이언트 컴포넌트 섞어 활용하기</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#%eb%a0%8c%eb%8d%94%eb%a7%81-%eb%9d%bc%ec%9d%b4%ed%94%84-%ec%82%ac%ec%9d%b4%ed%81%b4rendering-lifecycle">렌더링 라이프 사이클(Rendering Lifecycle)</a></li>
+<li><a href="#static-rendering">Static Rendering</a>
+<ul>
+<li><a href="#production-server-vs-dev-server">Production Server vs Dev Server</a></li>
+</ul>
+</li>
+<li><a href="#dynamic-rendering">Dynamic Rendering</a></li>
+<li><a href="#streaming">Streaming</a></li>
+</ul>
+<hr>
+<h2 id="렌더링-라이프-사이클rendering-lifecycle">렌더링 라이프 사이클(Rendering Lifecycle)</h2>
+<p>지난 글에서는 Next.js의 서버 컴포넌트와 클라이언트 컴포넌트에 대해 이야기했었는데요.</p>
+<p>지금부터는 서버 컴포넌트와 클라이언트 컴포넌트의 렌더링 라이프 사이클(Rendering Lifecycle)에 알아보겠습니다.</p>
+<p>쉽게 말하면 각각의 컴포넌트들이 브라우저 화면에 어떻게 나타나게 되는지를 좀 더 세세하게 살펴볼 건데요.</p>
+<p>물론 Next.js 앱을 만드는 데 이 과정을 알 필요는 없습니다.</p>
+<p>하지만 좀 더 전문적인 지식을 알고 싶다면 꼭 배워둘 필요는 있다고 봅니다.</p>
+<p>먼저, 서버 컴포넌트에서는 세 가지 요소를 고려해야 합니다.</p>
+<p>첫째, 클라이언트인 브라우저, 나머지 둘은 서버 쪽인데 Next.js 프레임워크과 React 라이브러리입니다.</p>
+<p>초기 로딩 순서를 하나하나 살펴볼까요?</p>
+<p>브라우저에서 사용자가 페이지를 요청(Request)하면, Next.js 앱 라우터가 요청된 URL을 서버 컴포넌트에 매칭시킵니다.</p>
+<p>그러면 Next.js가 React에게 그 서버 컴포넌트를 렌더링하라고 지시하죠.</p>
+<p>React는 서버 컴포넌트와 자식 서버 컴포넌트들을 렌더링해서 RSC 페이로드라는 특별한 JSON 형식으로 변환합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh6yQ2KtE7Npc1l9JQhkuRUfN66hlRlLTCTeQWG_aG9Ox79EuN_9HY74PMAajeZ6XRSNNQ34rgFJtsfwqurZh48Y-xSJeHm-DGhmCCdc7WHkbAB8grXEiejXzFH8YXVK8tvK3ypsDVyKl9kIX54erE6WO2RmOD-sS8sBTM-hn-b-mtZlXszcGYIpzBygq8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>네트워크 탭을 확인해보면 이 RSC 페이로드 JSON 형식을 볼 수 있는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiksr-ktu7596I0Bcal8oPS8hn9VHqKPkAf6fP6FupsdhP16CSGuFXvCPnkv_zLyLKTBK4aOgJ6mjPjzN0liN8Gs5VxK_2BiTGKLRP_WmIggp9ezVQhm2Xzr0sKJc7Adu6HdFVytKn1qTykISmPmUOZRJ5CSwRLonOfxG832CD2KVJB9RSi6qzz1Hq1ees"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>렌더링 도중 서버 컴포넌트가 중단되면, React는 그 서브트리의 렌더링을 일시 중지하고 대신 플레이스홀더 값을 보냅니다.</p>
+<p>한편 클라이언트 컴포넌트는 나중을 위해 지침(instructions)을 받는데요.</p>
+<p>Next.js는 클라이언트 컴포넌트 지침(instructions)이 포함된 RSC 페이로드를 사용해서 서버에서 HTML을 생성합니다.</p>
+<p>이 HTML은 브라우저로 스트리밍되고 라우트에 의해 아직은 유저와 상호작용할 수 없는 Non-interactive UI의 preview를 보여주게 됩니다.</p>
+<p>동시에 Next.js는 RSC 페이로드도 스트리밍하는데, 브라우저에서 React가 각 UI 단위를 렌더링할 때마다 Next.js가 스트리밍된 React 응답을 처리하는 겁니다.</p>
+<p>React는 RSC 페이로드와 클라이언트 컴포넌트 지침(instructions)을 사용해서 UI를 점진적으로 렌더링합니다.</p>
+<p>모든 컴포넌트와 서버 컴포넌트 출력이 로드되면 최종 UI 상태가 사용자에게 제공되게 되는 거죠.</p>
+<p>이때 클라이언트 컴포넌트는 하이드레이션을 거치면서 이제 본격적인 Interactive UI로 변화하게 되는 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjN9T65RJVGNcAQjj8BLQ0mNvVQ_k3C3Baf6nhk5GHDBSReTTxiszPVshQSfM2mPHFONDJah7pgi-0DZ5SjXfei52I0V6IVU75dMO1MoZ75-7aXG30xTiG5BIGQTHiHKYIJFKm1CNCpjGzZGga00zuGdWm1P435bxm942tGJ-cQv_drE97gFNXELaLUXcQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이게 바로 Initial Loading Sequence입니다.</p>
+<p>이제 앱의 일부를 새로고침하는 업데이트 순서를 볼까요?</p>
+<p>브라우저가 특정 UI, 예를 들어 전체 라우트의 리페치(re-fetch)를 요청하면, Next.js가 요청을 처리하고 요청된 서버 컴포넌트에 매칭시킵니다.</p>
+<p>Next.js가 React에게 컴포넌트 트리를 렌더링하라고 지시하고,</p>
+<p>React는 초기 로딩과 비슷하게 컴포넌트를 렌더링하는데, 초기 순서와는 달리 이 때는 HTML 생성은 없습니다.</p>
+<p>Next.js는 응답 데이터를 점진적으로 클라이언트로 스트리밍하죠.</p>
+<p>클라이언트가 스트리밍된 응답을 받으면, Next.js가 새 출력으로 라우트 렌더링을 트리거합니다..</p>
+<p>React는 새로 렌더링된 출력을 기존 컴포넌트와 병합하거나 조정하게 됩니다.</p>
+<p>UI 설명이 HTML이 아닌 특수 JSON 형식이기 때문에, React는 포커스나 입력 값 같은 중요한 UI 업데이트를 유지하면서도 DOM을 업데이트할 수 있습니다.</p>
+<p>이게 바로 Next.js의 앱 라우터에서 RSC 렌더링 라이프사이클의 핵심입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh1Ca-bsYpgDyrJUiN01I5o2GJa5zPeiwWAtOdplp0jUVtHNGEinUalbmMk3CciBsyKsDUeo4RR_h3OE5_2h2K7Ydmt7dr6cWlLFMkXPfuoHFaFQvxQq39_Y1KaVdfrXfi2-vWz_xnVamlMi-GHMZQscTj1S1JTLdBNbEOzOmkdJXjKoQ53B3L67gNwI4I"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>서버 렌더링 전략에 대해 더 깊이 알아보자면, 정적 렌더링, 동적 렌더링, 스트리밍 렌더링 이렇게 세 가지 서버 렌더링 전략이 있는데요.</p>
+<p>각각을 자세히 알아볼까 합니다.</p>
+<hr>
+<h2 id="static-rendering">Static Rendering</h2>
+<p>Next.js의 세 가지 서버 렌더링 전략 중 첫 번째인 정적 렌더링(Static Rendering)에 대해 자세히 알아보겠습니다.</p>
+<p>정적 렌더링이란 애플리케이션을 빌드할 때 HTML 페이지를 생성하는 서버 렌더링 전략입니다.</p>
+<p>이를 통해 웹 페이지의 모든 데이터와 콘텐츠가 미리 준비되죠.</p>
+<p>이 방식을 사용하면 페이지를 한 번 빌드한 뒤 CDN에 캐싱해서 클라이언트에 거의 즉시 제공할 수 있습니다.</p>
+<p>또한 렌더링 작업 결과를 여러 사용자와 공유할 수 있어 애플리케이션 성능이 크게 향상됩니다.</p>
+<p>정적 렌더링은 블로그, 전자상거래 제품 페이지, 문서, 마케팅 페이지 등에 특히 유용합니다.</p>
+<p>정적 렌더링이 무엇이고 언제 사용하는지 알았으니, 다음 질문은 어떻게 사용하느냐입니다.</p>
+<p>애플리케이션의 특정 경로를 정적으로 렌더링하려면 어떻게 해야 할까요?</p>
+<p>좋은 소식은 정적 렌더링이 앱 라우터의 기본 렌더링 전략이라는 것입니다.</p>
+<p>즉, 추가 설정 없이 모든 경로가 자동으로 빌드 시점에 준비됩니다.</p>
+<p>이 시점에서 &ldquo;예전에 HTML이 빌드 시점에 생성된다고 했는데, 우리 애플리케이션은 아직 빌드되지 않았잖아요? 지금은 개발 모드로 실행 중 아닌가요?&ldquo;라는 의문이 들 수 있습니다.</p>
+<p>이 좋은 질문에 대답하기 위해 프로덕션 서버와 개발 서버의 차이를 이해할 필요가 있습니다.</p>
+<h3 id="production-server-vs-dev-server">Production Server vs Dev Server</h3>
+<p>프로덕션에서는 한 번 최적화된 빌드가 생성되고 그 빌드를 배포합니다.</p>
+<p>배포된 후에는 코드 변경이 일어나지 않죠.</p>
+<p>반면 개발 서버는 개발자 경험에 초점을 맞춥니다.</p>
+<p>코드를 변경하면 변경 사항이 브라우저에 즉시 반영되어야 합니다.</p>
+<p>애플리케이션을 빌드하고, 변경하고, 다시 빌드하는 식으로는 안 됩니다.</p>
+<p>그래서 Next.js 팀은 프로덕션 빌드에서는 빌드 명령을 실행할 때 페이지가 한 번 프리렌더링되거나 정적으로 렌더링되지만, 개발 모드에서는 모든 요청마다 페이지가 프리렌더링되거나 정적으로 렌더링된다고 결정했습니다.</p>
+<p>예를 들어 홈페이지에 접속하면 프리렌더링되어 제공되고, 새로고침하면 다시 프리렌더링되어 제공됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgs5WL82kEhnhY19HWjLb9cd8SeDcm2SVfbTn8CV-dlxI2a4dkBIOvsmlFW0h4ldtJwDIi7YVsMpn-8-kw0rG8cQOETyNA14wYQk2khp8arFqw1pRCdS41525QSa5WvELcReCuSqZi1vlxyhGPxYu-uSLojQQpEU50UiQSjlMDxBq59ElYaDMkreffRDww"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이렇게 하면 코드 변경 사항이 모든 요청에 반영됩니다.</p>
+<p>개발 모드에서 정적 렌더링에 대해 신경 쓸 필요가 없다고 말했을 때 좀 이상하게 들릴 수 있습니다.</p>
+<p>애플리케이션 빌드 시의 작동 방식을 이해하는 것이 더 중요합니다.</p>
+<p>그런데 빌드 프로세스에 들어가기 전에 &lsquo;.next&rsquo; 폴더를 삭제하여 정리하고, about 페이지에서 현재 시간을 렌더링해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">AboutPage() {</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;About server component&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">About</span> <span class="nx">Page</span> <span class="p">{</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">toLocaleTimeString</span><span class="p">()}&lt;/</span><span class="nt">h1</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>new Date().toLocaleTimeString()</code>을 사용하면 됩니다.</p>
+<p>이제 터미널에서 npm run build 명령을 실행해 봅시다.</p>
+<p>이 명령으로 최적화된 프로덕션 빌드가 생성됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; rendering-demo@0.1.0 build
+</span></span><span class="line"><span class="cl">&gt; next build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ▲ Next.js 14.2.3
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Creating an optimized production build ...
+</span></span><span class="line"><span class="cl"> ✓ Compiled successfully
+</span></span><span class="line"><span class="cl"> ✓ Linting and checking validity of types    
+</span></span><span class="line"><span class="cl"> ✓ Collecting page data    
+</span></span><span class="line"><span class="cl">   Generating static pages <span class="o">(</span>0/7<span class="o">)</span>  <span class="o">[</span>    <span class="o">]</span>Dashboard server component
+</span></span><span class="line"><span class="cl">About server component
+</span></span><span class="line"><span class="cl">About server component
+</span></span><span class="line"><span class="cl">   Generating static pages <span class="o">(</span>1/7<span class="o">)</span>  <span class="o">[=</span>   <span class="o">]</span>Dashboard server component
+</span></span><span class="line"><span class="cl"> ✓ Generating static pages <span class="o">(</span>7/7<span class="o">)</span>
+</span></span><span class="line"><span class="cl"> ✓ Collecting build traces    
+</span></span><span class="line"><span class="cl"> ✓ Finalizing page optimization    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Route <span class="o">(</span>app<span class="o">)</span>                              Size     First Load JS
+</span></span><span class="line"><span class="cl">┌ ○ /                                    5.29 kB        92.2 kB
+</span></span><span class="line"><span class="cl">├ ○ /_not-found                          <span class="m">871</span> B          87.8 kB
+</span></span><span class="line"><span class="cl">├ ○ /about                               <span class="m">141</span> B          87.1 kB
+</span></span><span class="line"><span class="cl">└ ○ /dashboard                           <span class="m">141</span> B          87.1 kB
+</span></span><span class="line"><span class="cl">+ First Load JS shared by all            <span class="m">87</span> kB
+</span></span><span class="line"><span class="cl">  ├ chunks/23-0627c91053ca9399.js        31.5 kB
+</span></span><span class="line"><span class="cl">  ├ chunks/fd9d1056-2821b0f0cabcd8bd.js  53.6 kB
+</span></span><span class="line"><span class="cl">  └ other shared chunks <span class="o">(</span>total<span class="o">)</span>          1.86 kB
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">○  <span class="o">(</span>Static<span class="o">)</span>  prerendered as static content</span></span></code></pre></div>
+  </figure>
+</div>
+<p>빌드 프로세스에 대해 다루어야 할 부분이 꽤 있으니, 터미널 출력부터 시작해 보겠습니다.</p>
+<p>터미널 출력에는 애플리케이션의 각 경로에 대한 정보가 &ldquo;Route&rdquo;, &ldquo;Size&rdquo;, &ldquo;First load JS&rdquo; 세 열로 표시됩니다.</p>
+<p>&ldquo;Route&quot;는 about나 dashboard 등 실제 경로를 말합니다.</p>
+<p>&ldquo;Size&quot;는 브라우저에서 해당 경로로 이동할 때 클라이언트 측에 다운로드되는 asset의 크기입니다.</p>
+<p>&ldquo;First load JS&quot;는 서버에서 페이지를 로드할 때 다운로드되는 asset의 크기를 말하죠.</p>
+<p>&ldquo;First load JS shared by all&quot;에는 global.css의 CSS, 런타임 코드, 프레임워크 코드, React 같은 node_modules 벤더 코드, 그리고 일부 경로 및 컴포넌트 관련 코드가 포함됩니다.</p>
+<p>전체 크기는 87KB로 별도로 표시됩니다.</p>
+<p>생성된 개별 경로를 보면, app 폴더의 page.tsx에 해당하는 루트 페이지가 5.29KB 크기입니다.</p>
+<p>하지만 브라우저에서 홈페이지로 이동하면 5.29KB와 공유 번들 87KB가 모두 다운로드되어 &ldquo;First load JS&rdquo; 크기가 92.2KB가 됩니다.</p>
+<p>404 Not Found 페이지도 있는데, 우리가 만든 게 아니라 앱 라우터에 정의되지 않은 경로에 대해 Next.js에서 렌더링하는 겁니다.</p>
+<p>크기는 871바이트이고 first load는 87.8KB입니다.</p>
+<p>서버 컴포넌트가 포함된 about 경로는 클라이언트 측 이동 시 141바이트, 서버에서 페이지 로드 시 87.1KB입니다.</p>
+<p>클라이언트 컴포넌트가 포함된 dashboard 경로도 141바이트와 87.1KB입니다.</p>
+<p>다음은 범례를 보겠습니다.</p>
+<p>생성된 경로 유형에 대한 범례를 제공합니다.</p>
+<p>app 폴더의 page.tsx인 루트 경로에는 빈 원이 표시되어 있습니다.</p>
+<p>이는 해당 경로가 빌드 시점에 자동으로 정적 HTML 콘텐츠로 프리렌더링됨을 의미합니다.</p>
+<p>404, about, dashboard 경로도 마찬가지입니다.</p>
+<p>이 표시를 통해 빌드 시점에 프리렌더링되는 경로를 알 수 있습니다.</p>
+<p>마지막으로 빌드 출력을 이해해 봐야 합니다.</p>
+<p>Next.js는 빌드 출력을 &lsquo;.next&rsquo; 폴더에 생성하는데, 여기에는 브라우저의 수신 요청에 응답하는 데 필수적인 다양한 파일과 폴더가 있습니다.</p>
+<p>우리는 주로 server와 static 폴더에 집중하면 됩니다.</p>
+<p>server 폴더 안에는 앱 라우터에 해당하는 app 폴더가 있습니다.</p>
+<p>여기서 중요한 파일 유형부터 살펴보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhp-d2UZKCMRv5g5dDp176Q0o1pYoqpouXqBt6hvEKM4Z9RXZg3naGWw0BoEVZIKtJzx0PyHZPZ40HJolHDcQQxwuMFiFRom-3sKQDjdJvqQCngzGZHlB_omCpOjI3fCqCh1iqvVrbhF34Lo3kcy05GykN9EWbrglFWU9RINn_EiTxRI4BThdawfDhM66Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>먼저 HTML 파일입니다.</p>
+<p>빌드 정보에 따르면 루트 페이지는 정적 HTML 페이지이고, 이는 app 폴더의 index.html에서 확인할 수 있습니다.</p>
+<p>마찬가지로 터미널에서 정적 렌더링으로 표시된 404 Not Found도 app 폴더의 not-found.html 파일에 있습니다.</p>
+<p>about 경로에 해당하는 about.html에는 h1 요소가 포함되어 있고, dashboard 경로에 해당하는 dashboard.html에에도 h1 요소가 포함되어 있습니다.</p>
+<p>최적화 단계에서 클라이언트 컴포넌트도 프리렌더링되므로 클라이언트 컴포넌트의 HTML도 볼 수 있습니다.</p>
+<p>HTML 파일 외에도 각 경로의 RSC 페이로드에 주목할 필요가 있습니다.</p>
+<p>예를 들어 about 서버 컴포넌트에 대해 about.rsc가, dashboard 클라이언트 컴포넌트에 대해 dashboard.rsc가 있습니다.</p>
+<p>아래는 about.rsc 파일의 내용입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">2:I<span class="o">[</span>9275,<span class="o">[]</span>,<span class="s2">&#34;&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">3:I<span class="o">[</span>1343,<span class="o">[]</span>,<span class="s2">&#34;&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">0:<span class="o">[</span><span class="s2">&#34;kTQ95TroIWsqqVWM6V3xN&#34;</span>,<span class="o">[[[</span><span class="s2">&#34;&#34;</span>,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;about&#34;</span>,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;__PAGE__&#34;</span>,<span class="o">{}]}]}</span>,<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,true<span class="o">]</span>,<span class="o">[</span><span class="s2">&#34;&#34;</span>,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;about&#34;</span>,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;__PAGE__&#34;</span>,<span class="o">{}</span>,<span class="o">[[</span><span class="s2">&#34;</span><span class="nv">$L1</span><span class="s2">&#34;</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;h1&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;About Page &#34;</span>,<span class="s2">&#34;2:24:21 PM&#34;</span><span class="o">]}]]</span>,null<span class="o">]</span>,null<span class="o">]}</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;</span><span class="nv">$L2</span><span class="s2">&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;parallelRouterKey&#34;</span>:<span class="s2">&#34;children&#34;</span>,<span class="s2">&#34;segmentPath&#34;</span>:<span class="o">[</span><span class="s2">&#34;children&#34;</span>,<span class="s2">&#34;about&#34;</span>,<span class="s2">&#34;children&#34;</span><span class="o">]</span>,<span class="s2">&#34;error&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;errorStyles&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;errorScripts&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;template&#34;</span>:<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;</span><span class="nv">$L3</span><span class="s2">&#34;</span>,null,<span class="o">{}]</span>,<span class="s2">&#34;templateStyles&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;templateScripts&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;notFound&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;notFoundStyles&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;styles&#34;</span>:null<span class="o">}]</span>,null<span class="o">]}</span>,<span class="o">[[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;html&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;lang&#34;</span>:<span class="s2">&#34;en&#34;</span>,<span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;body&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;className&#34;</span>:<span class="s2">&#34;__className_aaf875&#34;</span>,<span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;</span><span class="nv">$L2</span><span class="s2">&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;parallelRouterKey&#34;</span>:<span class="s2">&#34;children&#34;</span>,<span class="s2">&#34;segmentPath&#34;</span>:<span class="o">[</span><span class="s2">&#34;children&#34;</span><span class="o">]</span>,<span class="s2">&#34;error&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;errorStyles&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;errorScripts&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;template&#34;</span>:<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;</span><span class="nv">$L3</span><span class="s2">&#34;</span>,null,<span class="o">{}]</span>,<span class="s2">&#34;templateStyles&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;templateScripts&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span>,<span class="s2">&#34;notFound&#34;</span>:<span class="o">[[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;title&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="s2">&#34;404: This page could not be found.&#34;</span><span class="o">}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;div&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;style&#34;</span>:<span class="o">{</span><span class="s2">&#34;fontFamily&#34;</span>:<span class="s2">&#34;system-ui,\&#34;Segoe UI\&#34;,Roboto,Helvetica,Arial,sans-serif,\&#34;Apple Color Emoji\&#34;,\&#34;Segoe UI Emoji\&#34;&#34;</span>,<span class="s2">&#34;height&#34;</span>:<span class="s2">&#34;100vh&#34;</span>,<span class="s2">&#34;textAlign&#34;</span>:<span class="s2">&#34;center&#34;</span>,<span class="s2">&#34;display&#34;</span>:<span class="s2">&#34;flex&#34;</span>,<span class="s2">&#34;flexDirection&#34;</span>:<span class="s2">&#34;column&#34;</span>,<span class="s2">&#34;alignItems&#34;</span>:<span class="s2">&#34;center&#34;</span>,<span class="s2">&#34;justifyContent&#34;</span>:<span class="s2">&#34;center&#34;</span><span class="o">}</span>,<span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;div&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="o">[[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;style&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;dangerouslySetInnerHTML&#34;</span>:<span class="o">{</span><span class="s2">&#34;__html&#34;</span>:<span class="s2">&#34;body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}&#34;</span><span class="o">}}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;h1&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;className&#34;</span>:<span class="s2">&#34;next-error-h1&#34;</span>,<span class="s2">&#34;style&#34;</span>:<span class="o">{</span><span class="s2">&#34;display&#34;</span>:<span class="s2">&#34;inline-block&#34;</span>,<span class="s2">&#34;margin&#34;</span>:<span class="s2">&#34;0 20px 0 0&#34;</span>,<span class="s2">&#34;padding&#34;</span>:<span class="s2">&#34;0 23px 0 0&#34;</span>,<span class="s2">&#34;fontSize&#34;</span>:24,<span class="s2">&#34;fontWeight&#34;</span>:500,<span class="s2">&#34;verticalAlign&#34;</span>:<span class="s2">&#34;top&#34;</span>,<span class="s2">&#34;lineHeight&#34;</span>:<span class="s2">&#34;49px&#34;</span><span class="o">}</span>,<span class="s2">&#34;children&#34;</span>:<span class="s2">&#34;404&#34;</span><span class="o">}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;div&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;style&#34;</span>:<span class="o">{</span><span class="s2">&#34;display&#34;</span>:<span class="s2">&#34;inline-block&#34;</span><span class="o">}</span>,<span class="s2">&#34;children&#34;</span>:<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;h2&#34;</span>,null,<span class="o">{</span><span class="s2">&#34;style&#34;</span>:<span class="o">{</span><span class="s2">&#34;fontSize&#34;</span>:14,<span class="s2">&#34;fontWeight&#34;</span>:400,<span class="s2">&#34;lineHeight&#34;</span>:<span class="s2">&#34;49px&#34;</span>,<span class="s2">&#34;margin&#34;</span>:0<span class="o">}</span>,<span class="s2">&#34;children&#34;</span>:<span class="s2">&#34;This page could not be found.&#34;</span><span class="o">}]}]]}]}]]</span>,<span class="s2">&#34;notFoundStyles&#34;</span>:<span class="o">[]</span>,<span class="s2">&#34;styles&#34;</span>:null<span class="o">}]}]}]</span>,null<span class="o">]</span>,null<span class="o">]</span>,<span class="o">[[[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;link&#34;</span>,<span class="s2">&#34;0&#34;</span>,<span class="o">{</span><span class="s2">&#34;rel&#34;</span>:<span class="s2">&#34;stylesheet&#34;</span>,<span class="s2">&#34;href&#34;</span>:<span class="s2">&#34;/_next/static/css/fb0852fb0bcf307d.css&#34;</span>,<span class="s2">&#34;precedence&#34;</span>:<span class="s2">&#34;next&#34;</span>,<span class="s2">&#34;crossOrigin&#34;</span>:<span class="s2">&#34;</span><span class="nv">$undefined</span><span class="s2">&#34;</span><span class="o">}]]</span>,<span class="s2">&#34;</span><span class="nv">$L4</span><span class="s2">&#34;</span><span class="o">]]]]</span>
+</span></span><span class="line"><span class="cl">4:<span class="o">[[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;meta&#34;</span>,<span class="s2">&#34;0&#34;</span>,<span class="o">{</span><span class="s2">&#34;name&#34;</span>:<span class="s2">&#34;viewport&#34;</span>,<span class="s2">&#34;content&#34;</span>:<span class="s2">&#34;width=device-width, initial-scale=1&#34;</span><span class="o">}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;meta&#34;</span>,<span class="s2">&#34;1&#34;</span>,<span class="o">{</span><span class="s2">&#34;charSet&#34;</span>:<span class="s2">&#34;utf-8&#34;</span><span class="o">}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;title&#34;</span>,<span class="s2">&#34;2&#34;</span>,<span class="o">{</span><span class="s2">&#34;children&#34;</span>:<span class="s2">&#34;Create Next App&#34;</span><span class="o">}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;meta&#34;</span>,<span class="s2">&#34;3&#34;</span>,<span class="o">{</span><span class="s2">&#34;name&#34;</span>:<span class="s2">&#34;description&#34;</span>,<span class="s2">&#34;content&#34;</span>:<span class="s2">&#34;Generated by create next app&#34;</span><span class="o">}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;link&#34;</span>,<span class="s2">&#34;4&#34;</span>,<span class="o">{</span><span class="s2">&#34;rel&#34;</span>:<span class="s2">&#34;icon&#34;</span>,<span class="s2">&#34;href&#34;</span>:<span class="s2">&#34;/favicon.ico&#34;</span>,<span class="s2">&#34;type&#34;</span>:<span class="s2">&#34;image/x-icon&#34;</span>,<span class="s2">&#34;sizes&#34;</span>:<span class="s2">&#34;16x16&#34;</span><span class="o">}]</span>,<span class="o">[</span><span class="s2">&#34;</span>$<span class="s2">&#34;</span>,<span class="s2">&#34;meta&#34;</span>,<span class="s2">&#34;5&#34;</span>,<span class="o">{</span><span class="s2">&#34;name&#34;</span>:<span class="s2">&#34;next-size-adjust&#34;</span><span class="o">}]]</span>
+</span></span><span class="line"><span class="cl">1:null</span></span></code></pre></div>
+  </figure>
+</div>
+<p>React에서 각 경로에 대해 생성하는 이 특수한 JSON 형식은 Virtual DOM의 압축된 문자열 표현입니다.</p>
+<p>약어, 내부 참조, 특수 의미 인코딩 등이 포함되어 있죠.</p>
+<p>서버 컴포넌트의 경우 페이로드에는 &ldquo;About Page&rdquo; 텍스트가 포함된 h1 태그 등 서버 컴포넌트의 렌더링 결과가 포함됩니다.</p>
+<p>하지만 클라이언트 컴포넌트의 경우 페이로드에는 클라이언트 컴포넌트가 렌더링될 위치에 대한 플레이스홀더나 Instructions과 JavaScript 파일에 대한 참조가 포함됩니다.</p>
+<p>예를 들어 클라이언트 컴포넌트인 dashboard 경로에는 dashboard 컴포넌트 코드에 대한 참조가 있습니다.</p>
+<p>RSC 페이로드에서 &ldquo;Dashboard Page&quot;를 검색해도 없지만, <code>static/chunks/app/dashboard/page-dbc112dcecfb9750.js</code> 파일을 추적하면 &ldquo;Dashboard Page&rdquo; 텍스트가 포함된 h1 태그를 볼 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiqGYLMp78fZaw3t93yGp6IAWShVG0gsVQvYJJkmdtDmi0_otTLcqT7XAHf5v2nc7lsXYUr0ywXfZ30jqPFf3-3mpD9boZKp7UNtN82iV_AnHBJ6ePxehEAsmFyzstjGYndjJ8n8g2aCnA1fLiEL8Bo_nYAcRCOj6x2qrkNMoq7lWrNaQ8R0wvtKSBLABI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 파일이 RSC 페이로드에서 참조하는 파일이며, 재조정 및 하이드레이션에 필요한 컴포넌트 코드가 들어 있습니다.</p>
+<p>빌드 출력이 어떤 식으로 되는지 잘 이해가 되셨나요?</p>
+<p>이제 이 .next 폴더에서 애플리케이션을 실행해보겠습니다.</p>
+<p>터미널에서 npm run start 명령을 실행하면 localhost 3000 포트에서 실행됩니다.</p>
+<p>브라우저에서 개발자 도구의 네트워크 탭을 열고, 브라우저의 새로고침 아이콘을 길게 누르면 나따나는 &ldquo;빈 캐시 및 하드 새로고침&quot;을 클릭하면 HTML 페이지 미리보기와 HTML 코드를 응답에서 확인할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhShR5Adwmbx4l46ABaQTEF-GZnJ8xFBo62ox0eGBMvFjpYDSYEjm619eemtmRMXJ_cIjo6_309kza5i4XX7upNLTXbkgH2V0KXWn6X2YVtkmr1Jfsqn-rzgpcLfUxPzj-6dkN2xmym9YHVyiP3GKhkyriEVGS3Y0XgK4lHBI5A2Ik0Vjte2xxXHGL721U"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiqzO6st0Fnl9jIbMPUe-uUDX81hCE8tSdypfPDuraJCobHDpqggOXysquR5UHEiNSqpPNuDe-xJtIliRR9NUmQKPtFMi71EA6kR2m42a0ew4fnuEGLvv0VaH7nMf5QCdR7P3ots26NmVRQqKN3oJ92MX2mIEfvOyeu00ofLfS5SatWV41Mc3OpiJQl2TA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>HTML 외에도 dashboard용 RSC 파일에 주목해 주세요.</p>
+<p>이 RSC 파일은 Dashboard 링크를 통해 이동할 때 클라이언트 측에서 UI를 구축하는 데 필수적입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEipla7abzokMEKGUvic5QUet2rMc7_BWt6b2N7avLKmiZIThuwmsbdo6IbpEnpplVMD8kRBGIONX0cyIJ5Aus6Qzl41GC6S6WB0ci8LU4nX7q3qUkT6TQT6KDcjSBc46-4NgTqXPU80J4yzd_9nAJI1LtvuxKD8rIJYE1deynwISGyzddf3kxr4q0CSUUE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>dashboard 경로로 이동하면 추가 리소스를 다운로드할 필요 없이 렌더링되는 것을 볼 수 있습니다.</p>
+<p>초기 로드에 클라이언트 측 탐색에 필요한 모든 것이 포함되어 있죠.</p>
+<p>하지만 궁금한 점이 있습니다.</p>
+<p>Next.js는 어떻게 미리 dashboard 컴포넌트 코드를 다운로드하는지 말이죠.</p>
+<p>이는 프리페칭(prefetching) 기능 때문입니다.</p>
+<p>프리페칭은 사용자가 특정 경로로 이동하기 전에 백그라운드에서 그 경로를 프리로드하는 기술입니다.</p>
+<p>정적 경로의 경우 전체 경로가 기본적으로 프리페칭되어 캐시됩니다.</p>
+<p>따라서 홈페이지를 로드하면 Next.js는 about과 dashboard 경로를 프리페칭하여 즉시 탐색할 수 있도록 준비합니다.</p>
+<p>하지만 server 폴더의 dashboard.html은 다운로드하지 않았잖아요?</p>
+<p>이 파일은 브라우저에서 직접 해당 페이지로 이동할 때 제공됩니다.</p>
+<p>예를 들어 <code>localhost:3000/dashboard</code> URL을 직접 로드하면 dashboard의 HTML과 클라이언트에 대한 코드 전송이 있습니다.</p>
+<p>마지막으로 아래 그림처럼 about 페이지에 렌더링된 시간을 보시기 바랍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh59jbrFM881SyQxRXtP54kfr7GJL2v8Mr8UD5PBnCDFl13fUbrc5EPqlqsCOgPz0j2NXepc51vwbyYPdHx-wLv_66yJAvHcKEE6X0VN8gVSNLuThIj5tLIgsqnaX3YyXazfBw84wRqnYN4wqyKHWoi0ReGblfcqEFvLxCdLkdk6Gsv1eD2myJ2zRFLW_M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 시간은 애플리케이션 빌드 시 렌더링되었기 때문에 페이지를 새로고침해도 변하지 않습니다.</p>
+<p>HTML 파일에서도 같은 시간을 볼 수 있습니다.</p>
+<p>요약하자면, 정적 렌더링은 HTML이 빌드 시점에 생성되는 전략입니다.</p>
+<p>HTML과 함께 각 컴포넌트에 대한 RSC 페이로드가 생성되고, 브라우저에서의 클라이언트 측 하이드레이션을 위한 JavaScript 청크가 생성됩니다.</p>
+<p>페이지 경로로 직접 이동하면 해당 HTML 파일이 제공되지만, 다른 경로에서 이동하면 RSC 페이로드와 JavaScript 청크를 사용하여 클라이언트 측에서 경로가 생성되며 추가 서버 요청은 없습니다.</p>
+<hr>
+<h2 id="dynamic-rendering">Dynamic Rendering</h2>
+<p>동적 렌더링(Dynamic Rendering)은 요청 시점에 페이지를 렌더링하는 전략입니다.</p>
+<p>사용자의 고유 데이터나 쿠키, URL 파라미터 등 요청 시점에야 알 수 있는 정보를 페이지에 포함해야 할 때 유용합니다.</p>
+<p>뉴스 사이트, 맞춤형 쇼핑몰, 소셜 미디어 피드 등이 대표적인 동적 렌더링 사례라고 할 수 있죠.</p>
+<p>자 그럼 Next.js에서는 동적 렌더링을 어떻게 구현할까요?</p>
+<p>Next.js는 페이지 컴포넌트에서 **동적 함수(cookies, headers, searchParams)**를 발견하면 자동으로 동적 렌더링 모드로 전환합니다.</p>
+<p>이 함수들 중 하나라도 사용하면 해당 라우트 전체가 요청 시점에 렌더링 되는 거죠.</p>
+<p>우리도 직접 코드를 작성해서 확인해 볼까요?</p>
+<p>about 컴포넌트에서 cookies 함수를 import하고 호출해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/headers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">cookieStore</span> <span class="o">=</span> <span class="nx">cookies</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">theme</span> <span class="o">=</span> <span class="nx">cookieStore</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;theme-test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">theme</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">AboutPage() {</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;About server component&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">About</span> <span class="nx">Page</span> <span class="p">{</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">toLocaleTimeString</span><span class="p">()}&lt;/</span><span class="nt">h1</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>함수 내용 자체는 중요하지 않고, 동적 렌더링 모드 전환 여부만 확인하는 게 목적입니다.</p>
+<p>이제 npm run build로 Next.js 앱을 빌드해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; rendering-demo@0.1.0 build
+</span></span><span class="line"><span class="cl">&gt; next build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ▲ Next.js 14.2.3
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Creating an optimized production build ...
+</span></span><span class="line"><span class="cl"> ✓ Compiled successfully
+</span></span><span class="line"><span class="cl"> ✓ Linting and checking validity of types    
+</span></span><span class="line"><span class="cl"> ✓ Collecting page data    
+</span></span><span class="line"><span class="cl">   Generating static pages <span class="o">(</span>0/7<span class="o">)</span>  <span class="o">[</span>    <span class="o">]</span>Dashboard server component
+</span></span><span class="line"><span class="cl">   Generating static pages <span class="o">(</span>1/7<span class="o">)</span>  <span class="o">[=</span>   <span class="o">]</span>Dashboard server component
+</span></span><span class="line"><span class="cl"> ✓ Generating static pages <span class="o">(</span>7/7<span class="o">)</span>
+</span></span><span class="line"><span class="cl"> ✓ Collecting build traces    
+</span></span><span class="line"><span class="cl"> ✓ Finalizing page optimization    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Route <span class="o">(</span>app<span class="o">)</span>                              Size     First Load JS
+</span></span><span class="line"><span class="cl">┌ ○ /                                    11.4 kB        98.4 kB
+</span></span><span class="line"><span class="cl">├ ○ /_not-found                          <span class="m">871</span> B          87.8 kB
+</span></span><span class="line"><span class="cl">├ ƒ /about                               <span class="m">141</span> B          87.1 kB
+</span></span><span class="line"><span class="cl">└ ○ /dashboard                           <span class="m">141</span> B          87.1 kB
+</span></span><span class="line"><span class="cl">+ First Load JS shared by all            <span class="m">87</span> kB
+</span></span><span class="line"><span class="cl">  ├ chunks/23-0627c91053ca9399.js        31.5 kB
+</span></span><span class="line"><span class="cl">  ├ chunks/fd9d1056-2821b0f0cabcd8bd.js  53.6 kB
+</span></span><span class="line"><span class="cl">  └ other shared chunks <span class="o">(</span>total<span class="o">)</span>          1.86 kB
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">○  <span class="o">(</span>Static<span class="o">)</span>   prerendered as static content
+</span></span><span class="line"><span class="cl">ƒ  <span class="o">(</span>Dynamic<span class="o">)</span>  server-rendered on demand</span></span></code></pre></div>
+  </figure>
+</div>
+<p>터미널 출력 결과를 보면 about 페이지 옆에 람다(λ) 기호가 있는 걸 확인할 수 있는데요.</p>
+<p>이게 바로 동적 렌더링을 의미합니다.</p>
+<p>이제 &lsquo;.next&rsquo; 폴더로 가서 정적으로 빌드된 파일은 server/app 폴더에 있는데, 여기에는 about.html이 없습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiqEZxKIPtK6uojiGHxeIwITj4Q6ZTceYiFWbX-5nFr4iB4YCLSOEpjlvX30HKkwpdkdA59Ke_ddELvgKtRk-DnmpEKmwY8FnT1yEIzOw-1ioVdwdHrt1QrkCusXLgo6A5pWLXoDdBxj1mQpP7qWw4cjH0RtyyIkBEOR51ri8eyameNft7jYSAEZm01WPY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보면 about.html 파일이 없고 about 폴더 밑에 page.js 파일이 있네요.</p>
+<p>마지막으로 npm run start로 개발 서버를 실행해 보겠습니다.</p>
+<p>페이지를 새로고치면 About 페이지가 렌더링되면서 콘솔에 theme-test 값과 로그가 아래 그림과 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiF9YLYcvCmtdjS3um3rA4cIdZYmBAYC6u4qF6vVxAQJL_HGzWFPN8pOBhQyLZt4nWqNRomAN8M13W0drGKUy8-tb7eKf-R-GWEJ2QuRqKcisqa_1XOGn5q5BmGe2xBV14nX8jJW6gvlclkfkzvrB-4gO2CDdWqs_274rE_CZLkxS9AFEtnuAtkWYb4BC8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>네트워크 탭에서도 렌더링된 HTML을 확인할 수 있습니다.</p>
+<p>새로고침할 때마다 HTML이 재생성되지만 빌드 폴더엔 파일이 만들어지지 않는데요.</p>
+<p>요청 때마다 새 페이지가 생성되므로 빌드 폴더에 HTML 파일을 만들 필요가 없는 거죠.</p>
+<p>여기까지가 동적 렌더링의 기본적인 작동 원리입니다.</p>
+<p>정적 렌더링 빌드 과정을 알고 나면 별것 아닌 것 같지만, 앱 빌드와 실행은 실제 프로덕션 환경과 가장 가까운 상황이라고 할 수 있습니다.</p>
+<p>그래서 동작 방식을 꼭 이해해 두셨으면 합니다.</p>
+<p>앞으로 데이터 fetching 관련 내용도 배우면서 동적 렌더링에 대해 더 깊이 있게 다뤄볼 예정이니 참고바랍니다.</p>
+<p>마지막으로 Next.js에서는 개발자가 직접 &lsquo;정적/동적&rsquo; 렌더링 전략을 선택할 필요가 없습니다.</p>
+<p>Next.js가 사용된 기능과 API를 기반으로 각 라우트에 최적의 렌더링 전략을 자동으로 결정해주니까요.</p>
+<hr>
+<h2 id="streaming">Streaming</h2>
+<p>Next.js에서 제공하는 세 번째이자 마지막 서버 렌더링 전략인 스트리밍에 대해 알아보도록 하겠습니다.</p>
+<p>스트리밍은 서버에서 점진적으로 UI를 렌더링할 수 있게 해주는 전략입니다.</p>
+<p>작업이 여러 개의 청크로 나뉘어 준비되는 대로 클라이언트에 전송되므로, 전체 컨텐츠가 렌더링되기 전에도 페이지의 일부를 즉시 볼수 있는거죠.</p>
+<p>스트리밍 기술은 첫 페이지 로딩 성능을 크게 향상 시켜주며, 또한 데이터 페치가 느릴 경우 영향 받는 UI 요소의 성능향상에도 도움이 됩니다.</p>
+<p>이 개념은 이전에 리액트 렌더링 기술에 대해 다룬 &ldquo;Suspense for SSR&quot;에서 다뤘던 내용과 비슷할 겁니다.</p>
+<p>지금은 Next.js 앱 라우터에 기본적으로 통합된 스트리밍에 초점을 맞추고 있습니다.</p>
+<p>코드를 직접 타이핑해 보며 애플리케이션에서 수동으로 Suspense 경계를 만들고 성능 향상을 위해 스트리밍에 의존하는 방법을 배워보겠습니다.</p>
+<p>먼저, app 폴더 밑에 product-detail 폴더를 만들고 그 밑에 page.tsx 파일을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Product</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/components/product&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Reviews</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/components/reviews&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ProductDetailPage() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Product</span> <span class="nx">detail</span> <span class="nx">page</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Product</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Reviews</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 Product 컴포넌트와 Reviews 컴포넌트를 만들어야겠죠.</p>
+<p>components 폴더를 src 폴더 밑에 만듭니다.</p>
+<p>그리고 각각 product.tsx 파일과 reviews.tsx 파일을 아래와 같이 만들어 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Product</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">await</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="mi">2000</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Product</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Reviews</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="mi">4000</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Reviews</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>앱 라우터에서는 리액트 컴포넌트와 함께 ES 모듈의 async/await를 사용할 수 있습니다.</p>
+<p>이 부분에 대해서는 다음에 자세히 다루겠지만, 지금은 Product 컴포넌트의 렌더링을 2초, Reviews 컴포넌트의 렌더링을 4초 동안 의도적으로 지연시켰다는 점을 이해하시면 됩니다.</p>
+<p>이는 데이터를 페치(fetch)하고 컴포넌트를 렌더링하는 데 걸리는 시간을 시뮬레이션한 겁니다.</p>
+<p>이렇게 설정한 후 개발 서버를 시작해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>브라우저에서 <code>/product-detail</code> 페이지로 이동하면 H1 태그와 두 개의 컴포넌트 JSX(Product, Reviews)가 렌더링되는 데 상당한 시간이 걸리는 것을 확인할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi46p_TPxtkXcAqcfIWVeJXNqO3F_zcVXb2RvhHsA3NsYP9R7RxfiLs7BIwA2U4zDaC40ptTegDc9RvGJsfAr0YUM10OUQl_TukpuSFt9Qr9-RrjW6RcJGC_zp9X-p0q8e0bkxO0LIraQN15uJH9z8eBmlVZMXMDpVeYlEjFh-jnBGueEzDPC7qk3kdro0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 페이지를 새로고침하고 네트워크 탭을 보면 서버 응답을 기다리는 시간이 4초를 약간 넘는 것을 알 수 있습니다.</p>
+<p>이는 페이지의 데이터를 모두 fetch한 후에야 응답(response)을 보내기 때문입니다.</p>
+<p>이제 앱 라우터에서 지원하는 스트리밍 전략을 사용해 보겠습니다.</p>
+<p>필요한 작업은 Suspense 컴포넌트를 임포트하고 렌더링 속도가 느린 컴포넌트를 Suspense로 래핑하는 것뿐입니다.</p>
+<p>나머지는 Next.js가 알아서 처리해 줍니다.</p>
+<p>아래 코드처럼 Suspense를 래핑해줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Suspense</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Product</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/components/product&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Reviews</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/components/reviews&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ProductDetailPage() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Product</span> <span class="nx">detail</span> <span class="nx">page</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Suspense</span> <span class="na">fallback</span><span class="o">=</span><span class="p">{&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Loading</span> <span class="nx">product</span> <span class="nx">details</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">Product</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Suspense</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Suspense</span> <span class="na">fallback</span><span class="o">=</span><span class="p">{&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Loading</span> <span class="nx">reviews</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">Reviews</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Suspense</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 브라우저에서 페이지를 새로고침하면 바로 페이지 제목이 표시되고, 이어서 Product 컴포넌트, 그리고 Reviews 컴포넌트가 렌더링되는 것을 확인할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgGOkMLSkzFA7pUPy7xgjzsRRvTtTnNENgt_Q-S5RsJD3nDsALMwqK-gGxVnnwwnLACU_wVkALBuo6F9NohGJv65GpEPh8YfWJmDPyDuG37ImVw5sxRZnge7e33swxNucaDwx4yIZz6Gxmk7oKjB6IaYivOOwaPi5R6rZuatUcFx47Ta5YWPjnx1dwIlgM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi3CX2pdoGrZ473F-gBSNYiRuBCFY6_pbl9nepyaejyCaiPOZtxIYnny4yw5dQNAy6AqEiiI6wR3yYeoUZrxOzwDY_MGN2hvag4b10SNIqPqf31-8YGzU2tiilNvhOJ0GA5uQx_8sVmOIM7FFz-6m35BdaDyizWis2ZD3HHU1roclB1qzj2L2bxomET01Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhrGRWZ1CrP035wA80S4l8MkF89HgIE1A0kDFgfMKpTKhWgiUcOsQCZHnBNGmZCfcelcwGrFblQL12Odbco_4QUg7xKHTxvCZGu2cLEHLBeAGVVGZYbu9Fbk4l6Pn5C3EZn7W03k8AhmeDxr0Y1O6epyTHfEsL0FgyIL5u7Wmy5vF10qdC7b6GO4Tb0KY8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 네트워크 탭에서 폭포수에 마우스를 갖다 대면 아래와 같이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiycVklkNOgOnGx0To_oOxeUyDaAq7bm7qyjPd7cvUsXt3DcudR3spjBk_SNxAHZsVcIG8bdB2CpY7VAcpKxEdBwQj6hIoiuwlHDDelTQUUJaZnTx3K-3Sbxepi_rrWa_GezogrxZITlfX0WWKRBt-7NBb9EsPxDpQKl3dhFYZRbMCWgY_7AaBE4v7JpjU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>서버 응답을 기다리는 시간(Waiting for server response)이 크게 줄어든 87.0밀리초임을 알 수 있습니다.</p>
+<p>페이지를 다시 새로고침해서 UI 업데이트 과정을 자세히 지켜봅시다.</p>
+<p>페이지 제목이 나온 후, 2초 뒤에 Product 컴포넌트가, 그리고 4초 후에 Reviews 컴포넌트가 렌더링됩니다.</p>
+<p>이렇게 서버에서 HTML을 점진적으로 클라이언트로 렌더링하는 것이 바로 스트리밍의 핵심입니다.</p>
+<p>지금까지 Next.js에서 제공하는 서버 렌더링 전략에 대해 알아보았습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/rendering-lifecycle/" role="button">rendering lifecycle</a>
+        <a class="btn btn-light" href="/tags/static-rendering/" role="button">static rendering</a>
+        <a class="btn btn-light" href="/tags/dynamic-rendering/" role="button">dynamic rendering</a>
+        <a class="btn btn-light" href="/tags/streaming/" role="button">streaming</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-25-3-ways-in-data-fetching-with-react/">옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기</a></h2>
+                  <p>이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다.</p>
+                  <p>
+  <small>August 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-19-refactoring-nextjs-lucia-auth-code-with-useformstate-and-useformstatus/">React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기</a></h2>
+                  <p>기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다.</p>
+                  <p>
+  <small>August 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>TypeScript 배열, `T[]` 대신 `ReadonlyArray&lt;T&gt;`를 써야 하는 이유</title>
+<meta name="description" content="함수 하나 호출했을 뿐인데 원본 배열이 망가진 경험, 있으신가요? 이런 사이드 이펙트 버그를 원천 차단하는 TypeScript의 강력한 무기, ReadonlyArray&lt;T&gt;의 모든 것을 알려드립니다. 이제 불변성은 선택이 아닌 필수입니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-16-typescript-readonly-array-for-safer-code/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TypeScript 배열, `T[]` 대신 `ReadonlyArray&lt;T&gt;`를 써야 하는 이유" />
+<meta property="og:description" content="함수 하나 호출했을 뿐인데 원본 배열이 망가진 경험, 있으신가요? 이런 사이드 이펙트 버그를 원천 차단하는 TypeScript의 강력한 무기, ReadonlyArray&lt;T&gt;의 모든 것을 알려드립니다. 이제 불변성은 선택이 아닌 필수입니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-16-typescript-readonly-array-for-safer-code/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-17T05:37:21Z" />
+<meta property="article:modified_time" content="2025-08-17T05:37:21Z" />
+<meta property="article:tag" content="TypeScript" />
+<meta property="article:tag" content="ReadonlyArray" />
+<meta property="article:tag" content="불변성" />
+<meta property="article:tag" content="사이드 이펙트" />
+<meta property="article:tag" content="타입스크립트" />
+<meta property="article:tag" content="코딩 스타일" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TypeScript 배열, `T[]` 대신 `ReadonlyArray&lt;T&gt;`를 써야 하는 이유" />
+<meta name="twitter:description" content="함수 하나 호출했을 뿐인데 원본 배열이 망가진 경험, 있으신가요? 이런 사이드 이펙트 버그를 원천 차단하는 TypeScript의 강력한 무기, ReadonlyArray&lt;T&gt;의 모든 것을 알려드립니다. 이제 불변성은 선택이 아닌 필수입니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"TypeScript 배열, `T[]` 대신 `ReadonlyArray\\u003cT\\u003e`를 써야 하는 이유\"",
+  "description": "\"함수 하나 호출했을 뿐인데 원본 배열이 망가진 경험, 있으신가요? 이런 사이드 이펙트 버그를 원천 차단하는 TypeScript의 강력한 무기, ReadonlyArray\\u0026lt;T\\u0026gt;의 모든 것을 알려드립니다. 이제 불변성은 선택이 아닌 필수입니다.\"",
+  "datePublished": "\"2025-08-17T05:37:21Z\"",
+  "dateModified": "\"2025-08-17T05:37:21Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-16-typescript-readonly-array-for-safer-code/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>TypeScript 배열, `T[]` 대신 `ReadonlyArray&lt;T&gt;`를 써야 하는 이유</h1>
+        <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>함수 하나 호출했을 뿐인데, 멀쩡하던 원본 배열이 박살 나는 경험, 다들 한 번쯤은 있으시죠?<br /><br />
+분명 나는 데이터를 그냥 정렬해서 &lsquo;보여주기만&rsquo; 하려고 했는데, 어느새 원본 데이터까지 뒤죽박죽이 되어버리는 상황 말입니다.<br /><br />
+이런 &lsquo;사이드 이펙트(Side Effect)&rsquo; 버그는 잡기도 정말 까다로운데요.<br /><br />
+오늘은 바로 이 문제의 근본적인 원인과 TypeScript가 제공하는 우아한 해결책, <code>ReadonlyArray&lt;T&gt;</code>에 대해 깊이 파고들어 보려고 합니다.<br /><br /></p>
+<h2 id="재앙은-아주-사소한-곳에서-시작된다">재앙은 아주 사소한 곳에서 시작된다</h2>
+<p>문제를 한번 직접 만들어보죠.<br /><br />
+숫자 배열을 받아서 정렬하고, 첫 번째 요소를 999로 바꾼 뒤 출력하는 간단한 함수들이 있는데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">sortLog</span> <span class="o">=</span> <span class="p">(</span><span class="nx">array</span>: <span class="kt">Array</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;)</span><span class="o">:</span> <span class="k">void</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 배열을 정렬해서 출력
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">.</span><span class="nx">sort</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">b</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">setLog</span> <span class="o">=</span> <span class="p">(</span><span class="nx">array</span>: <span class="kt">Array</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;)</span><span class="o">:</span> <span class="k">void</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 0번 인덱스의 값을 999로 변경
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">999</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">array</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">sortLog</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span> <span class="c1">// 출력: [ 1, 2, 3 ]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">setLog</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>  <span class="c1">// 출력: [ 999, 2, 3 ]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 그런데... 원본 배열은 어떻게 됐을까?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span> <span class="c1">// 출력: [ 999, 2, 3 ]
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>보이시나요?<br /><br />
+<code>sortLog</code>와 <code>setLog</code> 함수를 호출했을 뿐인데, 아무 상관없어 보이던 원본 <code>array</code>의 내용이 완전히 바뀌어 버렸습니다.<br /><br />
+이게 바로 JavaScript의 <code>Array.prototype.sort</code>나 인덱스를 통한 할당(<code>array[0] = ...</code>) 같은 메서드들이 원본 배열을 직접 수정하는 &lsquo;파괴적 변경(Destructive Mutation)&lsquo;을 일으키기 때문이죠.<br /><br />
+이런 코드가 프로젝트 곳곳에 흩어져 있다면, 정말 상상만 해도 끔찍한 디버깅 지옥이 펼쳐질 겁니다.<br /><br /></p>
+<h2 id="typescript의-방패-readonlyarrayt">TypeScript의 방패, <code>ReadonlyArray&lt;T&gt;</code></h2>
+<p>자, 그럼 이 재앙을 어떻게 막을 수 있을까요?<br /><br />
+답은 아주 간단한데요.<br /><br />
+함수의 매개변수 타입을 <code>Array&lt;T&gt;</code> 대신 <code>ReadonlyArray&lt;T&gt;</code>로 바꾸기만 하면 됩니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">sortLog</span> <span class="o">=</span> <span class="p">(</span><span class="nx">array</span>: <span class="kt">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;)</span><span class="o">:</span> <span class="k">void</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 에러: Property &#39;sort&#39; does not exist on type &#39;readonly number[]&#39;.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// Did you mean &#39;toSorted&#39;?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">.</span><span class="nx">sort</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">b</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">setLog</span> <span class="o">=</span> <span class="p">(</span><span class="nx">array</span>: <span class="kt">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;)</span><span class="o">:</span> <span class="k">void</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 에러: Index signature in type &#39;readonly number[]&#39; only permits reading.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">999</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>마법처럼 TypeScript 컴파일러가 에러를 뿜어내는 게 보이시죠?<br /><br />
+<code>ReadonlyArray&lt;T&gt;</code>는 말 그대로 &lsquo;읽기 전용&rsquo; 배열 타입이라서, <code>sort</code>, <code>push</code>, <code>splice</code>처럼 원본을 변경할 수 있는 모든 메서드가 제거되어 있습니다.<br /><br />
+인덱스를 통해 값을 직접 바꾸려는 시도 역시 원천적으로 차단되죠.<br /><br />
+이건 단순히 실수를 막아주는 것을 넘어, &lsquo;이 함수는 전달받은 배열을 절대 수정하지 않습니다&rsquo;라는 아주 강력한 &lsquo;계약&rsquo;을 코드 수준에서 보장하는 겁니다.<br /><br /></p>
+<h3 id="원본을-건드리지-않는-착한-메서드들">원본을 건드리지 않는 착한 메서드들</h3>
+<p>물론 여기서 질문이 생길 수 있는데요.<br /><br />
+&lsquo;그럼 정렬이나 값 변경은 어떻게 하라는 거죠?&rsquo; 하고 말입니다.<br /><br />
+다행히 최신 JavaScript(ES2023)에는 원본을 건드리지 않고 &lsquo;새로운 배열을 반환하는&rsquo; 아주 착한 메서드들이 표준으로 추가되었거든요.<br /><br />
+<code>ReadonlyArray&lt;T&gt;</code>를 사용할 땐 바로 이 메서드들을 쓰면 됩니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">sortLog</span> <span class="o">=</span> <span class="p">(</span><span class="nx">array</span>: <span class="kt">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;)</span><span class="o">:</span> <span class="k">void</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// sort() 대신 toSorted() 사용
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">.</span><span class="nx">toSorted</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">b</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">setLog</span> <span class="o">=</span> <span class="p">(</span><span class="nx">array</span>: <span class="kt">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;)</span><span class="o">:</span> <span class="k">void</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 인덱스 할당 대신 with() 사용
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">.</span><span class="kd">with</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">999</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">array</span>: <span class="kt">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">sortLog</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>     <span class="c1">// 출력: [ 1, 2, 3 ]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">setLog</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span>      <span class="c1">// 출력: [ 999, 1, 3 ]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 원본 배열은 안전하다!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">array</span><span class="p">);</span> <span class="c1">// 출력: [ 2, 1, 3 ]
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>toSorted()</code>, <code>with()</code>, 그리고 <code>toSpliced()</code> 같은 메서드들은 모두 원본은 그대로 둔 채, 변경된 &lsquo;복사본&rsquo;을 새로 만들어 반환하죠.<br /><br />
+이제 우리는 사이드 이펙트 걱정 없이 안전하게 데이터를 다룰 수 있게 된 겁니다.<br /><br /></p>
+<h2 id="사소하지만-중요한-스타일-가이드">사소하지만 중요한 스타일 가이드</h2>
+<p>읽기 전용 배열을 선언하는 방법에는 사실 두 가지가 있는데요.<br /><br />
+<code>ReadonlyArray&lt;T&gt;</code>와 <code>readonly T[]</code>입니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">a</span>: <span class="kt">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">b</span>: <span class="kt">readonly</span> <span class="kt">number</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>둘은 기능적으로는 완전히 동일하지만, 저는 개인적으로 <code>ReadonlyArray&lt;T&gt;</code>를 사용하는 것을 강력하게 추천하는데요.<br /><br />
+첫째, <code>T[]</code>는 배열만을 위한 특수 문법이지만, <code>ReadonlyArray&lt;T&gt;</code>는 <code>Promise&lt;T&gt;</code>나 <code>Map&lt;K, V&gt;</code>처럼 일반적인 제네릭 타입 문법과 일관성을 유지해 줍니다.<br /><br />
+둘째, 배열이 중첩될 때 가독성 차이가 하늘과 땅 차이죠.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 바깥쪽 배열만 읽기 전용으로 만들고 싶을 때
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">A</span> <span class="o">=</span> <span class="kr">readonly</span> <span class="p">(</span><span class="kt">number</span><span class="p">[])[];</span>          <span class="c1">// 헷갈린다...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">B</span> <span class="o">=</span> <span class="nx">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">Array</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;&gt;;</span>   <span class="c1">// 의도가 명확하다!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 안쪽 배열만 읽기 전용으로 만들고 싶을 때
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">C</span> <span class="o">=</span> <span class="p">(</span><span class="kr">readonly</span> <span class="kt">number</span><span class="p">[])[];</span>        <span class="c1">// 더 헷갈린다...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">D</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">&lt;</span><span class="nt">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;&gt;;</span>  <span class="c1">// 의도가 명확하다!
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>물론 튜플(<code>[number, string]</code>) 타입처럼 길이가 고정된 배열의 읽기 전용 버전을 만들 땐 <code>readonly [number, string]</code> 형태로만 쓸 수 있지만, 그 외의 모든 일반 배열에는 <code>ReadonlyArray&lt;T&gt;</code>를 쓰는 것이 훨씬 더 나은 선택입니다.<br /><br /></p>
+<h2 id="불변성은-배열에만-국한되지-않는다">불변성은 배열에만 국한되지 않는다</h2>
+<p>&lsquo;불변성(Immutability)&lsquo;이라는 개념은 비단 배열에만 적용되는 게 아닌데요.<br /><br />
+TypeScript는 <code>Set</code>과 <code>Map</code>을 위한 <code>ReadonlySet&lt;T&gt;</code>과 <code>ReadonlyMap&lt;K, V&gt;</code>도 기본으로 제공합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">readonlySet</span>: <span class="kt">ReadonlySet</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Set</span><span class="p">([</span><span class="s2">&#34;A&#34;</span><span class="p">,</span> <span class="s2">&#34;B&#34;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// readonlySet.add(&#34;C&#34;); // 에러!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">readonlyMap</span>: <span class="kt">ReadonlyMap</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">,</span> <span class="na">number</span><span class="p">&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Map</span><span class="p">([[</span><span class="s2">&#34;A&#34;</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// readonlyMap.set(&#34;B&#34;, 2); // 에러!
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>객체 속성에도 <code>readonly</code> 키워드를 붙여서 수정 불가능하게 만들 수 있죠.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Account</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">readonly</span> <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">account</span>: <span class="kt">Account</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;user-1&#34;</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Naru&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// account.id = &#34;user-2&#34;; // 에러! id는 읽기 전용 속성입니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">account</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s2">&#34;Mincho&#34;</span><span class="p">;</span> <span class="c1">// OK
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이처럼 코드 곳곳에 <code>readonly</code>를 적극적으로 활용하는 것은, 데이터의 흐름을 예측 가능하게 만들고 잠재적인 버그를 컴파일 시점에 차단하는 아주 현명한 습관입니다.<br /><br /></p>
+<h2 id="최종-가이드-그래서-언제-뭘-써야-할까">최종 가이드 그래서 언제 뭘 써야 할까?</h2>
+<p>지금까지 <code>ReadonlyArray</code>의 강력함에 대해 알아봤는데요.<br /><br />
+그럼 &lsquo;모든 배열을 <code>ReadonlyArray</code>로 써야 하나?&rsquo; 하는 궁금증이 생길 수 있죠.<br /><br />
+상황에 맞는 명확한 가이드라인을 제시해 드릴게요.<br /><br /></p>
+<ol>
+<li><strong>함수 매개변수 (Function Parameters)</strong><br />
+&lsquo;무조건&rsquo; <code>ReadonlyArray&lt;T&gt;</code>를 사용하세요.<br /><br />
+함수가 내부에서 배열을 수정할 의도가 없다는 것을 명확히 하고, 사이드 이펙트를 원천 차단하는 가장 중요한 규칙입니다.<br /><br /></li>
+<li><strong>함수 내부의 로컬 변수 (Local Variables)</strong><br />
+자유롭게 <code>Array&lt;T&gt;</code>를 사용해도 괜찮습니다.<br /><br />
+함수 안에서만 사용되고 외부로 노출되지 않는 변수는 변경이 일어나도 추적하기 쉽기 때문이죠.<br /><br />
+<code>map</code>이나 <code>filter</code>의 결과물을 새로운 배열에 <code>push</code>하며 만드는 경우 등이 여기에 해당합니다.<br /><br /></li>
+<li><strong>함수 반환 타입 (Function Return Types)</strong><br />
+<code>ReadonlyArray&lt;T&gt;</code>를 사용하는 것을 &lsquo;강력히 권장&rsquo;합니다.<br /><br />
+함수가 반환한 데이터를 사용하는 쪽에서 실수로 원본을 변경하는 것을 막아주기 때문이죠.<br /><br />
+다만, 함수를 호출하는 쪽에서 명시적으로 배열을 수정해야 하는 것이 함수의 역할이라면 <code>Array&lt;T&gt;</code>를 반환할 수도 있습니다.<br /><br /></li>
+</ol>
+<p>결국 핵심은 &lsquo;의도&rsquo;를 명확하게 드러내는 것인데요.<br /><br />
+<code>ReadonlyArray&lt;T&gt;</code>를 습관처럼 사용하는 것만으로도 여러분의 TypeScript 코드는 훨씬 더 견고하고 예측 가능하게 변할 거예요.<br /><br />
+사이드 이펙트와의 전쟁, 이제 끝낼 때가 되지 않았나요?<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/typescript/" role="button">TypeScript</a>
+        <a class="btn btn-light" href="/tags/readonlyarray/" role="button">ReadonlyArray</a>
+        <a class="btn btn-light" href="/tags/%EB%B6%88%EB%B3%80%EC%84%B1/" role="button">불변성</a>
+        <a class="btn btn-light" href="/tags/%EC%82%AC%EC%9D%B4%EB%93%9C-%EC%9D%B4%ED%8E%99%ED%8A%B8/" role="button">사이드 이펙트</a>
+        <a class="btn btn-light" href="/tags/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8/" role="button">타입스크립트</a>
+        <a class="btn btn-light" href="/tags/%EC%BD%94%EB%94%A9-%EC%8A%A4%ED%83%80%EC%9D%BC/" role="button">코딩 스타일</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-16-typescript-enum-alternatives-deep-dive/">TypeScript enum, 아직도 쓰고 계신가요?</a></h2>
+                  <p>TypeScript 개발자라면 누구나 한번쯤 써봤을 enum. 하지만 왜 많은 전문가들이 enum 사용을 망설이는 걸까요? enum의 숨겨진 문제점부터 가장 확실한 대안인 Object as const 패턴까지, 이제는 알아야 할 모든 것을 알려드립니다.</p>
+                  <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-14-typescript-satisfies-keyword-guide/">TypeScript &#39;satisfies&#39; 완벽 가이드 - &#39;as&#39; 대신 써야 하는 이유</a></h2>
+                  <p>TypeScript의 숨겨진 보석, 'satisfies' 키워드를 아시나요? 타입 추론은 유지하면서 타입 검사는 강화하는 satisfies의 마법을 통해, 왜 'as'보다 더 안전하고 현명한 선택인지 알아봅니다.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-10-21-typescript-type-master-third/">TypeScript 타입 기초 완전 정복! 3편 - as const, unknown, Mapped, Conditional 타입 완벽 분석</a></h2>
+                  <p>TypeScript 타입 시스템의 최고봉을 향해! `as const`, `unknown`, `keyof`, Lookup, Mapped, Conditional 타입 등 고급 타입 개념을 파헤쳐 봅니다.</p>
+                  <p>
+  <small>October 21, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>19&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

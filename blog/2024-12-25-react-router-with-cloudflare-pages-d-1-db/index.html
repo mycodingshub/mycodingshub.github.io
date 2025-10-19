@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Router V7과 Cloudflare Pages 그리고 D1 Database 사용</title>
+<meta name="description" content="React Router V7를 Cloudflare Pages에 D1 DB를 이용해서 배포할 수 있게 개조하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Router V7과 Cloudflare Pages 그리고 D1 Database 사용" />
+<meta property="og:description" content="React Router V7를 Cloudflare Pages에 D1 DB를 이용해서 배포할 수 있게 개조하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-12-25T06:47:59Z" />
+<meta property="article:modified_time" content="2024-12-25T06:47:59Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="react router v7" />
+<meta property="article:tag" content="react router" />
+<meta property="article:tag" content="cloudflare" />
+<meta property="article:tag" content="d1 db" />
+<meta property="article:tag" content="cloudflare pages" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Router V7과 Cloudflare Pages 그리고 D1 Database 사용" />
+<meta name="twitter:description" content="React Router V7를 Cloudflare Pages에 D1 DB를 이용해서 배포할 수 있게 개조하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Router V7과 Cloudflare Pages 그리고 D1 Database 사용\"",
+  "description": "\"React Router V7를 Cloudflare Pages에 D1 DB를 이용해서 배포할 수 있게 개조하기\"",
+  "datePublished": "\"2024-12-25T06:47:59Z\"",
+  "dateModified": "\"2024-12-25T06:47:59Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Router V7과 Cloudflare Pages 그리고 D1 Database 사용</h1>
+        <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>** 목차 **</p>
+<ul>
+<li><a href="#react-router-v7%ea%b3%bc-cloudflare-pages-%ea%b7%b8%eb%a6%ac%ea%b3%a0-d1-database-%ec%82%ac%ec%9a%a9">React Router V7과 Cloudflare Pages 그리고 D1 Database 사용</a>
+<ul>
+<li><a href="#react-router-v7%ec%97%90-cloudflare-%ea%b4%80%eb%a0%a8-%ec%b6%94%ea%b0%80%ed%95%98%ea%b8%b0">React Router V7에 Cloudflare 관련 추가하기</a></li>
+<li><a href="#wrangler%eb%a1%9c-cloudflare-%ea%b4%80%eb%a0%a8-%ec%84%b8%ed%8c%85%ed%95%98%ea%b8%b0">wrangler로 Cloudflare 관련 세팅하기</a></li>
+<li><a href="#tsconfigjson-%ed%8c%8c%ec%9d%bc%ec%97%90-types-%ec%a0%95%eb%b3%b4-%ec%b6%94%ea%b0%80%ed%95%98%ea%b8%b0">tsconfig.json 파일에 types 정보 추가하기</a></li>
+<li><a href="#entryservertsx-%ed%8c%8c%ec%9d%bc-%ec%86%90%eb%b3%b4%ea%b8%b0">entry.server.tsx 파일 손보기</a></li>
+<li><a href="#viteconfig-%ed%8c%8c%ec%9d%bc-%ec%86%90%eb%b3%b4%ea%b8%b0">vite.config 파일 손보기</a></li>
+<li><a href="#d1-db-%ec%b6%94%ea%b0%80">D1 DB 추가</a></li>
+<li><a href="#d1-db-%ec%bd%94%eb%93%9c-%ed%85%8c%ec%8a%a4%ed%8a%b8%ed%95%98%ea%b8%b0">D1 DB 코드 테스트하기</a></li>
+<li><a href="#cloudflare-%ea%b4%80%eb%a0%a8-%ed%83%80%ec%9e%85-%ec%a0%95%eb%b3%b4-%ec%b6%94%ea%b0%80%ed%95%98%ea%b8%b0">Cloudflare 관련 타입 정보 추가하기</a></li>
+<li><a href="#packagejson-%ed%8c%8c%ec%9d%bc-scripts-%ec%86%90%eb%b3%b4%ea%b8%b0">package.json 파일 scripts 손보기</a></li>
+</ul>
+</li>
+</ul>
+<p>안녕하세요?</p>
+<p>지난 시간에 React Router V7을 이용한 가장 기본적인 유저 로그인 구현을 알아보았는데요.</p>
+<p><a href="https://mycodingshub.github.io/blog/2024-12-25-tutorial-react-router-v-7-user-auth">React Router V7 유저 Auth(로그인) 구현하기</a></p>
+<p>이번 시간에는 Cloudflare 네트워크상에 배포할 수 있는 Pages 서비스를 이용할 수 있게 React Router 템플릿을 개조해 보겠습니다.</p>
+<p>먼저, create-react-router를 이용해서 빈 템플릿을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npx create-react-router@latest 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pnpx create-react-router@latest </span></span></code></pre></div>
+  </figure>
+</div>
+<p>맥북 용량이 많으면 NPM이나 NPX 명령어를 사용하셔도 무방하지만 저 같이 256GB 맥북을 가지고 계신분이라면 되도록이면 PNPM이나 PNPX를 사용하는 걸 추천드립니다.</p>
+<p>하드 용량 절약이 눈에 띄게 크다는 걸 쉽게 체감할 수 있을 겁니다.</p>
+<p>일단 아래와 같이 가장 기본적인 React Router V7 템플릿을 만들었습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">react-router-cloudflare-pages-d1-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         create-react-router v7.1.1
+</span></span><span class="line"><span class="cl">      ◼  Directory: Using react-router-cloudflare-pages-d1-test as project directory
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ◼  Using default template See https://github.com/remix-run/react-router-templates <span class="k">for</span> more
+</span></span><span class="line"><span class="cl">      ✔  Template copied
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   git   Initialize a new git repository?
+</span></span><span class="line"><span class="cl">         Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  deps   Install dependencies with pnpm?
+</span></span><span class="line"><span class="cl">         Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ✔  Dependencies installed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ✔  Git initialized
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">done</span>   That<span class="err">&#39;</span>s it!
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Enter your project directory using <span class="nb">cd</span> ./react-router-cloudflare-pages-d1-test
+</span></span><span class="line"><span class="cl">         Check out README.md <span class="k">for</span> development and deploy instructions.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Join the community at https://rmx.as/discord</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제, 터미널의 tree 명령어를 통해 전체적인 구조를 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  react-router-cloudflare-pages-d1-test git:<span class="o">(</span>main<span class="o">)</span> ✗ tree . -L <span class="m">2</span>
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── Dockerfile
+</span></span><span class="line"><span class="cl">├── Dockerfile.bun
+</span></span><span class="line"><span class="cl">├── Dockerfile.pnpm
+</span></span><span class="line"><span class="cl">├── README.md
+</span></span><span class="line"><span class="cl">├── app
+</span></span><span class="line"><span class="cl">│   ├── app.css
+</span></span><span class="line"><span class="cl">│   ├── root.tsx
+</span></span><span class="line"><span class="cl">│   ├── routes
+</span></span><span class="line"><span class="cl">│   ├── routes.ts
+</span></span><span class="line"><span class="cl">│   └── welcome
+</span></span><span class="line"><span class="cl">├── node_modules
+</span></span><span class="line"><span class="cl">│   ├── @react-router
+</span></span><span class="line"><span class="cl">│   ├── @types
+</span></span><span class="line"><span class="cl">│   ├── autoprefixer -&gt; .pnpm/autoprefixer@10.4.20_postcss@8.4.49/node_modules/autoprefixer
+</span></span><span class="line"><span class="cl">│   ├── cross-env -&gt; .pnpm/cross-env@7.0.3/node_modules/cross-env
+</span></span><span class="line"><span class="cl">│   ├── isbot -&gt; .pnpm/isbot@5.1.18/node_modules/isbot
+</span></span><span class="line"><span class="cl">│   ├── postcss -&gt; .pnpm/postcss@8.4.49/node_modules/postcss
+</span></span><span class="line"><span class="cl">│   ├── prettier -&gt; .pnpm/prettier@2.8.8/node_modules/prettier
+</span></span><span class="line"><span class="cl">│   ├── react -&gt; .pnpm/react@19.0.0/node_modules/react
+</span></span><span class="line"><span class="cl">│   ├── react-dom -&gt; .pnpm/react-dom@19.0.0_react@19.0.0/node_modules/react-dom
+</span></span><span class="line"><span class="cl">│   ├── react-router -&gt; .pnpm/react-router@7.1.1_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/react-router
+</span></span><span class="line"><span class="cl">│   ├── tailwindcss -&gt; .pnpm/tailwindcss@3.4.17/node_modules/tailwindcss
+</span></span><span class="line"><span class="cl">│   ├── typescript -&gt; .pnpm/typescript@5.7.2/node_modules/typescript
+</span></span><span class="line"><span class="cl">│   ├── vite -&gt; .pnpm/vite@5.4.11_@types+node@20.17.10/node_modules/vite
+</span></span><span class="line"><span class="cl">│   └── vite-tsconfig-paths -&gt; .pnpm/vite-tsconfig-paths@5.1.4_typescript@5.7.2_vite@5.4.11_@types+node@20.17.10_/node_modules/vite-tsconfig-paths
+</span></span><span class="line"><span class="cl">├── package.json
+</span></span><span class="line"><span class="cl">├── pnpm-lock.yaml
+</span></span><span class="line"><span class="cl">├── public
+</span></span><span class="line"><span class="cl">│   └── favicon.ico
+</span></span><span class="line"><span class="cl">├── react-router.config.ts
+</span></span><span class="line"><span class="cl">├── tailwind.config.ts
+</span></span><span class="line"><span class="cl">├── tsconfig.json
+</span></span><span class="line"><span class="cl">└── vite.config.ts
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">20</span> directories, <span class="m">15</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 구조를 보면 아주 깔끔한 node_modules 구조가 보일겁니다.</p>
+<p>PNPM의 위력이죠.</p>
+<hr>
+<h2 id="react-router-v7에-cloudflare-관련-추가하기">React Router V7에 Cloudflare 관련 추가하기</h2>
+<p>이제 Cloudflare 관련 패키지를 설치해야 합니다.</p>
+<p>총 3가지가 필요한데요.</p>
+<p>먼저, @react-router/cloudflare와 wrangler 패키지입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm install @react-router/cloudflare wrangler
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pnpm install @react-router/cloudflare wrangler</span></span></code></pre></div>
+  </figure>
+</div>
+<p>마지막으로 필요한게 타입스크립트로 개발하기 위한 타입정보인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm install -D @cloudflare/workers-types
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pnpm install -D @cloudflare/workers-types</span></span></code></pre></div>
+  </figure>
+</div>
+<p>지금까지의 package.json 파일을 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  react-router-cloudflare-pages-d1-test git:<span class="o">(</span>main<span class="o">)</span> ✗ bat package.json
+</span></span><span class="line"><span class="cl">───────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</span></span><span class="line"><span class="cl">       │ File: package.json
+</span></span><span class="line"><span class="cl">───────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</span></span><span class="line"><span class="cl">   <span class="m">1</span>   │ <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="m">2</span>   │   <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;react-router-cloudflare-pages-d1-test&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">3</span>   │   <span class="s2">&#34;private&#34;</span>: true,
+</span></span><span class="line"><span class="cl">   <span class="m">4</span>   │   <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;module&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">5</span>   │   <span class="s2">&#34;scripts&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="m">6</span>   │     <span class="s2">&#34;build&#34;</span>: <span class="s2">&#34;cross-env NODE_ENV=production react-router build&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">7</span>   │     <span class="s2">&#34;dev&#34;</span>: <span class="s2">&#34;react-router dev&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">8</span>   │     <span class="s2">&#34;start&#34;</span>: <span class="s2">&#34;cross-env NODE_ENV=production react-router-serve ./build/server/index.js&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">9</span>   │     <span class="s2">&#34;typecheck&#34;</span>: <span class="s2">&#34;react-router typegen &amp;&amp; tsc&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="m">10</span>   │   <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">11</span>   │   <span class="s2">&#34;dependencies&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="m">12</span> + │     <span class="s2">&#34;@react-router/cloudflare&#34;</span>: <span class="s2">&#34;^7.1.1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">13</span>   │     <span class="s2">&#34;@react-router/node&#34;</span>: <span class="s2">&#34;^7.1.1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">14</span>   │     <span class="s2">&#34;@react-router/serve&#34;</span>: <span class="s2">&#34;^7.1.1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">15</span>   │     <span class="s2">&#34;isbot&#34;</span>: <span class="s2">&#34;^5.1.17&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">16</span>   │     <span class="s2">&#34;react&#34;</span>: <span class="s2">&#34;^19.0.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">17</span>   │     <span class="s2">&#34;react-dom&#34;</span>: <span class="s2">&#34;^19.0.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">18</span> ~ │     <span class="s2">&#34;react-router&#34;</span>: <span class="s2">&#34;^7.1.1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">19</span> ~ │     <span class="s2">&#34;wrangler&#34;</span>: <span class="s2">&#34;^3.99.0&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="m">20</span>   │   <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">21</span>   │   <span class="s2">&#34;devDependencies&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="m">22</span> + │     <span class="s2">&#34;@cloudflare/workers-types&#34;</span>: <span class="s2">&#34;^4.20241224.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">23</span>   │     <span class="s2">&#34;@react-router/dev&#34;</span>: <span class="s2">&#34;^7.1.1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">24</span>   │     <span class="s2">&#34;@types/node&#34;</span>: <span class="s2">&#34;^20&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">25</span>   │     <span class="s2">&#34;@types/react&#34;</span>: <span class="s2">&#34;^19.0.1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">26</span>   │     <span class="s2">&#34;@types/react-dom&#34;</span>: <span class="s2">&#34;^19.0.1&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">27</span>   │     <span class="s2">&#34;autoprefixer&#34;</span>: <span class="s2">&#34;^10.4.20&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">28</span>   │     <span class="s2">&#34;cross-env&#34;</span>: <span class="s2">&#34;^7.0.3&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">29</span>   │     <span class="s2">&#34;postcss&#34;</span>: <span class="s2">&#34;^8.4.49&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">30</span>   │     <span class="s2">&#34;tailwindcss&#34;</span>: <span class="s2">&#34;^3.4.16&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">31</span>   │     <span class="s2">&#34;typescript&#34;</span>: <span class="s2">&#34;^5.7.2&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">32</span>   │     <span class="s2">&#34;vite&#34;</span>: <span class="s2">&#34;^5.4.11&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">33</span>   │     <span class="s2">&#34;vite-tsconfig-paths&#34;</span>: <span class="s2">&#34;^5.1.4&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="m">34</span>   │   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="m">35</span>   │ <span class="o">}</span>
+</span></span><span class="line"><span class="cl">───────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
+  </figure>
+</div>
+<p>cat 명령어 말고 bat 명령어가 터미널 상에서 아주 깔끔하게 텍스트를 보여주네요.</p>
+<p><code>brew install bat</code> 명령어로 쉽게 설치할 수 있습니다.</p>
+<hr>
+<h2 id="wrangler로-cloudflare-관련-세팅하기">wrangler로 Cloudflare 관련 세팅하기</h2>
+<p>wrangler.toml 파일이 Cloudflare 관련 가장 기본적인 파일인데요.</p>
+<p>아래와 같이 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">name</span> <span class="o">=</span> <span class="s2">&#34;react-router-cloudflare-pages-d1-test&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">compatibility_date</span> <span class="o">=</span> <span class="s2">&#34;2024-11-12&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">pages_build_output_dir</span> <span class="o">=</span> <span class="s2">&#34;./build/client&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 중요한게 Cloudflare Worker 방식이 아닌 Pages를 이용해서 홈페이지를 웹상에 배포하고 싶을때는 위와 같이 <code>pages_build_output_dir</code> 옵션이 꼭 들어가야 합니다.</p>
+<p>이 옵션이 없으면 Wrangler가 Worker 옵션으로 인식하고 worker로 배포하게 됩니다.</p>
+<p>그러면 <code>pages_build_output_dir</code> 옵션에 들어간 값이 뭘까요?</p>
+<p>바로 React Router V7 앱을 빌드(build)하면 생기는 폴더인데요.</p>
+<p>한번 빌드해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  test-cf git:<span class="o">(</span>main<span class="o">)</span> ✗ pnpm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; test-cf@ build /Users/cpro95/Codings/Javascript/react-router-test/test-cf
+</span></span><span class="line"><span class="cl">&gt; cross-env <span class="nv">NODE_ENV</span><span class="o">=</span>production react-router build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vite v5.4.11 building <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">45</span> modules transformed.
+</span></span><span class="line"><span class="cl">build/client/.vite/manifest.json                  1.37 kB │ gzip:  0.37 kB
+</span></span><span class="line"><span class="cl">build/client/assets/app-Ckulty-W.css              7.33 kB │ gzip:  2.13 kB
+</span></span><span class="line"><span class="cl">build/client/assets/with-props-BJdOiEPt.js        0.35 kB │ gzip:  0.21 kB
+</span></span><span class="line"><span class="cl">build/client/assets/home-D555HUO7.js              0.50 kB │ gzip:  0.35 kB
+</span></span><span class="line"><span class="cl">build/client/assets/root-CzEkcZd-.js              1.19 kB │ gzip:  0.67 kB
+</span></span><span class="line"><span class="cl">build/client/assets/chunk-K6AXKMTT-DycbfBQN.js  105.32 kB │ gzip: 35.59 kB
+</span></span><span class="line"><span class="cl">build/client/assets/entry.client-u-M4TmH-.js    178.81 kB │ gzip: 56.77 kB
+</span></span><span class="line"><span class="cl">✓ built in 680ms
+</span></span><span class="line"><span class="cl">vite v5.4.11 building SSR bundle <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">8</span> modules transformed.
+</span></span><span class="line"><span class="cl">build/server/.vite/manifest.json      0.43 kB
+</span></span><span class="line"><span class="cl">build/server/assets/app-Ckulty-W.css  7.33 kB
+</span></span><span class="line"><span class="cl">build/server/index.js                 6.28 kB
+</span></span><span class="line"><span class="cl">✓ built in 38ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 build가 성공하면 아래와 같이 build 폴더가 생깁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  test-cf git:<span class="o">(</span>main<span class="o">)</span> ✗ tree ./build -L <span class="m">2</span>
+</span></span><span class="line"><span class="cl">./build
+</span></span><span class="line"><span class="cl">├── client
+</span></span><span class="line"><span class="cl">│   ├── assets
+</span></span><span class="line"><span class="cl">│   └── favicon.ico
+</span></span><span class="line"><span class="cl">└── server
+</span></span><span class="line"><span class="cl">    ├── assets
+</span></span><span class="line"><span class="cl">    └── index.js
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">5</span> directories, <span class="m">2</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>잘 보시면 server 폴더 밑에 있는 index.js가 바로 웹 서버를 구동하는 파일입니다.</p>
+<p>만약 NodeJS를 이용해서 VPS에 배포하면 node 서버가 되는 거고, Cloudflare에 배포하면 Cloudflare worker를 이용해서 서버가 돌아가게 되는 겁니다.</p>
+<p>우리의 목적은 Cloudflare 상에 Pages 서비스 형태로 배포하기 원하기 때문에 이 역할을 할 Cloudflare 만의 특별한 파일을 만들어야 합니다.</p>
+<p>여기서 만약 worker를 이용해서 배포한다면 workers 폴더의 app.ts 파일이 필요하고, Pages 서비스를 이용해서 배포한다면 functions 폴더 밑의 <code>[[path]].ts</code> 파일이 필요합니다.</p>
+<p>우리는 Pages 서비스를 이용하기 때문에 functions 폴더 밑에 <code>[[path]].ts</code> 파일을 만들겠습니다.</p>
+<p>아래와 같이 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createPagesFunctionHandler</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/cloudflare&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">build</span> <span class="kr">from</span> <span class="s2">&#34;../build/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">ServerBuild</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">onRequest</span> <span class="o">=</span> <span class="nx">createPagesFunctionHandler</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">build</span>: <span class="kt">build</span> <span class="kr">as</span> <span class="nx">ServerBuild</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 파일이 Cloudflare 네트워크 상에서 실행되는 worker 함수인데요.</p>
+<p>onRequest 라는 함수를 주면 모든 웹 리퀘스트일 때 실행한다는 뜻으로 즉, 서버가 실행된다는 뜻입니다.</p>
+<p>이때 위에서 createPagesFunctionHandler 라는 cloudflare 만의 react-router가 제공하는 핸들러를 이용해서 우리가 아까 build한 폴더의 <code>server/index.js</code>를 돌리게 되는 겁니다.</p>
+<p>이 파일을 만들면 타입스크립트가 아래 그림처럼 불만을 표시하는데요.</p>
+<p>무시하시면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh6T_lipSqBVUEqI1FRpHRWs31ZXtGeXDRalbx7TnQ96WL5OJzOTJlXZN77ZEEYQgA-x0u2IYZVIzJXQ9eKBhfyf7c5t51xQ41VSJOqKXpeVfoTYCX_cRu8x44EafUa4h0XfEQRbG2XwsBkew4OxEOCe54ucpr02udn4aCuHV7MDMB214bfebtoMzHWAco"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="tsconfigjson-파일에-types-정보-추가하기">tsconfig.json 파일에 types 정보 추가하기</h2>
+<p>Cloudflare worker 관련 타입을 추가하기 위해 tsconfig.json 파일을 엽니다.</p>
+<p>compilerOptions 밑에 있는 types 항목을 아래와 같이 만듭니다.</p>
+<p><code>@cloudflare/workers-types</code>만 추가하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="s2">&#34;compilerOptions&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="p">...</span>
+</span></span><span class="line"><span class="cl">   <span class="s2">&#34;types&#34;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;@cloudflare/workers-types&#34;</span><span class="p">,</span> <span class="s2">&#34;node&#34;</span><span class="p">,</span> <span class="s2">&#34;vite/client&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">   <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="entryservertsx-파일-손보기">entry.server.tsx 파일 손보기</h2>
+<p>Remix 프레임웍을 다루다 보면 entry.server.tsx 파일과 entry.client.tsx 파일이 보이는데요.</p>
+<p>React Router에서는 보이지가 않습니다.</p>
+<p>숨겨놓은 건데요.</p>
+<p>그냥 Node 서버를 이용할 거라면 고칠 필요가 없지만 우리는 Node가 아니라 Cloudflare worker 런타임을 이용할 거라서 entry.server를 직접 고쳐야 합니다.</p>
+<p>일단 숨겨놓은 두 개의 파일을 파일에 보이게 해야 하는데요.</p>
+<p>아래와 같이 터미널 상에서 입력하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  react-router-cloudflare-pages-d1-test git:<span class="o">(</span>main<span class="o">)</span> ✗ npx react-router reveal
+</span></span><span class="line"><span class="cl">Entry file entry.client created at app/entry.client.tsx.
+</span></span><span class="line"><span class="cl">Entry file entry.server created at app/entry.server.tsx.</span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>npx react-router reveal</code> 명령어를 입력하면 위와 같이 두 개의 파일이 reveal 되어 집니다.</p>
+<p>entry.client 파일은 건들게 없어 그대로 나두고 entry.server 파일만 아래와 같이 고칩니다.</p>
+<p>Remix 템플릿에서 가져온 겁니다.</p>
+<p>차이점은 NodeJS를 이용하면 react-dom 서버의 renderToPipeableStream 함수를 이용하지만 Cloudflare worker 런타임을 사용할 경우 renderToReadableStream 함수를 사용해야 합니다.</p>
+<p>entry.server.tsx 파일의 전체 내용을 아래와 같이 바꿉니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">AppLoadContext</span><span class="p">,</span> <span class="nx">EntryContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ServerRouter</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">isbot</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;isbot&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderToReadableStream</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-dom/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">handleRequest</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span>: <span class="kt">Request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">responseStatusCode</span>: <span class="kt">number</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">responseHeaders</span>: <span class="kt">Headers</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">routerContext</span>: <span class="kt">EntryContext</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">_loadContext</span>: <span class="kt">AppLoadContext</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">shellRendered</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">userAgent</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user-agent&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">renderToReadableStream</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">ServerRouter</span> <span class="na">context</span><span class="o">=</span><span class="p">{</span><span class="nx">routerContext</span><span class="p">}</span> <span class="na">url</span><span class="o">=</span><span class="p">{</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">}</span> <span class="p">/&gt;,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">onError</span><span class="p">(</span><span class="nx">error</span>: <span class="kt">unknown</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">responseStatusCode</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Log streaming rendering errors from inside the shell.  Don&#39;t log
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// errors encountered during initial shell rendering since they&#39;ll
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// reject and get logged in handleDocumentRequest.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="nx">shellRendered</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">shellRendered</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Ensure requests from bots and SPA Mode renders wait for all content to load before responding
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// https://react.dev/reference/react-dom/server/renderToPipeableStream#waiting-for-all-content-to-load-for-crawlers-and-static-generation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">((</span><span class="nx">userAgent</span> <span class="o">&amp;&amp;</span> <span class="nx">isbot</span><span class="p">(</span><span class="nx">userAgent</span><span class="p">))</span> <span class="o">||</span> <span class="nx">routerContext</span><span class="p">.</span><span class="nx">isSpaMode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="nx">body</span><span class="p">.</span><span class="nx">allReady</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">responseHeaders</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;Content-Type&#34;</span><span class="p">,</span> <span class="s2">&#34;text/html&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">body</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span>: <span class="kt">responseHeaders</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">status</span>: <span class="kt">responseStatusCode</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그냥 이렇게만 하면 됩니다.</p>
+<p>이게 React Router가 서버를 돌릴 때 엔트리포인트가 되는 겁니다.</p>
+<hr>
+<h2 id="viteconfig-파일-손보기">vite.config 파일 손보기</h2>
+<p>위와 같이 entry.server.tsx 파일을 손봤으면 Vite 개발 서버를 위해서 <code>vite.config.ts</code> 파일을 아래와 같이 손봐야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cloudflareDevProxy</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/vite/cloudflare&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">css</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">postcss</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span><span class="nx">tailwindcss</span><span class="p">,</span> <span class="nx">autoprefixer</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span><span class="nx">cloudflareDevProxy</span><span class="p">(),</span> <span class="nx">reactRouter</span><span class="p">(),</span> <span class="nx">tsconfigPaths</span><span class="p">()],</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 cloudflareDevProxy 만 추가하면 됩니다.</p>
+<p>이제 Cloudflare 상에서 Pages 서비스 형태로 배포할 수 있게 완료가 되었는데요.</p>
+<p>여기서 그치지 말고 D1 DB를 이용할 수 있게 여러 가지 설정을 추가해 보겠습니다.</p>
+<hr>
+<h2 id="d1-db-추가">D1 DB 추가</h2>
+<p>일단 wrangler 명령어로 D1 DB를 하나 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  react-router-cloudflare-pages-d1-test git:<span class="o">(</span>main<span class="o">)</span> ✗ pnpx wrangler d1 create mydb
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.99.0
+</span></span><span class="line"><span class="cl">-------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✅ Successfully created DB <span class="s1">&#39;mydb&#39;</span> in region WNAM
+</span></span><span class="line"><span class="cl">Created your new D1 database.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;mydb&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;5~~~~~~~~~~~~~~~~~~~~a&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 &lsquo;mydb&rsquo;라는 이름의 D1 DB를 만들었습니다.</p>
+<p>Cloudflare 웹으로 들어가 보면 아래와 같이 생성된게 보일겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjsCcjlXiRGFuQBPzeNgwYjbDLL5g5JGpzKMgTiOBNwXhcGVWk4dsMVxynICIgYR5ghQv7aYQBaV9KIR-R7yv4NC2DmgLabo_scWBqsKWJoNjO0m7BK8bww1eVcW-sjmsg7aMi9HWBaiBhJVP7oo6OuUiMhzeRccs5ptBAosXlgtzATGCH0odCqemQm1ag"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 d1_databases 부분을 wrangler.toml 파일에 붙여 넣으면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="nx">name</span> <span class="p">=</span> <span class="s2">&#34;react-router-cloudflare-pages-d1-test&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">compatibility_date</span> <span class="p">=</span> <span class="s2">&#34;2024-11-12&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">pages_build_output_dir</span> <span class="p">=</span> <span class="s2">&#34;./build/client&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">d1_databases</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">binding</span> <span class="p">=</span> <span class="s2">&#34;DB&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">database_name</span> <span class="p">=</span> <span class="s2">&#34;mydb&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">database_id</span> <span class="p">=</span> <span class="s2">&#34;5~~~~~~~~~~~~~~~~~~~~a&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 D1 DB를 생성했으니 Table을 만들어야겠죠.</p>
+<p>최상위 폴더에서 db 폴더를 만들고 schema.sql 파일을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">todos</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">name</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">isCompleted</span><span class="o">`</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">false</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아주 간단한 todos 테이블입니다.</p>
+<p>이제 이 SQL 테이블을 이용해서 실제로 D1 DB에 테이블을 만들어야 하는데요.</p>
+<p>아래와 같이 명령어를 실행하면 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜ pnpx wrangler d1 execute mydb --local --file<span class="o">=</span>./db/schema.sql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.99.0
+</span></span><span class="line"><span class="cl">-------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">🌀 Executing on <span class="nb">local</span> database mydb <span class="o">(</span>59~~~~~~~~~~~~~~~~~~~~~~7a<span class="o">)</span> from .wrangler/state/v3/d1:
+</span></span><span class="line"><span class="cl">🌀 To execute on your remote database, add a --remote flag to your wrangler command.
+</span></span><span class="line"><span class="cl">🚣 <span class="m">1</span> <span class="nb">command</span> executed successfully.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 &lsquo;&ndash;local&rsquo; 옵션을 주면 로컬 개발서버의 D1 DB에 적용되는 겁니다.</p>
+<p>&lsquo;&ndash;remote&rsquo; 옵션으로 실제 Cloudflare 서버에 적용해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">✗ pnpx wrangler d1 execute mydb --remote --file<span class="o">=</span>./db/schema.sql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.99.0
+</span></span><span class="line"><span class="cl">-------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ ⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.
+</span></span><span class="line"><span class="cl">  Ok to proceed? … yes
+</span></span><span class="line"><span class="cl">🌀 Executing on remote database mydb <span class="o">(</span>5~~~~~~~~~~~~~~~~~~~~~~7a<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">🌀 To execute on your <span class="nb">local</span> development database, remove the --remote flag from your wrangler command.
+</span></span><span class="line"><span class="cl">Note: <span class="k">if</span> the execution fails to complete, your DB will <span class="k">return</span> to its original state and you can safely retry.
+</span></span><span class="line"><span class="cl">├ 🌀 Uploading 5~~~~~~~~~~~~~~~a7a.4863d22c297eaea3.sql
+</span></span><span class="line"><span class="cl">│ 🌀 Uploading complete.
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">🌀 Starting import...
+</span></span><span class="line"><span class="cl">🌀 Processed <span class="m">1</span> queries.
+</span></span><span class="line"><span class="cl">🚣 Executed <span class="m">1</span> queries in 0.00 seconds <span class="o">(</span><span class="m">2</span> rows read, <span class="m">4</span> rows written<span class="o">)</span>
+</span></span><span class="line"><span class="cl">   Database is currently at bookmark 00000001-00000005-00004e72-c5040d254dc6ccd3b20d4a735370929b.
+</span></span><span class="line"><span class="cl">┌────────────────────────┬───────────┬──────────────┬────────────────────┐
+</span></span><span class="line"><span class="cl">│ Total queries executed │ Rows <span class="nb">read</span> │ Rows written │ Database size <span class="o">(</span>MB<span class="o">)</span> │
+</span></span><span class="line"><span class="cl">├────────────────────────┼───────────┼──────────────┼────────────────────┤
+</span></span><span class="line"><span class="cl">│ <span class="m">1</span>                      │ <span class="m">2</span>         │ <span class="m">4</span>            │ 0.02               │
+</span></span><span class="line"><span class="cl">└────────────────────────┴───────────┴──────────────┴────────────────────┘</span></span></code></pre></div>
+  </figure>
+</div>
+<p>엔터키를 한번 치면 수행되는데요.</p>
+<p>실제 Cloudflare 웹상에서 살펴보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgEPG0kX-SgljRJ1JuCh4BLUn_chCl74BfAFl5Vtq1sEmaOFAjUc1XBLOkHtDKkJzykpXmRwsuwhLO0ClXMwIUsg2xEdm6MM9O1UqsvKyF15IK8rD1GKjnwLzy_Wy2ChFFr3iyqSCoWJnaSb3msj_ovEN_p2BqgbaQwYsifzg1r1_x9YKBYZml6PUGoRkc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 아주 잘 나옵니다.</p>
+<p>그러면 routes 폴더 밑에 있는 home.tsx 파일에 Cloudflare D1 DB 관련 코드를 넣어 작동되는지 테스트해 보겠습니다.</p>
+<hr>
+<h2 id="d1-db-코드-테스트하기">D1 DB 코드 테스트하기</h2>
+<p>home.tsx 파일을 열어 loader 함수를 아래와 같이 추가하고 Home 컴포넌트도 아래와 같이 바꿉니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">context</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">cloudflare</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="s2">&#34;SELECT * from todos&#34;</span><span class="p">).</span><span class="nx">run</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span> <span class="nx">results</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">({</span> <span class="nx">loaderData</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">ComponentProps</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">loaderData</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">React</span> <span class="nx">Router</span> <span class="nx">V7</span> <span class="kd">with</span> <span class="nx">Cloudflare</span> <span class="nx">D1</span> <span class="nx">DB</span> <span class="nx">Test</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">loaderData</span><span class="o">?</span><span class="p">.</span><span class="nx">results</span> <span class="o">&amp;&amp;</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">loaderData</span><span class="p">.</span><span class="nx">results</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발서버를 돌려볼까요?</p>
+<p>터미널상과 브라우저에 보이는 건 아래와 같이 나올 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">/react-router-cloudflare-pages-d1-test
+</span></span><span class="line"><span class="cl">&gt; react-router dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Re-optimizing dependencies because vite config has changed
+</span></span><span class="line"><span class="cl">  ➜  Local:   http://localhost:5173/
+</span></span><span class="line"><span class="cl">  ➜  Network: use --host to expose
+</span></span><span class="line"><span class="cl">  ➜  press h + enter to show <span class="nb">help</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  results: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    success: true,
+</span></span><span class="line"><span class="cl">    meta: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      served_by: <span class="s1">&#39;miniflare.db&#39;</span>,
+</span></span><span class="line"><span class="cl">      duration: 0,
+</span></span><span class="line"><span class="cl">      changes: 0,
+</span></span><span class="line"><span class="cl">      last_row_id: 0,
+</span></span><span class="line"><span class="cl">      changed_db: false,
+</span></span><span class="line"><span class="cl">      size_after: 12288,
+</span></span><span class="line"><span class="cl">      rows_read: 1,
+</span></span><span class="line"><span class="cl">      rows_written: <span class="m">0</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    results: <span class="o">[]</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh4SNy5ko4I6CeJfQN826C9gMYH3XQlQD6mybpdKarmVT454uEHvozYntQN2ZzDYDRoN16B6WOBMtsBsqgilhT5RVsfM-veTJ3NOcnvpMOHst9kdrgWWJd7MffjUhlXQQWw5sINhMK7EH6MI5D7EVjI0R7eCoKGG4YwksK3D1MB-oRMsUtF0uc1KqwQ8MM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>아주 성공적으로 Cloudflare D1 DB를 React Router의 loader 함수에서 읽어오고 있습니다.</p>
+<p>loader 함수의 context 객체를 이용해서 cloudflare에 접근하고 있습니다.</p>
+<hr>
+<h2 id="cloudflare-관련-타입-정보-추가하기">Cloudflare 관련 타입 정보 추가하기</h2>
+<p>아래 그림을 보시면 Cloudflare 관련해서 타입스크립트가 제대로 이해하지 못하는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhsG438b5r_tAC5lyc_JrKt0xcwUAhYmy6tiAWyriLgNpCauytj_ttv0slRIfZvto-v97E4ZCVir3eV1szGp-33SheJP2yoGZk_AVgRJlMGVdu2Tccv0sMiXot-wLvAy6pXy4xNyNTky7MGhwHNrJWj_P31ZuMrVTeLQaHgnYcG338AEn0gHIHravLIUn8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>개발할 때 여간 신경쓰이는게 아닙니다.</p>
+<p>이럴 때는 모듈을 선언하고 여러가지 부가적인 작업을 해줘야 하는데요.</p>
+<p>먼저, wrangler를 이용해서 사용하는 서비스의 Env 인터페이스를 작성해야 합니다.</p>
+<p>터미널 상에서 아래와 같이 입력하면 Env 인터페이스가 있는 <code>worker-configuration.d.ts</code> 파일이 생성됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">✗ pnpx wrangler types
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.99.0
+</span></span><span class="line"><span class="cl">-------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Generating project types...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">interface Env <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        DB: D1Database<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 파일은 d.ts 파일이기 때문에 타입스크립트가 자동으로 읽게 됩니다.</p>
+<p>이 파일을 잘 보시면 우리가 wrangler.toml 상에 설정한 D1 DB를 사용할 수 있게 환경 파일 Env 를 나타내준다고 볼 수 있는데요.</p>
+<p>그러면 다른 환경변수도 사용해 보겠습니다.</p>
+<p>wrangler.toml 파일에 아래와 같이 VARS 섹션을 추가해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">name</span> <span class="o">=</span> <span class="s2">&#34;react-router-cloudflare-pages-d1-test&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">compatibility_date</span> <span class="o">=</span> <span class="s2">&#34;2024-11-12&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">pages_build_output_dir</span> <span class="o">=</span> <span class="s2">&#34;./build/client&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;mydb&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;5~~~~~~~~~~~~~~~~&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>vars<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">MY_SECRET</span> <span class="o">=</span> <span class="s2">&#34;react_router_v7_is_cool&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 &rsquo;npx wrangler types` 명령어를 실행해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">✗ pnpx wrangler types
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.99.0
+</span></span><span class="line"><span class="cl">-------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Generating project types...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">interface Env <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        MY_SECRET: <span class="s2">&#34;react_router_v7_is_cool&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        DB: D1Database<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>어떤가요?</p>
+<p>wrangler.toml 파일의 내용을 보고 알아서 관련 환경변수를 제대로 작성해 줍니다.</p>
+<p>자, 이제 React Router와 Cloudflare를 연결하는 파일을 작성해야 하는데요.</p>
+<p>React Router 공식 홈페이지에서는 app 폴더 밑에 env.ts 파일을 아래와 같이 작성하는 걸 추천합니다.</p>
+<p>app 폴더 밑에 env.ts 파일을 만들어 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">PlatformProxy</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;wrangler&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Cloudflare</span> <span class="o">=</span> <span class="nx">Omit</span><span class="p">&lt;</span><span class="nt">PlatformProxy</span><span class="p">&lt;</span><span class="nt">Env</span><span class="p">&gt;,</span> <span class="s2">&#34;dispose&#34;</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">declare</span> <span class="nx">module</span> <span class="s2">&#34;react-router&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">interface</span> <span class="nx">AppLoadContext</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">cloudflare</span>: <span class="kt">Cloudflare</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{};</span> <span class="c1">// necessary for TS to treat this as a module
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 &ldquo;react-router&rdquo; 모듈을 선언하면 AppLoadContext를 이용할 수 있습니다.</p>
+<p>이제 다시 home.tsx 파일로 들어가 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjD5U75Sc3HrElem9qsLXzPxFE5TL5swmIwIAcCK1t0pMnminnMpV_pf6-96MsYk3p1B87wAhDdjpTnBwqFdF_WPjwXhv-CPfpo_1IubTtgUMOp520mXF4dO5ux3WByHv0JfkizDVEXcmQSXC-fgrf5XqENR2ch_4nGeXpWZsPeTt0rrRfxJLRASCJt8ak=w320-h47"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhTEBrTolXCcUn6d277DVYtERl8SyLP_WIOlOghwYmTEm8jJcJuDg0-XjSOLNsn40GL-hNqi8mOp7ga__7Zj5v_01-FZh6IdttnQC1KloTaoKm7jHDziHkTB8DI0rGQWX_rvrqm90lq0GiFRAFL-SrUlI275WLpeV7eXemLPerJgYariG3VzfRmNZYHAIs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgklSdLAN7Uow9IM5X6u_D37tNLNZS4tZqWvbGBIsc1eT5P74jBWLiH1kEWEmDXMSTYwchpQGJjba0tf6lyb6oYuAuWjAeImL2KkKCTYjdCboVzyaeP2Q9iNK9EA2tt2pRiQAM5tmdnwzhysRx0e9PZrYasPGG11PnA3VuXoqaZeUGKeHzhmIZQCuxNJ8M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 완벽하게 Cloudflare 관련 타입 정보를 얻고 있습니다.</p>
+<p>심지어 마지막에 보시면 MY_SECRET 같은 로컬 변수에도 접근할 수 가 있습니다.</p>
+<hr>
+<h2 id="packagejson-파일-scripts-손보기">package.json 파일 scripts 손보기</h2>
+<p>자, 지금까지 완벽하게 React Router와 Cloudflare 간의 타입 정보까지 구현했는데요.</p>
+<p>이제 개발 서버를 쉽게 돌리기 위한 package.json 파일의 scripts 부분을 손보겠습니다.</p>
+<p>Remix 프레임웍에서 일부 가져온겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">  <span class="s2">&#34;scripts&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;build&#34;</span>: <span class="s2">&#34;cross-env NODE_ENV=production react-router build&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;dev&#34;</span>: <span class="s2">&#34;react-router dev&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;start&#34;</span>: <span class="s2">&#34;cross-env NODE_ENV=production react-router-serve ./build/server/index.js&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;typecheck&#34;</span>: <span class="s2">&#34;react-router typegen &amp;&amp; tsc&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;deploy&#34;</span>: <span class="s2">&#34;npm run build &amp;&amp; wrangler pages deploy&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;typegen&#34;</span>: <span class="s2">&#34;wrangler types&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 deploy와 typegen 항목 두 개만 추가했습니다.</p>
+<p>이렇게 하면 이제 완벽한 개발서버를 환경을 구축한겁니다.</p>
+<p>실제 배포해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">✗ pnpm run deploy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; react-router-cloudflare-pages-d1-test@ deploy /Users/cpro95/Codings/Javascript/react-router-test/react-router-cloudflare-pages-d1-test
+</span></span><span class="line"><span class="cl">&gt; npm run build <span class="o">&amp;&amp;</span> wrangler pages deploy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; build
+</span></span><span class="line"><span class="cl">&gt; cross-env <span class="nv">NODE_ENV</span><span class="o">=</span>production react-router build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vite v5.4.11 building <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">48</span> modules transformed.
+</span></span><span class="line"><span class="cl">build/client/.vite/manifest.json                  1.68 kB │ gzip:  0.43 kB
+</span></span><span class="line"><span class="cl">build/client/assets/logo-dark-pX2395Y0.svg        6.10 kB │ gzip:  2.40 kB
+</span></span><span class="line"><span class="cl">build/client/assets/logo-light-CVbx2LBR.svg       6.13 kB │ gzip:  2.41 kB
+</span></span><span class="line"><span class="cl">build/client/assets/app-Ckulty-W.css              7.33 kB │ gzip:  2.13 kB
+</span></span><span class="line"><span class="cl">build/client/assets/with-props-BJdOiEPt.js        0.35 kB │ gzip:  0.21 kB
+</span></span><span class="line"><span class="cl">build/client/assets/home-B8OacU6i.js              0.49 kB │ gzip:  0.35 kB
+</span></span><span class="line"><span class="cl">build/client/assets/root-CzEkcZd-.js              1.19 kB │ gzip:  0.67 kB
+</span></span><span class="line"><span class="cl">build/client/assets/chunk-K6AXKMTT-DycbfBQN.js  105.32 kB │ gzip: 35.59 kB
+</span></span><span class="line"><span class="cl">build/client/assets/entry.client-u-M4TmH-.js    178.81 kB │ gzip: 56.77 kB
+</span></span><span class="line"><span class="cl">✓ built in 707ms
+</span></span><span class="line"><span class="cl">vite v5.4.11 building SSR bundle <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">11</span> modules transformed.
+</span></span><span class="line"><span class="cl">build/server/.vite/manifest.json             0.74 kB
+</span></span><span class="line"><span class="cl">build/server/assets/logo-dark-pX2395Y0.svg   6.10 kB
+</span></span><span class="line"><span class="cl">build/server/assets/logo-light-CVbx2LBR.svg  6.13 kB
+</span></span><span class="line"><span class="cl">build/server/assets/app-Ckulty-W.css         7.33 kB
+</span></span><span class="line"><span class="cl">build/server/index.js                        6.25 kB
+</span></span><span class="line"><span class="cl">✓ built in 47ms
+</span></span><span class="line"><span class="cl">✔ The project you specified does not exist: <span class="s2">&#34;react-router-cloudflare-pages-d1-test&#34;</span>. Would you like to create it? › Create a new project
+</span></span><span class="line"><span class="cl">✔ Enter the production branch name: … main
+</span></span><span class="line"><span class="cl">✨ Successfully created the <span class="s1">&#39;react-router-cloudflare-pages-d1-test&#39;</span> project.
+</span></span><span class="line"><span class="cl">▲ <span class="o">[</span>WARNING<span class="o">]</span> Warning: Your working directory is a git repo and has uncommitted changes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  To silence this warning, pass in --commit-dirty<span class="o">=</span><span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✨ Compiled Worker successfully
+</span></span><span class="line"><span class="cl">✨ Success! Uploaded <span class="m">10</span> files <span class="o">(</span>1.90 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✨ Uploading Functions bundle
+</span></span><span class="line"><span class="cl">🌎 Deploying...
+</span></span><span class="line"><span class="cl">✨ Deployment complete! Take a peek over at https://c2b0d507.react-router-cloudflare-pages-d1-test.pages.dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 처음 실행하면 Cloudflare Pages 관련 Create a new project 문구가 나오면서 홀딩되는데 엔터키 두 번 치면 실행됩니다.</p>
+<p>branch_name은 기본적으로 main으로 설정하면 됩니다.</p>
+<p>이제 웹상에서 살펴볼까요?</p>
+<p>실제로 웹상에 구현되려면 시간이 조금 걸리니까 브라우저에서 새로고침을 몇 번 해보면 됩니다.</p>
+<p>아래 그림과 같이 나올 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjUJCp61Bu-60kOl5DQ7GfSzNwgCyuVIWFkcxZRjqXRTCspYVyYZVYqSUtF8e9gEI0CKkjytZd9HakS1-iYcrHYLPxByk3R0ccnaHgQTBqPIuAXTphD0U_VBaNoemSHeAfdaYTyCb2CW4vHkxpTKiPJG-d-IQPWP4Uw0pzm7KGZO7R9H7KjF7wrDaGCaUk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>아주 잘 나오네요.</p>
+<p>웹상에서도 D1 DB에 성공적으로 접근하고 있네요.</p>
+<p>대성공입니다.</p>
+<p>그럼 앞으로 React Router V7을 이용해서 Cloudflare의 각종 서비스를 마음껏 공짜로 이용하시기 바랍니다.</p>
+<p>끝.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/react-router-v7/" role="button">react router v7</a>
+        <a class="btn btn-light" href="/tags/react-router/" role="button">react router</a>
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">cloudflare</a>
+        <a class="btn btn-light" href="/tags/d1-db/" role="button">d1 db</a>
+        <a class="btn btn-light" href="/tags/cloudflare-pages/" role="button">cloudflare pages</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-ssr-login-with-react-router-and-supabase/">React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기</a></h2>
+                  <p>Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다.</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-28-react-router-v-7-supabase-user-auth-login-signup-logout/">React Router V7과 Supabase로 유저 가입, 로그인, 로그아웃(Auth) 구현하기</a></h2>
+                  <p>React Router V7와 함께 Supabase의 User Auth 부분 즉, 로그인(로그아웃)을 구현해 보겠습니다.</p>
+                  <p>
+  <small>December 28, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-25-tutorial-react-router-v-7-user-auth/">React Router V7 유저 Auth(로그인) 구현하기</a></h2>
+                  <p>Remix V3인 React Router V7을 이용해서 가장 기본적인 유저 Auth 즉, 로그인(로그아웃)을 구현해 보겠습니다.</p>
+                  <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

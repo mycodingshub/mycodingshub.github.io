@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</title>
+<meta name="description" content="웹 컴포넌트를 직접 만들어 보면서 배우는 astrojs의 아일랜드 아키텍처" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기" />
+<meta property="og:description" content="웹 컴포넌트를 직접 만들어 보면서 배우는 astrojs의 아일랜드 아키텍처" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-10-14T07:32:05Z" />
+<meta property="article:modified_time" content="2023-10-14T07:32:05Z" />
+<meta property="article:tag" content="astrojs" />
+<meta property="article:tag" content="island architecture" />
+<meta property="article:tag" content="web component" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기" />
+<meta name="twitter:description" content="웹 컴포넌트를 직접 만들어 보면서 배우는 astrojs의 아일랜드 아키텍처" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기\"",
+  "description": "\"웹 컴포넌트를 직접 만들어 보면서 배우는 astrojs의 아일랜드 아키텍처\"",
+  "datePublished": "\"2023-10-14T07:32:05Z\"",
+  "dateModified": "\"2023-10-14T07:32:05Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</h1>
+        <p>
+  <small>October 14, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>astrojs 강좌가 벌써 3번째네요.</p>
+<p>전체 astrojs 강좌 목록입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs">astrojs 강좌 1편. astrojs에서 데이터 가져오기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme">astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component">astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture">astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing">astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing">astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering">astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token">astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia">astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목차 **</p>
+<ol>
+<li>
+<p><a href="#1-island-architecture-%ec%95%84%ec%9d%bc%eb%9e%9c%eb%93%9c-%ec%95%84%ed%82%a4%ed%85%8d%ec%b2%98">Island Architecture 아일랜드 아키텍처</a></p>
+</li>
+<li>
+<p><a href="#2-my-island-%ec%9b%b9-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ea%b5%ac%ed%98%84%ec%9c%bc%eb%a1%9c-%ec%95%84%ec%9d%bc%eb%9e%9c%eb%93%9c-%ec%95%84%ed%82%a4%ed%85%8d%ec%b2%98-%ea%b5%ac%ed%98%84%ed%95%b4-%eb%b3%b4%ea%b8%b0">my-island 웹 컴포넌트 구현으로 아일랜드 아키텍처 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="#3-%ec%9b%b9-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ed%81%b4%eb%9e%98%ec%8a%a4-%ec%9e%91%ec%84%b1">웹 컴포넌트 클래스 작성</a></p>
+</li>
+<li>
+<p><a href="#4-%ed%95%98%ec%9d%b4%eb%93%9c%eb%a0%88%ec%9d%b4%ec%85%98-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">하이드레이션 구현하기</a></p>
+</li>
+<li>
+<p><a href="#5-clientvisible-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">client:visible 구현하기</a></p>
+</li>
+<li>
+<p><a href="#6-clientidle-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">client:idle 구현하기</a></p>
+</li>
+<li>
+<p><a href="#7-clientmedia-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">client:media 구현하기</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-island-architecture-아일랜드-아키텍처">1. Island Architecture 아일랜드 아키텍처</h2>
+<p>Astrojs를 공부하다 보면 아일랜드 아키텍처라는 용어를 많이 듣는데요.</p>
+<p>patters.dev 사이트에서 설명한 아일랜드 아키텍처를 요약한 말이 있습니다.</p>
+<blockquote>
+<p>아일랜드 아키텍처를 사용하면 서버 렌더링되는 웹 앱 내에서
+작은 단위의 인터렉트에 집중한 분리된 코드 조각을 만들게 된다.<br />
+아일랜드 아키텍처는 점전직으로 향상되는 HTML을 만들어낸다.<br />
+일 앱이 전체 페이지 렌더링을 컨트롤하는 대신, 다수의 엔트리 포인트가 존재한다.<br />
+이 “아일랜드”의 상호작용을 위한 스크립트들은 독립적으로 클라이언트에 전송되고 hydrate되며
+그 외 나머지 페이지들은 정적 HTML로 렌더링 하게 된다.</p></blockquote>
+<p>바로 클라이언트 사이드 렌더링(CSR)과 서버사이드 렌더링(SSR)의 중간으로 CSR과 SSR의 장점을 뽑아 만든 건데요.</p>
+<p>자바스크립트 부분을 최대한 목적에 맞게 늦게 로드한다는 겁니다.</p>
+<p>이걸 처음부터 구현한 게 Qwik 프레임워크인데요.</p>
+<p>Qwik 프레임워크는 모든 자바스크립트 로드가 목적이 이루어질 때만 로드됩니다.</p>
+<p>그래서 초기 HTML 로드 타임이 빠른 거죠.</p>
+<p>Astrojs는 철저히 자바스크립트를 배제하고 순수한 HTML과 CSS만 로드하는 걸 선호합니다.</p>
+<p>그래야 웹 페이지가 빠르게 로드되거든요.</p>
+<p>그런데 현대적인 웹 페이지에서는 자바스크립트가 필수입니다.</p>
+<p>사용자와의 상호작용이 빠질 수가 없는 거죠.</p>
+<p>그래서 Astrojs에서 도입한 게 아일랜드 아키텍처(Island Architecture)입니다.</p>
+<p>필요할 때만 자바스크립트를 로드한다는 겁니다.</p>
+<hr>
+<h2 id="2-my-island-웹-컴포넌트-구현으로-아일랜드-아키텍처-구현해-보기">2. my-island 웹 컴포넌트 구현으로 아일랜드 아키텍처 구현해 보기</h2>
+<p>그러면 실제로 아이랜드 아키텍처를 구현해 볼까요?</p>
+<p>HTML과 JS파일 만 이용해서 아일랜드 아키텍처를 구현해 보면 자연스럽게 astrojs의 아일랜드 아키텍처에 대해 이해할 수 있을 겁니다.</p>
+<p>우리가 구현하려는 거는 웹 컴포넌트인데요.</p>
+<p>웹 컴포넌트에 대한 설명은 <a href="https://developer.mozilla.org/ko/docs/Web/API/Web_components">여기</a>를 클릭해서 한번 읽어 보시면 좋습니다.</p>
+<p>우리가 만들려고 하는 웹 컴포넌트는 my-island인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">my-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">template</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Hello from my-island<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">my-island</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 template를 이용할 건데요.</p>
+<p>왜 template를 이용하냐면 바로 template의 특성 때문입니다.</p>
+<p><code>&lt;template&gt;</code>는 HTML에서 브라우저에 의해 파싱 되지만 초기 페이지 로드 시 렌더링 되지 않도록 설계되었는데요.</p>
+<p>그래서 보통 자바스크립트를 사용하여 나중에 동적으로 삽입할 클라이언트 측 콘텐츠를 보유하는 메커니즘으로 작동합니다.</p>
+<p>기능은 다음과 같습니다:</p>
+<ol>
+<li>
+<p><strong>파싱하지만 렌더링하지 않음:</strong></p>
+<ul>
+<li><code>&lt;template&gt;</code> 요소 내부의 내용은 HTML이 로드될 때 브라우저에 의해 파싱됩니다.</li>
+<li>그러나 내용은 초기 페이지 뷰에서 렌더링 되지 않습니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>JavaScript 사용:</strong></p>
+<ul>
+<li>JavaScript는 <code>&lt;template&gt;</code> 요소의 내용에 액세스하고 복제할 수 있습니다.</li>
+<li>복제된 내용은 동적으로 문서에 삽입되거나 조작될 수 있습니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>일반적인 사용 사례:</strong></p>
+<ul>
+<li>주로 데이터가 채워진 후에 표시되어야 하는 클라이언트 측 템플릿을 보유하는 데 사용됩니다.</li>
+<li>나중에 숨겨져야 하거나 조건에 따라 표시되지 않아야 하는 콘텐츠의 렌더링을 피하는 데 유용합니다.</li>
+</ul>
+</li>
+</ol>
+<p>간단한 예제를 통해 설명하겠습니다:</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;ko&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>템플릿 요소 예제<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="c">&lt;!-- 템플릿 정의 --&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">template</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;myTemplate&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>이 내용은 템플릿 안에 있습니다.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 템플릿에 액세스
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">template</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;myTemplate&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 템플릿 내용 복제
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">clone</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">importNode</span><span class="p">(</span><span class="nx">template</span><span class="p">.</span><span class="nx">content</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 복제된 내용을 문서에 추가
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">clone</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 예제에서 <code>&lt;template&gt;</code> 요소 내부의 내용은 초기에 렌더링 되지 않았는데요.</p>
+<p>위에서 만든 자바스크립트는 template 내용을 복제하고 <code>&lt;body&gt;</code> 요소에 추가하여 최종적으로 브라우저에 보이게 만듭니다.</p>
+<p>즉, 초기 페이지 렌더링에서는 파싱되지 않고, 개발자가 의도한 데로 자바스크립트 코드를 통해 원하는 시간과 원하는 장소에 넣을 수 있게 됩니다.</p>
+<p>그때까지의 내용을 담아 놓는 그릇이라고 보시면 됩니다.</p>
+<p>그래서 우리가 만들려고 하는 my-island 웹 컴포넌트는 template를 보유하고 있고 template 안에 있는 걸 아일랜드 아키텍처에 따라 visible, idle, media라는 조건에 따라 보여주는 코드를 만들겠습니다.</p>
+<p>최종적인 사용 방법은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">my</span><span class="o">-</span><span class="nx">island</span> <span class="nx">client</span><span class="o">:</span><span class="nx">visible</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/my-island&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">my</span><span class="o">-</span><span class="nx">island</span> <span class="nx">client</span><span class="o">:</span><span class="nx">idle</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/my-island&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">my</span><span class="o">-</span><span class="nx">island</span> <span class="nx">client</span><span class="o">:</span><span class="nx">media</span><span class="o">=</span><span class="s2">&#34;(max-width: 400px)&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/my-island&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>visible는 화면에 보이는 경우,</p>
+<p>idle은 브라우저가 idle상태 즉, 모든 자료가 로드된 후,</p>
+<p>media는 화면 크기에 맞을 경우, 즉, max-width가 400px일 경우에만 작동되도록,</p>
+<p>위와 같이 작동하는 나만의 아일랜드 아키텍처를 구현해 보겠습니다.</p>
+<hr>
+<h2 id="3-웹-컴포넌트-클래스-작성">3. 웹 컴포넌트 클래스 작성</h2>
+<p>MDN 사이트에서 웹 컴포넌트는 클래스로 정의된다고 했습니다.</p>
+<p>일단 빈 폴더에 index.html 파일과 함께, my-island.js 파일을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">MyIsland</span> <span class="kr">extends</span> <span class="nx">HTMLElement</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">tagName</span> <span class="o">=</span> <span class="s1">&#39;my-island&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">attributes</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">dataIsland</span><span class="o">:</span> <span class="s1">&#39;data-island&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;customElements&#39;</span> <span class="k">in</span> <span class="nb">window</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">window</span><span class="p">.</span><span class="nx">customElements</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="nx">MyIsland</span><span class="p">.</span><span class="nx">tagName</span><span class="p">,</span> <span class="nx">MyIsland</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;Island can not be initiated because browser can not support customElements.&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>MyIsland라는 객체를 구현했고, 구현한 객체를 customElements에 define 해서 정의했습니다.</p>
+<p>그러면 index.html에서 사용해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My Island Test<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">import</span> <span class="s1">&#39;./my-island.js&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Test of My Island<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">my-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello from start of my-island&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">template</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello from template of my-island&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">my-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 작성했습니다.</p>
+<p>my-island.js 파일을 로드하려면 모듈로써 import 해야 합니다.</p>
+<p>그래서 위와 같이 해야 합니다.</p>
+<p>단순히 <code>&lt;script src&gt;</code> 방식으로는 작동되지 않으니 참고 바랍니다.</p>
+<p>실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj6Wnl6gfgc0t-Ljg6IuiCOqdJrIwlDnLtfA5mhkyMW_rqW3k_4CdIb3ESyuYZsBiGis7h48ruig7z2Q14DRNonWos1zbcQ9lbq7MGqP5bv4iev9FJMjHdk6E8a7ectufeZBOOGrHEwt0JDRyt_-rsRYfFfgS_spL2FGMYy8VOeOA0CtVtK2XJBgdD_sLM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 my-island 안에 있는 template은 파싱되지 않았네요.</p>
+<p>template 바깥에 있는 console log 명령어만 작동했으니까요.</p>
+<hr>
+<h2 id="4-하이드레이션-구현하기">4. 하이드레이션 구현하기</h2>
+<p>client:visible 속성은 클라이언트 화면에서 해당 항목이 보일 때 my-island 웹 컴포넌트가 실행되도록 만드는 겁니다.</p>
+<p>즉, 한 페이지를 넘어가는 기다란 페이지가 있고 자바스크립트가 있는 곳은 페이지 맨 밑단일 경우, 유저가 페이지를 스크롤해서 자바스크립트가 있는 페이지가 화면에 보였을 때, 이때 로드하는 방식입니다.</p>
+<p>그럼 이런 구현을 위해 웹 컴포넌트의 생명 주기 함수인 connectedCallback 함수를 이용해야 합니다.</p>
+<p>connectedCallback 함수는 웹 컴포넌트가 DOM에 연결될 때 실행됩니다.</p>
+<p>즉, 해당 컴포넌트가 문서에 삽입되면 브라우저에 의해 connectedCallback 함수가 호출됩니다.</p>
+<p>이는 컴포넌트의 생명 주기에서 연결 단계에서 발생하는 부분입니다.</p>
+<p>간단히 말하면, 해당 웹 컴포넌트가 DOM에 실제로 추가될 때 connectedCallback 함수가 호출되어 초기화 또는 다른 초기 작업을 수행할 수 있습니다.</p>
+<p>그래서 hydrate 함수를 바로 connectedCallback 함수 안에 작성하는 이유입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">MyIsland</span> <span class="kr">extends</span> <span class="nx">HTMLElement</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">tagName</span> <span class="o">=</span> <span class="s1">&#39;my-island&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">attributes</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">dataIsland</span><span class="o">:</span> <span class="s1">&#39;data-island&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 생명주기 콜백함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">async</span> <span class="nx">connectedCallback</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">hydrate</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">hydrate</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">relevantChildTemplates</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getTemplates</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;customElements&#39;</span> <span class="k">in</span> <span class="nb">window</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">window</span><span class="p">.</span><span class="nx">customElements</span><span class="p">.</span><span class="nx">define</span><span class="p">(</span><span class="nx">MyIsland</span><span class="p">.</span><span class="nx">tagName</span><span class="p">,</span> <span class="nx">MyIsland</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;Island can not be initiated because browser can not support customElements.&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>추가된 부분만 보시면 connectedCallback 함수에서 hydrate 함수를 실행시키는데요.</p>
+<p>그리고 hydrate 함수는 template 태그와 관련된 getTemplate 함수를 실행해서 관련 template 정보를 모읍니다.</p>
+<p>그러면 getTemplate 함수를 구현해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">async</span> <span class="nx">connectedCallback</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">hydrate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">hydrate</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">relevantChildTemplates</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getTemplates</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">getTemplates</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="sb">`template[</span><span class="si">${</span><span class="nx">MyIsland</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">dataIsland</span><span class="si">}</span><span class="sb">]`</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 추가된 부분
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>getTemplate는 querySelectorAll 메서드를 이용해서 <code>template[data-island]</code>인걸 모두 선택하게 됩니다.</p>
+<p>data-island는 우리가 맨 처음 구현했던 아래 class 구현해 보면 attributes 항목에 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">MyIsland</span> <span class="kr">extends</span> <span class="nx">HTMLElement</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">tagName</span> <span class="o">=</span> <span class="s1">&#39;my-island&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">attributes</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">dataIsland</span><span class="o">:</span> <span class="s1">&#39;data-island&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러면 이제 다시 hydrate 함수를 다시 고쳐 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">hydrate</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">relevantChildTemplates</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getTemplates</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">replaceTemplates</span><span class="p">(</span><span class="nx">relevantChildTemplates</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">replaceTemplates</span><span class="p">(</span><span class="nx">templates</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">node</span> <span class="k">of</span> <span class="nx">templates</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 아래 DOM을
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &lt;template data-island=&#34;&#34;&gt;#document-fragment&lt;/template&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 아래 DOM으로 바꾸는 코드
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// #document-fragment
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">node</span><span class="p">.</span><span class="nx">replaceWith</span><span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>hydrate 함수를 수정했고 그다음에 replaceTemplates 함수도 추가했습니다.</p>
+<p>replaceTemplates 함수에서 실제 node.content를 replaceWith 하게 되는 겁니다.</p>
+<p>즉, data-island data 세트가 있는 temlate 태그에서 template 태그만 없애주는 거죠.</p>
+<p>node가 <code>&lt;template data-island=&quot;&quot;&gt;#document-fragment&lt;/template&gt;</code>인데, node.content 인 <code>#document-fragment</code>로 replace 하는 거니까요.</p>
+<p>이제, 다시 index.html 파일을 브라우저에서 로드해 볼까요?</p>
+<p>아까랑 별 차이가 없습니다.</p>
+<p>왜냐하면 template 부분에 data-island 속성을 추가해야 하거든요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My Island Test<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">import</span> <span class="s1">&#39;./my-island.js&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Test of My Island<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">my-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello from start of my-island&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">template</span> <span class="na">data-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        /* 이 부분 추가 */
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello from template of my-island&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">my-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 template 부분에 data-island 속성을 추가했습니다.</p>
+<p>왜 추가하냐면 우리가 만든 getTemplate함수에서 data-island 부분만 찾기 때문이죠.</p>
+<p>이제 브라우저를 다시 로드해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgdZ3zLgg2dWJfyIFFcfOIMjoAhe8XzcWJ5FZ2pFsLb5_3l0sh2du1n19qAKs6KOcp7fjIpIVgAY_24_C8qQ-zyVN4ei_D2NqN6RX_HkY1n7CT5Ic2eBn7pKTEiXBlcDYeeMUZn41vwcgaL9LCmlrBSNVF-RJpoEvn1BekrppBEbPGAlpgNXmam6lWiOm0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 template안에 있는 script도 실행이 됐습니다.</p>
+<p>이게 바로 hydrate입니다.</p>
+<p>성공적으로 하이드레이션이 구현됐네요.</p>
+<hr>
+<h2 id="5-clientvisible-구현하기">5. client:visible 구현하기</h2>
+<p>하이드레이션도 구현했으니 이제 client:visible 항목에 대한 하이드레이션도 구현해 볼까요?</p>
+<p>일단 visible 처럼 화면에서 스크롤해서 해당 항목이 보이게끔 의도적으로 아래 코드를 넣어봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Test of My Island<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">p</span> <span class="na">style</span><span class="o">=</span><span class="s">&#34;padding-bottom: 100vh&#34;</span><span class="p">&gt;</span>Scroll down<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>padding-bottom을 100vh 로 주면 수직 화면 100%인게 됩니다.</p>
+<p>그래서 밑으로 스크롤할 수 있는 거죠.</p>
+<p>즉, 스크롤했을 경우만 template 안에 있는 script가 실행되게 끔 만드는 겁니다.</p>
+<p>즉, 컨디션(조건)이 만족됐을 경우 작동하게끔 해야 하는데요.</p>
+<p>그래서 Conditions 이란 클래스를 하나 더 만들 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">Conditions</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">map</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">idle</span><span class="o">:</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">waitForIdle</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">visible</span><span class="o">:</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">waitForVisible</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">media</span><span class="o">:</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">waitForMedia</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">waitForIdle</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">resolve</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">waitForVisible</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">resolve</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">waitForMedia</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">resolve</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Conditions 객체는 3가지 Promise를 리턴하는 함수를 가지는 map이 있습니다.</p>
+<p>waitForVisible, waitForIdle, waitForMedia가 그것입니다.</p>
+<p>waitForVisible Promise는 my-island가 client:visible 이란 항목으로 작성되었을 때 실행되는 Promise가 되는 거죠.</p>
+<p>그러면 client:visible, client:idle, client:media 에 대한 조건 검색을 구현해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">Conditions</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">map</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">idle</span><span class="o">:</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">waitForIdle</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">visible</span><span class="o">:</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">waitForVisible</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">media</span><span class="o">:</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">waitForMedia</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">waitForIdle</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">resolve</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">waitForVisible</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">resolve</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">waitForMedia</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">resolve</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">static</span> <span class="nx">getConditions</span><span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">condition</span> <span class="k">of</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">Conditions</span><span class="p">.</span><span class="nx">map</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">hasAttribute</span><span class="p">(</span><span class="sb">`client:</span><span class="si">${</span><span class="nx">condition</span><span class="si">}</span><span class="sb">`</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span><span class="p">[</span><span class="nx">condition</span><span class="p">]</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="sb">`client:</span><span class="si">${</span><span class="nx">condition</span><span class="si">}</span><span class="sb">`</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;client:condition is &#39;</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">result</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>getConditions 함수가 그건데요.</p>
+<p>client: 뒤에 오는 visible, idle, media를 구분하여 값을 리턴해 줍니다.</p>
+<p>실제 콘솔 로그된 화면을 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgJrWhFozW4be1Bj_px2K73B2mEn7u13TdtPA9cNoiRvhy_gEpmLcYL7wfwidZu7C_SbAwLzQre7IR53_NWdI1YPoWmqik8ZNhbliaPDjQ0T3nH9KVVwy_SmQRCd3-MqiZ3z0DlCgT4a9CzE6kAoMowvodIq_SaIp_T0N7Gmg36JqX9OdZ-hOwQ1bA1HOI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 visible이란 문구가 출력되네요.</p>
+<p>이제, Conditions 객체를 이용해서 다시 MyIsland 객체의 hydrate 함수를 손봐야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">async</span> <span class="nx">hydrate</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">conditions</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">conditionAttributesMap</span> <span class="o">=</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">getConditions</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">condition</span> <span class="k">in</span> <span class="nx">conditionAttributesMap</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">conditionFn</span> <span class="o">=</span> <span class="nx">Conditions</span><span class="p">.</span><span class="nx">map</span><span class="p">[</span><span class="nx">condition</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">conditionFn</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">conditionPromise</span> <span class="o">=</span> <span class="nx">conditionFn</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">conditionAttributesMap</span><span class="p">[</span><span class="nx">condition</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">conditions</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">conditionPromise</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 해당 컨디션 여기서는 visible이 됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 그래서 waitForVisible 이 실행되는거죠.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">conditions</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// template 태그 안에 있는 걸로 교체 즉, template 태그만 삭제
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">relevantChildTemplates</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getTemplates</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">replaceTemplates</span><span class="p">(</span><span class="nx">relevantChildTemplates</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>getConditions 해서 conditionAttributesMap에 저장하고 그리고 conditionAttributesMap의 condition 을 모두 LOOP해서 해당 Promise를 가져와서 실행하게 됩니다.</p>
+<p>이제 index.html 파일에서 아래와 같이 client:visible를 추가해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">my-island</span> <span class="na">client:visible</span><span class="p">&gt;</span> ... ... <span class="p">&lt;/</span><span class="nt">my-island</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjP7isEN0f1FH6UQKmJNaV-WN4Iaj9CFKPyY_tgZalSSQuGZon8Sp2VVlxu7sHro5UGSYH7V_nEOMSR04qEsYFQlAQ1xvwSOgINREtc70s6l_e_jAZfE_oWbd-CBdF3Oipo1xhv_qy_aYRGmst-5LmjYJDotVcIHyWTBZxbN7Ra1Hh_SXnCYQLk1y8BzzA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>브라우저를 실행해 봐도 template안에 있는 스크립트가 바로 실행되어 버리는데요.</p>
+<p>왜냐하면 Conditions 클래스에서 아래 코드처럼 waitForVisible 함수가 아직까지는 Promise를 즉시 반환해서 그렇습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">static</span> <span class="nx">waitForVisible</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="p">=&gt;</span> <span class="nx">resolve</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 부분에서 스크롤이 됐을 경우에만 Promise를 리턴하는 코드를 작성하면 됩니다.</p>
+<p>여기에는 IntersectionObserver라는 객체를 이용할 건데요.</p>
+<p>예전 React Query에서 Infinite Pagination을 구현할 때 사용한 겁니다.</p>
+<p>우리가 예전에 단순하게 Promise를 리턴했던 waitForVisible 스태틱 함수를 수정해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// 단순히 Promise만 리턴하는 코드를 아래와 같이 IntersectionObserver를 이용한 코드로 수정하면 됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1">// static waitForVisible() {
+</span></span></span><span class="line"><span class="cl"><span class="c1">//   return new Promise(resolve =&gt; resolve())
+</span></span></span><span class="line"><span class="cl"><span class="c1">//}
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">static</span> <span class="nx">waitForVisible</span><span class="p">(</span><span class="nx">noop</span><span class="p">,</span> <span class="nx">el</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="s2">&#34;IntersectionObserver&#34;</span> <span class="k">in</span> <span class="nb">window</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// observer 함수를 만들고
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">let</span> <span class="nx">observer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">IntersectionObserver</span><span class="p">((</span><span class="nx">entries</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="p">[</span><span class="nx">entry</span><span class="p">]</span> <span class="o">=</span> <span class="nx">entries</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">entry</span><span class="p">.</span><span class="nx">isIntersecting</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">observer</span><span class="p">.</span><span class="nx">unobserve</span><span class="p">(</span><span class="nx">entry</span><span class="p">.</span><span class="nx">target</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// el 엘러멘트를 observe(관찰) 시작
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">observer</span><span class="p">.</span><span class="nx">observe</span><span class="p">(</span><span class="nx">el</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 작성하면 client:visible에 대한 구현이 완성되었습니다.</p>
+<p>그러면 다시 브라우저를 리프레쉬하고 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgGFueEBnuVZim-jGMZh-MNHr-_QPZnyJV0wZGM2-om2IG79R_eLHAfprZKA_f27SCKdQYbknsDG3Rz3Nf-OZOaNU1KHeqxXim8Slj2wrJU9BsN339hZ3eKw6E1WnPZ9tUCErGWMVdTxmQmnQ8Ut83RM9PNJHMdQPZZJ3wG9goluCidCw6g7zXUBcQkHlk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>처음에는 위와 같이 나옵니다.</p>
+<p>그러다가 마우스를 스크롤 다운하면 아래와 같이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgtKgEE2oNRTaL4oNl_zS65t9PV-XBoz_dSbWuDBoFw3PO8ezAbMxpo-BpFy-5hEbsufJMRowlyQ4sTQ1pqPrvOFielrDoJhzt-R73BaR74oQ-1dq87xeQiT9QQbKcsULojqDi5exnFgOU7up-Wn5V_a4lJOMdteZaI8FCyvLW4wsmFd0zJNexWVxF93kQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>client:visible에 대한 아일랜드 아키텍처 구현이 완성되었네요.</p>
+<hr>
+<h2 id="6-clientidle-구현하기">6. client:idle 구현하기</h2>
+<p>이제 client:idle 항목에 대해 아일랜드 아키텍처를 구현해 보겠습니다.</p>
+<p>Conditions 클래스에 waitForIdle 함수를 좀 더 구체적으로 수정하면 되는데요.</p>
+<p>idle 항목은 브라우저에서 모든 항목이 다운로드가 되었을 상황에 해당합니다.</p>
+<p>즉, 모든 게 브라우저에 로드되었을 때만 아일랜드 아키텍처가 작동하라는 뜻입니다.</p>
+<p>idle 상태를 따지는 로직은 바로 window.requestIdleCallback 메서드를 사용할 건데요.</p>
+<p>window.requestIdleCallback() 메서드는 브라우저가 유휴 상태일 때 호출될 함수를 대기열에 추가합니다.</p>
+<p>즉, requestIdleCallback 함수에 Promise를 resolve 되는 명령어를 입력해 놓으면 브라우저가 idle이 되면 알아서 Promise가 resolve가 되겠죠.</p>
+<p>그리고 만약, requestIdleCallback 함수가 지원되지 않으면 load 이벤트를 이용하면 됩니다.</p>
+<p>load 이벤트를 이용하는 방법은 바로 document.readyState 항목을 이용하는 건데요.</p>
+<p>이게 complete가 아니면 load 이벤트리스너를 추가해서 끝날때까지 기다리는거죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">static</span> <span class="nx">waitForIdle</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">onLoad</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">!==</span> <span class="s2">&#34;complete&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;load&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span> <span class="nx">once</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">onIdle</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="s2">&#34;requestIdleCallback&#34;</span> <span class="k">in</span> <span class="nb">window</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">requestIdleCallback</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span><span class="nx">onIdle</span><span class="p">,</span> <span class="nx">onLoad</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리는 onIdle, onLoad 함수를 둘 다 만들었고 두개가 모드 Promise resolve가 되야지 waitForIdle 함수가 실행되는 겁니다.</p>
+<p>이제, waitForIdle 함수도 완성되었네요.</p>
+<p>client:idle 같은 경우의 아일랜드 아키텍처를 테스트해보려면 img 태그에 용량이 큰 이미지를 걸어 놓으면 됩니다.</p>
+<p>만약 30메가가 넘는 큰 그림이면 전부 로드되는데 상당한 시간이 걸릴 건데요.</p>
+<p>이럴 때 client:idle을 쓰면 30메가 그림이 다 로드되면 실행되는 웹 컴포넌트가 될 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Initial island demo<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">img</span>
+</span></span><span class="line"><span class="cl">      <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://raw.githubusercontent.com/ohansemmanuel/larder/main/large_image.jpeg&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="na">alt</span><span class="o">=</span><span class="s">&#34;34MB large satellite image from Effigis.&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">my-island</span> <span class="na">client:idle</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Hello island<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">template</span> <span class="na">data-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;hello from start of my-island&#34;</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;hello from template of my-island&#34;</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">my-island</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드처럼 34메가 바이트 그림을 github에서 다운로드 해야하는데요.</p>
+<p>완료되면 idle 상태가 되기 때문에 waitForIdle 스태틱 함수가 실행될 겁니다.</p>
+<hr>
+<h2 id="7-clientmedia-구현하기">7. client:media 구현하기</h2>
+<p>이번에는 media 라고해서 CSS에서 match query 관련 로직입니다.</p>
+<p>화면 크기에 따라 실현되는 아일랜드 아키텍처인거죠.</p>
+<p>모바일 화면일 경우 실행하게끔 client:media에 아래와 같이 옵션을 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">my</span><span class="o">-</span><span class="nx">island</span> <span class="nx">client</span><span class="o">:</span><span class="nx">media</span><span class="o">=</span><span class="s2">&#34;(max-width: 400px)&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/my-island&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>400px가 맥스 폭일 경우 waitForMedia 함수가 실행되는 거죠.</p>
+<p>자체적으로 window.matchMedia() 함수를 이용할 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">static</span> <span class="nx">waitForMedia</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">queryList</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">matches</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">query</span> <span class="o">&amp;&amp;</span> <span class="s2">&#34;matchMedia&#34;</span> <span class="k">in</span> <span class="nb">window</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryList</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">matchMedia</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">queryList</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">queryList</span><span class="p">.</span><span class="nx">matches</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryList</span><span class="p">.</span><span class="nx">addListener</span><span class="p">((</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">matches</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실제 콘솔 로그창을 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjD_fmZT_R5tV3BYu0ThxVkF7SttGJFJDOO8gSv3xZU3M8x8NnqA_OhqhO-Obf4HZ1pHqgbzAlxfaazV0VyetCkJ_WyMnly5O3KORAq-3lRfs-wPXEfziYmnrRfkIfrBsYUvESVd53UtOGpCcQwzbdq2n9b5hWSNVQF5_Rq6RP3x1Xxvup0vLPALab0RqI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 condition은 media이고 media의 value 값은 &lsquo;max-width : 400px&rsquo;이네요.</p>
+<p>그리고 MediaQueryList의 값에서 matches 값이 false네요.</p>
+<p>즉 화면이 400px 보다는 크다는 얘기죠.</p>
+<p>화면을 줄여볼까요?</p>
+<p>queryList.addListener 를 추가해서 화면이 바뀌면 자동으로 Promise가 resolve 될겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhKOzU13fHW4D1Y6i_NssodPcp_Pr9_GjKwhEF7W8fs_ePqS7BfRm3Cn8IkeL0GcpzGMcbxBSm62A6CjNF1yRkEgu-EAjvmwjIbq4_oVIZOwlIxwywy9bw6IXyuQe8w2d0HyOOwHy5LDuggKHRyXTvlldpBFa4yZEzcPwyWBTIjx_A9Pc7A4RDQ9vUTiUU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 화면을 줄이면 matches 값이 true가 되고 template 안의 script 콘솔 로그가 작동하게 됩니다.</p>
+<p>즉, hydrate가 된거죠.</p>
+<hr>
+<p>지금까지 아이랜드 아키텍처를 3가지 경우를 상정해서 구현해 봤는데요.</p>
+<p>이런 식으로 아일랜드 아키텍처를 완벽하게 구현해 놓은 게 바로 Astrojs의 아일랜드 아키텍처입니다.</p>
+<p>Astrojs에서 제공하는 아일랜드 아키텍처는 client:load, client:idle, client:visible, client:media, client:only가 있습니다.</p>
+<p>자세한 내용은 공식 문서를 읽어보시면 됩니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/astrojs/" role="button">astrojs</a>
+        <a class="btn btn-light" href="/tags/island-architecture/" role="button">island architecture</a>
+        <a class="btn btn-light" href="/tags/web-component/" role="button">web component</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture/">astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</a></h2>
+                  <p>astrojs 아일랜드 아키텍처 자세히 알아보기</p>
+                  <p>
+  <small>October 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm/">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></h2>
+                  <p>풀스택 개발하기 AstroJS + Cloudflare pages + D1 + Drizzle ORM</p>
+                  <p>
+  <small>December 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></h2>
+                  <p>Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

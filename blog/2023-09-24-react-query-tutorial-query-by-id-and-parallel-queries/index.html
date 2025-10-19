@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법</title>
+<meta name="description" content="id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-09-24-react-query-tutorial-query-by-id-and-parallel-queries/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법" />
+<meta property="og:description" content="id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-09-24-react-query-tutorial-query-by-id-and-parallel-queries/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-09-24T05:39:45Z" />
+<meta property="article:modified_time" content="2023-09-24T05:39:45Z" />
+<meta property="article:tag" content="react query" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="query by id" />
+<meta property="article:tag" content="parallel queries" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법" />
+<meta name="twitter:description" content="id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법\"",
+  "description": "\"id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법\"",
+  "datePublished": "\"2023-09-24T05:39:45Z\"",
+  "dateModified": "\"2023-09-24T05:39:45Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-09-24-react-query-tutorial-query-by-id-and-parallel-queries/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법</h1>
+        <p>
+  <small>September 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>네 번째 React Query 강좌 시리즈입니다</p>
+<p>전체 시리즈 링크는 아래와 같습니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-17-how-to-use-react-query-and-usequery">React Query 강좌 1편. useQuery 사용법 기초</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-17-react-query-cachetime-staletime-refetch-poll">React Query 강좌 2편. 캐시로 움직이는 useQuery 작동 원리(cachetime,staletime,refetch,poll)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-refetch-on-click-success-callback-data-transformation">React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-tutorial-query-by-id-and-parallel-queries">React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-dynamic-parallel-queries-and-dependent-query">React Query 강좌 5편. 동적 병렬 쿼리(dynamic parallel queries)와 필요충분 쿼리 만들기(dependent query)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-usequeryclient-initialdata-using-cache">React Query 강좌 6편. useQueryClient와 initialData를 이용해서 캐시된 데이터 활용하여 상세 페이지에서 보여주기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-paginated-query-and-infinite-query">React Query 강좌 7편. 페이지네이션 구현하기와 useInfiniteQuery로 무한스크롤 구현하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-02-react-query-howto-usemutation-in-depth">React Query 강좌 8편. useMutation 사용법과 Optimistic Updates</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ol>
+<li><a href="#1-id%eb%a1%9c-%ed%8a%b9%ec%a0%95-%ed%95%ad%eb%aa%a9%eb%a7%8c-%ea%b0%80%ec%a0%b8%ec%98%a4%eb%8a%94-%ec%bf%bc%eb%a6%ac-%eb%b0%a9%eb%b2%95query-by-id">id로 특정 항목만 가져오는 쿼리 방법(query by id)</a></li>
+<li><a href="#2-%eb%b3%91%eb%a0%ac-%ec%bf%bc%eb%a6%acparallel-queries-%eb%b0%a9%eb%b2%95">병렬 쿼리(parallel queries) 방법</a></li>
+</ol>
+<hr>
+<h2 id="1-id로-특정-항목만-가져오는-쿼리-방법query-by-id">1. id로 특정 항목만 가져오는 쿼리 방법(query by id)</h2>
+<p>UI를 만들다 보면 전체 리스트가 있고 해당 리스트를 클릭하면 상세 페이지로 이동하는 경우가 많은데요.</p>
+<p>이 경우 id로 특정 항목만 가져오는 쿼리를 만들 필요가 있습니다.</p>
+<p>먼저, 리액트 라우터를 이용해서 상세페이지의 경우 다이내믹 라우터를 만들어 보겠습니다.</p>
+<p>App.jsx 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ReactQuery</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./ReactQuery&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ReactQueryDetails</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./ReactQueryDetails&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="s2">&#34;/react-query&#34;</span> <span class="nx">element</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">ReactQuery</span> <span class="o">/&gt;</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="s2">&#34;/react-query/:productId&#34;</span> <span class="nx">element</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">ReactQueryDetails</span> <span class="o">/&gt;</span><span class="p">}</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>react-query 경로 다음에 productId라는 다이내믹 라우팅을 구성했는데요.</p>
+<p>이제 ReactQueryDetails 컴포넌트를 만들어 보겠습니다.</p>
+<p>위치는 ReactQuery.jsx 파일과 같은 곳에 두면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useParams</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-router-dom&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useProductId</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./hooks/useProductId&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactQueryDetails</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">productId</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useParams</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">isError</span><span class="p">,</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useProductId</span><span class="p">(</span><span class="nx">productId</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isLoading</span><span class="p">)</span> <span class="k">return</span> <span class="o">&lt;&gt;</span><span class="nx">Loading</span><span class="p">...</span><span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isError</span><span class="p">)</span> <span class="k">return</span> <span class="o">&lt;&gt;</span><span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">data</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">ID</span> <span class="o">:</span> <span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">NAME</span> <span class="o">:</span> <span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">PRICE</span> <span class="o">:</span> <span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">price</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>상세 페이지는 useProductId 라는 훅을 이용합니다.</p>
+<p>이 훅을 만들어 볼까요?</p>
+<p>hooks 폴더 밑에 위치시키면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-query&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">axios</span> <span class="nx">from</span> <span class="s1">&#39;axios&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchProductDetails</span> <span class="o">=</span> <span class="nx">productId</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="sb">`https://mypocketbase.fly.dev/api/collections/products/records/</span><span class="si">${</span><span class="nx">productId</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useProductId</span> <span class="o">=</span> <span class="nx">productId</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useQuery</span><span class="p">([</span><span class="s1">&#39;product-id&#39;</span><span class="p">,</span> <span class="nx">productId</span><span class="p">],</span> <span class="p">()</span> <span class="p">=&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fetchProductDetails</span><span class="p">(</span><span class="nx">productId</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>제가 사용하는 pocketbase의 API는 위와 같이 마지막에 id를 넣으면 해당 id에 대한 아이템만 리턴합니다.</p>
+<p>아래 그림처럼요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgyPpl7E8YfflDTl2MJ0_LhOwpSKPA62KfAF5af1wYwDQFORH8BZgq7MlrSoLCfW5w5HtLQ9zqHsUMfdZZskBW023D0-hE1HJXOjlMhk8Fp0j7HPjWrbEhH4U_Lir-AqMPAMfYjMeNa84x-ZXWORuwWAkA--uDe2MHr3co8lI-W6o4R94BAip3XYGsm8hQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기서 useProductId 훅에 쓰인 useQuery함수에서 첫 번째 인자인 queryKey를 자세히 볼 필요가 있는데요.</p>
+<p>queryKey에 배열이 들어가 있습니다.</p>
+<p>즉, 다이내믹 라우팅에 쓰이는 방식인데요.</p>
+<p>배열의 첫 번째 항목에 전체적인 query 이름을 적고, 배열의 두 번째 항목에 다이내믹으로 변하는 변수를 넣어주면 됩니다.</p>
+<p>이제, ReactQuery.jsx 파일에 Link를 걸어야 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useProductName</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./hooks/useProductName&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Link</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-router-dom&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactQuery</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onSuccess</span> <span class="o">=</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;데이터 가져오기 후 사이드 이펙트 수행&#34;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onError</span> <span class="o">=</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;오류 발생 후 사이드 이펙트 수행&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">isError</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useProductName</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSuccess</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onError</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isLoading</span><span class="p">)</span> <span class="k">return</span> <span class="o">&lt;&gt;</span><span class="nx">Loading</span><span class="p">...</span><span class="o">&lt;</span><span class="err">/&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isError</span><span class="p">)</span> <span class="k">return</span> <span class="o">&lt;&gt;</span><span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-4xl&#34;</span><span class="o">&gt;</span><span class="nx">ReactQuery</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ul</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;p-4 list-disc&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">data</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">items</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">product</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">product</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="nx">Link</span> <span class="nx">to</span><span class="o">=</span><span class="p">{</span><span class="sb">`/react-query/</span><span class="si">${</span><span class="nx">product</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">}</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">product</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/Link&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제, Product 리스트에서 해당 아이템을 클릭하면 아래와 같이 React Query가 2개의 쿼리를 작동시킬 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjaKq_mGe2u_6A5uYb11vHgRVVIPiJPH8f474lut3a5tm2WMVbje5SpoqOl45t40Tx2ebzpCvPUS7YqNPBbb62gyos0r7G3peeGqFKdcWQ1perQnQoYmFVhkknv9u6VtCTDMod_yzw4kegi_T0vYJeaVKJeHwtpZWVOlZhDKvq0dis_UMJh7LyKZ2YjMGQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보시면 &lsquo;get-product&rsquo; 쿼리와 &lsquo;product-id&rsquo; 두개가 보일 텐데요.</p>
+<p>&lsquo;product-id&rsquo; 쿼리는 또다시 id로 구분되어집니다.</p>
+<p>id를 한 번 더 눌러보시면 아래와 같이 변합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhSZmZ8nUrBuf2QdY4fyiptXvZ1nt81IT1oOYfNF7kh4U7osgM0tCRpzoKwtBjzKT88vEk5wgQJlHw9QjK2vxZUdjKqnJdUvQSni4_AUfOFdAWR1v-3JR1MjS4X6SwhSzx7BFC5xROiIbM0ent5mEAT61-0iOJIqqRFoJ1PsRN__xAL0N7ODb-mTsNeI6w"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보시면 id를 두 개 눌렀을 경우 쿼리가 각각 따로 생기게 됩니다.</p>
+<p>지금까지 특정 항목을 가져오는 쿼리 작성에 대해 알아봤습니다.</p>
+<hr>
+<h2 id="2-병렬-쿼리parallel-queries-방법">2. 병렬 쿼리(parallel queries) 방법</h2>
+<p>때로는 하나의 컴포넌트에서 필요한 데이터를 여러 곳에서 가져오기 위해 여러 API를 호출해야 할 때가 있습니다.</p>
+<p>React Query를 사용하면 useQuery를 두 번 호출하는 것만으로도 간단하게 처리할 수 있습니다.</p>
+<p>먼저, pocketbase의 products 컬렉션과 users 컬렉션을 모두 가져오는 예제 코드를 만들겠습니다.</p>
+<p>파일 이름은 ParallelQuery.jsx 파일이고 src 파일 밑에 두시면 됩니다.</p>
+<p>리액트 라우터 돔으로 라우팅을 아래처럼 정해주고,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Route</span> <span class="nx">path</span><span class="o">=</span><span class="s2">&#34;/react-query/:productId&#34;</span> <span class="nx">element</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">ReactQueryDetails</span> <span class="o">/&gt;</span><span class="p">}</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Headers.jsx 파일에 헤더 부분 링크를 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Link</span> <span class="nx">to</span><span class="o">=</span><span class="s2">&#34;/parallel-query&#34;</span><span class="o">&gt;</span><span class="nx">Parallel</span> <span class="nx">Query</span><span class="o">&lt;</span><span class="err">/Link&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 ParallelQuery.jsx 파일을 아래와 같이 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">axios</span> <span class="nx">from</span> <span class="s2">&#34;axios&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchProducts</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;https://mypocketbase.fly.dev/api/collections/products/records&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchUsers</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;https://mypocketbase.fly.dev/api/collections/users/records&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ParallelQuery</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">useQuery</span><span class="p">(</span><span class="s2">&#34;parallel-get-product&#34;</span><span class="p">,</span> <span class="nx">fetchProducts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">useQuery</span><span class="p">(</span><span class="s2">&#34;parallel-get-users&#34;</span><span class="p">,</span> <span class="nx">fetchUsers</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">ParallelQuery</span><span class="o">&lt;</span><span class="err">/div&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>UI 부분은 생략했는데요.</p>
+<p>React Query Dev Tools에서 확인해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhXdAfWxCvl7ACZ5_RPjp5gRUdC1qQn00v5JhZfT-xUKGIQz4a0w-yXKoJLj71Q5OeLKpO7Ojzr2eJLaohTGHpetnuUijmKA69njxyWN_FQEwMxoQ5375iCQe47_pH4WXo_bG53gdksudpROgq5I09PGbyMT6KOjSUePoC9BMYeOARbXYlbTXcXUcLwyb0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhpRiWQSqT9sgUEZC2R44c7tzCMWoZ6edLOcUMlLwpmud111q6X8C5nt2LVaogxqrbnwfIzLrc0QWx_GocxkXzrqrB66Jfi4LAZ3GDzgyCuoaOckB4A0_ZUzCqnjlb8bc0kNdntUNtpcSqXvQFkZfOYZ1LXnOklYJ4nxFtV2-9VCuvSw9JnYxUNQL95JHs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 실제 두 개의 쿼리가 병렬로 처리되면서 데이터도 정상적으로 가지고 옵니다.</p>
+<p>그러면, 쿼리가 두 개이면 어떻게 구분할까요?</p>
+<p>다음과 같이 하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ParallelQuery</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">productsData</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(</span><span class="s2">&#34;parallel-get-product&#34;</span><span class="p">,</span> <span class="nx">fetchProducts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">usersData</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(</span><span class="s2">&#34;parallel-get-users&#34;</span><span class="p">,</span> <span class="nx">fetchUsers</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">productsData</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">usersData</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 해도 되고, 아래처럼 별칭(alias) 기능을 사용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span><span class="o">:</span> <span class="nx">productsData</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">isLoading</span><span class="o">:</span> <span class="nx">productsLoading</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">isError</span><span class="o">:</span> <span class="nx">productsError</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(</span><span class="s2">&#34;parallel-get-product&#34;</span><span class="p">,</span> <span class="nx">fetchProducts</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>alias를 사용하면 데이터를 구조화할 수 있고 충돌을 방지할 수 있습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react-query/" role="button">react query</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/query-by-id/" role="button">query by id</a>
+        <a class="btn btn-light" href="/tags/parallel-queries/" role="button">parallel queries</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-24-react-query-paginated-query-and-infinite-query/">React Query 강좌 7편. 페이지네이션 구현하기와 useInfiniteQuery로 무한스크롤 구현하기</a></h2>
+                  <p>페이지네이션 구현하기와 useInfiniteQuery로 무한스크롤 구현하기</p>
+                  <p>
+  <small>September 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-24-react-query-dynamic-parallel-queries-and-dependent-query/">React Query 강좌 5편. 동적 병렬 쿼리(dynamic parallel queries)와 필요충분 쿼리 만들기(dependent query)</a></h2>
+                  <p>동적 병렬 쿼리(dynamic parallel queries)와 필요충분 쿼리 만들기(dependent query)</p>
+                  <p>
+  <small>September 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-09-react-data-fetching-study-guide-from-useeffect-to-server-components/">리액트 데이터 페칭 완전 정복 - useEffect부터 서버 컴포넌트까지</a></h2>
+                  <p>리액트 데이터 페칭의 기초부터 최신 서버 컴포넌트까지, 단계별 발전 과정을 예제와 함께 완벽하게 알아봅니다.</p>
+                  <p>
+  <small>July 9, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

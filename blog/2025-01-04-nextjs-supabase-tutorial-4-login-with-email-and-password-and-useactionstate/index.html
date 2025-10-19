@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현</title>
+<meta name="description" content="Next.js와 Supabase를 이용해서 Email, Password 방식의 로그인을 테스트해 보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현" />
+<meta property="og:description" content="Next.js와 Supabase를 이용해서 Email, Password 방식의 로그인을 테스트해 보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-01-04T14:09:55Z" />
+<meta property="article:modified_time" content="2025-01-04T14:09:55Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="auth" />
+<meta property="article:tag" content="useActionState" />
+<meta property="article:tag" content="react 19" />
+<meta property="article:tag" content="supabase" />
+<meta property="article:tag" content="email password login" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현" />
+<meta name="twitter:description" content="Next.js와 Supabase를 이용해서 Email, Password 방식의 로그인을 테스트해 보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현\"",
+  "description": "\"Next.js와 Supabase를 이용해서 Email, Password 방식의 로그인을 테스트해 보겠습니다.\"",
+  "datePublished": "\"2025-01-04T14:09:55Z\"",
+  "dateModified": "\"2025-01-04T14:09:55Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현</h1>
+        <p>
+  <small>January 4, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>** 목  차 **</p>
+<ul>
+<li><a href="#nextjs-15-supabase-%ea%b0%95%ec%a2%8c-4%ed%8e%b8-email-password%eb%a5%bc-%ec%9d%b4%ec%9a%a9%ed%95%9c-%eb%a1%9c%ea%b7%b8%ec%9d%b8-%ea%b5%ac%ed%98%84">Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현</a>
+<ul>
+<li><a href="#nextjs-15-supabase-%ea%b0%95%ec%a2%8c-3%ed%8e%b8-github-oauth%eb%a5%bc-%ec%9d%b4%ec%9a%a9%ed%95%9c-%eb%a1%9c%ea%b7%b8%ec%9d%b8-%ea%b5%ac%ed%98%84">Next.js 15, Supabase 강좌 3편. Github OAuth를 이용한 로그인 구현</a></li>
+<li><a href="#%ea%b0%80%ec%9e%85signup-%eb%a1%9c%ea%b7%b8%ec%9d%b8signin-%ed%8e%98%ec%9d%b4%ec%a7%80-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">가입(SignUp), 로그인(SignIn) 페이지 구현하기</a></li>
+<li><a href="#signup-%ed%8e%98%ec%9d%b4%ec%a7%80-%eb%a7%8c%eb%93%a4%ea%b8%b0">SignUp 페이지 만들기</a></li>
+<li><a href="#%eb%98%91%ea%b0%99%ec%9d%80-%ec%9d%b4%eb%a9%94%ec%9d%bc%eb%a1%9c-%eb%8b%a4%ec%8b%9c-%ea%b0%80%ec%9e%85%ed%95%b4-%eb%b3%b4%ea%b8%b0">똑같은 이메일로 다시 가입해 보기</a></li>
+<li><a href="#react-19%ec%9d%98-useactionstate-%ec%82%ac%ec%9a%a9%ed%95%98%ec%97%ac-%ec%89%bd%ea%b2%8c-form-%ed%95%b8%eb%93%a4%eb%a7%81%ed%95%98%ea%b8%b0">React 19의 useActionState 사용하여 쉽게 Form 핸들링하기</a></li>
+<li><a href="#signinform-%ec%9e%91%ec%84%b1%ea%b3%bc-%eb%a1%9c%ea%b7%b8%ec%9d%b8-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">SignInForm 작성과 로그인 구현하기</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>안녕하세요?</p>
+<p>Next.js 15, Supabase 강좌 4편입니다.</p>
+<p>지난 시간에는 Next.js 15를 이용한 기본적인 템플릿과 Google OAuth, Github OAuth를 이용한 로그인을 구현해 봤는데요.</p>
+<p>오늘은 가장 전통적인 방식의 로그인과 가입하기 로직을 구현해 보겠습니다.</p>
+<p>참고로, 지난 시간 강좌 리스트입니다.</p>
+<p><a href="https://mycodingshub.github.io/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-2-login-with-google-id-oauth">Next.js 15, Supabase 강좌 2편. Google OAuth를 이용한 로그인 구현</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-3-login-with-github-id-oauth">Next.js 15, Supabase 강좌 3편. Github OAuth를 이용한 로그인 구현</a></p>
+<hr>
+<h2 id="가입signup-로그인signin-페이지-구현하기">가입(SignUp), 로그인(SignIn) 페이지 구현하기</h2>
+<p>Supabase를 이용해서 이메일, 패스워드 방식으로 가입하기와 로그인을 구현해 보도록 하겠습니다.</p>
+<p>먼저, &ldquo;/auth&rdquo; 라우팅과 &ldquo;/auth/signup&rdquo;, &ldquo;/auth/signin&rdquo; 라우팅에 해당하는 페이지를 만들어야 합니다.</p>
+<p>일단 기존 시간에 사용했던 &ldquo;/auth&rdquo; 라우팅에 해당하는 페이지를 아래와 같이 바꾸겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// src/app/auth/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">AuthForm</span> <span class="kr">from</span> <span class="s2">&#34;@/components/Forms/AuthForm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Link</span> <span class="kr">from</span> <span class="s2">&#34;next/link&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">AuthPage</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col items-start gap-4 p-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;underline&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">Home</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/auth/signup&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;underline&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">Sign</span> <span class="nx">Up</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/auth/signin&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;underline&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">Sign</span> <span class="nx">In</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">AuthForm</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">AuthPage</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&ldquo;/auth&rdquo; 라우팅에 모든 경로로 갈 수 있는 링크를 넣었습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJR1R132rhDvZppWuTqatUFwVoexWTi0Bc7Qg_P4cI9-WKRUZvG3cD8dQuCxpht50uvYoTaSqLIscIbW7IBAgX378VVgMNCI1obD8BslKL1H2VE3oMBYFblCwRBG5cMsLmDPhVE7PbAluW1oFNKL8ttdukaEmLby2he99rQwBlZrQJxbq5peCy-wk2Syk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 허접한 링크가 보이는데요.</p>
+<p>먼저, &ldquo;/auth/signup&rdquo; 페이지를 만들겠습니다.</p>
+<hr>
+<h2 id="signup-페이지-만들기">SignUp 페이지 만들기</h2>
+<p><code>src/app/auth/signup/page.tsx</code> 페이지를 만들어야 &ldquo;/auth/signup&rdquo; 라우팅이 되는겁니다.</p>
+<p>일단 서버 컴포넌트와 클라이언트 컴포넌트를 분리하기 위해 아래와 같이 만들었습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// src/app/auth/signup/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">SignUpForm</span> <span class="kr">from</span> <span class="s2">&#34;@/components/Forms/SignUpForm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Link</span> <span class="kr">from</span> <span class="s2">&#34;next/link&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SignUpPage</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-2 p-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/auth&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;underline&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">Auth</span> <span class="nx">Page</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Sign</span> <span class="nx">Up</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">SignUpForm</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/auth/signin&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;underline&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">Sign</span> <span class="nx">In</span> <span class="nx">Page</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">SignUpPage</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjUBoZd8PrOJHz8U7WrinsN7BDSPnBP8qLDxN5JwSveEbZgcxTXfj6v8abApu3pkbCvl6H-t6CmgmwKeTlf8t5oPVKCnK5HxSqPKijKP9sKojVx5VeMDFufrK8d_f5JnRs6xl3NgWfqeqqrJB5apn08zgQ3KeH7bSRDGwP11V8Yh5jjlNaAhfRy4a5a_rc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>실행 화면은 위와 같습니다.</p>
+<p>그리고 위 파일은 서버 컴포넌트고 중간에 보이는 &lsquo;SignUpForm&rsquo;이 바로 클라이언트 컴포넌트입니다.</p>
+<p>&lsquo;SignUpForm&rsquo;은 &ldquo;src/components/Forms&rdquo; 폴더에 만들었습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">signupWithEmailPassword</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/utils/supabase/actions&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SignUpForm</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">form</span>
+</span></span><span class="line"><span class="cl">      <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">signupWithEmailPassword</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-2 max-w-40&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2 text-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Email&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2 text-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Password&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2&#34;</span><span class="p">&gt;</span><span class="nx">Sign</span> <span class="nx">Up</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">SignUpForm</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;SignUpForm&rsquo;은 서버 액션을 사용하게끔 formAction에 &lsquo;signupWithEmailPassword&rsquo;이라는 액션 함수를 넣었습니다.</p>
+<p>그러면, 이 함수를 만들어야 하는데요.</p>
+<p>&lsquo;src/utils/supabase/actions.ts&rsquo; 파일에 모든 액션 함수가 있었는데요.</p>
+<p>여기에 아래와 같이 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// src/utils/supabase/actions.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">signupWithEmailPassword</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">formData</span>: <span class="kt">FormData</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">supabase</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createClientForServer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signUp</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signInWithGoogle</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signInWithGithub</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signOut</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signupWithEmailPassword</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;signupWithEmailPassword&rsquo; 함수는 아주 간단합니다.</p>
+<p>supabase에서 제공해 주는 signUp 함수를 사용하면 되는데요.</p>
+<p>signUp 함수에는 간단하게 email, password가 있는 객체만 전달하면 됩니다.</p>
+<p>이제 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhnR0gRfQN2oaV4kuGM_LEGirQj-44QW0b7s46Vkv_1FFHzkCH8YvlP-ieEFpBwkmM7pgmLS1H7uxL1PzsJsPMnvMGnPNrnAwSoneuPCZ6nYbE6wakvPfeHVaomKV0HbkGfYp0nkqbbFY8JelCc5FcVFW2-oMKWGLdWUgaIm-vSscH27dzPob6ZIm6eIPY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 &ldquo;test@test.com&rdquo; 이메일과 패스워드는 &ldquo;11111111&quot;를 넣었습니다.</p>
+<p>엔터키를 누르거나 밑에 &ldquo;Sign Up&rdquo; 버튼을 누르면 아주 잠깐의 딜레이 후에 &ldquo;/&rdquo; 라우팅으로 이동하는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjpvMkCGrOBuigiwrNlLTkrvJyXy2THdoDC92u__3O3KUMS_M6vDOpJKSFyL3kzN4_B5OXJ3kLd1yCP8fgdRCi32ml9fUs2HITMCvhcSOThQVMfbkVWvAUqzSdPBnA1khr-10d4PMrcVNTufJ-ATeE2R2Tbf4lVLVXPjaJpw-UnLrOQoZR7Bg5q7yL2lr4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 &ldquo;test@test.com&quot;이란 이름으로 로그인이 완료되었습니다.</p>
+<p>가입이 성공하면 해당 이메일로 바로 로그인까지 되는 로직입니다.</p>
+<p>터미널을 보시면 아래와 같이 &lsquo;console.log(data)&rsquo; 값이 보이는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh5KyA3kNe2beGMun-ixJoDvfP0oAcBdws4-hcCxC7rbwtSW80EcF4EaRFLNXFoBVLjCDQMeDJ5jDTzACj1ahFSaPNzm83yl3y1H577fy4wj5tg9FVGnYKKo_ZN1z_YjSSr6kpITVeHwUfRVLo0pwyM9_TxdWQevItQSlpsV2v0sb416_a0thElenXa5F4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 데이터는 signUp 함수의 실행 결과 성공했을 때 &lsquo;data&rsquo; 값을 보여주는데, &lsquo;data&rsquo; 값에는 user, session 값이 있네요.</p>
+<p>그리고 아래 화면은 &ldquo;/&ldquo;라우팅으로 갔을 때 현재 로그인 유저 값을 콘솔에 출력한 값입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgNr7DW-P6xvsqi5_Hi0BDwMgDJMlIP9bG1_rtltwb3X_qvqEfuxOcum5-_Qx15-gP5yxoF-mreMJKBTKdS4rZuC8xJSYDZq5KKcjV_JZrT4-SIM7uHdOwWBXVE7Af-WH0tUMFf2hEY2QoAz5m2JvxE3yqqOXr5Zv6-kxKjWk8HrSMgqg3HGinGjs4J5WQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>지금까지는 아주 잘 작동하고 있습니다.</p>
+<p>supabase 대시보드로 가서 방금 가입한 유저가 있는지 확인해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi-aZ56t_bR-sHUhN15VilzUuKKroNGmYpDtq2qQzg2bwp-uLXkJkko8MB6lEbeJNLcdFBJQhMNdaF5vPuMmY9fUxmFDM-L8IuIKFGB6gXN-Pp4gOqzLf-R5lQEA9QcAlEX4CV8iQQZI45Rtvn1yZbFIAJwhjzirVkMvrACFzlgwVXt-DbD9mcqfz4YK2Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 잘 나옵니다.</p>
+<p>참고로 Supabase Auth 세팅에서 Email 부분에서 아래와 같이 &lsquo;Confirm email&rsquo; 부분은 선택하지 않았습니다.</p>
+<p>이걸 선택하면 Resend 같은 이메일 서비스를 이용해서 가입 인증 컨펌 메일을 보내고 유저가 실제 이메일을 열어 본 후 컨펌해 줘야지 최종적으로 유저가 가입되는 방식인데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgqrGBGGikAkGqUlJ01zOxyXAoHF-2XTBq8sjTIdWWivqlZt6-m3F5AhF3cD_CiL1gASSToJwqvtPr54pz0sEDHSrqWZj6EwNnaBwtVJhSLg4s2yDocHtBpapwE4WOIZGcAnJFMOLuMRMgVn-xXG_hnaGQNBt3HlgsLcDBCrBt8fpGr1pXX1nfPrzXK7ms"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>저는 테스트 용도로 사용하기 위해 위 그림처럼 Confirm email 부분은 체크해제한 후에 테스트하고 있습니다.</p>
+<hr>
+<h2 id="똑같은-이메일로-다시-가입해-보기">똑같은 이메일로 다시 가입해 보기</h2>
+<p>가입하기 로직을 다시 테스트하기 위해 아까 가입한 &rsquo;test@test.com&rsquo; 이란 이메일로 다시 가입해 보겠습니다.</p>
+<p>&ldquo;/&rdquo; 라우팅에서 &ldquo;Sign Out&quot;하시고 다시 가입하기로 가신다음에 &rsquo;test@test.com&rsquo;이란 이메일로 가입을 시도해 보십시오.</p>
+<p>브라우저는 새로고침같이 input 칸이 지워지면서 아무런 반응이 없는데요.</p>
+<p>터미널에서는 아래와 같이 나옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">{</span> <span class="nx">user</span>: <span class="kt">null</span><span class="p">,</span> <span class="nx">session</span>: <span class="kt">null</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Error</span> <span class="p">[</span><span class="nx">AuthApiError</span><span class="p">]</span><span class="o">:</span> <span class="nx">User</span> <span class="nx">already</span> <span class="nx">registered</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">at</span> <span class="kr">async</span> <span class="nx">signupWithEmailPassword</span> <span class="p">(</span><span class="nx">src</span><span class="o">/</span><span class="nx">utils</span><span class="o">/</span><span class="nx">supabase</span><span class="o">/</span><span class="nx">actions.ts</span>:<span class="kt">40</span><span class="o">:</span><span class="mi">26</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="mi">38</span> <span class="o">|</span>   <span class="kr">const</span> <span class="nx">supabase</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createClientForServer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="mi">39</span> <span class="o">|</span>
+</span></span><span class="line"><span class="cl"><span class="o">&gt;</span> <span class="mi">40</span> <span class="o">|</span>   <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signUp</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">     <span class="o">|</span>                          <span class="o">^</span>
+</span></span><span class="line"><span class="cl">  <span class="mi">41</span> <span class="o">|</span>     <span class="nx">email</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="mi">42</span> <span class="o">|</span>     <span class="nx">password</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="mi">43</span> <span class="o">|</span>   <span class="p">});</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">__isAuthError</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">status</span>: <span class="kt">422</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">code</span><span class="o">:</span> <span class="s1">&#39;user_already_exists&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>user와 session 이 &rsquo;null&rsquo; 이라는 부분은 &lsquo;console.log(data)&lsquo;란 콘솔 명령어에 해당하는 부분입니다.</p>
+<p>즉, supabase.auth.signUp 함수가 실패했다는 뜻이고, error가 발생했다는 뜻인데요.</p>
+<p>그래서 &lsquo;console.log(error)&rsquo; 부분 때문에, 터미널에 에러 코드가 출력되고 있습니다.</p>
+<p>에러 데이터를 읽어 보시면 &ldquo;User already registered&quot;라는 문구가 보입니다.</p>
+<p>즉, 아까 가입했던 이메일이라 유저가 벌써 가입됐다는 문구를 보여주고 있습니다.</p>
+<p>그래서 유저에게 현재 일어나고 있는 일은 브라우저에 표시해 줘야 하는데요.</p>
+<p>이 작업은 React 19 이전에는 상당히 복잡했는데요.</p>
+<p>이 부분을 짚고 넘어가 보겠습니다.</p>
+<hr>
+<h2 id="react-19의-useactionstate-사용하여-쉽게-form-핸들링하기">React 19의 useActionState 사용하여 쉽게 Form 핸들링하기</h2>
+<p>React 19 이전에서는 form 핸들링하여 UI를 관리하려면 아래 그림과 같이 상당히 번거롭게 작업해야 했었는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjEk7ZmORD7p3yjrdEj4rrpZ2kzOQpqSTX3CmAj7YmLXisj--6uNpcEp8GMRdb4TC8YCgHvmFF5xZ3rOUWyTc1m3QPUlwuTcoZPF8kKmYdCWJCU9fZ1X3pzYX6eUYooCdpZiEDehB8IQq2bz9sSdR8nk65WnTRcvG87y3G5ac9pXAXNA82G9cn72Mem-XM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>React 19의 useActionState 훅이 나오면서 아래와 같이 아주 간단하게 UI를 꾸밀 수 있게 되었습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgYxEA4Ozoa5WNJ1LN049_lypWzkzJ0YoAMtarV-luBsZPFnBo4GDVFfzk3odN8tLVIr_RbdIU7gHeaCT6pEXMBDKLL3FZaYH_W_Nwqq1uprO9t5Si1n1QEbtbBFXv6yNNvcdsacIgSusYY1YN_tRjeOdfwsvqVQn8vbaXPbJspoDsAjrX5ofvzR1xSTaY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그러면 SignUpForm을 useActionState 훅을 이용해서 바꿔 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">signupWithEmailPassword</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/utils/supabase/actions&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useActionState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SignUpForm</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">error</span><span class="p">,</span> <span class="nx">formAction</span><span class="p">,</span> <span class="nx">isPending</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useActionState</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">signupWithEmailPassword</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">formAction</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-2 max-w-40&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2 text-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Email&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2 text-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Password&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">isPending</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">isPending</span> <span class="o">?</span> <span class="s2">&#34;Processing&#34;</span> <span class="o">:</span> <span class="s2">&#34;Sign Up&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">error</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}&lt;/</span><span class="nt">span</span><span class="p">&gt;}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">SignUpForm</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아까랑 바뀐 부분을 집중적으로 설명해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">error</span><span class="p">,</span> <span class="nx">formAction</span><span class="p">,</span> <span class="nx">isPending</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useActionState</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">signupWithEmailPassword</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 useActionState 훅의 사용법입니다.</p>
+<p>useState처럼 배열을 디스트럭쳐링 하면 되는데요.</p>
+<p>배열 안에 있는 3가지를 설명해 보면, 먼저, error 입니다.</p>
+<p>이 값은 state 인데요.</p>
+<p>error 라는 이름도 되고 state라는 이름도 됩니다.</p>
+<p>즉, 상태값인데요.</p>
+<p>useActionState에 의해 리턴된 상태값이란 뜻입니다.</p>
+<p>우리는 Form 핸들링에서 에러값만 보여주면 되기 때문에 이름을 state라는 이름 말고 직관적으로 error라는 이름으로 썼습니다.</p>
+<p>그리고 밑에 error라는 값을 아래와 같이 브라우저에 보여주고 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">{</span><span class="nx">error</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}&lt;/</span><span class="nt">span</span><span class="p">&gt;}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>useActionState의 리턴 배열의 두 번째 인자는 위에서는 formAction인데요.</p>
+<p>formAction 함수는 아래와 같이 form의 action 값과 연결되어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">formAction</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-2 max-w-40&#34;</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>잘 생각해 보시면 useActionState 없이 처음에 작성한 코드에서는 action 값에 우리가 작성한 &lsquo;signupWithEmailPassword&rsquo; 액션 함수를 바로 넣었었는데요.</p>
+<p>useActionState 훅을 이용하려면 form 태그랑 연결되게 설정하고 &lsquo;useActionState(signupWithEmailPassword, null)&rsquo; 처럼 이 부분에 액션 함수를 전달해 줘야 합니다.</p>
+<p>세 번째, &lsquo;isPending&rsquo; 변수는 Boolean 값으로 Action이 Pending 되고 있는지 여부를 &lsquo;참/거짓&rsquo; 값으로 나타내 줍니다.</p>
+<p>그래서 이 &lsquo;isPending&rsquo; 값을 이용해서 아래와 같이 &ldquo;Processing&hellip;&rdquo; 값을 보여주고 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">button</span> <span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">isPending</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nx">isPending</span> <span class="o">?</span> <span class="s2">&#34;Processing&#34;</span> <span class="o">:</span> <span class="s2">&#34;Sign Up&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러면, 마지막으로 &lsquo;useActionState(signupWithEmailPassword, null)&rsquo; 이 부분을 이해해야하는데요.</p>
+<p>useActionState 훅에 실제 액션 함수를 넣고, 두 번째 인자로는 초기 state 값을 넣으면 됩니다.</p>
+<p>이렇게 하면 타입스크립트가 signupWithEmailPassword 함수에 아래와 같은 경고를 보여주는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEghVzv-FuqWNSEbblPXePfz4voQOfYVm_24QJITjEAl28-oqV2Pl6qj5y4iQ6yKSVinAZ-3bHGeb10I5oQRoNkGmFvFAntu9m9Dwagq-C-ihvZldierlMqCgAIaRbWlhnFIr9UqOMBzDdlZBmGHEvKptGrUs7tusRN_wIgd37J6a3ypv3pq16edPVIRQwg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>useActionState 훅에 사용하려면 signupWithEmailPassword 함수의 첫 번째 인자는 previous State 값이 와야 합니다.</p>
+<p>그래서 아래와 같이 signupWithEmailPassword 함수의 인자 타입을 바꿔주면 됩니다.</p>
+<p>formData 앞에 prev 인자를 넣으면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">signupWithEmailPassword</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">prev</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">formData</span>: <span class="kt">FormData</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">supabase</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createClientForServer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signUp</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/auth/signup&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">message</span>: <span class="kt">error.message</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 error 발생 시 실제 error 값을 리턴해줘야 합니다.</p>
+<p>저는 객체를 리턴해주고 있습니다.</p>
+<p>여기서 중요한 게 바로 <code>revalidatePath(&quot;/auth/signup&quot;)</code> 명령어인데요.</p>
+<p>이 부분은 클라이언트 컴포넌트가 캐시되어 사용되어질 경우 에러값을 옛 캐시값으로 보여줄 수 있어 꼭 revalidate해서 캐시된 값을 갱신하라는 뜻입니다.</p>
+<p>이제 테스트해 볼까요?</p>
+<p>브라우저는 리프레시하고 똑같은 이메일로 가입해 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_f_t_zFhifkTSQFsBT6tUPWZcqylCCwaKesFzRyel1k3Mc76QvvPcLPoiaLqN6uYoxvJKsJCix2liHvPhJ5TtaLTb_f7Dt-ZO3gKkc8yzbB5BcEfVr1lvFFB3wfd-zUrknqjtnjfl7xHGk_TMCsgKLDuKA5PnlMPeRUw9MTuRAwmFcpDTwCk7_v2akLs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 에러 메시지가 잘 보입니다.</p>
+<p>그리고 isPending 값에 따라 &ldquo;Processing&hellip;&rdquo; 값도 잠깐 보였다가 사라질 겁니다.</p>
+<p>useActionState 훅을 이용해서 아주 멋지게 UI를 꾸몄었는데요.</p>
+<p>useActionState 훅은 사실 useFormState와 useFormStatus 훅 2가지를 합친 겁니다.</p>
+<p>이름을 Action이라고 지은 거는 form만 처리하는게 아니라 Action 함수는 모두 처리한다는 의미에서 useActionState라는 이름으로 지었다고 합니다.</p>
+<p>이제, 로그인 부분을 작성해 보겠습니다.</p>
+<hr>
+<h2 id="signinform-작성과-로그인-구현하기">SignInForm 작성과 로그인 구현하기</h2>
+<p>SignUpForm과 아주 비슷합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">signinWithEmailPassword</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/utils/supabase/actions&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useActionState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SignInForm</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">error</span><span class="p">,</span> <span class="nx">formAction</span><span class="p">,</span> <span class="nx">isPending</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useActionState</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">signinWithEmailPassword</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">formAction</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-2 max-w-40&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2 text-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Email&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2 text-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Password&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">isPending</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-2&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">isPending</span> <span class="o">?</span> <span class="s2">&#34;Processing&#34;</span> <span class="o">:</span> <span class="s2">&#34;Sign In&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">error</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}&lt;/</span><span class="nt">span</span><span class="p">&gt;}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">SignInForm</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>당연히 여기서도 useActionState 훅을 사용하고 있습니다.</p>
+<p>이제 action 값에 들어가 있는 signinWithEmailPassword 함수를 만들어 보겠습니다.</p>
+<p>actions.ts 파일에 아래와 같이 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">signinWithEmailPassword</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">prev</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">formData</span>: <span class="kt">FormData</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">supabase</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createClientForServer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signInWithPassword</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/auth/signin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">message</span>: <span class="kt">error.message</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signInWithGoogle</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signInWithGithub</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signOut</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signupWithEmailPassword</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">signinWithEmailPassword</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>supabase의 signInWithPassword 함수를 이용해서 아주 쉽게 로그인하고 있습니다.</p>
+<p>테스트해 보면 아주 간단하게 로그인되는 걸 볼 수 있을 겁니다.</p>
+<hr>
+<p>지금까지 supabase로 이메일, 패스워드 방식의 로그인을 구현해 봤는데요.</p>
+<p>사실 여기서 중요한 거는 useActionState 훅을 꼭 사용하라는 겁니다.</p>
+<p>UI에 현재 무슨 일이 일어나고 있는지 꼭 보여줘야 사용자가 답답해하지 않고 사용할 수 있기 때문입니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/auth/" role="button">auth</a>
+        <a class="btn btn-light" href="/tags/useactionstate/" role="button">useActionState</a>
+        <a class="btn btn-light" href="/tags/react-19/" role="button">react 19</a>
+        <a class="btn btn-light" href="/tags/supabase/" role="button">supabase</a>
+        <a class="btn btn-light" href="/tags/email-password-login/" role="button">email password login</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-11-nextjs-supabase-tutorial-5-sending-confirm-email-without-domain/">Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 컨펌 이메일 보내기</a></h2>
+                  <p>Next.js와 Supabase를 이용해서 도메인 없이 Brevo를 이용해서 컨펌 Email을 보내는 로직을 테스트해 보겠습니다.</p>
+                  <p>
+  <small>January 11, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-19-nextjs-supabase-tutorial-8-send-otp-number-and-login-with-otp/">Next.js 15, Supabase 강좌 8편. 이메일로 OTP를 보내서 로그인 구현하기</a></h2>
+                  <p>Next.js와 Supabase를 이용해서 이메일로 OTP 숫자를 보내서 로그인하는 방법을 구현해 봅시다.</p>
+                  <p>
+  <small>January 19, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-13-nextjs-supabase-tutorial-7-send-magic-link-and-login-with-supabase-brevo/">Next.js 15, Supabase 강좌 7편. 이메일로 Magic Link를 보내서 로그인 구현하기</a></h2>
+                  <p>Next.js와 Supabase를 이용해서 이메일로 Magic Link를 보내서 로그인하는 방법을 구현해 봅시다.</p>
+                  <p>
+  <small>January 13, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

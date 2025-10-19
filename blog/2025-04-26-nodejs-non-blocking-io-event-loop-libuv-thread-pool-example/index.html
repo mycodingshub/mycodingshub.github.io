@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Node.js 성능 비결 파헤치기 - libuv 라이브러리와 함께 알아보는 논블로킹 IO와 이벤트 루프 완벽 정복!</title>
+<meta name="description" content="논블로킹(Non-Blocking) IO와 비동기(Asynchronous) 프로그래밍, 그리고 이를 기가 막히게 구현해낸 노드제이에스(Node.js) 의 내부 동작 원리(이벤트 루프, libuv)까지 오늘 알아보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-04-26-nodejs-non-blocking-io-event-loop-libuv-thread-pool-example/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Node.js 성능 비결 파헤치기 - libuv 라이브러리와 함께 알아보는 논블로킹 IO와 이벤트 루프 완벽 정복!" />
+<meta property="og:description" content="논블로킹(Non-Blocking) IO와 비동기(Asynchronous) 프로그래밍, 그리고 이를 기가 막히게 구현해낸 노드제이에스(Node.js) 의 내부 동작 원리(이벤트 루프, libuv)까지 오늘 알아보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-04-26-nodejs-non-blocking-io-event-loop-libuv-thread-pool-example/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-04-26T13:53:51Z" />
+<meta property="article:modified_time" content="2025-04-26T13:53:51Z" />
+<meta property="article:tag" content="Node.js" />
+<meta property="article:tag" content="논블로킹 IO" />
+<meta property="article:tag" content="비동기 프로그래밍" />
+<meta property="article:tag" content="이벤트 루프" />
+<meta property="article:tag" content="libuv" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Node.js 성능 비결 파헤치기 - libuv 라이브러리와 함께 알아보는 논블로킹 IO와 이벤트 루프 완벽 정복!" />
+<meta name="twitter:description" content="논블로킹(Non-Blocking) IO와 비동기(Asynchronous) 프로그래밍, 그리고 이를 기가 막히게 구현해낸 노드제이에스(Node.js) 의 내부 동작 원리(이벤트 루프, libuv)까지 오늘 알아보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Node.js 성능 비결 파헤치기 - libuv 라이브러리와 함께 알아보는 논블로킹 IO와 이벤트 루프 완벽 정복!\"",
+  "description": "\"논블로킹(Non-Blocking) IO와 비동기(Asynchronous) 프로그래밍, 그리고 이를 기가 막히게 구현해낸 노드제이에스(Node.js) 의 내부 동작 원리(이벤트 루프, libuv)까지 오늘 알아보겠습니다.\"",
+  "datePublished": "\"2025-04-26T13:53:51Z\"",
+  "dateModified": "\"2025-04-26T13:53:51Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-04-26-nodejs-non-blocking-io-event-loop-libuv-thread-pool-example/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Node.js 성능 비결 파헤치기 - libuv 라이브러리와 함께 알아보는 논블로킹 IO와 이벤트 루프 완벽 정복!</h1>
+        <p>
+  <small>April 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘 공부할 주제를 살펴보기 전에 우리가 프로그래머로서 컴퓨터의 속성에 대해 이미 알고 있는 걸 다시 짚어보면 아래와 같습니다.</p>
+<blockquote>
+<ol>
+<li>컴퓨터 작업은 크게 <strong>CPU 연산</strong>과 <strong>IO(입출력) 작업</strong>으로 나뉩니다.</li>
+<li>CPU 연산 속도는 IO 작업 속도보다 훨씬 빠릅니다.</li>
+<li><strong>CPU 바운드</strong> 작업은 연산량이 너무 많아 CPU가 병목 지점이 되는 경우고, <strong>IO 바운드</strong> 작업은 디스크나 네트워크 등 IO 장치가 느려서 CPU가 기다리는 시간이 길어지는 경우입니다.</li>
+<li>가장 큰 문제! IO 바운드 작업 시, CPU는 IO가 끝나기를 기다리며 <strong>아까운 시간을 낭비</strong>하게 됩니다.</li>
+</ol></blockquote>
+<p>바로 이 &lsquo;CPU의 낭비되는 기다림&rsquo; 문제를 해결하는 것이 오늘 이야기의 핵심입니다.</p>
+<p>어떻게 하면 IO 작업을 기다리는 동안에도 CPU가 멈추지 않고 다른 유용한 일을 할 수 있을까요?</p>
+<p>그 해답인 <strong>논블로킹(Non-Blocking) IO</strong>와 <strong>비동기(Asynchronous) 프로그래밍</strong>, 그리고 이를 기가 막히게 구현해낸 <strong>노드제이에스(Node.js)</strong> 의 내부 동작 원리(이벤트 루프, libuv)까지 오늘 알아보겠습니다.</p>
+<h2 id="1-문제점---답답한-기다림-블로킹blocking-io-방식">1. 문제점 - 답답한 기다림, 블로킹(Blocking) IO 방식</h2>
+<p>먼저 전통적인 방식, 즉 <strong>블로킹 IO</strong>가 왜 비효율적인지 확실히 짚고 넘어가겠습니다.</p>
+<p>블로킹 방식은 아주 직관적입니다. 프로그램이 IO 작업(예: 파일 읽기, 네트워크 요청 보내기)을 시키면, 그 <strong>작업이 완전히 끝날 때까지 프로그램의 다음 코드 실행을 멈추고 기다리는 방식</strong>입니다.</p>
+<p>마치 식당에서 웨이터에게 주문을 했는데, 그 웨이터가 주방 앞에서 <strong>음식이 나올 때까지 아무것도 안 하고 꼼짝 않고 기다리는 것</strong>과 같습니다.</p>
+<p>그동안 다른 테이블 손님이 불러도 못 가고, 빈 그릇을 치우지도 못합니다. 오직 주문한 음식이 나와야만 다음 행동을 할 수 있습니다.</p>
+<p>코드로 간단히 개념을 표현하면 이렇습니다. (실제 코드는 아니지만 이해를 돕기 위한 예시입니다.)</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 블로킹 방식의 개념적 예시
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">결과1</span> <span class="o">=</span> <span class="nx">파일_읽기</span><span class="p">(</span><span class="s1">&#39;파일A&#39;</span><span class="p">);</span> <span class="c1">// 파일A 읽기가 끝날 때까지 여기서 멈춤!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">처리하기</span><span class="p">(</span><span class="nx">결과1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">결과2</span> <span class="o">=</span> <span class="nx">네트워크_요청</span><span class="p">(</span><span class="s1">&#39;주소B&#39;</span><span class="p">);</span> <span class="c1">// 주소B 응답이 올 때까지 여기서 멈춤!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">처리하기</span><span class="p">(</span><span class="nx">결과2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;모든 작업 완료!&#39;</span><span class="p">);</span> <span class="c1">// 앞의 작업들이 다 끝나야 실행됨
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>혼자서 순차적으로 일을 처리할 때는 문제가 없어 보일 수 있습니다.</p>
+<p>하지만 만약 동시에 여러 손님(요청)을 받아야 하는 웹 서버 같은 경우는 어떨까요?</p>
+<p>한 명의 요청(파일 읽기나 데이터베이스 조회 등)을 처리하는 동안 다른 모든 요청은 하염없이 기다려야만 합니다.</p>
+<p>이를 해결하려면 손님(요청)마다 웨이터(스레드)를 한 명씩 붙여줘야 하는데, 요청이 많아지면 스레드 수도 그만큼 늘어나야 하고 이는 엄청난 메모리 자원 낭비와 관리 부담으로 이어집니다.</p>
+<p>결론적으로, <strong>블로킹 IO 방식은 IO 작업 대기 시간 동안 CPU 자원을 낭비하고, 많은 동시 요청을 효율적으로 처리하기 어렵다는 치명적인 단점</strong>이 있습니다.</p>
+<h2 id="2-해결책---기다리지-않고-일한다-논블로킹non-blocking-io와-비동기asynchronous-프로그래밍">2. 해결책 - 기다리지 않고 일한다! 논블로킹(Non-Blocking) IO와 비동기(Asynchronous) 프로그래밍</h2>
+<p>이 답답한 블로킹 방식의 문제를 해결하기 위해 등장한 것이 바로 <strong>논블로킹 IO</strong>입니다.</p>
+<p>논블로킹 방식은 IO 작업을 요청한 후, 그 작업이 <strong>완료되었는지 여부와 상관없이 즉시 다음 코드로 실행 흐름을 넘기는 방식</strong>입니다.</p>
+<p>&ldquo;일단 요청했으니, 난 내 할 일 계속할게. 작업 끝나면 나중에 알려줘!&rdquo; 라고 말하는 것과 같습니다.</p>
+<p>앞서 식당 비유를 다시 가져와 볼까요? 똑똑한 웨이터는 손님의 주문을 받아서 주방에 전달(IO 요청)한 뒤, 음식이 나오기를 <strong>기다리지 않습니다</strong>.</p>
+<p>대신 다른 테이블에 가서 주문을 받거나(다른 IO 요청 처리), 테이블을 정리하는 등(다른 작업 수행) 다른 일을 하다가, 주방에서 음식이 다 되었다고 알려주면(IO 완료 알림) 그때 음식을 가져다줍니다.</p>
+<p>훨씬 효율적이죠!</p>
+<p>이 논블로킹 IO 방식을 기반으로 프로그램을 작성하는 방식을 <strong>비동기 프로그래밍</strong>이라고 부릅니다.</p>
+<p>&ldquo;나중에 알려줘&quot;라는 약속을 코드로 구현하는 방법에는 여러 가지가 있지만, 가장 대표적인 것이 <strong>콜백(Callback) 함수</strong>, <strong>프로미스(Promise)</strong>, 그리고 최신 자바스크립트(JavaScript)의 <strong>async/await</strong> 문법입니다.</p>
+<p>자, 이제 실제 노드제이에스(Node.js) 코드를 통해 블로킹과 논블로킹(비동기) 방식의 차이를 눈으로 확인해 볼까요?</p>
+<p>파일을 읽는 간단한 예제입니다.</p>
+<p><strong>[예제 1: 블로킹 방식으로 파일 읽기 - <code>fs.readFileSync</code>]</strong></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span> <span class="c1">// Node.js의 파일 시스템 모듈
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;파일 읽기 시작 (동기)&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// readFileSync는 파일 읽기가 끝날 때까지 여기서 실행을 멈춥니다. (블로킹)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="s1">&#39;./myFile.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;파일 내용:&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;파일 읽기 오류:&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;파일 읽기 완료 (동기)&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;다음 작업 진행&#39;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><strong>[예제 2: 논블로킹(비동기) 방식으로 파일 읽기 - <code>fs.readFile</code>]</strong></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;파일 읽기 시작 (비동기)&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// readFile은 파일 읽기를 &#39;시작&#39;만 시키고 바로 다음 코드로 넘어갑니다. (논블로킹)
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 파일 읽기가 완료되면, 세 번째 인자로 전달된 콜백 함수가 실행됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">&#39;./myFile.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 이 부분은 파일 읽기가 완료된 &#39;미래 시점&#39;에 실행됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;파일 읽기 오류:&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;파일 내용:&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;--- 비동기 파일 읽기 콜백 완료 ---&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;파일 읽기 요청 완료 (비동기)&#39;</span><span class="p">);</span> <span class="c1">// readFile 함수 호출 직후 바로 실행됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;다음 작업 진행&#39;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>두 코드의 실행 결과를 비교하면 어떻게 나올까요? (<code>myFile.txt</code>에는 &ldquo;Hello Node.js!&ldquo;라는 내용이 있다고 가정합니다.)</p>
+<p><strong>[예제 1 실행 결과 예상]</strong></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>파일 읽기 시작 (동기)
+파일 내용: Hello Node.js!
+파일 읽기 완료 (동기)
+다음 작업 진행</code></pre>
+  </figure>
+</div>
+<p><strong>[예제 2 실행 결과 예상]</strong></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>파일 읽기 시작 (비동기)
+파일 읽기 요청 완료 (비동기)
+다음 작업 진행
+파일 내용: Hello Node.js!
+--- 비동기 파일 읽기 콜백 완료 ---</code></pre>
+  </figure>
+</div>
+<p>결과가 확연히 다르죠?</p>
+<ul>
+<li><strong>블로킹 방식(<code>readFileSync</code>)</strong> 은 파일 읽기가 끝날 때까지 <code>console.log('파일 내용:', data);</code> 다음 줄로 넘어가지 못했습니다. 모든 것이 순서대로 실행됩니다.</li>
+<li><strong>논블로킹 방식(<code>readFile</code>)</strong> 은 <code>readFile</code> 함수를 호출하자마자 바로 다음 줄인 <code>console.log('파일 읽기 요청 완료 (비동기)');</code> 와 <code>console.log('다음 작업 진행');</code> 이 실행되었습니다. 파일 읽기 자체는 백그라운드에서 진행되고, 완료된 후에야 콜백 함수 안의 코드가 실행되어 파일 내용이 출력된 것을 볼 수 있습니다.</li>
+</ul>
+<p>이것이 바로 논블로킹 IO와 비동기 프로그래밍의 힘입니다!</p>
+<p><strong>IO 작업을 기다리는 동안에도 프로그램의 다른 부분을 계속 실행</strong>하여 효율성을 극대화하는 것이죠.</p>
+<p>특히 수많은 동시 요청을 처리해야 하는 웹 서버 같은 IO 바운드 환경에서 이 방식은 엄청난 성능 향상을 가져옵니다.</p>
+<h2 id="3-nodejs의-심장---마법-같은-이벤트-루프event-loop">3. Node.js의 심장 - 마법 같은 이벤트 루프(Event Loop)</h2>
+<p>&ldquo;아니, 자바스크립트(JavaScript)는 원래 싱글 스레드(Single Thread)라면서요?</p>
+<p>어떻게 동시에 여러 작업을 처리하는 거죠?&rdquo; 라는 의문이 드는 것이 당연합니다.</p>
+<p>맞습니다. 노드제이에스(Node.js)의 메인 실행 흐름은 기본적으로 <strong>하나의 스레드</strong>에서 이루어집니다.</p>
+<p>그런데도 여러 요청을 동시에 처리하는 것처럼 보이는 비결, 그것이 바로 <strong>이벤트 루프(Event Loop)</strong> 입니다.</p>
+<p>이벤트 루프는 노드제이에스(Node.js) 애플리케이션이 시작될 때 함께 실행되어, 프로그램이 종료될 때까지 <strong>끊임없이 특정 작업들을 확인하고 처리하는 역할</strong>을 합니다.</p>
+<p>마치 아주 눈치 빠르고 부지런한 매니저 같다고 할 수 있습니다.</p>
+<p>이벤트 루프가 주로 하는 일과 관련된 핵심 요소들을 알아볼까요?</p>
+<ul>
+<li><strong>호출 스택 (Call Stack):</strong> 현재 실행 중인 함수의 목록을 관리하는 곳입니다. 자바스크립트 함수가 호출되면 스택에 쌓이고(push), 함수 실행이 끝나면 스택에서 빠집니다(pop). 일반적인 동기 코드(계산 등)는 여기서 실행됩니다.</li>
+<li><strong>백그라운드 (Background / Web APIs / C++ APIs):</strong> 시간이 오래 걸리는 작업(타이머 설정, 파일 IO 요청, 네트워크 요청 등)은 노드제이에스(Node.js)나 브라우저가 제공하는 별도의 영역(또는 내부 C++ 모듈)으로 보내져 처리됩니다. <strong>메인 스레드는 이 작업들이 완료되기를 기다리지 않습니다.</strong></li>
+<li><strong>콜백 큐 (Callback Queue / Task Queue):</strong> 백그라운드에서 처리된 비동기 작업들의 <strong>완료 결과(콜백 함수)</strong> 가 등록되는 대기 장소입니다. 여러 종류의 큐가 있지만(마이크로태스크 큐, 매크로태스크 큐 등), 일단은 &lsquo;완료된 작업의 콜백 함수들이 줄 서 있는 곳&rsquo; 정도로 이해하면 충분합니다.</li>
+<li><strong>이벤트 루프 (Event Loop):</strong> 바로 이 녀석이 핵심입니다! 이벤트 루프는 다음과 같은 일을 <strong>끊임없이 반복</strong>합니다.
+<ol>
+<li><strong>호출 스택(Call Stack)을 확인합니다.</strong> 스택이 비어 있나요? (즉, 현재 실행 중인 동기 코드가 없나요?)</li>
+<li><strong>호출 스택이 비어 있다면, 콜백 큐(Callback Queue)를 확인합니다.</strong> 큐에 대기 중인 콜백 함수가 있나요?</li>
+<li><strong>콜백 큐에 함수가 있다면,</strong> 그중 하나를 꺼내서 <strong>호출 스택으로 옮깁니다(push).</strong></li>
+<li>호출 스택으로 옮겨진 콜백 함수가 실행됩니다. 함수 실행이 끝나면 스택에서 빠집니다(pop).</li>
+<li>다시 1번부터 반복합니다.</li>
+</ol>
+</li>
+</ul>
+<p>이 과정을 그림으로 상상해 보세요.</p>
+<ol>
+<li><code>fs.readFile</code> 같은 비동기 함수가 호출 스택에서 실행됩니다.</li>
+<li><code>fs.readFile</code>은 실제 파일 읽기 작업을 <strong>백그라운드</strong>로 보냅니다. 그리고 <strong>자신은 바로 호출 스택에서 빠져나옵니다.</strong> (논블로킹!)</li>
+<li>호출 스택에는 <code>fs.readFile</code> 다음에 있던 <code>console.log('파일 읽기 요청 완료...')</code> 등이 들어와 실행되고 빠져나갑니다.</li>
+<li>그동안 백그라운드에서는 파일 읽기가 진행됩니다.</li>
+<li>파일 읽기가 완료되면, <code>fs.readFile</code>에 전달했던 <strong>콜백 함수가 콜백 큐로 들어갑니다.</strong></li>
+<li><strong>이벤트 루프</strong>는 끊임없이 호출 스택과 콜백 큐를 감시합니다.</li>
+<li>호출 스택이 비어있는 시점에, 이벤트 루프는 콜백 큐에 있던 콜백 함수를 발견하고 <strong>호출 스택으로 옮깁니다.</strong></li>
+<li>드디어 콜백 함수가 실행되어 파일 내용을 출력합니다.</li>
+</ol>
+<p>이러한 매커니즘 덕분에 노드제이에스(Node.js)는 <strong>단일 스레드임에도 불구하고 IO 작업을 기다리는 동안 멈추지 않고 다른 요청이나 작업을 처리할 수 있는 것</strong>입니다.</p>
+<p>이것이 바로 노드제이에스(Node.js)가 IO 바운드 작업 처리에 매우 효율적인 이유입니다!</p>
+<h2 id="4-보이지-않는-조력자---리부브libuv-라이브러리와-스레드-풀-예제">4. 보이지 않는 조력자 - 리부브(libuv) 라이브러리와 스레드 풀 예제</h2>
+<p>그런데 노드제이에스(Node.js)가 이런 복잡한 비동기 IO 처리를 처음부터 끝까지 혼자 다 만들었을까요?</p>
+<p>아닙니다. 노드제이에스(Node.js)의 강력한 비동기 기능 뒤에는 <strong>리부브(libuv)</strong> 라는 든든한 조력자가 있습니다.</p>
+<p>리부브(libuv)는 <strong>C 언어로 작성된 저수준(low-level) 라이브러리</strong>로, 노드제이에스(Node.js)에게 <strong>운영체제(OS) 종류(윈도우, 맥OS, 리눅스 등)에 상관없이 일관된 방식으로 비동기 IO 기능을 제공</strong>하는 핵심적인 역할을 합니다.</p>
+<p>이벤트 루프 자체도 리부브(libuv)의 기능 중 하나입니다.</p>
+<p>앞서 잠깐 언급했듯이, 모든 IO 작업이 OS 레벨에서 논블로킹을 지원하는 것은 아닙니다.</p>
+<p>몇몇 파일 시스템 작업이나, 또는 CPU 연산 자체가 매우 많이 필요한 작업(예: 암호화, 압축)을 메인 스레드에서 직접 처리하면 결국 이벤트 루프가 해당 작업 시간 동안 멈춰버리는 &lsquo;블로킹&rsquo; 현상이 발생합니다.</p>
+<p>이 문제를 해결하기 위해 리부브(libuv)는 <strong>내부적으로 작은 규모의 스레드 풀(Thread Pool)</strong> 을 가지고 있습니다(기본 4개).</p>
+<p>OS 수준에서 논블로킹을 지원하지 않는 IO 작업이나 시간이 오래 걸리는 특정 작업들은 <strong>메인 이벤트 루프 스레드가 아닌, 이 별도의 스레드 풀에 있는 워커 스레드(Worker Thread)에게 위임</strong>됩니다.</p>
+<p>워커 스레드가 일을 처리하는 동안, 메인 스레드는 멈추지 않고 다른 요청을 계속 처리할 수 있습니다.</p>
+<p>작업이 완료되면 워커 스레드는 그 결과를 이벤트 루프에게 다시 알려주고, 이벤트 루프는 해당 콜백을 적절한 시점에 실행합니다.</p>
+<p><strong>[예제 3: libuv 스레드 풀 동작 확인하기 (파일 I/O + 암호화)]</strong></p>
+<p>이번 예제에서는 리부브(libuv)의 스레드 풀이 실제로 어떻게 사용되는지 보여주는 코드를 살펴보겠습니다.</p>
+<p>비동기 파일 읽기(<code>fs.readFile</code>)와 상대적으로 CPU 연산이 많이 필요한 암호화 함수(<code>crypto.pbkdf2</code>)를 함께 사용해 보겠습니다.</p>
+<p><code>setTimeout</code>도 사용하여 이벤트 루프의 다른 작업과의 상호작용도 관찰해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">crypto</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">os</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;os&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// libuv의 기본 스레드 풀 크기를 확인하고 변경할 수 있습니다. (기본값은 보통 4)
+</span></span></span><span class="line"><span class="cl"><span class="c1">// process.env.UV_THREADPOOL_SIZE = os.cpus().length; // 예: CPU 코어 수만큼 설정
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`libuv 스레드 풀 크기: </span><span class="si">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">UV_THREADPOOL_SIZE</span> <span class="o">||</span> <span class="mi">4</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">startTime</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 타이머 설정 (10ms 뒤 실행 예약)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">delay</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">startTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`타이머 1 (10ms) 실행 완료: </span><span class="si">${</span><span class="nx">delay</span><span class="si">}</span><span class="sb">ms 경과`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 비동기 파일 읽기 (myFile.txt가 존재한다고 가정)
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 이 작업은 libuv에 의해 처리되며, 경우에 따라 스레드 풀을 사용할 수 있습니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">&#39;./myFile.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;utf8&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;파일 읽기 오류:&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">delay</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">startTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`파일 읽기 1 완료: </span><span class="si">${</span><span class="nx">delay</span><span class="si">}</span><span class="sb">ms 경과`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// CPU 집약적인 암호화 작업 (PBKDF2) - 비동기 방식
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 이 함수는 연산량이 많아 이벤트 루프를 차단할 수 있으므로,
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Node.js는 libuv의 스레드 풀을 사용하여 이 작업을 백그라운드에서 실행합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">crypto</span><span class="p">.</span><span class="nx">pbkdf2</span><span class="p">(</span><span class="s1">&#39;비밀번호&#39;</span><span class="p">,</span> <span class="s1">&#39;솔트값&#39;</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;sha512&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">derivedKey</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">delay</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">startTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`암호화 1 (PBKDF2) 완료: </span><span class="si">${</span><span class="nx">delay</span><span class="si">}</span><span class="sb">ms 경과`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 스레드 풀을 더 많이 사용하도록 암호화 작업을 몇 번 더 호출해 봅니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 기본 스레드 풀 크기가 4라면, 이 작업들은 여러 스레드에 분산되어 처리될 겁니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">crypto</span><span class="p">.</span><span class="nx">pbkdf2</span><span class="p">(</span><span class="s1">&#39;비밀번호&#39;</span><span class="p">,</span> <span class="s1">&#39;솔트값&#39;</span><span class="p">,</span> <span class="mi">100000</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;sha512&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">derivedKey</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">delay</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">startTime</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`암호화 </span><span class="si">${</span><span class="nx">i</span><span class="si">}</span><span class="sb"> (PBKDF2) 완료: </span><span class="si">${</span><span class="nx">delay</span><span class="si">}</span><span class="sb">ms 경과`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 동기 코드
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;동기 코드 실행 완료 (비동기 작업 요청 보냄)&#39;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><strong>[예제 3 실행 결과 예상 (주의: 순서는 실행 환경에 따라 다를 수 있습니다!)]</strong></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>libuv 스레드 풀 크기: 4 // 또는 설정된 값
+동기 코드 실행 완료 (비동기 작업 요청 보냄)
+타이머 1 (10ms) 실행 완료: 12ms 경과 // 10ms 보다 약간 늦게 실행될 수 있음
+파일 읽기 1 완료: 85ms 경과       // 파일 크기와 디스크 속도에 따라 다름
+암호화 3 (PBKDF2) 완료: 210ms 경과 // 스레드 풀에서 먼저 끝난 순서대로
+암호화 2 (PBKDF2) 완료: 215ms 경과
+암호화 5 (PBKDF2) 완료: 220ms 경과
+암호화 1 (PBKDF2) 완료: 225ms 경과
+암호화 4 (PBKDF2) 완료: 230ms 경과 // 마지막 암호화 완료</code></pre>
+  </figure>
+</div>
+<p><strong>[결과 해석 및 libuv의 역할]</strong></p>
+<ol>
+<li><strong>동기 코드 우선 실행:</strong> 가장 먼저 <code>console.log('동기 코드 실행 완료...')</code>가 출력됩니다. 이는 비동기 함수들이 호출되자마자 실행 흐름이 바로 다음으로 넘어간다는 것을 보여줍니다.</li>
+<li><strong>비동기 작업 요청:</strong> <code>setTimeout</code>, <code>fs.readFile</code>, <code>crypto.pbkdf2</code> 호출 시, 실제 작업은 노드제이에스(Node.js) 내부(백그라운드)로 보내집니다. <code>pbkdf2</code>나 특정 상황의 <code>readFile</code> 같은 작업은 리부브(libuv)에 의해 <strong>스레드 풀</strong>로 보내집니다.</li>
+<li><strong>타이머 실행:</strong> <code>setTimeout</code>으로 예약된 콜백은 지정된 시간(10ms)이 지나면 콜백 큐(타이머 큐)에 들어갑니다. 이벤트 루프는 다른 작업들을 처리하다가 적절한 시점에 이 콜백을 실행합니다. (정확히 10ms가 아닐 수 있습니다!)</li>
+<li><strong>스레드 풀 작업 완료:</strong> 스레드 풀에서 실행된 파일 읽기나 암호화 작업들은 완료되는 대로 해당 콜백 함수를 콜백 큐(IO 큐 또는 다른 큐)에 넣습니다. <strong>어떤 작업이 먼저 끝날지는 예측하기 어렵습니다.</strong> 파일 읽기가 빠를 수도, 암호화 중 일부가 먼저 끝날 수도 있습니다. 위 예시에서는 파일 읽기가 암호화보다 먼저 끝났지만, 환경에 따라 다를 수 있습니다.</li>
+<li><strong>콜백 실행 순서:</strong> 이벤트 루프는 정해진 규칙(페이즈 순서, 큐 우선순위 등)에 따라 콜백 큐들을 확인하고, 큐에 있는 콜백 함수들을 하나씩 호출 스택으로 가져와 실행합니다. 따라서 최종 출력 순서는 작업 완료 순서 및 이벤트 루프의 스케줄링에 따라 유동적입니다. 중요한 것은, <strong>스레드 풀에서 아무리 오래 걸리는 작업이 실행되더라도 메인 이벤트 루프는 멈추지 않고 타이머 같은 다른 작업들을 계속 처리할 수 있다</strong>는 점입니다.</li>
+</ol>
+<p>이처럼 리부브(libuv)는 보이지 않는 곳에서 이벤트 루프를 돌리고, OS별 비동기 API 차이를 흡수하며, 필요시 스레드 풀을 활용하여 <strong>메인 스레드가 절대 멈추지 않도록(non-blocking)</strong> 보장합니다.</p>
+<p>이것이 바로 노드제이에스(Node.js)가 싱글 스레드 기반임에도 불구하고 높은 동시성과 반응성을 유지할 수 있는 비결입니다.</p>
+<h2 id="5-nodejs-io-바운드-작업의-강자">5. Node.js, IO 바운드 작업의 강자!</h2>
+<p>자, 이렇게 해서 우리는 블로킹 IO의 문제점에서 시작하여 논블로킹 IO와 비동기 프로그래밍의 개념, 그리고 노드제이에스(Node.js)가 이를 이벤트 루프와 리부브(libuv)를 통해 어떻게 구현하는지까지 깊이 있게 살펴봤습니다.</p>
+<p>핵심을 다시 정리하면, <strong>노드제이에스(Node.js)는 이벤트 기반의 논블로킹 IO 모델을 사용하여 싱글 스레드 환경에서도 IO 작업을 기다리는 동안 CPU 자원을 낭비하지 않고 다른 요청들을 효율적으로 처리할 수 있다</strong>는 것입니다.</p>
+<p>이 덕분에 웹 서버, API 서버, 실시간 채팅 애플리케이션 등 <strong>동시에 많은 IO 요청을 처리해야 하는 IO 바운드 환경에서 특히 강력한 성능과 자원 효율성</strong>을 보여줍니다.</p>
+<p>적은 서버 자원으로도 많은 사용자를 감당할 수 있게 되는 것이죠.</p>
+<p>물론 노드제이에스(Node.js)가 만능은 아닙니다.</p>
+<p>앞서 살펴봤듯이, 순수하게 CPU 연산이 매우 중요한 <strong>CPU 바운드 작업</strong>에서는 전통적인 멀티스레딩 모델을 사용하는 다른 언어/플랫폼(Java, C++, Go 등)이 더 유리할 수 있습니다.</p>
+<p>(물론 노드제이에스(Node.js)에도 워커 스레드(Worker Threads) 기능이 추가되어 CPU 바운드 작업 처리 능력이 향상되긴 했습니다.)</p>
+<p>하지만 오늘 배운 내용을 통해 왜 노드제이에스(Node.js)가 특정 분야에서 큰 인기를 얻고 있는지, 그리고 그 내부에서는 어떤 놀라운 일들이 벌어지고 있는지 조금이나마 이해하는 계기가 되었기를 바랍니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/node.js/" role="button">Node.js</a>
+        <a class="btn btn-light" href="/tags/%EB%85%BC%EB%B8%94%EB%A1%9C%ED%82%B9-io/" role="button">논블로킹 IO</a>
+        <a class="btn btn-light" href="/tags/%EB%B9%84%EB%8F%99%EA%B8%B0-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/" role="button">비동기 프로그래밍</a>
+        <a class="btn btn-light" href="/tags/%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EB%A3%A8%ED%94%84/" role="button">이벤트 루프</a>
+        <a class="btn btn-light" href="/tags/libuv/" role="button">libuv</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-25-nodejs-esm-migration-guide-jest-to-vitest/">Node.js ESM 마이그레이션 완벽 가이드 Jest에서 Vitest까지</a></h2>
+                  <p>기존 CommonJS 프로젝트를 최신 ESM으로 전환하고, 테스트 러너를 Jest에서 Vitest로 마이그레이션하는 실전 가이드입니다. 복잡한 설정부터 에러 해결 팁까지 모든 과정을 상세하게 다룹니다.</p>
+                  <p>
+  <small>August 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-16-fix-malformed-json-with-jsonrepair/">깨진 JSON 데이터, 더 이상 두렵지 않다 - JSONRepair 완벽 가이드</a></h2>
+                  <p>깨진 JSON, 누락된 콤마, 잘못된 따옴표 때문에 더 이상 데이터 파이프라인을 멈추지 마세요. JSONRepair 라이브러리를 사용하여 불안정한 데이터를 자동으로 복구하고 파싱하는 방법을 단계별로 배워보세요.</p>
+                  <p>
+  <small>July 16, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-13-nesting-multiple-async-local-storage/">다중 Async Local Storage - React Context처럼 중첩하기</a></h2>
+                  <p>단일 컨텍스트를 넘어, 여러 개의 Async Local Storage를 중첩하여 사용하는 방법을 알아봅니다. 재귀 함수를 이용한 영리한 트릭으로, 서버 사이드 코드의 모듈성을 극대화하고 prop drilling을 완벽하게 해결해 보세요.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

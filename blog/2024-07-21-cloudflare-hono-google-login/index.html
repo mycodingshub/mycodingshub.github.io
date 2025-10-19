@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기</title>
+<meta name="description" content="Cloudflare에서 Hono와 Google OAuth를 이용해서 구글 아이디를 이용한 Login 구현을 해보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기" />
+<meta property="og:description" content="Cloudflare에서 Hono와 Google OAuth를 이용해서 구글 아이디를 이용한 Login 구현을 해보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-07-21T11:36:11Z" />
+<meta property="article:modified_time" content="2024-07-21T11:36:11Z" />
+<meta property="article:tag" content="Google OAuth" />
+<meta property="article:tag" content="Cloudflare" />
+<meta property="article:tag" content="Hono" />
+<meta property="article:tag" content="Login" />
+<meta property="article:tag" content="Session" />
+<meta property="article:tag" content="Google ID Login" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기" />
+<meta name="twitter:description" content="Cloudflare에서 Hono와 Google OAuth를 이용해서 구글 아이디를 이용한 Login 구현을 해보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기\"",
+  "description": "\"Cloudflare에서 Hono와 Google OAuth를 이용해서 구글 아이디를 이용한 Login 구현을 해보겠습니다.\"",
+  "datePublished": "\"2024-07-21T11:36:11Z\"",
+  "dateModified": "\"2024-07-21T11:36:11Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기</h1>
+        <p>
+  <small>July 21, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘은 Cloudflare가 밀고 있는 Hono 웹 프레임워크를 이용해서 OAuth 테스트를 해 보겠습니다.</p>
+<p>OAuth 테스트에는 Google 아이디로 로그인 하기를 이용하겠습니다.</p>
+<p>먼저, Cloudflare + Hono의 빈 템플릿을 만들겠습니다.</p>
+<p>패키지 매니저로 Bun을 이용하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bunx create-hono bun-oauth-google-login-test
+</span></span><span class="line"><span class="cl">create-hono version 0.10.0
+</span></span><span class="line"><span class="cl">✔ Using target directory … bun-oauth-google-login-test
+</span></span><span class="line"><span class="cl">? Which template <span class="k">do</span> you want to use? cloudflare-pages
+</span></span><span class="line"><span class="cl">✔ Cloning the template
+</span></span><span class="line"><span class="cl">? Do you want to install project dependencies? yes
+</span></span><span class="line"><span class="cl">? Which package manager <span class="k">do</span> you want to use? bun
+</span></span><span class="line"><span class="cl">✔ Installing project dependencies
+</span></span><span class="line"><span class="cl">🎉 Copied project files
+</span></span><span class="line"><span class="cl">Get started with: <span class="nb">cd</span> bun-oauth-google-login-test</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="google-cloud-platform-사용하기">Google Cloud Platform 사용하기</h2>
+<p>Google 아이디로 로그인하기 위해서는 Google Cloud Platform을 이용해야 합니다.</p>
+<p>아래 링크는 Google Cloud Platform 콘솔로 바로 이어지는 링크입니다.</p>
+<p><a href="https://console.cloud.google.com/">Google Cloud Platform Console</a></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEja-EIJ_wwaLuBcxoWAYQimTvlTWdN1CS1Cks9o2Uz6ayRf1PxgNZWdc3cteuzALjawPa9qcYO73KUhjXt_NVGmF0r3tqVVX8hqE__1eY2RiOmC2kFu-7jrszadVE21fnRL3t4f6rqW4FZMaaTML3mgf2BGPr0EdL6kQeM5XovNsXWPgpZU2FODTbH7Zt4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 나오는데, 새로운 프로젝트를 하나 만들어야 합니다.</p>
+<p>상단 프로젝트선택을 누르고 아래 그림에서 &ldquo;새 프로젝트&quot;를 눌러 하나 만들어야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhVwzTbq5OROyzui7ORWa8lQDa8aNQogO8QalIXJM3oBIaxc7ClBT7aC-5fvwX_PI8EBrhVh6xoi8YbPNWp-GKxp9kqfFp3GkzmTlfr7-tGC33UOiJs6SWchH4mIDNeYmps6N4DqhvH9P9qad_oSENO-N0wOYLhxhJzjlXB-P3VBgDq1vn4KT9oZ8fXxSc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>아래 그림과 같이 프로젝트 이름을 아무렇게 정해주고,</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_Ns2c8sMFbKd37Tgtf3-s54GyMAyyl-kvv5h7w6gvzXHPH1-itgGFmCB0DvLFFunwXVlteIAezVGB2BsHxSrzXTyzx66FDCyGdulX2UUcP0Rv8ISm0IG5vVK6HtTZ79LsqwSExDGWNvy-hhAzkeZqtAtCnfwi6o7z46A1uP5T_xrUSrW6UEC35h6Holg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 프로젝트가 만들어졌으면 아래 그림과 같이 대시보드로 갑시다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgshIo_eVLVweMq_e9wwUcKEFTsbgIm7zwNYMGi1YCtCs_JJEo4iEHhurdwSjtiZdBjkXWVYzpd06gvZeChuCX9lPjV7ow6rOCvsVcIfcsFgb8qVs8xOOJw7OyO8pLVCtJpPxcCl2WoMimBv5v-CWHEMPHeu5kON11my7b-pHiQXnlzBogdQKMVwYLIFO0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 API를 사용해야하기 때문에 상단 그림 오른쪽 부분에 &ldquo;API 개요로 이동&rdquo; 링크를 누릅니다.</p>
+<p>그러면 아래와 같이 &ldquo;API 및 서비스&quot;라는 메뉴가 나오는데 여기서 먼저, OAuth 동의 화면을 설정해야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjoGR6WStIesizmIywTzmfPXgyo5W_ycYRirhXxEFTLQJRu7qzmh7I2Jd8_pu0PT6eO5z-Fheek3y34sYhi0xgPLgo9B0K-ML1yi-L6HhFqPdUNUcnifTrjJ0Xo8prbDc9U-aZiIVTDE17QIbA_9PB8QQp7FPwaoh13ebc0sX9BKmUiQYnA6hre7UqPSBk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>클릭하면 아래와 같이 Internal과 External 두개가 나오는데요.</p>
+<p>External을 선택합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgzhZ5vy2g6pA37FsBU34pD2s6pFw2PSsOyXo-9eMUoAOuzUn77SRahLVZLnAo_9yzeyFAjAXJ0aXo0v9j9xNtF0fnoTr4r7qMXrWA6YdMQUpVqKesZ-ItAjHqWrCCfK925ybpvOyd-FGQ9hLGst2Spe9rP7CrnMrBzjrPEUTRAg124BEENeVsYOAiXM24"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기서 &ldquo;만들기&rdquo; 버튼을 누르면 앱 이름과 사용자 지원 이메일을 넣으라고 합니다.</p>
+<p>앱 이름은 실제 웹 애플리케이션이 만들어졌을 때 구글 아이디 로그인시 나타나는 이름입니다.</p>
+<p>앱 로고도 설정할 수 있으니 참고바랍니다.</p>
+<p>우리가 만드려는 건 OAuth 클라이언트 ID입니다.</p>
+<p>아래 그림과 같이 OAuth 클라이언트 ID를 선택합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhp_LLPsNA4_SE9T9W_wHskQBr1PVWbIaO0NbcMtmjsYVvV84gtFoSEfKxZeacYOXRVQHuFaklp-HUN7h5LK_TfKNJHyZrZpRG-3SkW7FNFD30V4Yp9EWie0PZ2Js1wGyHMkGkQAOcfd2NfmbQT0mEvStk3FQcdJrljKlBqlESTayb5hDMmZumIR5XIM74"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 아래와 같이 우리가 만드려는 애플리케이션의 타입을 정해야 합니다.</p>
+<p>당연히 웹 애플리케이션을 선택하면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjmg7rK8py-m3AOAgL42veC8s_1MDoBrBlRdI0s2yDQdaKhFb9XyMkCWLx_RBhwYwJl3cB1lIdPTf61Iwt9tu0FQj7ind6_O7c1KY1YYvI1lbm1A1aeR0xuikC8Im1-W-sgK5yDBVLYbD54NOdPLFUHNmNQ8BkW3hEisnJ4GYcCSjOC-_hy-4MtnEYlswc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그러면 또 앱 이름을 넣으라고 합니다.</p>
+<p>해당 이름을 넣으면 여기서 가장 중요한 부분이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEimMrKT2XLdUFEPHpABScZhZ_l1bQ4gDt2v8ZZjC7Usnn7ko_SoXvwND8jie6MNX7KhZPi9WTp705rsPYlS2L4Vi7PYMf3c-ErlwfEdT9hgSAcmaMaPd3t6fUkPs6fD1QIFgZ5mtifvUgW1nYYXCLggmv9KgcweEzQ4IQrkjM6dMKDB6V2oOFRoYd0gMrI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 <code>승인된 Javascript 원본</code>과 <code>승인된 리디렉션 URI</code>입니다.</p>
+<p><code>승인된 Javascript 원본</code>은 웹 애플리케이션의 웹 주소입니다.</p>
+<p>우리는 현재 개발서버이기 때문에 Vite 개발서버인 <code>http://localhost:5173</code>을 넣으면 됩니다.</p>
+<p>그리고 <code>승인된 리디렉션 URI</code> 부분이 가장 중요한데요.</p>
+<p>이 주소는 구글 아이디로 로그인했을 때의 콜백 주소를 넣는 겁니다.</p>
+<p>우리는 개발 편의를 위해 간단하게 <code>http://localhost:5173/callback</code> 주소를 사용하겠습니다.</p>
+<p>이제 완료되면 아래와 같이 클라이언트 ID와 클라이언트 보안 비밀번호가 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjp6FqNJwCQ1kbZEP5krVuCkrm1dso4j3GxlHi8e-8DpMKe9DnRmlrh3xA7jerISH4tvZLkpgaEfVt67wKyrb_pxd8FcyVaqe8QI_3CrBYMazdwZNBnl99-WN59TgMzED1lUZ6XJ-9akb3l7O2TO7nqt3dE9CzDok0Xc27BUMLldTQUC9AnLKFqMOLyW7k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 두개의 문자열을 실제로 Hono 앱에서 사용할 겁니다.</p>
+<p>이제 Google Cloud Platform의 준비가 끝났습니다.</p>
+<hr>
+<h2 id="hono로-login-라우팅-구현하기">Hono로 login 라우팅 구현하기</h2>
+<p>이제 본격적인 Hono 앱을 만들어 보겠습니다.</p>
+<p>기본적인 템플릿은 아래와 같은데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;hono&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./renderer&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>로그인 로직 구현이기 때문에 스타일은 신경쓰지 않겠습니다.</p>
+<p><code>/login</code> 라우팅을 구현하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./renderer&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// &#34;클라이언트 등록&#34;에서 취득한 값을 변수에 설정합니다
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">CLIENT_ID</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;2437iu9ddmt4rmq.apps.googleusercontent.com&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">CLIENT_SECRET</span> <span class="o">=</span> <span class="s2">&#34;GOCSPXrqFasdfasdfasdfsadfasdfaYU&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">REDIRECT_URI</span> <span class="o">=</span> <span class="s2">&#34;http://localhost:5173/callback&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">AUTH_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://accounts.google.com/o/oauth2/v2/auth&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">response_type</span><span class="o">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">scope</span><span class="o">:</span> <span class="s2">&#34;profile&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirect_uri</span>: <span class="kt">REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">AUTH_ENDPOINT</span><span class="si">}</span><span class="sb">?</span><span class="si">${</span><span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드를 보시면 먼저, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI 값을 설정했습니다.</p>
+<p>당연히 아까 구글 클라우드 플랫폼에서 얻은 클라이언트 ID와 해당 SECRET 값을 넣으면 됩니다.</p>
+<p><code>/login</code> 라우팅은 구글의 oauth2 REST API에 관련 정보를 이용해서 get 메서드로 HTTP 통신을 하면 됩니다.</p>
+<p>그리고 잘 보시면 params 객체를 URLSearchParams 클래스를 이용해서 브라우저에서 사용할 수 있는 문자열의 연속으로 바꿨습니다.</p>
+<p>여기 params 객체에서 중요한게 response_type과 scope입니다.</p>
+<p>response_type은 &lsquo;code&rsquo;라고 넣으면 됩니다.</p>
+<p>scope는 구글에서 제공하는 여러가지 서비스 관련 주소를 넣는건데요.</p>
+<p>만약 구글 드라이브 API를 쓰려면 아래와 같이 넣으면 됩니다.</p>
+<p><code>&quot;https://www.googleapis.com/auth/drive.readonly&quot;</code></p>
+<p>scope를 위와 같이하면 구글 드라이브에 접근한다는 뜻입니다.</p>
+<p>그런데, 우리는 로그인만 하기 때문에 scope를 profile로 지정했습니다.</p>
+<p>그러면 구글 아이디의 profile을 얻을 수 있는겁니다.</p>
+<p>이제 개발 서버를 돌려서 브라우저에서 테스트해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bun run dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  VITE v5.3.4  ready in <span class="m">6185</span> ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ➜  Local:   http://localhost:5173/
+</span></span><span class="line"><span class="cl">  ➜  Network: use --host to expose
+</span></span><span class="line"><span class="cl">  ➜  press h + enter to show help</span></span></code></pre></div>
+  </figure>
+</div>
+<p>만약 브라우저가 기존에 구글 아이디로 로그인했었다면 본인 아이디를 사용할 거라고 물어보는 화면이 나오는데요.</p>
+<p>시크릿 모드에서 <code>http://localhost:5173/login</code> 주소로 가면 아래와 같이 구글 계정으로 로그인하라는 화면이 뜹니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhvOTvWwJ6xc7Qa7CuW6u1mfaeY0lgHpyRr7Ex3GAMoFMS51rDXFsPK8RqGfH7V71uW901nyc6s0olT90VoOD8RQaqwHSOqfj262vNNuuUoA4zzXM_PggSKko48CyzsAap8l4_tZVnr2fvgaOhqFff35frx37PLivc6yIsK_jdQ4zVbCTRmHMwFjmV4MUM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>잘 보시면 구글 클라우드 플랫폼에서 작성한 앱 이름이 나오네요.</p>
+<p>이제 로그인 하면 아마 유투브에서 인증하라고 나올겁니다.</p>
+<p>그리고 마지막으로 아래와 같이 나올겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg3RYSFvx-H1-9qqhQGjd3vnMNkrCj3mCSm-EnboaJx4dFlPTBRpToPvkkOkH3-m2eJwO9t_cU3w6PDapi7dyQ4geW0MPzfPPAYnhFv_zvBTGiz2ZLXmnqPmfkGijOMOS8MpHq3zNQlxBQXVrLoaglDGdYnBAqFUZ5MA8xQe1RSU7_lej9p1Dg94eSG1us"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 &ldquo;계속&quot;버튼을 누르면 로그인이 완료된건데요.</p>
+<p>그러면 브라우저는 아래와 같이 나올겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhqVvhxYi6dj0xcuWF7XuI2RzHS3K_BIRLPnlUkcw5J2ILewdIrLifEU10Np0AtYTxxEv7yVn1w-7Ejkk1FvN8FC20A_tDEo27yAH1RjD29rN9gVEBcRqNm6Nn6tEGnnWghuZQxz8mXcQCmAfX9fjudJfb04olKp5L8sjpfzjVebgNAwW2h6GaJQiRYIBI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나오는데요.</p>
+<p><code>/callback</code> 라우팅이 없다는 거죠.</p>
+<p>왜 <code>/callback</code> 라우팅으로 왔냐면 바로 우리가 구글 클라우드 플랫폼에서 설정한 <code>승인된 리디렉션 URI</code> 때문입니다.</p>
+<p>구글 oauth REST API로 관련 정보를 이용해서 로그인하면 구글은 <code>승인된 리디렉션 URI</code>로 관련 정보를 code라는 파라미터로 저장해서 보냅니다.</p>
+<p>그래서 위 그림에서 주소창을 보시면 <code>code=~~~~~~~</code>부분이 보일겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">http://localhost:5173/callback?code<span class="o">=</span>4%2F0AcvDMrBF4mqy8Yl02FLi4B0p_BwltUNK0k4nyIfjd9zLFCgATa1VwCKw<span class="p">&amp;</span><span class="nv">scope</span><span class="o">=</span>profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile</span></span></code></pre></div>
+  </figure>
+</div>
+<p>잘 분석해 보면 googleapis에서 auth 관련 userinfo.profile을 가져온겁니다.</p>
+<p>근데 왜 에러가 떳냐면 아직 Hono 앱에서 <code>/callback</code> 라우팅을 정의하지 않아서 입니다.</p>
+<p>이제 다시 Hono 앱에서 <code>/callback</code> 라우팅을 정의해 보도록 하겠습니다.</p>
+<h2 id="callback-라우팅-구현">callback 라우팅 구현</h2>
+<p>callback 라우팅에서 무조건 구현해야하는 거는 토큰 관련 로직입니다.</p>
+<p>로그인을 했으면 그리고 로그인이 정확하다면 구글에서 액세스 토큰을 얻을 수 있는데요.</p>
+<p>이 액세스 토큰을 이용해서 사용자 정보도 얻고, 구글 드라이브 API에도 접속하고 그러는 겁니다.</p>
+<p>그래서 먼저, 액세스 토큰을 얻는 코드를 작성해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">TokenResponse</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">access_token</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expires_in</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">token_type</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">scope</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refresh_token?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">UserInfo</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">given_name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">family_name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">picture</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/callback&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">TOKEN_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://www.googleapis.com/oauth2/v4/token&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;code&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;Authorization code not found&#34;</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_secret</span>: <span class="kt">CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">grant_type</span><span class="o">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">code</span>: <span class="kt">code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirect_uri</span>: <span class="kt">REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">response</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">TOKEN_ENDPOINT</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/x-www-form-urlencoded&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">body</span>: <span class="kt">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">errorResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">data</span>: <span class="kt">TokenResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">access_token</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">access_token</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">access_token</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;An error occurred during token exchange&#34;</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 잘 보시면 먼저, TokenResponse 타입과 UserInfo 타입을 정의했습니다.</p>
+<p>UserInfo 타입은 나중에 쓸 겁니다.</p>
+<p>TOKEN_ENDPOINT를 정의했고, 그 다음에 params 값을 지정하면 되는데요.</p>
+<p>중요한 거는 아까 콜백 주소창에 있던 <code>code</code>라는 URL 파라미터 값입니다.</p>
+<p>이제 TOKEN_ENDPOINT로 fetch를 POST 메서드로 하면 됩니다.</p>
+<p>body 부분은 params입니다.</p>
+<p>이제 리턴된 데이터에서 access_token을 뽑아내면 됩니다.</p>
+<p>브라우저 화면을 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgpJ0Y_-sMIla6j2RhgBWOyLo4I9wTmP-NtVPoiqLqC7wzhOWkXxXc3saq27RD5mkII_6oUxAoAxxAw5VBEIATIDTe3etRGWsfK2p0ro6NH92DYvLBonEI88aLsK4f0lyjYZOTGBz4Vt7qSqbb7kjTwnxbHeh0Twb-5qeBqs_l5hTI2VrgCQvtrlqZElUY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리의 액세스 토큰이 잘 얻어지고 있습니다.</p>
+<p>이제 이 액세스 토큰을 활용해서 구글 유저 정보를 얻어오는 코드와 해당 정보를 쿠키에 저장하는 코드만 작성하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">setCookie</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/cookie&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/callback&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">TOKEN_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://www.googleapis.com/oauth2/v4/token&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;code&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;Authorization code not found&#34;</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_secret</span>: <span class="kt">CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">grant_type</span><span class="o">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">code</span>: <span class="kt">code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirect_uri</span>: <span class="kt">REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">response</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">TOKEN_ENDPOINT</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/x-www-form-urlencoded&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">body</span>: <span class="kt">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">errorResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">data</span>: <span class="kt">TokenResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">access_token</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">access_token</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">userInfoResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;https://www.googleapis.com/oauth2/v2/userinfo&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">access_token</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">errorResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">userInfo</span>: <span class="kt">UserInfo</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userInfo</span><span class="p">);</span> <span class="c1">// 사용자 정보 출력
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 세션 쿠키 설정
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">sessionCookie</span> <span class="o">=</span> <span class="nx">Buffer</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">userInfo</span><span class="p">)).</span><span class="nx">toString</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;base64&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;session&#34;</span><span class="p">,</span> <span class="nx">sessionCookie</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span> <span class="c1">// 1 day
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;An error occurred during token exchange&#34;</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>먼저, setCookie 함수를 import 합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">setCookie</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/cookie&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 잘 보시면 아까 얻었던 액세스 토큰을 이용해서 다음 주소를 이용해서 정보를 얻어오고 있습니다.</p>
+<p><code>https://www.googleapis.com/oauth2/v2/userinfo</code></p>
+<p>로그인을 다시해보면 콘솔창에는 아래와 같이 userInfo 값이 출력될겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  id: <span class="s1">&#39;1105846834656&#39;</span>,
+</span></span><span class="line"><span class="cl">  name: <span class="s1">&#39;M~~~~~m&#39;</span>,
+</span></span><span class="line"><span class="cl">  given_name: <span class="s1">&#39;M~~~~~~~~~~&#39;</span>,
+</span></span><span class="line"><span class="cl">  family_name: <span class="s1">&#39;~~~~&#39;</span>,
+</span></span><span class="line"><span class="cl">  picture: <span class="s1">&#39;https://lh3.googleusercontent.com/a/ACg8ocJchdcIu6QL8IWodm0_sYiMsU55E_a9O4g=s96-c&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 우리가 얻은 사용자 정보를 쿠키에 저장해서 로그인됐는지 확인할 때 사용해야 합니다.</p>
+<p>아래 코드를 보시면 Buffer를 이용해서 &lsquo;base64&rsquo;로 userInfo 값을 인코딩했고 그 정보를 sessionCookie 값에 저장했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// 세션 쿠키 설정
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">sessionCookie</span> <span class="o">=</span> <span class="nx">Buffer</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">userInfo</span><span class="p">)).</span><span class="nx">toString</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;base64&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;session&#34;</span><span class="p">,</span> <span class="nx">sessionCookie</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span> <span class="c1">// 1 day
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 Hono에서 제공해주는 setCookie 함수를 이용해서 sessionCookie 값을 &ldquo;session&quot;이라는 이름으로 쿠키 형태로 저장했습니다.</p>
+<p>이제 크롬 개발자 모드로 들어가서 쿠키란을 보면 아래와 같이 쿠키가 저장된걸 볼 수 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEizJNn7Cy6uobQxaGgnAOHAA5BPwfEJvsfi8cxvS9FCXevAPfXwxdU5g48hknv2S2lmjj9wENU6qUePbPBBRAjV_hGSCZ3wOuHTaNs8OuQUwgxEy3COXxs1m_gzykAupu0CBXBqmj-XQv0FLADIYllQada4-5uFSgKIfUCqVkcIzIgM62XLBK3RXaJl1eY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>쿠키 이름이 &ldquo;session&quot;이라고 했는데, 조금은 앱과 연관된 특이한 이름을 사용하는게 좋습니다.</p>
+<p>그리고 코드 마지막에 보시면 &ldquo;/&rdquo; 라우팅으로 redirect 된걸 알 수 있을 겁니다.</p>
+<hr>
+<h2 id="로그인-여부-확인하기">로그인 여부 확인하기</h2>
+<p>이제 코드의 80%가 완성됐는데요.</p>
+<p>&ldquo;/&rdquo; 라우팅에서 &ldquo;session&rdquo; 쿠키 여부에 따라 로그인 여부를 확인하고 화면에 다르게 보여줘야 하는데요.</p>
+<p>해당 로직을 작성해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getCookie</span><span class="p">,</span> <span class="nx">setCookie</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/cookie&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;session&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">userInfo</span>: <span class="kt">UserInfo</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Buffer</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="s2">&#34;base64&#34;</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// return c.json({ message: &#34;Logged in&#34;, user: userInfo });
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">welcome</span> <span class="o">:</span> <span class="p">{</span><span class="nx">userInfo</span><span class="p">.</span><span class="nx">id</span><span class="p">}&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">userInfo</span><span class="p">.</span><span class="nx">picture</span><span class="p">}</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;/logout&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span><span class="nx">logout</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;Welcome to the home page. Please log in.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>먼저, Hono에서 제공해주는 getCookie 함수를 import 합시다.</p>
+<p>getCookie 함수를 이용해서 &ldquo;session&quot;이라는 이름의 쿠키를 얻어 오는데요.</p>
+<p>그걸 다시 Buffer를 이용해서 &ldquo;base64&rdquo; 디코드해서 userInfo 변수에 저장합니다.</p>
+<p>그리고 해당 정보를 이용해서 아래 그림과 같이 화면에 뿌려주는데요.</p>
+<p>그리고 logout 버튼도 만들었습니다.</p>
+<p>먼저, 해당 화면입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhOLVhUohHv4QG19yMPj3i4nAH_BYvtHKVNnBHM8mzvX33ou8Rt6gMqfT7QB4AIdPs7Yt2jTNcUJH2B2zx8dLH7ujujXjmbphrL1e65ITJJoDZPu6vcAbLuCqYqzF-Q3ni9AoELLo9efP20v9Sv0KgW6SBrvWryRP8Pc0kPK5ktPmCE5NHUQP7hTHOU-oU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 id와 picture가 잘 보입니다.</p>
+<p>이제 logout 로직을 만들어야 하는데요.</p>
+<p>logout 로직은 간단합니다.</p>
+<p>&ldquo;session&quot;이라는 이름의 쿠키를 삭제하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">&#34;/logout&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">deleteCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;session&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 POST 메서드로 &lsquo;/logout&rsquo; 주소로 보내면 됩니다.</p>
+<p>deleteCookie로 &ldquo;session&rdquo; 쿠키를 삭제하고 &ldquo;/&ldquo;로 redirect 하면 끕입니다.</p>
+<p>당연히 deleteCookie도 import 하시면 됩니다.</p>
+<p>로그아웃 버튼을 눌러보면 브라우저가 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhR21TuPq4_MFyJ9eg9SaTVOyFoBH2HwZbe6g3m-qwhdQDGkGEvtci1_BI5EPUq9nwtXXJFGFoTlYiBZHSmLbr6Al8udnuPhB31n82AfG1xM_P9sFoL4wFRBllDtEIqUEW78oni-yBA-3lKusaqSPaDP4CMxv_h3gzoqTLtEXEx4uWJUiv2j7pBQe41--k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리가 의도했던데로 로그아웃이 구현되었네요.</p>
+<hr>
+<p>이로써 Hono와 Google OAuth를 이용한 로그인 로직을 구현해 봤는데요.</p>
+<p>많은 도움이 됐으면 합니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/google-oauth/" role="button">Google OAuth</a>
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">Cloudflare</a>
+        <a class="btn btn-light" href="/tags/hono/" role="button">Hono</a>
+        <a class="btn btn-light" href="/tags/login/" role="button">Login</a>
+        <a class="btn btn-light" href="/tags/session/" role="button">Session</a>
+        <a class="btn btn-light" href="/tags/google-id-login/" role="button">Google ID Login</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-24-cloudflare-hono-oauth-naver-login/">Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</a></h2>
+                  <p>Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</p>
+                  <p>
+  <small>July 24, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login/">네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth</a></h2>
+                  <p>Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 4, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login/">Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</a></h2>
+                  <p>Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

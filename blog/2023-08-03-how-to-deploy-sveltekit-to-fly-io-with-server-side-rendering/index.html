@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링</title>
+<meta name="description" content="SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링" />
+<meta property="og:description" content="SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-08-03T12:54:46Z" />
+<meta property="article:modified_time" content="2023-08-03T12:54:46Z" />
+<meta property="article:tag" content="fly.io" />
+<meta property="article:tag" content="sveltekit" />
+<meta property="article:tag" content="sveltejs" />
+<meta property="article:tag" content="ssr" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링" />
+<meta name="twitter:description" content="SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링\"",
+  "description": "\"SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링\"",
+  "datePublished": "\"2023-08-03T12:54:46Z\"",
+  "dateModified": "\"2023-08-03T12:54:46Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링</h1>
+        <p>
+  <small>August 3, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간에는 SvelteKit을 이용해서 마크다운 형식의 블로그를 만들어 보았는데요.</p>
+<p>오늘은 SvelteKit 강좌보다는 SvelteKit의 Server Side Rendering일 경우 실제 어떻게 호스팅 하는지에 대해 알아보겠습니다.</p>
+<hr>
+<h2 id="flyio">Fly.io</h2>
+<p>지금 글 쓰고 있는 이 블로그는 Fly.io에 호스팅 했는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjXiyTCU4volGBIivfpv-5BBfJFW_gCRQgSYat7fIeQTcLIgykeS2Vc0eurFq_zGpwTVlkeEmNPJe0CimWYeif0qyHoVDVC3c6TsgRofgVNtqcadWfSFWrrUOv0JKSGBVX8BcOfEpq4Bzzdj7AJqotF1TwDXjqMbONcEbCd7jdPp48rUCjg50keBtiUf74"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 Fly.io 대시보드에서 보시면 mycodings라는 프로젝트가 사용하는 클라우드 컴퓨터는 CPU가 &ldquo;shared-cpu-1x&quot;이고 메모리는 256MB짜리입니다.</p>
+<p>실제 Fly.io에서 제공해 주는 Hobby Plan에 따라 $5 이하는 무료로 사용하고 있습니다.</p>
+<p>실제, 제가 쓰는 가상머신 요금은 아래와 같은데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">shared-cpu-1x	<span class="m">1</span> shared	256MB	<span class="nv">$0</span>.0000008/s <span class="o">(</span><span class="nv">$1</span>.94/mo<span class="o">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아무리 많은 트래픽이 나와도 한 달에 $5를 넘길 수는 없을 거 같네요.</p>
+<p>실제 Fly.io의 무료 요금제가 제공하는 혜택은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Up to <span class="m">3</span> shared-cpu-1x 256mb VMs†
+</span></span><span class="line"><span class="cl">3GB persistent volume storage <span class="o">(</span>total<span class="o">)</span>
+</span></span><span class="line"><span class="cl">160GB outbound data transfer</span></span></code></pre></div>
+  </figure>
+</div>
+<p>Fly.io는 제 블로그 주소처럼 끝이 fly.dev로 끝나는 도메인을 제공해 주는데요.</p>
+<p>전 세계 여러 곳에 Edge 서버를 제공해주고 있고, 실제 제 서버는 한국과 가장 가까운 일본 도쿄에 위치하고 있습니다.</p>
+<p>Fly.io가 아직 한국 서버를 제공해 주지는 않고 있네요.</p>
+<h2 id="flyio의-장점">Fly.io의 장점</h2>
+<p>Fly.io가 Netlify나 Vercel보다 좋은 점은 Docker를 이용한다는 점과 실제 데이터를 저장할 수 있는 HDD를 제공해 준다는 점입니다.</p>
+<p>그래서 Node 서버(Express 서버)를 Docker 상에서 실행하면서 Prisma 같은 데이터베이스 ORM 패키지로 백그라운드에서 DB를 제어할 수 있습니다.</p>
+<p>그리고 Github Action과 연동하면 Github에 Push만 해도 다시 Docker가 빌드되게 설정할 수 있어 유지 보수가 아주 쉽습니다.</p>
+<p>그리고 실제 이 가상 서버에 SSH 방식으로 원격으로 로그인할 수 있는데요.</p>
+<p>SSH 방식으로 로그인한 이 가상 서버는 실제 우분투 서버 버전이라 손쉽게 내가 원하는 방식으로 서버를 운영할 수 있습니다.</p>
+<p>그러면, SvelteKit 예제 프로젝트를 하나 만들고 실제 Fly.io에 배포까지 해 보겠습니다.</p>
+<hr>
+<h2 id="sveltekit-예제-프로젝트도-멋지게">SvelteKit 예제 프로젝트도 멋지게</h2>
+<p>이왕 만드는 김에 서버 사이드 렌더링도 되게끔 서버 관련 코드도 작성해야 할 겸, 좀 더 어렵게 프로젝트를 만들어 보겠습니다.</p>
+<p>바로, mymovies.fly.dev 사이트에서 구현한 TMDB 사이트의 Popular Movies 데이터를 화면에 뿌려주는 코드를 작성해 볼건데요.</p>
+<p>TMDB 사이트에 가셔서 나만의 API_Key를 꼭 얻어 놓으셔야 다음 작업으로 진행이 가능하겠습니다.</p>
+<p>빈 SvelteKit 프로젝트 만들기</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  blog&gt; npm create svelte@latest ./sveltekit-deploy-on-fly-io
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">create-svelte version 5.0.4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">┌  Welcome to SvelteKit!
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">◇  Which Svelte app template?
+</span></span><span class="line"><span class="cl">│  Skeleton project
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">◇  Add <span class="nb">type</span> checking with TypeScript?
+</span></span><span class="line"><span class="cl">│  Yes, using TypeScript syntax
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">◇  Select additional options <span class="o">(</span>use arrow keys/space bar<span class="o">)</span>
+</span></span><span class="line"><span class="cl">│  Add ESLint <span class="k">for</span> code linting
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">└  Your project is ready!
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Typescript
+</span></span><span class="line"><span class="cl">  Inside Svelte components, use &lt;script <span class="nv">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span>&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ ESLint
+</span></span><span class="line"><span class="cl">  https://github.com/sveltejs/eslint-plugin-svelte
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Install community-maintained integrations:
+</span></span><span class="line"><span class="cl">  https://github.com/svelte-add/svelte-add
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Next steps:
+</span></span><span class="line"><span class="cl">  1: <span class="nb">cd</span> sveltekit-deploy-on-fly-io
+</span></span><span class="line"><span class="cl">  2: npm install <span class="o">(</span>or pnpm install, etc<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  3: git init <span class="o">&amp;&amp;</span> git add -A <span class="o">&amp;&amp;</span> git commit -m <span class="s2">&#34;Initial commit&#34;</span> <span class="o">(</span>optional<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  4: npm run dev -- --open
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">To close the dev server, hit Ctrl-C
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Stuck? Visit us at https://svelte.dev/chat
+</span></span><span class="line"><span class="cl">➜  blog&gt; <span class="nb">cd</span> sveltekit-deploy-on-fly-io
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; npm i</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 만들어 주시고 &ldquo;npm install&rdquo; 까지 하면 됩니다.</p>
+<h3 id="tailwindcss-추가하기">TailwindCSS 추가하기</h3>
+<p>CSS 부분은 역시 저의 최애 TailwindCSS를 설치하도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; npx svelte-add@latest tailwindcss
+</span></span><span class="line"><span class="cl">➕ Svelte Add <span class="o">(</span>Version 2023.06.280.00<span class="o">)</span>
+</span></span><span class="line"><span class="cl">The project directory you<span class="s1">&#39;re giving to this command cannot be determined to be guaranteed fresh — maybe it is, maybe it isn&#39;</span>t. If any issues arise after running this command, please try again, making sure you<span class="err">&#39;</span>ve run it on a freshly initialized SvelteKit or Vite–Svelte app template.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">PostCSS
+</span></span><span class="line"><span class="cl"> ✅ successfully <span class="nb">set</span> up and repaired <span class="o">(</span>it looks like it was in a broken setup before this <span class="nb">command</span> was run<span class="o">)</span>!
+</span></span><span class="line"><span class="cl">Create or find an existing issue at https://github.com/svelte-add/svelte-add/issues <span class="k">if</span> this is wrong.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Tailwind CSS
+</span></span><span class="line"><span class="cl"> ✅ successfully <span class="nb">set</span> up!
+</span></span><span class="line"><span class="cl">Create or find an existing issue at https://github.com/svelte-add/svelte-add/issues <span class="k">if</span> this is wrong.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Run npm install to install new dependencies, and <span class="k">then</span> reload your IDE before starting your app.
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; npm i
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">added <span class="m">42</span> packages, changed <span class="m">2</span> packages, and audited <span class="m">263</span> packages in 5s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">57</span> packages are looking <span class="k">for</span> funding
+</span></span><span class="line"><span class="cl">  run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">found <span class="m">0</span> vulnerabilities
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; code .</span></span></code></pre></div>
+  </figure>
+</div>
+<p>TailwindCSS가 제대로 작동하는지 보기 위해 routes 폴더 밑에 +page.svelte 파일을 아래와 같이 바꿔봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">h1</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-4xl font-bold&#34;</span><span class="o">&gt;</span><span class="nx">Welcome</span> <span class="nx">to</span> <span class="nx">SvelteKit</span><span class="o">&lt;</span><span class="err">/h1&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발 서버를 돌려볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh3Hbwz4u1vt1Lef09Sg79PalsvKC5CNrB2cRBOeJlhAP3Uq0QGnfIEnRuWM5maScdMaVekk6ft3ZX3AwuPH7uMo7HGtWkwsGVUxYer90W9bYK_OZziUZ71HKioQTeTUUAa_k1JWZdp2JOMey_TjxZGVn3qjh5qVQ0R0EKazuSy-B0_Rak7Gvd_eBMqHlw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>일단 위와 같이 TailwindCSS가 잘 작동하네요.</p>
+<h2 id="adapter-node-설치">Adapter-Node 설치</h2>
+<p>우리가 SvelteKit을 Fly.io에 배포하는 거는 Fly.io 공식 문서에서 보면 Node 서버를 돌리는 걸로 나오는데요.</p>
+<p>그래서 svelte.config.js 파일에서 adpater-node로 어댑터를 교체해 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; npm i -D @sveltejs/adapter-node
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">added <span class="m">17</span> packages, and audited <span class="m">280</span> packages in 4s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">60</span> packages are looking <span class="k">for</span> funding
+</span></span><span class="line"><span class="cl">  run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">found <span class="m">0</span> vulnerabilities
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>svelte.config.js 파일 첫 줄에 apdater-auto를 adapter-node로 바꿔 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">adapter</span> <span class="nx">from</span> <span class="s2">&#34;@sveltejs/adapter-node&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 SvelteKit의 준비는 끝났는데요.</p>
+<hr>
+<h2 id="실제-flyio에-배포해-보기">실제 Fly.io에 배포해 보기</h2>
+<p>이제 실제 Fly.io에 배포해 볼까요?</p>
+<p>Fly.io는 flyctl이라는 명령어를 지원해 주는데요.</p>
+<p>MacOS에서는 아래와 같이 설치하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">brew install flyctl</span></span></code></pre></div>
+  </figure>
+</div>
+<p>설치가 다 되면 Fly.io에 로그인해야 하는데요.</p>
+<p>아래와 같이 터미널상에서 명령어를 입력하면 브라우저 창이 뜨면서 로그인하라고 나옵니다.</p>
+<p>보통 Github ID와 연동시켜놔서 쉽게 로그인 할 수 있을겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; flyctl auth login
+</span></span><span class="line"><span class="cl">Opening https://fly.io/app/auth/cli/ebbf52d3dcee200c3d571 ...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Waiting <span class="k">for</span> session... Done
+</span></span><span class="line"><span class="cl">successfully logged in as cpro95@~~~~
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 우리 프로젝트가 있는 폴더에서 아래와 같이 flyctl 명령어를 실행해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; flyctl launch
+</span></span><span class="line"><span class="cl">Creating app in /Users/cpro95/Codings/Javascript/blog/sveltekit-deploy-on-fly-io
+</span></span><span class="line"><span class="cl">Scanning <span class="nb">source</span> code
+</span></span><span class="line"><span class="cl">Detected a NodeJS app
+</span></span><span class="line"><span class="cl">? Choose an app name <span class="o">(</span>leave blank to generate one<span class="o">)</span>: my-svelteki-test2
+</span></span><span class="line"><span class="cl">automatically selected personal organization: cpro95
+</span></span><span class="line"><span class="cl">Some regions require a paid plan <span class="o">(</span>bom, fra, maa<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">See https://fly.io/plans to <span class="nb">set</span> up a plan.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">? Choose a region <span class="k">for</span> deployment: Tokyo, Japan <span class="o">(</span>nrt<span class="o">)</span>
+</span></span><span class="line"><span class="cl">App will use <span class="s1">&#39;nrt&#39;</span> region as primary
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Created app <span class="s1">&#39;my-svelteki-test2&#39;</span> in organization <span class="s1">&#39;personal&#39;</span>
+</span></span><span class="line"><span class="cl">Admin URL: https://fly.io/apps/my-svelteki-test2
+</span></span><span class="line"><span class="cl">Hostname: my-svelteki-test2.fly.dev
+</span></span><span class="line"><span class="cl">installing: npm install @flydotio/dockerfile@latest --save-dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">added <span class="m">20</span> packages, and audited <span class="m">300</span> packages in 12s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">63</span> packages are looking <span class="k">for</span> funding
+</span></span><span class="line"><span class="cl">  run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">found <span class="m">0</span> vulnerabilities
+</span></span><span class="line"><span class="cl">     create  Dockerfile
+</span></span><span class="line"><span class="cl">Wrote config file fly.toml
+</span></span><span class="line"><span class="cl">Validating /Users/cpro95/Codings/Javascript/blog/sveltekit-deploy-on-fly-io/fly.toml
+</span></span><span class="line"><span class="cl">Platform: machines
+</span></span><span class="line"><span class="cl">✓ Configuration is valid
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">If you need custom packages installed, or have problems with your deployment
+</span></span><span class="line"><span class="cl">build, you may need to edit the Dockerfile <span class="k">for</span> app-specific changes. If you
+</span></span><span class="line"><span class="cl">need help, please post on https://community.fly.io.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Now: run <span class="s1">&#39;fly deploy&#39;</span> to deploy your Node.js app.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>launch 명령어는 프로젝트 생성을 위해 제일 처음 실행하는 명령어입니다.</p>
+<p>위에서 보시면 자동으로 NodeJS App 이라고 인식했고, 그리고 앱의 이름(app name)을 물어보는데요.</p>
+<p>여기서 중요한 게 이름이 바로 fly.dev로 끝나는 주소의 첫 번째 도메인 이름이 됩니다.</p>
+<p>fly.dev는 전 세계 여러 사람이 사용하고 있기 때문에 이름이 중복될 수 있는데요.</p>
+<p>계속 실행해서 중복이 안 되는 나만의 이름을 찾으면 됩니다.</p>
+<p>그리고 호스팅 위치를 고르라고 하는데요.</p>
+<p>전 세계 여러 군데를 지원해 줍니다.</p>
+<p>아직 서울 지역이 없기 때문에 도쿄를 고르면 한국과 가장 빠르게 연결될 겁니다.</p>
+<p>그리고, 에러 없이 실행이 완료되면 fly.toml 파일과 Dockerfile이 작성됩니다.</p>
+<p>한번 열어보시면 쉽게 이해할 수 있을 텐데요.</p>
+<p>Docerfile을 열어보시면 아래와 같은데요.</p>
+<p>여기서 고칠 게 하나 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># syntax = docker/dockerfile:1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Adjust NODE_VERSION as desired</span>
+</span></span><span class="line"><span class="cl">ARG <span class="nv">NODE_VERSION</span><span class="o">=</span>16.20.1
+</span></span><span class="line"><span class="cl">FROM node:<span class="si">${</span><span class="nv">NODE_VERSION</span><span class="si">}</span>-slim as base
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">LABEL <span class="nv">fly_launch_runtime</span><span class="o">=</span><span class="s2">&#34;Node.js&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Node.js app lives here</span>
+</span></span><span class="line"><span class="cl">WORKDIR /app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Set production environment</span>
+</span></span><span class="line"><span class="cl">ENV <span class="nv">NODE_ENV</span><span class="o">=</span><span class="s2">&#34;production&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Throw-away build stage to reduce size of final image</span>
+</span></span><span class="line"><span class="cl">FROM base as build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install packages needed to build node modules</span>
+</span></span><span class="line"><span class="cl">RUN apt-get update -qq <span class="o">&amp;&amp;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    apt-get install -y build-essential pkg-config python
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install node modules</span>
+</span></span><span class="line"><span class="cl">COPY --link .npmrc package-lock.json package.json ./
+</span></span><span class="line"><span class="cl">RUN npm ci --include<span class="o">=</span>dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Copy application code</span>
+</span></span><span class="line"><span class="cl">COPY --link . .
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Build application</span>
+</span></span><span class="line"><span class="cl">RUN npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Remove development dependencies</span>
+</span></span><span class="line"><span class="cl">RUN npm prune --omit<span class="o">=</span>dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Final stage for app image</span>
+</span></span><span class="line"><span class="cl">FROM base
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Copy built application</span>
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>build /app /app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Start the server by default, this can be overwritten at runtime</span>
+</span></span><span class="line"><span class="cl">EXPOSE <span class="m">3000</span>
+</span></span><span class="line"><span class="cl">CMD <span class="o">[</span> <span class="s2">&#34;node&#34;</span>, <span class="s2">&#34;index.js&#34;</span> <span class="o">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>제일 마지막에 있는 두 줄인데요.</p>
+<p>우리가 호스팅 할 서버의 포트는 3000이란 뜻이고, 마지막으로 서버를 실행하라는 명령어인데요.</p>
+<p>SvelteKit을 NodeJS 서버 방식으로 서버를 운영하려고 하면 단순하게 &ldquo;node index.js&quot;라고 실행하면 안 됩니다.</p>
+<p>SvelteKit은 build 명령어를 통해 build 폴더에 생긴 SvelteKit 앱을 서버로 돌려야 하는데요.</p>
+<p>package.json 파일의 scripts 부분에 명령어를 하나 추가하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;scripts&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;lint&#34;</span><span class="o">:</span> <span class="s2">&#34;eslint .&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;start&#34;</span><span class="o">:</span> <span class="s2">&#34;node build&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>start란 명령어를 추가했습니다.</p>
+<p>이제, 실제 서버 구동을 &ldquo;npm run start&quot;라고 실행하면 됩니다.</p>
+<p>그러면 Dockerfile의 제일 마지막 명령어를 아래와 같이 바꿔주시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Start the server by default, this can be overwritten at runtime</span>
+</span></span><span class="line"><span class="cl">EXPOSE <span class="m">3000</span>
+</span></span><span class="line"><span class="cl">CMD <span class="o">[</span> <span class="s2">&#34;npm&#34;</span>, <span class="s2">&#34;run&#34;</span>, <span class="s2">&#34;start&#34;</span> <span class="o">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 주의할 점은 Dockerfile에서는 &ldquo;npm start&quot;만 넣으면 작동하지 않습니다.</p>
+<p>꼭 npm 풀 실행 명령어인 &ldquo;run&quot;을 꼭 넣어줘야 하니까 주의 바랍니다.</p>
+<p>이제 Dockerfile도 작성 완료했습니다.</p>
+<p>npm run build후에 npm run preview로 실제 build된 앱을 테스트해 보시고 이제 Fly.io 서버에 배포해 보겠습니다.</p>
+<h2 id="deploy-배포하기">Deploy (배포하기)</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; sveltekit-deploy-on-fly-io@0.0.1 build
+</span></span><span class="line"><span class="cl">&gt; vite build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vite v4.4.8 building SSR bundle <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">73</span> modules transformed.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vite v4.4.8 building <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">62</span> modules transformed.
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/version.json                              0.03 kB │ gzip: 0.05 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/vite-manifest.json                             2.36 kB │ gzip: 0.43 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/assets/0.bb78efc0.css           4.58 kB │ gzip: 1.43 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/nodes/2.8646070d.js             0.51 kB │ gzip: 0.36 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/nodes/0.22f34324.js             0.60 kB │ gzip: 0.38 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/nodes/1.31552206.js             1.03 kB │ gzip: 0.59 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/chunks/scheduler.e108d1fd.js    2.16 kB │ gzip: 1.02 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/chunks/singletons.cc504b42.js   2.85 kB │ gzip: 1.46 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/chunks/index.0719bd3d.js        5.44 kB │ gzip: 2.31 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/entry/app.59b91578.js           5.85 kB │ gzip: 2.32 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/client/_app/immutable/entry/start.2056ce01.js        24.06 kB │ gzip: 9.54 kB
+</span></span><span class="line"><span class="cl">✓ built in 713ms
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/vite-manifest.json                           1.42 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/_app/immutable/assets/_layout.bb78efc0.css   4.58 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/internal.js                                  0.19 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/entries/pages/_layout.svelte.js              0.25 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/entries/pages/_page.svelte.js                0.28 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/entries/fallbacks/error.svelte.js            0.89 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/chunks/ssr.js                                3.35 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/chunks/internal.js                           5.39 kB
+</span></span><span class="line"><span class="cl">.svelte-kit/output/server/index.js                                    89.05 kB
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Run npm run preview to preview your production build locally.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; Using @sveltejs/adapter-node
+</span></span><span class="line"><span class="cl">  ✔ <span class="k">done</span>
+</span></span><span class="line"><span class="cl">✓ built in 5.18s
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; npm run preview
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; sveltekit-deploy-on-fly-io@0.0.1 preview
+</span></span><span class="line"><span class="cl">&gt; vite preview
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ➜  Local:   http://127.0.0.1:4173/
+</span></span><span class="line"><span class="cl">  ➜  Network: use --host to expose
+</span></span><span class="line"><span class="cl">  ➜  press h to show help</span></span></code></pre></div>
+  </figure>
+</div>
+<p>&ldquo;npm run preview&quot;는  4173 프리뷰 개발 서버를 돌리는 건데요.</p>
+<p>제대로 작동하는지 보고 최종적으로 deploy도 해도 되는지 판단하시면 됩니다.</p>
+<h3 id="배포-전에-flyio-대시보드-보기">배포 전에 Fly.io 대시보드 보기</h3>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgH1I4ep5A3OhmYna0ki---g036U3y0Rce_vvkxd9drzWuN35R9vgiNWvoDX7J5Vk92DitjqHhTcOdneT_V8hcS7g00wxmJnPkYOME0hQHIe9eMUR4CN9XLss-TBbGisWYunsATiMBUPZL4SPCW3LXYRB3zj716xiUkGfcDXNmXzXlX0kPIsp82p-zdoVw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>실제 배포 전에 아까 우리가 launch 명령어만 작동시켰었는데요.</p>
+<p>그러면 위와 같이 우리가 만든 앱 이름이 예약되면서 Fly.io 대시보드에 나오게 됩니다.</p>
+<p>아직, 정식 배포가 한 번도 없었기 때문에 가상서버에 아무런 정보가 없네요.</p>
+<h3 id="배포하기">배포하기</h3>
+<p>이제 Ctrl+C를 누른 다음 아래 명령어로 deploy 해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt; fly <span class="nv">deploy</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Verifying app config
+</span></span><span class="line"><span class="cl">Validating /Users/cpro95/Codings/Javascript/blog/sveltekit-deploy-on-fly-io/fly.toml
+</span></span><span class="line"><span class="cl">Platform: machines
+</span></span><span class="line"><span class="cl">✓ Configuration is valid
+</span></span><span class="line"><span class="cl">--&gt; Verified app <span class="nv">config</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Building image
+</span></span><span class="line"><span class="cl">Remote builder fly-builder-dark-shape-9440 <span class="nv">ready</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Building image with Docker
+</span></span><span class="line"><span class="cl">--&gt; docker host: 20.10.12 linux x86_64
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Building 12.9s <span class="o">(</span>18/18<span class="o">)</span> <span class="nv">FINISHED</span>
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load build definition from Dockerfile       1.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring dockerfile: 954B                       1.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load .dockerignore                                                                              0.9s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring context: 35B                           0.9s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; resolve image config <span class="k">for</span> docker.io/docker/dockerfile:1          0.5s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED docker-image://docker.io/docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f  0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load build definition from Dockerfile                  0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load metadata <span class="k">for</span> docker.io/library/node:16.20.1-slim       0.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load .dockerignore                           0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load build context                           0.4s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring context: 1.83kB                         0.4s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>base 1/2<span class="o">]</span> FROM docker.io/library/node:16.20.1-slim@sha256:3b9214c4d0540be68e61311afd8819c15c8cd0b964a  0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>base 2/2<span class="o">]</span> WORKDIR /app                          0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>build 1/6<span class="o">]</span> RUN apt-get update -qq <span class="o">&amp;&amp;</span>     apt-get install -y build-essential pkg-config python      0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>build 2/6<span class="o">]</span> COPY --link .npmrc package-lock.json package.json ./    0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>build 3/6<span class="o">]</span> RUN npm ci --include<span class="o">=</span>dev             0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>build 4/6<span class="o">]</span> COPY --link . .                             0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>build 5/6<span class="o">]</span> RUN npm run build                           8.1s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>build 6/6<span class="o">]</span> RUN npm prune --omit<span class="o">=</span>dev                    1.9s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>stage-2 1/1<span class="o">]</span> COPY --from<span class="o">=</span>build /app /app           
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; exporting to image                                      0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; exporting layers                                     0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; writing image sha256:6aaffc798d05891900c0125ddd6e8   0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; naming to registry.fly.io/my-svelteki-test2:deployment-01H6XT27PWB2QXS0Q92YEFVREW    0.0s
+</span></span><span class="line"><span class="cl">--&gt; Building image <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Pushing image to fly
+</span></span><span class="line"><span class="cl">The push refers to repository <span class="o">[</span>registry.fly.io/my-svelteki-test2<span class="o">]</span>
+</span></span><span class="line"><span class="cl">49fc624001ac: Pushed
+</span></span><span class="line"><span class="cl">2227f6d18843: Layer already exists
+</span></span><span class="line"><span class="cl">ce20f0dc920f: Layer already exists
+</span></span><span class="line"><span class="cl">45f2f06d83a0: Layer already exists
+</span></span><span class="line"><span class="cl">acdc63d06458: Layer already exists
+</span></span><span class="line"><span class="cl">92cf2e8e2fb2: Layer already exists
+</span></span><span class="line"><span class="cl">ff3e8b4eec52: Layer already exists
+</span></span><span class="line"><span class="cl">deployment-01H6XT27PWB2QXS0Q92YEFVREW: digest: sha256:feccac6fba1231231b209545e157fb4c09c32a3ab1658cc0c3f487633f85aeb1d size: <span class="m">1783</span>
+</span></span><span class="line"><span class="cl">--&gt; Pushing image <span class="k">done</span>
+</span></span><span class="line"><span class="cl">image: registry.fly.io/my-svelteki-test2:deployment-01H6XT27PWB2QXS0Q92YEFVREW
+</span></span><span class="line"><span class="cl">image size: <span class="m">181</span> MB
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Watch your app at https://fly.io/apps/my-svelteki-test2/monitoring
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Updating existing machines in <span class="s1">&#39;my-svelteki-test2&#39;</span> with rolling strategy
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>1/1<span class="o">]</span> Machine 4d891224b40168 <span class="o">[</span>app<span class="o">]</span> update finished: success
+</span></span><span class="line"><span class="cl">  Finished deploying
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Visit your newly deployed app at https://my-svelteki-test2.fly.dev/
+</span></span><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 fly deploy 명령어가 잘 작동된 걸 볼 수 있는데요.</p>
+<p>이제 호스팅 된 주소 https://my-svelteki-test2.fly.dev/ 여기로 이동해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhvOegfMG89M4KbMNsOzfXWP8JiJRAbXGFlhzbbuPdTjKZJYU9SnN6LGv2OZNKD9um21SzzpIUWKP7yp5oO56_VHUPCAPQJp8TSgLoAJGzk7w2enghee3neAoA5_HaRJRA1J1xetpBX7ADNBqAtx7-pKedKsPPwJJMs8uohu1HvbDUVk49wBJmsVXcA1iE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림같이 fly.dev주소로 정상적으로 완벽히 호스팅 된 걸 볼 수 있을 겁니다.</p>
+<p>결론적으로 Fly.io에 배포 성공입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj8e0IiWsdsVaewunZmSSdjNV2B2qeCWeheodePhWHfvX_YUHy_RGAsEcuebLOydqUNItpnt59-_i5MRITY48xGezulzi4cM3zIVhT-ZoiQXCT5XD37_d0gxwNlFvQefapt8OAPO6nSUJEwSCigrZpOmF3cOXRnJ6_1LOdEgpbHaMOGSNO50FslYoxztzc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgV7L47vTF85o90YXIUm2shNbPGGkqtaTgzLKnwg6l2T_V_thOTt72BXH7jfmSoDSWEncC1BcmGVm6SsYR4ChW6up8sGGFM8rfhd3jQy-VBYhzr7oi1Lucu7B9jtOmQ40ZvAYvb_8Os36z9K3Xhrxz9jKu2nWkyuxZHPo2hw8IiXXSHkIwvfz9kjZ_-3_k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Fly.io 대시보드에서 보시면 위 그림과 같이 서버가 Suspended 됐다고 나오는데요.</p>
+<p>실제, 서버 중지가 아니라 서버 요청이 없어 쉬고 있는 겁니다.</p>
+<p>다시 https://my-svelteki-test2.fly.dev/ 이 주소로 들어가면 Fly.io가 위 서버를 깨워서 우리가 만든 SvelteKit의 Nodejs 서버를 구동하게 됩니다.</p>
+<p>어떤가요?</p>
+<p>SvelteKit으로 Fly.io에 배포하는 게 아주 쉽죠.</p>
+<p>여기까지는 실제 Git 상태와 무관하게 fly 명령어가 현재 폴더 기준으로 직접 Fly.io에 배포하는 방법입니다.</p>
+<p>다음시간에는 Github과 연동해서 자동으로 Deploy 되는 Github Action을 만들어 볼까 합니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/fly.io/" role="button">fly.io</a>
+        <a class="btn btn-light" href="/tags/sveltekit/" role="button">sveltekit</a>
+        <a class="btn btn-light" href="/tags/sveltejs/" role="button">sveltejs</a>
+        <a class="btn btn-light" href="/tags/ssr/" role="button">ssr</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io/">SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)</a></h2>
+                  <p>Github Action 살펴보기 및 SvelteKit을 Fly.io에 자동으로 배포해 보기</p>
+                  <p>
+  <small>August 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy/">SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기</a></h2>
+                  <p>SvelteKit을 이용해서 서버 사이드 렌더링 풀 스택 무비 앱 만들기</p>
+                  <p>
+  <small>August 5, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-21-how-to-avoid-my-fly-io-app-sleep-issue/">SvelteKit 실전 예제 6편 - Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</a></h2>
+                  <p>Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</p>
+                  <p>
+  <small>August 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

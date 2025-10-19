@@ -1,0 +1,1531 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현</title>
+<meta name="description" content="Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현 및 Lucia를 이용한 세션 저장까지 시도해 봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현" />
+<meta property="og:description" content="Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현 및 Lucia를 이용한 세션 저장까지 시도해 봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-08-01T13:44:12Z" />
+<meta property="article:modified_time" content="2024-08-01T13:44:12Z" />
+<meta property="article:tag" content="Cloudflare" />
+<meta property="article:tag" content="Hono" />
+<meta property="article:tag" content="Lucia" />
+<meta property="article:tag" content="Drizzle orm" />
+<meta property="article:tag" content="D1 DB" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현" />
+<meta name="twitter:description" content="Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현 및 Lucia를 이용한 세션 저장까지 시도해 봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현\"",
+  "description": "\"Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현 및 Lucia를 이용한 세션 저장까지 시도해 봅니다.\"",
+  "datePublished": "\"2024-08-01T13:44:12Z\"",
+  "dateModified": "\"2024-08-01T13:44:12Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현</h1>
+        <p>
+  <small>August 1, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간에 Cloudflare에서 OAuth를 이용한 구글 아이디, 네이버 아이디, 카카오 아이디 로그인을 알아 봤는데요.</p>
+<p>먼저, 지난 시간 강의 링크입니다.</p>
+<ul>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login">Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login">Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login">Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)</a></p>
+</li>
+</ul>
+<p>오늘은 좀 더 깊게 들어가기 위해 전문 인증 패키지를 사용해서 로그인을 구현해 보겠습니다.</p>
+<p>사용할 스택은 Lucia Auth인데요.</p>
+<p><a href="https://lucia-auth.com/">Lucia Auth</a></p>
+<p>요즘 뜨는 있는 인증 관련 라이브러리입니다.</p>
+<p>Next.js쪽에서는 NextAuth가 유명하고 Clerk, 0Auth 등 전문 인증 사이트도 있지만, 가볍고 공짜인 Lucia Auth가 요즘 각광받고 있습니다.</p>
+<p>Lucia Auth의 로그인 세션 구현 방법은 아래와 같이 간단합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Lucia</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Lucia</span><span class="p">(</span><span class="k">new</span> <span class="nx">Adapter</span><span class="p">(</span><span class="nx">db</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">userId</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl"><span class="kr">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">validateSession</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Adapter는 사용하는 DB에 맞게 골라주면 됩니다.</p>
+<p>공식 홈페이지에 가보면 여러가지 예제가 나오는데요.</p>
+<p>오늘은 Cloudflare에서 제공하는 D1 DB를 사용할 예정입니다.</p>
+<p>타입스크립트를 위해서 ORM은 Drizzle ORM을 사용할 겁니다.</p>
+<p>Cloudflare의 D1 DB는 Prisma를 사용할 수 없습니다.</p>
+<p>그리고 Drizzle ORM도 요즘 각광받고 있는 Typescript ORM입니다.</p>
+<p>그러면 먼저, Cloudflare pages에 올리기 위해 빈 프로젝트 템플릿을 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bunx create-hono bun-hono-drizzle-lucia-auth-test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>Bun은 패키지 매니저로 사용할 겁니다.</p>
+<p>npm 보다 훨씬 빠르기 때문이죠.</p>
+<p>그리고 Lucia, Drizzle ORM도 미리 설치합시다.</p>
+<p>아래와 같이 Bun을 이용하면 아주 빠르게 설치할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bun add lucia drizzle-orm @lucia-auth/adapter-sqlite
+</span></span><span class="line"><span class="cl">bun add -D drizzle-kit @types/better-sqlite3</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="d1-db-만들기">D1 DB 만들기</h2>
+<p>이제 Wranlger를 이용하여 D1 DB를 만들어야하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npx wrangler login</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 Cloudflare에 로그인하면 됩니다.</p>
+<p>브라우저에서 Cloudflare에 로그인하면 됩니다.</p>
+<p>그리고 아래와 같이 터미널 CLId에서 직접 D1 DB를 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  bun-hono-drizzle-lucia-auth-test npx wrangler d1 create hono-lucia-test-db
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.67.1 <span class="o">(</span>update available 3.68.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">-------------------------------------------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✅ Successfully created DB <span class="s1">&#39;hono-lucia-test-db&#39;</span> in region APAC
+</span></span><span class="line"><span class="cl">Created your new D1 database.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span> <span class="c1"># i.e. available in your Worker on env.DB</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;hono-lucia-test-db&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;f6b7477f-~~~~-~~~~-~~~~-c~~~~92538&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위에서 보시면 database_id 이 값이 아주 중요한데요.</p>
+<p>잘 저장해 두시면 됩니다.</p>
+<p>이 값은 Cloudflare 대시보드에 가도 쉽게 찾을 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEglToyyZNde6VN_5BAsIBhRtLX6dqQ3ZXiKwh0Td38ciB-s6_fBY8zC4LPQcPZKSV8CamoyytSWQj4qANvtJhNY-_PNhY62TAVY8cJ71E2ZpRe8oj5G4lNqbOvuVRQeVdqotdzHFNH0vqaeSfyjF1IWBcOOmsQMRhpkS5xRxPwByjodwhwp4o9Az0UazZ8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 이 값을 wrangler.toml 파일에 넣어둬야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">name</span> <span class="o">=</span> <span class="s2">&#34;bun-hono-drizzle-lucia-auth-test&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">compatibility_date</span> <span class="o">=</span> <span class="s2">&#34;2024-07-28&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">pages_build_output_dir</span> <span class="o">=</span> <span class="s2">&#34;./dist&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;hono-lucia-test-db&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;f6b7477f-~~~~-~~~~-~~~~-c~~~~92538&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 1차 준비가 끝났습니다.</p>
+<hr>
+<h2 id="drizzle로-db-schema-만들기">Drizzle로 DB Schema 만들기</h2>
+<p>Drizzle로 DB Schema(스키마) 파일을 만들어야 하는데요.</p>
+<p>먼저, src 폴더에 db라는 폴더를 만들고 그 밑에 schema.ts 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">InferSelectModel</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">integer</span><span class="p">,</span> <span class="nx">sqliteTable</span><span class="p">,</span> <span class="nx">text</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/sqlite-core&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">generateId</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">usersTable</span> <span class="o">=</span> <span class="nx">sqliteTable</span><span class="p">(</span><span class="s2">&#34;users&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">primaryKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">notNull</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">$defaultFn</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">generateId</span><span class="p">(</span><span class="mi">15</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">().</span><span class="kt">unique</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">password</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">MyUsersType</span> <span class="o">=</span> <span class="nx">InferSelectModel</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">usersTable</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">InsertUser</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">usersTable</span><span class="p">.</span><span class="nx">$inferInsert</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">SelectUser</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">usersTable</span><span class="p">.</span><span class="nx">$inferSelect</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">sessionsTable</span> <span class="o">=</span> <span class="nx">sqliteTable</span><span class="p">(</span><span class="s2">&#34;sessions&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">).</span><span class="nx">primaryKey</span><span class="p">().</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">userId</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;user_id&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">notNull</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">references</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">usersTable</span><span class="p">.</span><span class="nx">id</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expiresAt</span>: <span class="kt">integer</span><span class="p">(</span><span class="s2">&#34;expires_at&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">MySessionsType</span> <span class="o">=</span> <span class="nx">InferSelectModel</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">sessionsTable</span><span class="p">&gt;;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리가 구현하려는게 이메일과 패스워드 방식의 로그인 방식입니다.</p>
+<p>그래서 usersTable에는 이메일과 패스워드를 넣었고, 그리고 여기서 중요한게 userTable의 id인데요.</p>
+<p>보통이면 아래와 같이 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">id: integer<span class="o">(</span><span class="s2">&#34;id&#34;</span>, <span class="o">{</span> mode: <span class="s2">&#34;number&#34;</span> <span class="o">})</span>.primaryKey<span class="o">({</span> autoIncrement: <span class="nb">true</span> <span class="o">})</span>,</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그런데 sessionsTable에서 usersTable의 id를 참조하기 때문에 좀 더 어려운 id로 만들기 위해 lucia에서 제공해 주는 generateId 함수를 사용했습니다.</p>
+<p>generateId 함수는 난수 방식의 글자를 제공해 줍니다.</p>
+<p>그리고 로그인 세션을 저장하기 위해서도 테이블을 만들어야 하는데요.</p>
+<p>바로 sessionsTable입니다.</p>
+<p>세션 테이블은 간단하게 유저 아이디 정보와 만료 정보만 저장하면 됩니다.</p>
+<p>sessionsTable의 유저 아이디 정보인 userId 컬럼은 레퍼런스를 이용해서 usersTable.id와 연결되어 있는거 볼 수 있을 겁니다.</p>
+<p>그리고 Drizzle ORM이 좋은게 테이블의 타입정보를 쉽게 구할 수 있습니다.</p>
+<p>InferSelectModel로도 구할 수 있고, usersTable.$inferInsert 방식으로도 구할 수 있으니 편한걸 쓰면 됩니다.</p>
+<p>이제 DB를 위한 스키마 파일이 완성되었습니다.</p>
+<p>그러면 drizzle-kit 패키지로 실제 SQL 파일로 만들어야 합니다.</p>
+<p>다음과 같이 터미널 창에서 아래 명령어를 입력합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  bun-hono-drizzle-lucia-auth-test npx drizzle-kit generate --dialect<span class="o">=</span>sqlite --schema<span class="o">=</span>
+</span></span><span class="line"><span class="cl">./src/db/schema.ts
+</span></span><span class="line"><span class="cl"><span class="m">2</span> tables
+</span></span><span class="line"><span class="cl">sessions <span class="m">3</span> columns <span class="m">0</span> indexes <span class="m">1</span> fks
+</span></span><span class="line"><span class="cl">users <span class="m">3</span> columns <span class="m">1</span> indexes <span class="m">0</span> fks
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>✓<span class="o">]</span> Your SQL migration file ➜ drizzle/0000_lush_william_stryker.sql 🚀</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 입력하지 않고 단순하게 generate하고 싶으면 drizzle.config.ts 파일을 아래와 같이 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-kit&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">dialect</span><span class="o">:</span> <span class="s2">&#34;sqlite&#34;</span><span class="p">,</span> <span class="c1">// &#34;mysql&#34; | &#34;sqlite&#34; | &#34;postgresql&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">schema</span><span class="o">:</span> <span class="s2">&#34;./src/db/schema.ts&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">out</span><span class="o">:</span> <span class="s2">&#34;./drizzle&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행결과 drizzle 폴더 밑에 sql 파일이 생겼습니다.</p>
+<p>한번 열어보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">sessions</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">user_id</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">expires_at</span><span class="o">`</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">user_id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="o">`</span><span class="n">users</span><span class="o">`</span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">action</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="n">action</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">--&gt; statement-breakpoint
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">users</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">email</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">password</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">--&gt; statement-breakpoint
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="o">`</span><span class="n">users_email_unique</span><span class="o">`</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="o">`</span><span class="n">users</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">email</span><span class="o">`</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Drizzle ORM으로 만들었던 sessions, users 테이블이 만들어졌네요.</p>
+<p>이제 이 sql 파일을 이용해서 실제 DB에 migrate(이동) 해야 합니다.</p>
+<p>먼저, 개발 서버를 위해 wrangler 로컬 파일쪽에 migrate 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  bun-hono-drizzle-lucia-auth-test npx wrangler d1 execute hono-lucia-test-db --local --file<span class="o">=</span>./drizzle/0000_lush_william_stryker.sql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.67.1 <span class="o">(</span>update available 3.68.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">-------------------------------------------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">🌀 Executing on <span class="nb">local</span> database hono-lucia-test-db <span class="o">(</span>f6b7477f-25f4-4803-9bb2-c268c3e92538<span class="o">)</span> from .wrangler/state/v3/d1:
+</span></span><span class="line"><span class="cl">🌀 To execute on your remote database, add a --remote flag to your wrangler command.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 Cloudflare 서버에도 migrate 합시다.</p>
+<p>&lsquo;&ndash;local&rsquo; 옵션을 &lsquo;&ndash;remote&rsquo; 옵션으로 바꿔주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npx wrangler d1 execute hono-lucia-test-db --remote --file<span class="o">=</span>./drizzle/0000_lush_william_stryker.sql</span></span></code></pre></div>
+  </figure>
+</div>
+<p>터미널창에 성공메시지가 뜰겁니다.</p>
+<p>브라우저에서 Cloudflare 대시보드에 들어가 보면 아래와 같이 잘 나와있을겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgSEsCaIVn7kLaWjuy7VBEdyQ8Czt58iEBndIi6iXFji3OYglro0H8LWls_sYsex36Vywuk1GBW3tTW3X-falcXvQyXHms3rF2SCsUKL_aOSI_-Vgl6mmEIdUwOzJhKNZbHoW444WvCd8U5o4OTICC5XS9k7oVL_Rjqloio8LLa9lLfWRIi-lFB4DtGPDc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh1LKV1g8OEkvIkF5qLtTX6bccMIEAp3z2H5qCoAjybbuT9agqCK4OFw1aNy1KwY3DPSTY0I5YG84UQglQPpEZUi0VgfCRTPDxfFHWVF0DGADKXyz2EPxJlu9k378djePJo0e1TQsqLxCpjJlEthLjw-mvlMniMJLfKXxCP80iXz84BDBrCv5gE3O736No"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjtgKzCBKHXonzCHEvoLzgf1lhITl1DyWdEkDbHDDwUkcuwMZdVNmgf9RbqJWl5f2lt2dYduwhhpHG2OSUR0qpMrFyWPRGYxk8vmC-B-ExqgITLK_U7UtDuVmUo8VgrMghZQFFvgc0WRlTa_sgNmE1ZS37WgMr1jo7rbPMoIpo_oUEjbSmVg5bbtnJlTW8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="lucia-설정">lucia 설정</h2>
+<p>Lucia Auth를 이용하려면 Lucia를 초기화해야 하는데요.</p>
+<p>src 폴더 밑의 db 폴더에 lucia.ts 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">D1Adapter</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@lucia-auth/adapter-sqlite&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Lucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">SelectUser</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">D1</span>: <span class="kt">D1Database</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">D1Adapter</span><span class="p">(</span><span class="nx">D1</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">user</span><span class="o">:</span> <span class="s2">&#34;users&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">session</span><span class="o">:</span> <span class="s2">&#34;sessions&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Lucia</span><span class="p">(</span><span class="nx">adapter</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">getUserAttributes</span><span class="o">:</span> <span class="p">(</span><span class="nx">attribute</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">email</span>: <span class="kt">attribute.email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">declare</span> <span class="kr">module</span> <span class="nx">&#34;lucia&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">interface</span> <span class="nx">Register</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Lucia</span>: <span class="kt">ReturnType</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">initializeLucia</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">DatabaseUserAttributes</span>: <span class="kt">SelectUser</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 파일의 내용은 Lucia에서 제공하는 이메일 패스워드 방식의 인증을 위한 가장 기본적인 설정이라 똑같이 작성하시면 됩니다.</p>
+<p>특히 D1Adapter 부분에 넣는 항목인 &lsquo;user&rsquo;, &lsquo;session&rsquo; 항목에는 D1 DB에 만들었던 테이블 이름을 넣으면 됩니다.</p>
+<p>아까 그림에 보시면 테이블 이름은 &lsquo;user&rsquo;가 아니라 &lsquo;users&rsquo;입니다.</p>
+<p>헷갈리시면 안됩니다.</p>
+<p>이제 만반의 준비가 끝났습니다.</p>
+<hr>
+<h2 id="hono를-이용해서-유저-가입하기-구현">Hono를 이용해서 유저 가입하기 구현</h2>
+<p>로그인을 위해서는 먼저, 유저가 가입을 해야 겠죠.</p>
+<p>그래서 &ldquo;/signup&rdquo; 라우팅을 작성해 봅시다.</p>
+<p>src 폴더에 index.tsx 파일을 열어보면 아래와 같은데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;hono&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./renderer&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;app&rsquo;이라는 Hono 객체가 메인 엔트리 포인트입니다.</p>
+<p>Cloudflare에서 Hono 프레임워크를 사용한다면 아주 쉽게 바인딩을 제공해 주는데요.</p>
+<p>일단 src 폴더에 bindings.ts 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Session</span><span class="p">,</span> <span class="nx">User</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">Bindings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">DB</span>: <span class="kt">D1Database</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">Variables</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">user</span>: <span class="kt">User</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">session</span>: <span class="kt">Session</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 아까 index.tsx 파일을 아래와 같이 바꿉시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./renderer&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Bindings</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./bindings&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">Bindings</span>: <span class="kt">Bindings</span> <span class="p">}</span><span class="o">&gt;</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하면 Hono가 Cloudflare의 D1 DB를 확실하게 인식하게 됩니다.</p>
+<p>그리고, 저는 로그인 부분을 &ldquo;/&rdquo; 라우팅과 별도로 만들고 싶어 admin.tsx 파일을 추가해 보겠습니다.</p>
+<p>src 폴더에 &lsquo;admin.tsx&rsquo; 파일을 만듭시다.</p>
+<p>lucia에서 Session, User 부분을 인식하기 위해 Hono를 만들 때 Bindings와 함께 Variables도 함께 지정해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">csrf</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/csrf&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./renderer&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Bindings</span><span class="p">,</span> <span class="nx">Variables</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./bindings&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">admin</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">Bindings</span>: <span class="kt">Bindings</span><span class="p">;</span> <span class="nx">Variables</span>: <span class="kt">Variables</span> <span class="p">}</span><span class="o">&gt;</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">csrf</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/signup&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Signup</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">admin</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 admin 라우팅을 index.tsx 파일에서 import 해서 &lsquo;/admin&rsquo; 라우팅으로 지정해 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./renderer&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Bindings</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./bindings&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">admin</span> <span class="kr">from</span> <span class="s2">&#34;./admin&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">Bindings</span>: <span class="kt">Bindings</span> <span class="p">}</span><span class="o">&gt;</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">,</span> <span class="nx">admin</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발 서버를 돌려 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bun run dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>브라우저에서 아래 주소로 이동해 봅시다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhVhAUw0QrRu3cFjmBXn7PikhTkc4hdrDbXcCW_q-2JuRJS50dHJXCxqPoa3jWTh0CsNWzTTLWgDzoItSvlKZ74OIfT0x9uwxHUj8MJHXsR_4X5o4H-ee11KJoksi9llBUALO-23yp0dWVFDs1inPPBD5rvyVWibf87VkfzRNmVA7xwNdhCoPD0NZ--44Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgVcGsXOdb-hH8eBIwktg7VpNIFc2ateVtatHWHKWSOhykkvDq6l08DZ3I-l3s-lANs-U_cTMJ-Dr9LYc6cqid8QZa5ZiedvbO1nSBogYepz8mHVhsLSeiFPX4e5J6E2hRRaHwIQI4WeNyHIUPOHCCk32lM492Md_CxM9EQRB37xPHXccgtxi6-Ar0wC3o"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>정확히 작동하고 있네요.</p>
+<hr>
+<h2 id="signup-폼과-post-엔드포인트-작성">signup 폼과 POST 엔드포인트 작성</h2>
+<p>일단 signup을 위한 폼을 구성해야 하기 때문에 UI를 꾸며보겠습니다.</p>
+<p>Hono도 JSX와 같은 컴포넌트 방식으로 앱을 꾸밀 수 있는데요.</p>
+<p>src 폴더 밑에 pages란 폴더를 만들고 또 그 밑에 admin이란 폴더를 만듭시다.</p>
+<p><code>src/pages/admin/AdminSignup.tsx</code> 파일을 만들건데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">AdminSignup</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Sign</span> <span class="nx">up</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;POST&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&#34;email&#34;</span><span class="p">&gt;</span><span class="nx">Email</span><span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;email&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&#34;password&#34;</span><span class="p">&gt;</span><span class="nx">Password</span><span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span><span class="nx">Sign</span> <span class="nx">up</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>CSS는 생각하지 않고 순수하게 HTML 태그만으로 구성했습니다.</p>
+<p>이제 다시 admin.tsx 파일에서 &lsquo;/signup&rsquo; 라우팅을 아래와 같이 바꿔줍시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span> <span class="err">기존</span> <span class="err">코드와</span> <span class="err">동일</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">AdminSignup</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./pages/admin/AdminSignup&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span> <span class="err">기존</span> <span class="err">코드와</span> <span class="err">동일</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/signup&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">AdminSignup</span> <span class="p">/&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">admin</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEim2gbjAi0Kg-q-tChPoqugzG7oLVYxV-8vXHJB1-oxXUxhfQ7x2NftLEk62mWMtMpvVyV4TBUZuta1IkzbF9p0Ha1vaaiO-sHEdsueWqsz5msTXL6cylgygKThiCQwbq3SzRS79n1P1kHf5B_iJqgRFsyOF91SfMaD_fgXpo9K92nmqQF2AkRgH1LnLlg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>실행결과 위와 같이 나올겁니다.</p>
+<p>이제 테스트를 위해 더미 유저를 입력해 봅시다.</p>
+<p>실제로 아래와 같이 나오는데요.</p>
+<p>주소창은 같은 주소인데 &ldquo;404 Not Found&rdquo; 에러가 뜹니다.</p>
+<p>왜냐하면 이 주소로 POST 메서드로 리퀘스트했기 때문입니다.</p>
+<p>아직 POST 리퀘스트에 대응하는 Response를 리턴하는 Hono 코드를 작성하지 않아서입니다.</p>
+<p>먼저, 폼 Validator를 위해 zod와 관련 패키지를 설치합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bun add zod @hono/zod-validator</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 admin.tsx 파일에서 &ldquo;/signup&rdquo; 주소에 대한 POST ENDPOINT 대응 코드를 작성합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">zValidator</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@hono/zod-validator&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">z</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;zod&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span> <span class="err">기존</span> <span class="err">코드와</span> <span class="err">동일</span> <span class="p">(</span><span class="err">순서</span> <span class="err">상관</span> <span class="err">없음</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/signup&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;form&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nx">email</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;form&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">SignUp</span> <span class="p">{</span><span class="nx">email</span><span class="p">},</span> <span class="p">{</span><span class="nx">password</span><span class="p">}{</span><span class="s2">&#34; &#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 됩니다.</p>
+<p>실제 브라우저를 보면 아래와 같은데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiJxoT2dumDXH8-QAcXZ6Ka636loOxQRLcvzNT469aYDGhaEoM0GkA4yVwDyEJ5N1AIWZaq9vCMq74IeruEBX50BHE0OlwAQpdLj-qyMtIaXAafIoz3V7byI_Nfll8Lh_c_lqSrQ6fUq3xyOA39rEWLYJ7Mq4A0IA-ipikbRfEnaDmJI9mPuKzGWi5yTcY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 form에 입력했던 email과 password 값이 잘 나옵니다.</p>
+<p>이제 form 에서 입력한 email과 password 값을 D1 DB에 저장해야 하는데요.</p>
+<p>이 때 요긴하게 쓰이는게 바로 Drizzle-ORM입니다.</p>
+<p>이제 아까 코드를 확장하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span> <span class="err">기존</span> <span class="err">코드와</span> <span class="err">동일</span> <span class="p">(</span><span class="err">순서</span> <span class="err">상관</span> <span class="err">없음</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">eq</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">usersTable</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Scrypt</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span> <span class="err">기존</span> <span class="err">코드와</span> <span class="err">동일</span> <span class="p">(</span><span class="err">순서</span> <span class="err">상관</span> <span class="err">없음</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/signup&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;form&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="nx">email</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;form&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">existingUser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="nx">email</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// console.log(existingUser);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;User with that email already exists.&#34;</span> <span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">passwordHash</span> <span class="o">=</span> <span class="k">await</span> <span class="k">new</span> <span class="nx">Scrypt</span><span class="p">().</span><span class="nx">hash</span><span class="p">(</span><span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">values</span><span class="p">({</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span>: <span class="kt">passwordHash</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">returning</span><span class="p">({</span> <span class="nx">id</span>: <span class="kt">usersTable.id</span><span class="p">,</span> <span class="nx">email</span>: <span class="kt">usersTable.email</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">user</span> <span class="o">||</span> <span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;An error occured during sign up.&#34;</span> <span class="p">},</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">SignUp</span> <span class="p">{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}&lt;/</span><span class="nt">h1</span><span class="p">&gt;);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드는 간단합니다.</p>
+<p>form으로 입력받은 email과 password 데이터 값을 이용해서, 먼저 같은 email로 등록된 데이터가 있는지 점검한후에 없으면 db에 insert하는 로직인데요.</p>
+<p>passwordHash는 lucia에서 제공해주는 Scrypt 함수를 사용했습니다.</p>
+<p>실행결과는 아래와 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEja2jJ4VNaie9icrhbZRPGcw3PHpeVHPmgWWjK3Qyl1H6DMg3zL9U5DEmZaK1dmJkaqm5Jz4LP1O_RyL4cNyc1vPRKuuC40hg5Suo6Hzeeszcew2TZdHqfW_mXzqKsAHqr3-k5HRveAv5q0QdBqwqJwxuTm7F3DtZWW5e0Tqbt-rpb4COijjscDOwufzps"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>코드가 제대로 작동하고 있네요.</p>
+<p>그런데, signup 과정에서 가입하기가 끝나면 그 상태로 로그인 상태가 되야 하는데요.</p>
+<p>그래서 lucia의 세션 저장 코드를 마저 작성해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span> <span class="err">기존</span> <span class="err">코드와</span> <span class="err">동일</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">cookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cookie</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span> <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 나중에 사용할 코드
+</span></span></span><span class="line"><span class="cl"><span class="c1">// return c.redirect(&#34;/admin&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">SignUp</span> <span class="p">{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}&lt;/</span><span class="nt">h1</span><span class="p">&gt;);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드와 같이 마지막 return 문 앞에 lucia의 createSession 관련 코드를 위와 같이 작성하면 됩니다.</p>
+<p>위 코드는 lucia를 사용하면 사용해야하는 코드입니다.</p>
+<p>콘솔창을 보면 아래와 같이 나올겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">test3@test.com <span class="m">1111</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  id: <span class="s1">&#39;5nv72yi3qn2lsngfj7pa33lqipggawpkcsrt2y2c&#39;</span>,
+</span></span><span class="line"><span class="cl">  userId: <span class="s1">&#39;ir5jhcv5y6b3ty4&#39;</span>,
+</span></span><span class="line"><span class="cl">  fresh: true,
+</span></span><span class="line"><span class="cl">  expiresAt: 2024-08-31T13:03:49.059Z
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">Cookie <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  name: <span class="s1">&#39;auth_session&#39;</span>,
+</span></span><span class="line"><span class="cl">  value: <span class="s1">&#39;5nv72yi3qn2lsngfj7pa33lqipggawpkcsrt2y2c&#39;</span>,
+</span></span><span class="line"><span class="cl">  attributes: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    httpOnly: true,
+</span></span><span class="line"><span class="cl">    secure: true,
+</span></span><span class="line"><span class="cl">    sameSite: <span class="s1">&#39;lax&#39;</span>,
+</span></span><span class="line"><span class="cl">    path: <span class="s1">&#39;/&#39;</span>,
+</span></span><span class="line"><span class="cl">    maxAge: <span class="m">2592000</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>맨 처음에 입력했던 이메일과 패스워드값이 출력됐고, 그 다음에 lucia.createSession 함수로 만든 session 값이 출력됩니다.</p>
+<p>마지막으로 lucia.createSessionCookie 함수로 만들어진 cookie 값이 출력되고 있습니다.</p>
+<p>이제 크롬 개발창의 Application 쪽을 보면 쿠키값이 아래와 같이 보일겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgzTJpFVVkdgJr83n73pkeLpIjoOzu1XIiU-zvBotZMMNUWzgR6fzkxlbw1O0ovPOFGVjUvLumn3DaFcSxMuQuP7QUgO-w_-D64lAAKU-Mgy-PommseSfo1WFx0892sYH-w80Sr0PIqZWsaVsbFvTm3rRQy3Caiw4THhUjwuLTUhOqoxZgsDhOI18YRRqs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>가입하기 라우팅은 이제 완성됐네요.</p>
+<p>그리고 마지막 return 문을 나중에는 &ldquo;/admin&rdquo; 라우팅으로 redirect 하는 코드를 추가하면 끝입니다.</p>
+<p>가입한 후에는 &ldquo;/admin&rdquo; 초기화면으로 이동하는게 일반적이니까요.</p>
+<hr>
+<h2 id="로그인-로직-구현하기">로그인 로직 구현하기</h2>
+<p>가입하기 로직이 끝났으니 로그인 로직을 구현해야 합니다.</p>
+<p>&ldquo;/login&rdquo; 라우팅으로 GET 메서드에 대응하는 거는 로그인 form을 보여주는 UI가 되겠고, POST 메서드에 대응하는 거는 실제 lucia를 이용해서 로그인하는 겁니다.</p>
+<p>먼저, UI쪽인 GET 메서드에 대응해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">AdminLogin</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./pages/admin/AdminLogin&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">AdminLogin</span> <span class="p">/&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 코드를 짜고 다시 AdminLogin 컴포넌트를 작성하면 됩니다.</p>
+<p>AdminLogin 컴포넌트는 당연히 <code>src/pages/admin/AdminLogin.tsx</code> 파일이 되는거죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">AdminLogin</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Log</span> <span class="k">in</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;POST&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&#34;email&#34;</span><span class="p">&gt;</span><span class="nx">Email</span><span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;email&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&#34;password&#34;</span><span class="p">&gt;</span><span class="nx">Password</span><span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span><span class="nx">Log</span> <span class="k">in</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행해 보면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhm6QeUAL4QDJ2dcfutnUqbTT4-9swwXOMgHgZcqycHshvNFBZahtXEaOgKpbtIt5Bui0N1yM4hkjnczjzRNG2dLz7_JwgiaXsgcZAxPTpvAhGpFXP4aPJ3ZIPK9wuRf9jfZQ07hlrpTQsGkSJOU9glt2e3857UDuflfrozW0mjV0eWZ0Gc11j5j3Q1dZg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 UI는 끝냈으니, POST 메서드에 대응하는 코드를 작성해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/login&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;form&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">email</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;form&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">user</span>: <span class="kt">SelectUser</span><span class="p">[]</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="nx">email</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;Invalid email.&#34;</span> <span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;email does not exist.&#34;</span> <span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">isValidPassword</span> <span class="o">=</span> <span class="k">await</span> <span class="k">new</span> <span class="nx">Scrypt</span><span class="p">().</span><span class="nx">verify</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isValidPassword</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;Invalid password.&#34;</span> <span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">cookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span> <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>로그인 로직도 간단합니다.</p>
+<p>form의 이메일 값을 이용해서 같은 이메일의 user 정보를 얻고, 그 user가 없다면 에러를 나타내주고,</p>
+<p>에러가 없다면 해당 이메일의 user가 있다는 뜻이니, 그 다음에는 패스워드를 비교하면 됩니다.</p>
+<p>패스워드 비교는 lucia에서 제공해주는 <code>Scrypt().verify</code> 메서드를 이용하면 됩니다.</p>
+<p>패스워드가 틀리면 에러를 보여주면 되고, 만약 패스워드가 맞다면 유저가 제대로 로그인했다는 증거이기 때문에 이때는 lucia의 createSession, createSessionCookie을 이용해서 세션 쿠키를 만들어주면 됩니다.</p>
+<p>그리고 다시 &ldquo;/admin&rdquo; 라우팅으로 redirect 해주면 끝입니다.</p>
+<p>이렇게 로그인 로직은 끝났는데요.</p>
+<hr>
+<h2 id="미들웨어를-이용해서-유저-정보-유지하기">미들웨어를 이용해서 유저 정보 유지하기</h2>
+<p>Hono에서는 미들웨어(Middleware)를 제공해 주는데요.</p>
+<p>매번 유저 정보를 확인하는 코드를 만들필요없이 미들웨어에 등록해 놓으면 쉽게 코드를 구조화 할 수 있는데요.</p>
+<p>Hono의 미들웨어는 middleware.ts 파일을 index.tsx 파일과 같은 위치에 작성하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Context</span><span class="p">,</span> <span class="nx">Next</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">initializeLucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./db/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getCookie</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/cookie&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">authMiddleware</span><span class="p">(</span><span class="nx">c</span>: <span class="kt">Context</span><span class="p">,</span> <span class="nx">next</span>: <span class="kt">Next</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">sessionId</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">sessionCookieName</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sessionId</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;session&#34;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">session</span><span class="p">,</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">validateSession</span><span class="p">(</span><span class="nx">sessionId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">session</span> <span class="o">&amp;&amp;</span> <span class="nx">session</span><span class="p">.</span><span class="nx">fresh</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">append</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createBlankSessionCookie</span><span class="p">().</span><span class="nx">serialize</span><span class="p">(),</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">append</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;session&#34;</span><span class="p">,</span> <span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>미들웨어 이름을 &lsquo;authMiddleware&rsquo;이라고 지었습니다.</p>
+<p>미들웨어의 역할은 간단합니다.</p>
+<p>유저가 로그인되어 있다는 전제하에 쿠키값을 읽어들이고 그 쿠키값에서 sessionId 값을 얻습니다.</p>
+<p>만약, sessionId가 없다면 Hono의 글로벌 상태 값 저장 방식인 아래 코드처럼 user, sesion을 null로 만들어 버립니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;session&#34;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>만약, sessionId가 있다면 lucia에서 제공해주는 validateSession 함수를 이용해서 session 값을 얻습니다.</p>
+<p>만약 session이 있고 session.fresh 값이 있다면 즉, 방금 로그인한 상태라면(fresh) lucia.createSessionCookie 함수를 이용해서 세션 쿠키를 만듭니다.</p>
+<p>왜냐하면 fresh 상태이기 때문이죠.</p>
+<p>만약 session이 없다면 createBlankSessionCookie 으로 처리하고, fresh 상태가 아니라면 현재 로그인되어 있다는 뜻이므로, Hono Context에 user값과 session 값을 저장합니다.</p>
+<p>Hono Context 값에 저장한 값은 나중에 쉽게 불러올 수 있어 React로 치면 글로벌 상태 관리 같은겁니다.</p>
+<p>그래서 코드 마지막에 보시면 user, session 값을 저장하고 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">c</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;session&#34;</span><span class="p">,</span> <span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="nx">next</span><span class="p">();</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 Hono의 미들웨어는 Response를 리턴하는게 아니라 <code>next()</code>를 리턴해야 합니다.</p>
+<p>미들웨어를 적용하려면 admin에 아래와 같이 추가해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">authMiddleware</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./middleware&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s2">&#34;*&#34;</span><span class="p">,</span> <span class="nx">authMiddleware</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>미들웨어를 끝냈으니, <code>c.set(&quot;user&quot;, user)</code>로 Hono의 Context에 저장한 값을 이용해서 현재 로그인 되어 있고 없고에 따라 UI를 다시 보여주는 코드를 추가해야 코드가 깔끔해 집니다.</p>
+<p>UI 부분이라 GET 메서드에 대응하는 코드만 바꾸면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">AdminLogin</span> <span class="p">/&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/signup&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">AdminSignup</span> <span class="p">/&gt;);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>GET 메서드에 해당되는 라우팅은 &ldquo;/login&quot;과 &ldquo;/signup&rdquo; 라우팅 밖에 없습니다.</p>
+<p>위와 같이 코드를 작성하면 즉, user 값이 있으면 그냥 &ldquo;/admin&rdquo; 페이지로 이동하면 끝입니다.</p>
+<p>그러면 &ldquo;/admin&rdquo; 페이지의 UI를 조금 바꿔 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Admin</span> <span class="nx">Home</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">you</span> <span class="nx">are</span> <span class="nx">logged</span> <span class="k">in</span> <span class="kr">as</span> <span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">email</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;POST&#34;</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;/admin/logout&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span><span class="nx">Logout</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Admin</span> <span class="nx">Home</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">you</span> <span class="nx">need</span> <span class="nx">to</span> <span class="nx">login</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login&#34;</span><span class="p">&gt;</span><span class="nx">Log</span> <span class="k">in</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEglMEgqiuD-fF9zlwfoGFnTwxfsABTOz-200y9uA1MKwpPJVcertibumjmxk0fVEt2He4goSqRzynAU3FTWCv4zNNk0rbxbpfhgM_dcz4kjgUL1ZzDIs4-ry_CBVZc_tHzqIR0E9WEhhjTAo18UWyec79h4tAY5Xnxm8p8KRj1uY1Bo61w9Y6eGCMSCeZg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 <code>c.get(&quot;user&quot;)</code> 명령어로 쉽게 user 정보를 얻을 수 있습니다.</p>
+<p>이제 남은건 log out 로직을 구현해야하는데요.</p>
+<p>당연히 POST 메서드입니다.</p>
+<p>다음과 같이 하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">&#34;/logout&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;session&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">invalidateSession</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">cookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createBlankSessionCookie</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span> <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>로그아웃 로직은 간답합니다.</p>
+<p>invalidateSession 함수를 사용해서 session을 무력화시키고 쿠키도 빈 쿠키로 대체하는 겁니다.</p>
+<p>createBlankSessionCookie 함수를 사용하면 실제로 쿠키가 삭제됩니다.</p>
+<p>로그아웃 버튼을 누르면 잘 작동되는 걸 볼 수 있을 겁니다.</p>
+<hr>
+<h2 id="마무리">마무리</h2>
+<p>지금까지 Cloudflare, D1 DB, Lucia, Drizzle ORM을 이용해서 유저 로그인을 구현해 봤습니다.</p>
+<p>UI만 TailwindCSS를 이용해서 작성하면 멋진 풀스택앱을 꾸밀 수 있을 겁니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">Cloudflare</a>
+        <a class="btn btn-light" href="/tags/hono/" role="button">Hono</a>
+        <a class="btn btn-light" href="/tags/lucia/" role="button">Lucia</a>
+        <a class="btn btn-light" href="/tags/drizzle-orm/" role="button">Drizzle orm</a>
+        <a class="btn btn-light" href="/tags/d1-db/" role="button">D1 DB</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login/">네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth</a></h2>
+                  <p>Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 4, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login/">Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</a></h2>
+                  <p>Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db/">Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기</a></h2>
+                  <p>Lucia Auth와 arctic 패키지를 이용해서 GitHub ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>RSC(리액트 서버 컴포넌트) 이해 2편, 번들러와 인터리빙, 그리고 성능 최적화 전략까지</title>
+<meta name="description" content="RSC(리액트 서버 컴포넌트)에 대해 번들러와 인터리빙, 그리고 성능 최적화 전략까지 알아보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-01-20-rsc-guide-2-bundler-interleaving-optimization/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="RSC(리액트 서버 컴포넌트) 이해 2편, 번들러와 인터리빙, 그리고 성능 최적화 전략까지" />
+<meta property="og:description" content="RSC(리액트 서버 컴포넌트)에 대해 번들러와 인터리빙, 그리고 성능 최적화 전략까지 알아보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-01-20-rsc-guide-2-bundler-interleaving-optimization/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-01-20T12:01:20Z" />
+<meta property="article:modified_time" content="2025-01-20T12:01:20Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="rsc" />
+<meta property="article:tag" content="react server components" />
+<meta property="article:tag" content="bundler" />
+<meta property="article:tag" content="interleaving" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="RSC(리액트 서버 컴포넌트) 이해 2편, 번들러와 인터리빙, 그리고 성능 최적화 전략까지" />
+<meta name="twitter:description" content="RSC(리액트 서버 컴포넌트)에 대해 번들러와 인터리빙, 그리고 성능 최적화 전략까지 알아보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"RSC(리액트 서버 컴포넌트) 이해 2편, 번들러와 인터리빙, 그리고 성능 최적화 전략까지\"",
+  "description": "\"RSC(리액트 서버 컴포넌트)에 대해 번들러와 인터리빙, 그리고 성능 최적화 전략까지 알아보겠습니다.\"",
+  "datePublished": "\"2025-01-20T12:01:20Z\"",
+  "dateModified": "\"2025-01-20T12:01:20Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-01-20-rsc-guide-2-bundler-interleaving-optimization/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>RSC(리액트 서버 컴포넌트) 이해 2편, 번들러와 인터리빙, 그리고 성능 최적화 전략까지</h1>
+        <p>
+  <small>January 20, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p><strong>목 차</strong></p>
+<ul>
+<li><a href="#%eb%b2%88%eb%93%a4%eb%9f%ac%ec%99%80-%ec%9d%b8%ed%84%b0%eb%a6%ac%eb%b9%99interleaving">번들러와 인터리빙(Interleaving)</a>
+<ul>
+<li><a href="#%ec%84%9c%eb%b2%84-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8%eb%a1%9c-%ea%b0%80%ec%a0%b8%ec%98%a8-%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8">서버 컴포넌트로 가져온 클라이언트 컴포넌트</a></li>
+</ul>
+</li>
+<li><a href="#%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8%eb%a1%9c-%ea%b0%80%ec%a0%b8%ec%98%a8-%ec%84%9c%eb%b2%84-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8">클라이언트 컴포넌트로 가져온 서버 컴포넌트</a></li>
+<li><a href="#%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8%ec%9d%98-%ec%9e%90%ec%8b%9d%ec%9c%bc%eb%a1%9c-%ec%a0%84%eb%8b%ac%eb%90%9c-%ec%84%9c%eb%b2%84-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8">클라이언트 컴포넌트의 자식으로 전달된 서버 컴포넌트</a></li>
+<li><a href="#%eb%b2%88%eb%93%a4%eb%9f%ac-%ec%88%a8%ea%b2%a8%ec%a7%84-%ec%98%81%ec%9b%85">번들러: 숨겨진 영웅</a></li>
+<li><a href="#hook%ea%b3%bc-rscs">Hook과 RSCs</a></li>
+<li><a href="#hydration%ec%9d%84-%ed%95%a0%ea%b9%8c-%eb%a7%90%ea%b9%8c">Hydration을 할까 말까?</a></li>
+<li><a href="#refetching-%eb%b0%8f-%ec%9e%ac%ec%a1%b0%ec%a0%95">Refetching 및 재조정</a></li>
+<li><a href="#%eb%b2%88%eb%93%a4-%ed%81%ac%ea%b8%b0-%ed%98%bc%eb%9e%80">번들 크기 혼란</a></li>
+<li><a href="#%ec%96%b8%ec%a0%9c-rscs%eb%a5%bc-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%a0%ea%b9%8c%ec%9a%94">언제 RSCs를 사용해야 할까요?</a></li>
+</ul>
+<hr>
+<h2 id="번들러와-인터리빙interleaving">번들러와 인터리빙(Interleaving)</h2>
+<p>React의 핵심 원칙 중 하나는 항상 컴포넌트 합성(composition)이었습니다.</p>
+<p>DOM이 어떻게 보여야 하는지 결정하는 작업을 여러 함수로 분할하고, 컴포넌트를 서로의 자식으로 만들어서 해당 작업을 합성 (즉, 결합)할 수 있는데요.</p>
+<p>RSCs가 이 핵심 원칙에서 크게 벗어나지 않으려면 서버 컴포넌트와 클라이언트 컴포넌트를 인터리빙(혼합)할 수 있어야 합니다.</p>
+<p>클라이언트 컴포넌트는 서버 컴포넌트의 자식이 될 수 있어야 합니다.</p>
+<p>여기에는 props(함수 인수)를 전달할 수 있는 기능이 포함됩니다.</p>
+<p>실제로 컴포넌트 계층 구조에서 일부 함수는 서버에서 실행되고 일부는 클라이언트에서 실행된다는 의미입니다.</p>
+<p>하지만 결국에는 모두 자신이 생성하는 DOM 부분의 구조와 내용을 계산하는 작업을 수행할 겁니다.</p>
+<p>이것을 가능하게 하는 것은 메타 프레임워크와 번들러의 책임이며, 실제로 그렇게 하고 있습니다.</p>
+<p>하지만 추상화에는 비용이 따른다는 점을 기억하셔야 하는데요.</p>
+<p>종종 그 비용은 추상화를 사용하기 위해 배워야 하는 특별한 규칙입니다.</p>
+<p>이 경우 서버와 클라이언트 분리의 일부를 추상화하는 것은 추상화의 제한 사항을 깨뜨리지 않도록 규칙을 따르는 것을 의미합니다.</p>
+<p>RSC의 경우 고려해야 할 3가지 인터리빙 시나리오가 있는데요.</p>
+<p>규칙은 실제로 컴포넌트가 실행될 위치에 따라 컴포넌트가 가져올 수 있는 것에 대한 것입니다.</p>
+<p>RSC가 번들러와 함께 작동하는 방식과 번들러가 지시문과 import를 분석하고 모든 것을 통합하는 방식을 기반으로 하는 규칙입니다.</p>
+<hr>
+<h3 id="서버-컴포넌트로-가져온-클라이언트-컴포넌트">서버 컴포넌트로 가져온 클라이언트 컴포넌트</h3>
+<p>&ldquo;서버 컴포넌트로 가져온 클라이언트 컴포넌트&rdquo; 이 말이 괜찮다는 것은 당연한데요.</p>
+<p>번들러는 import 문을 보고 번들에 포함할 코드와 클라이언트에서 다운로드할 코드를 결정합니다.</p>
+<p>RSCs도 Virtual DOM을 빌드하는 데 참여해야하는데요.</p>
+<p>클라이언트 컴포넌트 코드가 번들에서 브라우저에서 사용할 수 있게 되므로 트리에서 클라이언트 컴포넌트를 참조할 수 있습니다.</p>
+<p>React의 useState 훅을 이용해서 state 값을 갖는 카운터를 추가해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// components/Counter.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Counter</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">section</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">count</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">Increment</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/section&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// page.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">Counter</span> <span class="nx">from</span> <span class="s2">&#34;./components/Counter&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">DelayedMessage</span> <span class="nx">from</span> <span class="s2">&#34;./components/DelayedMessage&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Suspense</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">mycodingshub</span><span class="p">.</span><span class="nx">github</span><span class="p">.</span><span class="nx">io</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Counter</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Suspense</span> <span class="nx">fallback</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Loading</span><span class="p">...</span><span class="o">&lt;</span><span class="err">/p&gt;}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">DelayedMessage</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/Suspense&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일 상단에 <code>use client</code> 지시문이 사용된 것을 보셔야 하는데요.</p>
+<p><code>use client</code> 지시문은 React 기능이 아닙니다.</p>
+<p>컴포넌트 트리의 일부가 클라이언트에서 실행되어야 함을 표시하기 위해 개발자(Next.js)가 합의한 규칙입니다.</p>
+<p>해당 컴포넌트와 해당 컴포넌트가 가져오는 모든 컴포넌트는 클라이언트 컴포넌트로 번들링됩니다.</p>
+<p>번들러는 <code>use client</code> 지시문을 기록하고 해당 컴포넌트의 코드 및 해당 컴포넌트가 가져오는 모든 코드를 브라우저에서 다운로드하는 내용에 포함합니다.</p>
+<p><code>Home</code> 및 <code>DelayedMessage</code> RSC는 서버에서 실행되고 해당 코드는 번들에 포함되지 않습니다.</p>
+<p>서버의 페이로드는 다음과 같이 보일겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;main&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;h1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="s2">&#34;mycodingshub.github.io&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;$$type&#34;</span><span class="p">:</span> <span class="s2">&#34;reference&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;identifier&#34;</span><span class="p">:</span> <span class="s2">&#34;L&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;Lazy node&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="p">},</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;$$type&#34;</span><span class="p">:</span> <span class="s2">&#34;reference&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;e&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;identifier&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;Reference&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="p">},</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;fallback&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;p&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="s2">&#34;Loading...&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;$$type&#34;</span><span class="p">:</span> <span class="s2">&#34;reference&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;f&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;identifier&#34;</span><span class="p">:</span> <span class="s2">&#34;L&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;Lazy node&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">     <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>클라이언트 컴포넌트가 있을 위치에 새로운 &ldquo;Lazy node&rdquo; 참조가 있는 것을 볼 수 있습니다.</p>
+<p>Virtual DOM의 해당 부분은 해당 클라이언트 컴포넌트가 실행될 때 알려집니다.</p>
+<p>이는 프레임워크가 SSR을 수행하는 경우 클라이언트 컴포넌트가 SSR될 때 또는 브라우저에서 실행될 때 발생합니다.</p>
+<p>마지막으로 한 가지 더 말씀드리자면, 서버 컴포넌트에서 클라이언트 컴포넌트로 props를 전달하는 경우 해당 props는 React에서 직렬화할 수 있어야 합니다.</p>
+<p>앞에서 보았듯이 props는 네트워크를 통해 전송되는 페이로드의 일부가 됩니다.</p>
+<p>즉, 전달되는 모든 것은 문자열로 표현될 수 있어야 클라이언트에서 메모리 내 객체로 다시 변환할 수 있습니다.</p>
+<hr>
+<h2 id="클라이언트-컴포넌트로-가져온-서버-컴포넌트">클라이언트 컴포넌트로 가져온 서버 컴포넌트</h2>
+<p>이건 허용되지 않는데요.</p>
+<p>서버에서 실행되도록 만들어진 컴포넌트를 브라우저에서 실행될 컴포넌트로 가져올 수는 없습니다.</p>
+<p>왜냐하면 번들러는 RSC 함수를 클라이언트로 보내면 안 되고, 페이로드만 보내야 하기 때문입니다.</p>
+<p>따라서 가져올 코드가 없는 거죠.</p>
+<p>번들러는 클라이언트가 다운로드할 코드를 포함하지 않을 것이므로 RSC 코드는 사용할 수 없습니다.</p>
+<p>여기서 잠깐, 서버와 클라이언트 모두에서 실행 가능한 공유 컴포넌트를 가져오는 것은 가능한데요.</p>
+<p>하지만 공유 컴포넌트를 클라이언트 컴포넌트로 가져오면 해당 코드는 클라이언트에서 다운로드할 수 있도록 번들링됩니다.</p>
+<p>공유 컴포넌트를 서버 컴포넌트로 가져오면 번들링되지 않습니다.</p>
+<p>이런 의문이 들 수도 있을 텐데요.</p>
+<p>&ldquo;만약 실수로 서버 컴포넌트를 가져오면, 번들러는 내가 실수한 건지 어떻게 알 수 있을까요?&rdquo;</p>
+<p>좋은 질문인데요!</p>
+<p>이건 약간 보안 문제와도 연결될 수 있습니다.</p>
+<p>서버 컴포넌트에는 다른 사람에게 다운로드되거나 보여서는 안 되는 코드가 있을 수 있지만, 실수로 클라이언트 컴포넌트로 가져와서 번들에 포함될 수 있죠.</p>
+<p>서버 특정 기능(예를 들어 데이터베이스 연결)이 있다면 브라우저에서 실행이 실패하겠지만, 프로덕션 환경에 배포된다면 데이터베이스 주소와 같은 민감한 정보가 유출될 수도 있습니다.</p>
+<p>Next.js는 컴포넌트를 서버 전용으로 표시할 수 있도록 하여 이 문제를 해결하려고 하는데요.</p>
+<p>기타 다른 메타 프레임워크에서는 서버 코드가 번들링되어 클라이언트로 전송되지 않도록 더 안전한 대안을 모색하고 있습니다.</p>
+<p>하지만 서버-클라이언트 경계에 대한 추상화를 받아들이기로 했다면, 이러한 경계가 존재한다는 사실을 잊어버리는 것에 대한 어느 정도의 위험을 감수해야 합니다.</p>
+<hr>
+<h2 id="클라이언트-컴포넌트의-자식으로-전달된-서버-컴포넌트">클라이언트 컴포넌트의 자식으로 전달된 서버 컴포넌트</h2>
+<p>이건 허용됩니다.</p>
+<p>아주 흥미로운 경우인데요.</p>
+<p>서버 컴포넌트를 임포트하는 것과는 다르게 클라이언트 컴포넌트에 자식 props로 서버 컴포넌트를 전달할 수 있습니다.</p>
+<p>컴포넌트를 가져오는 것과는 다르죠.</p>
+<p>만약 <code>Counter</code> 함수에 자식을 전달한다면 다음과 같이 코드를 작성할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// components/Counter.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Counter</span><span class="p">({</span> <span class="nx">children</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">section</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">count</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">Increment</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span> <span class="nx">children</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/section&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// page.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">Counter</span> <span class="nx">from</span> <span class="s2">&#34;./components/Counter&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">DelayedMessage</span> <span class="nx">from</span> <span class="s2">&#34;./components/DelayedMessage&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Suspense</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">mycodingshub</span><span class="p">.</span><span class="nx">github</span><span class="p">.</span><span class="nx">io</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Counter</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Server</span> <span class="nx">Text</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/Counter&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Suspense</span> <span class="nx">fallback</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Loading</span><span class="p">...</span><span class="o">&lt;</span><span class="err">/p&gt;}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">DelayedMessage</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/Suspense&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>Counter</code> 함수가 클라이언트에서 실행되더라도, 그리고 자식으로 전달된 <code>&lt;p&gt;Server Text&lt;/p&gt;</code>가 서버에서 처리되었더라도, 코드는 문제없이 잘 작동합니다!</p>
+<p>왜 작동하는 걸까요?</p>
+<p>왜냐하면 실제로 전달하는 것은 실행될 서버 컴포넌트 코드가 아니라 Virtual DOM 트리 일부(코드 실행 결과)이기 때문입니다.</p>
+<p>페이로드는 다음과 같이 생겼습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;h1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="s2">&#34;mycodingshub.github.io&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;$$type&#34;</span><span class="p">:</span> <span class="s2">&#34;reference&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;identifier&#34;</span><span class="p">:</span> <span class="s2">&#34;L&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;Lazy node&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="p">},</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;p&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="s2">&#34;Server Text&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">     <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;$$type&#34;</span><span class="p">:</span> <span class="s2">&#34;reference&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;e&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;identifier&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;Reference&#34;</span>
+</span></span><span class="line"><span class="cl">     <span class="p">},</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;fallback&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;p&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;key&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;props&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="s2">&#34;Loading...&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;children&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;$$type&#34;</span><span class="p">:</span> <span class="s2">&#34;reference&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;f&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;identifier&#34;</span><span class="p">:</span> <span class="s2">&#34;L&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;Lazy node&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">     <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> <span class="err">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>페이로드의 &ldquo;Server Text&rdquo; 부분을 확인해보세요.</p>
+<p>이미 클라이언트 컴포넌트에 prop으로 전달되었습니다.</p>
+<p>마치 클라이언트 컴포넌트에 페이로드의 JSX를 직접 작성한 것과 같습니다.</p>
+<hr>
+<h2 id="번들러-숨겨진-영웅">번들러: 숨겨진 영웅</h2>
+<p>React Server Components는 여러 면에서 번들러 기능입니다.</p>
+<p>번들러는 코드를 분석하여 클라이언트 컴포넌트가 번들에 포함되도록 하고, 해당 클라이언트 컴포넌트에 대한 참조가 페이로드에 제대로 나타나도록 돕습니다.</p>
+<p>번들러는 React에서 핵심적인 역할을 합니다.</p>
+<p>React 코드베이스를 보면 다음과 같은 폴더를 찾을 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">/react-server-dom-parcel
+</span></span><span class="line"><span class="cl">/react-server-dom-turbopack
+</span></span><span class="line"><span class="cl">/react-server-dom-webpack
+</span></span><span class="line"><span class="cl">//...등등</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이러한 폴더 내부에는 Flight와 관련된 코드들이 있어서 번들링된 코드가 이 모든 것을 제대로 처리하도록 돕습니다.</p>
+<p>번들러가 RSCs의 숨겨진 영웅이기 때문에 다른 규칙도 가능합니다.</p>
+<p>메타 프레임워크가 Next.js에서 사용하는 <code>use client</code> 접근 방식을 따를 필요는 없습니다.</p>
+<p>예를 들어 TanStack Start는 RSCs를 단순히 &ldquo;JSX를 반환하는&rdquo; 함수 (즉, Flight 형식)로 구현하고 있습니다.</p>
+<p>React는 Flight 데이터를 스트리밍하는 API를 제공했습니다.</p>
+<p>메타 프레임워크가 해당 API를 사용하는 방식을 반복하고 혁신하는 것은 메타 프레임워크에 달려 있습니다.</p>
+<hr>
+<h2 id="hook과-rscs">Hook과 RSCs</h2>
+<p>서버에서 실행하면 몇 가지 장점이 있지만, 몇 가지 제약 사항도 있습니다.</p>
+<p>React는 Virtual DOM에 엘리먼트 구조만 저장하는 것이 아니라 상태도 저장합니다.</p>
+<p>컴포넌트에서 다음과 같이 작성하면,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">[</span><span class="nx">counter</span><span class="p">,</span> <span class="nx">setCounter</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>해당 데이터를 Virtual DOM의 컴포넌트 위치에 연결된 연결 리스트의 노드에 배치합니다.</p>
+<p>따라서 실제로 해당 상태는 클라이언트 브라우저 메모리의 JavaScript 객체에 저장됩니다.</p>
+<p>따라서 React Server Components는 본질적으로 이러한 Hook(훅)을 사용할 수 없습니다.</p>
+<p>훅을 사용하기에 적합하지 않은 환경에서 실행되기 때문입니다.</p>
+<p>이는 궁극적으로 RSCs가 인터랙티브하지 않다는 것을 의미합니다.</p>
+<p>React에서 인터랙티브 기능은 일반적으로 클라이언트 사이드 React 리렌더링을 트리거하는 것을 의미하며, 이는 상태를 업데이트함으로써 발생합니다.</p>
+<p>즉, 앱이 점점 더 많은 인터랙티브 기능을 얻게 되면 서버 컴포넌트를 클라이언트 및 서버 컴포넌트 구성으로 리팩토링하는 경향이 있습니다.</p>
+<p><code>useReducer</code> 또는 <code>useState</code>와 같은 것이 필요할 때마다 클라이언트 컴포넌트가 필요합니다.</p>
+<p>컴포넌트가 어디에서 실행되는지 염두에 둔다면 훅을 적절하게 사용 (하거나 사용하지 않게) 될 겁니다.</p>
+<hr>
+<h2 id="hydration을-할까-말까">Hydration을 할까 말까?</h2>
+<p>RSCs는 hydration될까요?</p>
+<p>정답은 &lsquo;아니오&rsquo;입니다.</p>
+<p>Hydration은 이벤트가 해당 핸들러에 연결될 수 있도록 Virtual DOM을 빌드하기 위해 클라이언트에서 실제 함수를 다시 실행하는 것입니다.</p>
+<p>React에서 버튼을 클릭하면 해당 이벤트는 DOM 트리를 거슬러 React 루트까지 전송됩니다.</p>
+<p>그러면 React는 어떤 컴포넌트가 클릭을 처리해야 하는지 결정합니다. (여기서 정답은 버튼을 생성한 컴포넌트입니다).</p>
+<p>따라서 이벤트에 React가 적절하게 응답할 수 있도록 Virtual DOM과 클릭을 처리하는 코드가 제자리에 있어야 합니다.</p>
+<p>RSCs는 인터랙티브하지 않습니다.</p>
+<p>상태를 설정하지 않고, 클릭을 처리하지도 않습니다.</p>
+<p>적어도 React의 일반적인 접근 방식을 통해서는요.</p>
+<p>해당 코드는 실행을 위해 클라이언트로 전송되지 않으므로 정의상 hydration되지 않습니다.</p>
+<p>하지만 Virtual DOM을 빌드하는 데에는 참여합니다.</p>
+<p>트리 재조정에도 참여하고요.</p>
+<p>hydration되지 않는다는 사실이 hydration 중에 트리에 없다는 것을 의미하지는 않습니다.</p>
+<p>트리에 있습니다.</p>
+<hr>
+<h2 id="refetching-및-재조정">Refetching 및 재조정</h2>
+<p>실제 앱에서는 페이지의 초기 로드뿐만 아니라 해당 서버 컴포넌트를 리페칭(refetching) 하는 것에도 관심을 가져야 하는데요.</p>
+<p>즉, 서버에 해당 컴포넌트를 다시 실행하도록 요청하고 (아마도 새로운 props와 함께), Virtual DOM을 업데이트하기 위해 새로운 페이로드 데이터를 제공하도록 요청하는 겁니다.</p>
+<p>예를 들어 데이터 목록을 페이지네이션하고 해당 목록이 RSC에 의해 생성된 경우, 경로가 <code>/page/1</code>일 때와 <code>/page/2</code>일 때 다른 데이터 세트를 얻고 싶을 수 있습니다.</p>
+<p>이것은 RSCs의 장점이며, 메타 프레임워크의 라우터와 통합될 가능성이 높습니다.</p>
+<p>UI가 서버에서 계산되더라도 메타 프레임워크는 전체 페이지의 새로 고침을 수행할 필요가 없습니다.</p>
+<p>본질적으로 RSCs는 Virtual DOM 정의를 클라이언트로 스트리밍할 수 있으며, 그러면 React는 정상적으로 클라이언트 사이드 재조정을 수행할 수 있습니다.</p>
+<p>다시 말해 페이지를 새로 고침할 필요가 없고 페이지의 다른 상태를 잃을 필요도 없는거죠.</p>
+<p>이러한 측면에서 RSCs는 렌더링 세계의 장점을 모두 제공할 수 있습니다.</p>
+<p>서버에서 실행되지만 클라이언트에서 실행되는 것처럼 업데이트할 수 있습니다.</p>
+<p>이제 RSCs가 실제로 어떻게 작동하는지 살펴보았으니, 이게 훨씬 더 직관적으로 이해되길 바랍니다.</p>
+<p>React는 이미 Virtual DOM을 diffing하여 DOM을 업데이트합니다.</p>
+<p>따라서 서버에서 Virtual DOM 데이터를 가져올 수 있다면 React는 항상 해왔던 일을 할 수 있는 겁니다.</p>
+<hr>
+<h2 id="번들-크기-혼란">번들 크기 혼란</h2>
+<p>Next.js 세계에서는 RSCs의 이점에 대한 혼란이 있는데요.</p>
+<p>Next.js 리포지터리가 있는 Github에는 <code>__next_f()</code> 함수에 대해 꽤 큰 논란이 있는데요.</p>
+<p>그 논란의 주요 요지는 일부 RSCs를 사용하기 시작한 개발자들은 페이지 하단의 스크립트 태그에서 이 함수로 전달되는 데이터가 중복되는 것을 발견했다는 겁니다.</p>
+<p>그래서 일부 개발자들이 Next.js 개발자들에게 <code>__next_f()</code> 함수가 왜 거기에 있는지, 수작업으로 끌 수 있는지 물었는데요.</p>
+<p>여기서, 이 중복된 데이터는 무엇일까요?</p>
+<p>짐작하셨겠지만, 페이로드입니다!</p>
+<p>스트리밍된 해당 함수 호출은 궁극적으로 Virtual DOM을 만들기 위해 해당 페이로드 데이터를 React로 전달합니다.</p>
+<p>문제는 대역폭 사용량이 증가한다는 것인데, 어떤 개발자들은 이런 불만을 제기하기도 했습니다.</p>
+<p>네트워크를 통해 더 많은 데이터를 보내게 되는 거니까요.</p>
+<p>서버 컴포넌트 코드는 번들에 포함되어 있지 않습니다!</p>
+<p>따라서 번들 크기를 줄여줍니다!</p>
+<p>하지만 페이로드는 중복 데이터이고, 해당 데이터가 크다면 즉 블로그 글처럼 생각보다 절약하는 것보다 더 많은 바이트를 보내게 될 겁니다.</p>
+<hr>
+<h2 id="언제-rscs를-사용해야-할까요">언제 RSCs를 사용해야 할까요?</h2>
+<p>그렇다면 언제 RSCs를 사용해야 할까요?</p>
+<p>언제나 그렇듯이 올바른 답은 &ldquo;상황에 따라 다릅니다&quot;입니다.</p>
+<p>RSCs가 어떻게 작동하는지에 대한 정확한 모델을 갖추면 아키텍처 선택을 하는 데 도움이 될 겁니다.</p>
+<p>보통은 지금 쓰는 글 처럼 내용이 많은 블로그 게시물에는 RSCs를 사용하지 않을 겁니다.</p>
+<p>대역폭 사용량이 합리적이지 않기 때문이죠.</p>
+<p>콘텐츠가 중심인 사이트나 앱에는 Astro와 같은 것을 사용하는게 좋을 듯 합니다.</p>
+<p>반면에 DB 액세스 및 복잡한 로직이 많다면 서버 컴포넌트에서 수행하는게 좋을 듯 합니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/rsc/" role="button">rsc</a>
+        <a class="btn btn-light" href="/tags/react-server-components/" role="button">react server components</a>
+        <a class="btn btn-light" href="/tags/bundler/" role="button">bundler</a>
+        <a class="btn btn-light" href="/tags/interleaving/" role="button">interleaving</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-20-rsc-tutorial-1-react-server-components-explained/">RSC(리액트 서버 컴포넌트) 동작 원리부터 성능 최적화까지</a></h2>
+                  <p>React Server Comoponents 에 대해 심도 있게 공부해 봅시다.</p>
+                  <p>
+  <small>January 20, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-01-28-complete-understanding-nextjs-ssr-and-react-rsc/">Next.js의 SSR과 React의 RSC(React Server Components) 완벽 이해</a></h2>
+                  <p>SSR과 RSC의 차이에 대해 심도 있게 공부해 보기</p>
+                  <p>
+  <small>January 28, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-15-tanstack-start-react-framework-deep-dive/">TanStack Start 깊이 파고들기 - React 프레임워크의 새로운 미래일까</a></h2>
+                  <p>Next.js의 대안으로 떠오르는 이 프레임워크의 설정부터 인증, 배포까지 모든 것을 다룹니다.</p>
+                  <p>
+  <small>July 15, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

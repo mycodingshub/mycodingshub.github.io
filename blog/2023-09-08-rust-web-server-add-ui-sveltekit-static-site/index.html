@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Rust 웹 서버 만들기 4편. SvelteKit으로 FrontEnd를 만들고 Actix-Web에서 직접 서빙(serving)하기</title>
+<meta name="description" content="FrontEnd 서버를 따로 만들지 않고, Static Site로 만들어 Actix-Web에서 직접 서빙" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-09-08-rust-web-server-add-ui-sveltekit-static-site/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Rust 웹 서버 만들기 4편. SvelteKit으로 FrontEnd를 만들고 Actix-Web에서 직접 서빙(serving)하기" />
+<meta property="og:description" content="FrontEnd 서버를 따로 만들지 않고, Static Site로 만들어 Actix-Web에서 직접 서빙" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-09-08-rust-web-server-add-ui-sveltekit-static-site/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-09-08T10:11:23Z" />
+<meta property="article:modified_time" content="2023-09-08T10:11:23Z" />
+<meta property="article:tag" content="sveltejs" />
+<meta property="article:tag" content="rust" />
+<meta property="article:tag" content="actix-web" />
+<meta property="article:tag" content="web server" />
+<meta property="article:tag" content="web application" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Rust 웹 서버 만들기 4편. SvelteKit으로 FrontEnd를 만들고 Actix-Web에서 직접 서빙(serving)하기" />
+<meta name="twitter:description" content="FrontEnd 서버를 따로 만들지 않고, Static Site로 만들어 Actix-Web에서 직접 서빙" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Rust 웹 서버 만들기 4편. SvelteKit으로 FrontEnd를 만들고 Actix-Web에서 직접 서빙(serving)하기\"",
+  "description": "\"FrontEnd 서버를 따로 만들지 않고, Static Site로 만들어 Actix-Web에서 직접 서빙\"",
+  "datePublished": "\"2023-09-08T10:11:23Z\"",
+  "dateModified": "\"2023-09-08T10:11:23Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-09-08-rust-web-server-add-ui-sveltekit-static-site/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Rust 웹 서버 만들기 4편. SvelteKit으로 FrontEnd를 만들고 Actix-Web에서 직접 서빙(serving)하기</h1>
+        <p>
+  <small>September 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Rust 웹 서버 만들기 4편까지 왔습니다.</p>
+<p>이게 마지막일 듯싶습니다.</p>
+<p>지난 시간까지의 글 목록입니다.</p>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web">Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-04-how-to-use-rust-reqwest-http-get-post">Rust 웹 서버 만들기 2편. Rust에서 Reqwest를 이용해서 HTTP 요청(Request)하기</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-07-rust-web-server-how-to-use-scraper">Rust 웹 서버 만들기 3편. scraper를 이용해서 러스트로 웹 스크래핑하기</a></p>
+<hr>
+<h2 id="sveltekit-설치">SvelteKit 설치</h2>
+<p>일단 저는 간단한 프로그램은 별도의 FrontEnd 서버를 만들지 않는데요.</p>
+<p>지금 만드는 사이트가 그렇게 복잡하지도 않고, UI는 단순히 fetch만 하고 그 자료를 브라우저에 보여주면 되는 겁니다.</p>
+<p>그러면 여기서 우리가 사용할 수 있는 FrontEnd 쪽 기술은 바로 Static Site가 되겠습니다.</p>
+<p>Static Site로 유명한 게 Next.js 인데요.</p>
+<p>저는 최근 공부하고 있는 SvelteKit으로 사용하겠습니다.</p>
+<p>일단 다음과 같이 ui 폴더를 sveltekit 프로젝트 이름으로 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Skeleton, Typescript를 골랐습니다.</span>
+</span></span><span class="line"><span class="cl">npm create svelte@latest ui
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ui
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npx add-svelte@latest tailwindcss
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm install</span></span></code></pre></div>
+  </figure>
+</div>
+<p>바로 이어서 TailWindCSS도 설치했습니다.</p>
+<h2 id="sveltekit을-indexhtml-파일이-있는-static-site로-만들기">SvelteKit을 index.html 파일이 있는 Static Site로 만들기</h2>
+<p>SvelteKit은 SSR(Server Side Rendering), SSG(Static Site Generation) 등 여러 가지를 할 수 있는데요.</p>
+<p>이번 시간에는 SSG 부분입니다.</p>
+<p>먼저, SSG에 맞는 sveltejs의 adapter를 설치해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i -D @sveltejs/adapter-static</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 svelte.config.js 파일을 열어 다음과 같이 adapter를 바꿔주고 설정을 조금 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">adapter</span> <span class="nx">from</span> <span class="s1">&#39;@sveltejs/adapter-static&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">vitePreprocess</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@sveltejs/kit/vite&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/** @type {import(&#39;@sveltejs/kit&#39;).Config} */</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">preprocess</span><span class="o">:</span> <span class="p">[</span><span class="nx">vitePreprocess</span><span class="p">({})],</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">kit</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">adapter</span><span class="o">:</span> <span class="nx">adapter</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">pages</span><span class="o">:</span> <span class="s1">&#39;build&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">assets</span><span class="o">:</span> <span class="s1">&#39;build&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">fallback</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">precompress</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">strict</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">config</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위에서 설정 부분에 pages란 부분이 바로 index.html 파일이 생기게 되는 부분입니다.</p>
+<p>Static Site라서 build 폴더만으로 HTTP 서빙할 수 있습니다.</p>
+<p>index.html 파일이 있으니까요.</p>
+<p>이제 마지막을 Static Site로 만드는 작업은 +layout.ts 파일에 prerender = true라고 명시하면 됩니다.</p>
+<p>이때 +layout.ts 파일은 SvelteKit의 전체 레이아웃을 관장하는 백엔드 로직이 들어가는 코드입니다.</p>
+<p>당연히 src 폴더 밑에 routes 폴더에 있어야 합니다.</p>
+<p>이 +layout.ts 파일이 routes와 관련해서 제일 먼저 로딩됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">prerender</span> <span class="o">=</span> <span class="kc">true</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고, TailwindCSS를 이용해서 모바일에도 적용되는 Responsive 디자인을 만들어 봅시다.</p>
+<p>+layout.svelte 파일을 아래와 같이 수정해 줍시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="s2">&#34;../app.postcss&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;h-full min-h-screen w-full&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">main</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex w-full flex-col items-center&#34;</span><span class="o">&gt;&lt;</span><span class="nx">slot</span> <span class="o">/&gt;&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/div&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 +page.svelte 파일에다가 우리가 원하는 디자인과 코드를 작성해 볼까요?</p>
+<h2 id="sveltejs에서-데이터-fetching-하기">SvelteJS에서 데이터 fetching 하기</h2>
+<p>백엔드에서 데이터를 불러올 때 주의해야 할 점이 바로 사용자에게 무언가 일어나고 있다고 알려줘야 합니다.</p>
+<p>바로 로딩 스피너(loading spinner)를 제공해야 하는데요.</p>
+<p>로딩 스피너가 없으면 느린 인터넷에선 사용자가 아무런 반응이 없다고 판단해 바로 뒤로 돌아가기 때문입니다.</p>
+<p>그래서 SvelteJS에서 유명한 패키지 하나를 추가로 설치하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i -D svelte-loading-spinners</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 본격적인 Data Fetching에 들어가 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">onMount</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;svelte&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">Circle</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;svelte-loading-spinners&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">type</span> <span class="nx">VPNINFOTYPE</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">country</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ip</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">tcp</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">udp</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sid</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">hid</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">vpnInfos</span><span class="o">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">VPNINFOTYPE</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">isLoading</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// 로딩 중인지 여부를 나타내는 상태 변수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">apiUrl</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MODE</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">apiUrl</span> <span class="o">=</span> <span class="s2">&#34;/api/get-vpn&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">apiUrl</span> <span class="o">=</span> <span class="s2">&#34;http://127.0.0.1:8080/api/get-vpn&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="kd">function</span> <span class="nx">getVpnInfo</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">apiUrl</span><span class="p">,</span> <span class="p">{</span><span class="nx">mode</span><span class="o">:</span> <span class="s2">&#34;cors&#34;</span><span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">vpnInfos</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">results</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">isLoading</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Failed to fetch data:&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">isLoading</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">onMount</span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="nx">getVpnInfo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>UI 쪽에서 Client가 브라우저를 로드했을 때 바로 시작되는 onMount 함수를 이용했습니다.</p>
+<p>apiUrl은 개발 모드, 프로덕션 모드에 따라 바뀌게 될 거고요.</p>
+<p>그리고 getVpnInfo 함수로 실제 데이터를 fetching 했고 그걸, 리액티브 변수인 vpnInfos에 저장했습니다.</p>
+<p>React에서는 useState를 써야 하는데요.</p>
+<p>SvelteJS에서는 그냥 선언한 변수는 모두 리액티브 변수가 됩니다.</p>
+<p>이제 UI 코드를 작성해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">section</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;bg-white&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;py-4 px-4 mx-auto max-w-screen-xl lg:py-16 grid lg:grid-cols-2 gap-8 lg:gap-16&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex flex-col justify-center&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Welcome</span> <span class="nx">to</span> <span class="nx">my</span> <span class="nx">OpenVpn</span> <span class="nx">Site</span><span class="p">.</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">p</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;mb-2 text-lg font-normal text-gray-500 lg:text-xl&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">This</span> <span class="nx">website</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">mirror</span> <span class="nx">site</span> <span class="k">of</span> <span class="o">&lt;</span><span class="nx">span</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;underline&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&gt;&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;https://www.vpngate.net/en/&#34;</span><span class="o">&gt;</span><span class="nx">www</span><span class="p">.</span><span class="nx">vpngate</span><span class="p">.</span><span class="nx">net</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/span</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">I</span> <span class="nx">created</span> <span class="nx">it</span> <span class="nx">myself</span> <span class="nx">because</span> <span class="nx">the</span> <span class="nx">original</span> <span class="nx">site</span> <span class="nx">is</span> <span class="nx">very</span> <span class="nx">inconvenient</span> <span class="nx">to</span> <span class="nx">view</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">on</span> <span class="nx">mobile</span> <span class="nx">devices</span><span class="p">.</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/section&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">#</span><span class="k">if</span> <span class="nx">isLoading</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c">&lt;!--</span> <span class="nx">로딩</span> <span class="nx">중일</span> <span class="nx">때</span> <span class="nx">화면에</span> <span class="nx">로딩</span> <span class="nx">스크린을</span> <span class="nx">표시</span> <span class="o">--&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex items-center justify-center w-full pb-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">Circle</span> <span class="nx">size</span><span class="o">=</span><span class="s2">&#34;60&#34;</span> <span class="nx">color</span><span class="o">=</span><span class="s2">&#34;#3b3b40&#34;</span> <span class="nx">unit</span><span class="o">=</span><span class="s2">&#34;px&#34;</span> <span class="nx">duration</span><span class="o">=</span><span class="s2">&#34;1s&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="o">:</span><span class="k">else</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c">&lt;!--</span> <span class="nx">데이터가</span> <span class="nx">로딩된</span> <span class="nx">후</span> <span class="nx">화면에</span> <span class="nx">데이터를</span> <span class="nx">표시</span> <span class="o">--&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex w-full flex-col md:p-4 lg:w-10/12&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">h1</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-2xl font-bold dark:text-white pl-4 pb-2&#34;</span><span class="o">&gt;</span><span class="nx">VPN</span> <span class="nx">Lists</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="err">#</span><span class="nx">each</span> <span class="nx">vpnInfos</span> <span class="nx">as</span> <span class="nx">vpnInfo</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;max-w-sm p-6 border border-gray-200 rounded-lg shadow bg-white&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">h3</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;mb-2 text-md font-bold tracking-tight text-gray-900&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">country</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/h3&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">ul</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;pb-2 text-sm&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">ip</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">TCP</span> <span class="p">{</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">tcp</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">UDP</span> <span class="p">{</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">udp</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex flex-row&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="err">#</span><span class="k">if</span> <span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">tcp</span> <span class="o">!==</span> <span class="s2">&#34;0&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="nx">a</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">href</span><span class="o">=</span><span class="p">{</span><span class="sb">`https://www.vpngate.net/common/openvpn_download.aspx?sid=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">sid</span><span class="si">}</span><span class="sb">&amp;tcp=1&amp;host=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">ip</span><span class="si">}</span><span class="sb">&amp;port=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">tcp</span><span class="si">}</span><span class="sb">&amp;hid=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">hid</span><span class="si">}</span><span class="sb">`</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-white bg-[#050708] hover:bg-[#050708]/80 focus:ring-4 focus:outline-none focus:ring-[#050708]/50 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center mr-2 mb-2&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">TCP</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="err">/if}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="err">#</span><span class="k">if</span> <span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">udp</span> <span class="o">!==</span> <span class="s2">&#34;0&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="nx">a</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">href</span><span class="o">=</span><span class="p">{</span><span class="sb">`https://www.vpngate.net/common/openvpn_download.aspx?sid=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">sid</span><span class="si">}</span><span class="sb">&amp;udp=1&amp;host=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">ip</span><span class="si">}</span><span class="sb">&amp;port=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">udp</span><span class="si">}</span><span class="sb">&amp;hid=</span><span class="si">${</span><span class="nx">vpnInfo</span><span class="p">.</span><span class="nx">hid</span><span class="si">}</span><span class="sb">`</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-white bg-gray-500 hover:bg-gray-500/80 focus:ring-4 focus:outline-none focus:ring-gray-500/50 font-medium rounded-lg text-sm px-4 py-2 text-center inline-flex items-center mr-2 mb-2&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">UDP</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="err">/if}</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="err">/each}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">/if}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>SvelteJS의 템플릿에 따라 적절하게 UI를 꾸몄습니다.</p>
+<p>이제 테스트해 볼까요?</p>
+<p>백엔드 쪽에서도 &ldquo;cargo run&quot;으로 서버를 실행해 주시고,</p>
+<p>ui 폴더 안에서 &ldquo;npm run dev&quot;로 UI 쪽 개발 서버를 실행해 주시면 됩니다.</p>
+<p>그런데, 아래 그림과 같이 작동하지 않네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEha8268fQQHI0VzkTZ6wwzxjCBQGjPgqAqXg_oHcyzD228POF2XbAKVbwnZ-eO9nDfQBe42KYNQvNn41PkX2ExdFlAQfcCv5urx0LV-qpZ7g1pWKSpxE4-EoWLyis32Wrl32OJNr9_midPO64JJVaDs9-kLqTaxCNNO7Y070o6yLZk8tdFMafHgmM-AJ6Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그 이유는 크롬 콘솔 창에 잘 나와 있습니다.</p>
+<p>바로 CORS 때문인데요.</p>
+<p>크로스 오리진 정책입니다.</p>
+<p>기본적으로 서로 다른 도메인 간 데이터 교환이 불가한데요.</p>
+<p>이걸 CORS인데요. 그래서 no-cors 설정이 필요합니다.</p>
+<p>참고로, 러스트 백엔드는 8080 포트고, 프론트엔드인 SvelteKit은 5173 포트이니까요.</p>
+<h2 id="actix-web에-cors-관련-처리-해주기">Actix-Web에 Cors 관련 처리 해주기</h2>
+<p>러스트 서버와 UI 서버간 데이터 교환이 안될 겁니다.</p>
+<p>바로 Cors 때문인데요.</p>
+<p>Actix-Web에는 actix-cors 패키지가 있습니다.</p>
+<p>우리는 이걸 이용할 건데요.</p>
+<p>일단 먼저, 설치해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cargo add actix-cors</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제, Rust의 main.rs 파일에 아래와 같이 Cors 처리를 해주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">use</span><span class="w"> </span><span class="n">actix_cors</span>::<span class="n">Cors</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cp">#[actix_web::main]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nc">std</span>::<span class="n">io</span>::<span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Rust Actix-web server started at 127.0.0.1:8080&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpServer</span>::<span class="n">new</span><span class="p">(</span><span class="o">||</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">cors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cors</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allow_any_origin</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allowed_methods</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="s">&#34;GET&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;POST&#34;</span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allowed_headers</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="n">http</span>::<span class="n">header</span>::<span class="no">AUTHORIZATION</span><span class="p">,</span><span class="w"> </span><span class="n">http</span>::<span class="n">header</span>::<span class="no">ACCEPT</span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allowed_header</span><span class="p">(</span><span class="n">http</span>::<span class="n">header</span>::<span class="no">CONTENT_TYPE</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">max_age</span><span class="p">(</span><span class="mi">3600</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">App</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">cors</span><span class="p">)</span><span class="w">  </span><span class="c1">// 여기에 cors를 wrap 해야 합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">get_vpn_info</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">healthcheck</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="n">bind</span><span class="p">((</span><span class="s">&#34;127.0.0.1&#34;</span><span class="p">,</span><span class="w"> </span><span class="mi">8080</span><span class="p">))</span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// .bind((&#34;0.0.0.0&#34;, 8080))?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="p">.</span><span class="n">run</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="k">await</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>allowed_methods에 보시면 허용되는 HTTP 메서드가 있는데요.</p>
+<p>우리는 GET 메서드만 쓸 거라서 POST 메서드는 지워도 됩니다.</p>
+<p>이제 다시 2개의 서버를 각각 돌려서 실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjzHfUgBcvUzRpKHgabq8KIrRR0KDti0mWZekNkDrr7qeIYkEk-h5km_XGYlIFnbnbBVqCKspaXVXbAs2_q47Q9gbSm0ADEvuEc6U5xymWTIbrhxHQJZjQNY96yD0AV44TJNrOwd-sVFZH9abcsHoazEyQh9LEga_8VtZNB9yarp0SVczGJwKVoIys7GRY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 콘솔 창에 아무런 에러도 없고, UI 부분도 잘 나오고 있습니다.</p>
+<p>대 성공이네요.</p>
+<p>또, 새로 고침 해보면 동그란 로딩 스피너가 작동할 겁니다.</p>
+<h2 id="sveltekit-build-해보기">SvelteKit Build 해보기</h2>
+<p>이제 UI 부분은 끝났으니까요, UI 부분을 정적 사이트로 빌드 해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run build</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하시면 아까 svelte.config.js 파일에서 설정했듯이 build 폴더에 파일이 생성됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  ui git:<span class="o">(</span>master<span class="o">)</span> ✗ <span class="nb">cd</span> build
+</span></span><span class="line"><span class="cl">➜  build git:<span class="o">(</span>master<span class="o">)</span> ✗ ls -al
+</span></span><span class="line"><span class="cl">total <span class="m">16</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x   <span class="m">5</span> cpro95  staff   <span class="m">160</span>  <span class="m">9</span>  <span class="m">8</span> 19:52 .
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">17</span> cpro95  staff   <span class="m">544</span>  <span class="m">9</span>  <span class="m">8</span> 19:52 ..
+</span></span><span class="line"><span class="cl">drwxr-xr-x   <span class="m">4</span> cpro95  staff   <span class="m">128</span>  <span class="m">9</span>  <span class="m">8</span> 19:52 _app
+</span></span><span class="line"><span class="cl">-rw-r--r--   <span class="m">1</span> cpro95  staff  <span class="m">1571</span>  <span class="m">9</span>  <span class="m">8</span> 19:52 favicon.png
+</span></span><span class="line"><span class="cl">-rw-r--r--   <span class="m">1</span> cpro95  staff  <span class="m">2419</span>  <span class="m">9</span>  <span class="m">8</span> 19:52 index.html
+</span></span><span class="line"><span class="cl">➜  build git:<span class="o">(</span>master<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 index.html 파일이 생성됐습니다.</p>
+<p>이제 이 파일을 직접 serve 해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  build git:<span class="o">(</span>master<span class="o">)</span> ✗ serve .
+</span></span><span class="line"><span class="cl"> UPDATE  The latest version of <span class="sb">`</span>serve<span class="sb">`</span> is 14.2.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   ┌────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">   │                                            │
+</span></span><span class="line"><span class="cl">   │   Serving!                                 │
+</span></span><span class="line"><span class="cl">   │                                            │
+</span></span><span class="line"><span class="cl">   │   - Local:    http://localhost:3000        │
+</span></span><span class="line"><span class="cl">   │   - Network:  http://192.168.29.145:3000   │
+</span></span><span class="line"><span class="cl">   │                                            │
+</span></span><span class="line"><span class="cl">   │   Copied <span class="nb">local</span> address to clipboard!       │
+</span></span><span class="line"><span class="cl">   │                                            │
+</span></span><span class="line"><span class="cl">   └────────────────────────────────────────────┘</span></span></code></pre></div>
+  </figure>
+</div>
+<p>serve 는 npm 패키지입니다.</p>
+<p>&ldquo;npm i -g serve&quot;로 글로벌하게 설치하시면 언제든지 사용할 수 있습니다.</p>
+<p>포트 3000으로 가볼까요?</p>
+<p>아래 그림과 같이 데이터를 Fetching 하지 못하고 있네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh4ICV9p7W2CypihVazBun58E1g_F_bBRL_nzrGmp4p-vPanfYZ66ETCLrqeR1wOrSYDF1pjc1LJ2LVb9L0nekT-s9IAjR1GUB3D5AtAuaGPHD-MDTRmqZlRbU7TNZ-AcO70LHMEv8-q1hVGbN55mQ6625f62nkTHeSNwmARu8SJLsh7VQxxlawFuSR-m4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>걱정하지 마십시오.</p>
+<p>이건 아까 svelte 코드에서 apiUrl을 개발 모드, 배포모드에 따라 주소를 달리 했기 때문입니다.</p>
+<p>우리가 포트 3000으로 서빙하는 건 배포모드이기 때문에 현재 그 서버가 없는 거죠.</p>
+<h2 id="rust에서-정적-파일-서빙하기">Rust에서 정적 파일 서빙하기</h2>
+<p>Actix-Web에서 정적 파일을 서빙하기 위해서는 Actix-files를 이용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cargo add actix-files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 설치하시고 main.rs 파일을 아래와 같이 바꿔 주시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">mod</span> <span class="nn">my_scrape_lib</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">my_scrape_lib</span>::<span class="n">scrape_vpn_info</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">actix_cors</span>::<span class="n">Cors</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">actix_web</span>::<span class="p">{</span><span class="n">get</span><span class="p">,</span><span class="w"> </span><span class="n">http</span><span class="p">,</span><span class="w"> </span><span class="n">App</span><span class="p">,</span><span class="w"> </span><span class="n">HttpResponse</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServer</span><span class="p">,</span><span class="w"> </span><span class="n">Responder</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">actix_files</span>::<span class="n">Files</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 중간 부분은 생략
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cp">#[actix_web::main]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nc">std</span>::<span class="n">io</span>::<span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Rust Actix-web server started at 127.0.0.1:8080&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpServer</span>::<span class="n">new</span><span class="p">(</span><span class="o">||</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">cors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cors</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allow_any_origin</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allowed_methods</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="s">&#34;GET&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;POST&#34;</span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allowed_headers</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="n">http</span>::<span class="n">header</span>::<span class="no">AUTHORIZATION</span><span class="p">,</span><span class="w"> </span><span class="n">http</span>::<span class="n">header</span>::<span class="no">ACCEPT</span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">allowed_header</span><span class="p">(</span><span class="n">http</span>::<span class="n">header</span>::<span class="no">CONTENT_TYPE</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">max_age</span><span class="p">(</span><span class="mi">3600</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">App</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">cors</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">get_vpn_info</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">healthcheck</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">Files</span>::<span class="n">new</span><span class="p">(</span><span class="s">&#34;/&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;ui/build&#34;</span><span class="p">).</span><span class="n">index_file</span><span class="p">(</span><span class="s">&#34;index.html&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="n">bind</span><span class="p">((</span><span class="s">&#34;127.0.0.1&#34;</span><span class="p">,</span><span class="w"> </span><span class="mi">8080</span><span class="p">))</span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// .bind((&#34;0.0.0.0&#34;, 8080))?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="p">.</span><span class="n">run</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="k">await</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Actix-Web에 service 개념으로 &ldquo;ui/build&rdquo; 폴더를 정적 사이트로 서빙하는데 찾는 파일이 index.html이라는 겁니다.</p>
+<p>이제, 컴파일해 볼까요?</p>
+<p>UI 쪽은 배포 모드로 한번 빌드 했기 때문에 UI 쪽 서버는 더 이상 돌릴 필요가 없습니다.</p>
+<p>Rust 쪽 백엔드 서버만 돌리면 되죠.</p>
+<p><code>http:/127.0.0.1:8080</code>으로 들어가 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhb1DE2HPUU4axiPDDcQD9IkRvYJvMNG6Ln_mSP7REBgwBYMZFmZVZNqEOdz_SN0VESkCOjsBbQkSoqAFruWeypTPp0i-gc7qob2xOmI9ri95fULqYTPo9IXT_ZOAKZPpgYXr6w4bwxEpySsAMcIkUEWP5MluFl985PF5ZtxYmi12DqKsvkHGxE2VnITGk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 아주 잘 작동하고 있습니다.</p>
+<hr>
+<h2 id="flyio에-배포하기">Fly.io에 배포하기</h2>
+<p>이제 우리가 호스팅 하기로 했던 Fly.io에 배포해 보겠습니다</p>
+<p>Fly.io에 배포하는 거는 실제 프로덕션 빌드기 때문에, 러스트에서 사용한 개발 서버 127.0.0.1을 바꿔저야 하는데요.</p>
+<p>Fly.io에 배포되는 Docker파일에서 실제 실행되는 러스트 실행파일은 0.0.0.0 주소로 해야 됩니다.</p>
+<p>그래야 작동이 되는데요.</p>
+<p>main.rs 파일을 다시 바꾸겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// .bind((&#34;127.0.0.1&#34;, 8080))?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="p">.</span><span class="n">bind</span><span class="p">((</span><span class="s">&#34;0.0.0.0&#34;</span><span class="p">,</span><span class="w"> </span><span class="mi">8080</span><span class="p">))</span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="n">run</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="k">await</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하시면 됩니다.</p>
+<p>그리고 <code>.dockerignore</code> 파일에 ui/build 폴더가 들어가 있으면 안 됩니다.</p>
+<p>우리의 서버는 프론트엔드를 로컬에서 직접 빌드해서 최종 정적 파일로 만들고 그걸, 그대로 서버로 올리는 거기 때문에,</p>
+<p><code>.docerignore</code>에 ui/build가 들어가 있으면 ui/build 폴더가 서버에 올라가지 않게 되는 거죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly deploy</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 실행하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="err">➜</span><span class="w">  </span><span class="n">rust</span><span class="o">-</span><span class="n">fly</span><span class="o">-</span><span class="n">test</span><span class="w"> </span><span class="n">git</span>:<span class="p">(</span><span class="n">master</span><span class="p">)</span><span class="w"> </span><span class="err">✗</span><span class="w"> </span><span class="n">fly</span><span class="w"> </span><span class="n">deploy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">==&gt;</span><span class="w"> </span><span class="n">Verifying</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="n">config</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Validating</span><span class="w"> </span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">cpro95</span><span class="o">/</span><span class="n">Codings</span><span class="o">/</span><span class="n">Rust</span><span class="o">/</span><span class="n">rust</span><span class="o">-</span><span class="n">fly</span><span class="o">-</span><span class="n">test</span><span class="o">/</span><span class="n">fly</span><span class="p">.</span><span class="n">toml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Platform</span>: <span class="nc">machines</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="err">✓</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">valid</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">-</span>-&gt; <span class="nc">Verified</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="n">config</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">==&gt;</span><span class="w"> </span><span class="n">Building</span><span class="w"> </span><span class="n">image</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Remote</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="n">fly</span><span class="o">-</span><span class="n">builder</span><span class="o">-</span><span class="n">snowy</span><span class="o">-</span><span class="n">sun</span><span class="o">-</span><span class="mi">1195</span><span class="w"> </span><span class="n">ready</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">==&gt;</span><span class="w"> </span><span class="n">Building</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">Docker</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">-</span>-&gt; <span class="nc">docker</span><span class="w"> </span><span class="n">host</span>: <span class="mf">20.10.12</span><span class="w"> </span><span class="n">linux</span><span class="w"> </span><span class="n">x86_64</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">[</span><span class="o">+</span><span class="p">]</span><span class="w"> </span><span class="n">Building</span><span class="w"> </span><span class="mf">78.6</span><span class="n">s</span><span class="w"> </span><span class="p">(</span><span class="mi">15</span><span class="o">/</span><span class="mi">15</span><span class="p">)</span><span class="w"> </span><span class="no">FINISHED</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">internal</span><span class="p">]</span><span class="w"> </span><span class="n">load</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="n">definition</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">Dockerfile</span><span class="w">                          </span><span class="mf">0.9</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">transferring</span><span class="w"> </span><span class="n">dockerfile</span>: <span class="mi">651</span><span class="n">B</span><span class="w">                                          </span><span class="mf">0.9</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">internal</span><span class="p">]</span><span class="w"> </span><span class="n">load</span><span class="w"> </span><span class="p">.</span><span class="n">dockerignore</span><span class="w">                                             </span><span class="mf">0.9</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">transferring</span><span class="w"> </span><span class="n">context</span>: <span class="mi">94</span><span class="n">B</span><span class="w">                                              </span><span class="mf">0.9</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">internal</span><span class="p">]</span><span class="w"> </span><span class="n">load</span><span class="w"> </span><span class="n">metadata</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">docker</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">rust</span>:<span class="nc">latest</span><span class="w">                </span><span class="mf">0.5</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">internal</span><span class="p">]</span><span class="w"> </span><span class="n">load</span><span class="w"> </span><span class="n">metadata</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">docker</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">ubuntu</span>:<span class="mf">22.04</span><span class="w">               </span><span class="mf">0.5</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">FROM</span><span class="w"> </span><span class="n">docker</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">rust</span>:<span class="nc">latest</span><span class="w">                                        </span><span class="mf">0.2</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="n">docker</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">rust</span>:<span class="nc">latest</span><span class="w">                                  </span><span class="mf">0.2</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">builder</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">FROM</span><span class="w"> </span><span class="n">docker</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">rust</span>:<span class="nc">latest</span><span class="o">@</span><span class="n">sha256</span>:<span class="mi">8</span><span class="n">a4ca3ca75afbc9</span><span class="w">  </span><span class="mf">13.6</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">resolve</span><span class="w"> </span><span class="n">docker</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">rust</span>:<span class="nc">latest</span><span class="o">@</span><span class="n">sha256</span>:<span class="mi">8</span><span class="n">a4ca3ca75afbc97bcf5362e</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">9</span><span class="n">f13f5a53d118643c1f1ff294867c09f224d00edca21</span><span class="w"> </span><span class="mf">64.11</span><span class="n">MB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">64.11</span><span class="n">MB</span><span class="w">  </span><span class="mf">1.5</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="nc">e13e76ad6279c3d69aa6842a935288c7db66878ec3</span><span class="w"> </span><span class="mf">210.99</span><span class="n">MB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">210.99</span><span class="n">MB</span><span class="w">  </span><span class="mf">2.8</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="nc">f5b255a946cc52ffae479ef24bcde1d8454459f983</span><span class="w"> </span><span class="mf">190.46</span><span class="n">MB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">190.46</span><span class="n">MB</span><span class="w">  </span><span class="mf">2.7</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">8</span><span class="n">a4ca3ca75afbc97bcf5362e9a694fe049d15734fbbaf82b8b</span><span class="w"> </span><span class="mi">988</span><span class="n">B</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">988</span><span class="n">B</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="nc">e18a590e3b63b971a1d5f9d91c89ac7d562a9c20279f87</span><span class="w"> </span><span class="mf">1.38</span><span class="n">kB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">1.38</span><span class="n">kB</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">2274565811</span><span class="n">a0dd1d5fc49868fcbdae074ad2f42b1207a3</span><span class="w"> </span><span class="mf">6.10</span><span class="n">kB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">6.10</span><span class="n">kB</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">012</span><span class="n">c0b3e998c1a0c0bedcf712eaaafb188580529dd02</span><span class="w"> </span><span class="mf">49.56</span><span class="n">MB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">49.56</span><span class="n">MB</span><span class="w">  </span><span class="mf">1.2</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">00046</span><span class="n">d1e755ea94fa55a700ca9a10597e4fac7c47be1</span><span class="w"> </span><span class="mf">24.03</span><span class="n">MB</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">24.03</span><span class="n">MB</span><span class="w">  </span><span class="mf">0.6</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">extracting</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">012</span><span class="n">c0b3e998c1a0c0bedcf712eaaafb188580529dd026a04aa1</span><span class="w">  </span><span class="mf">1.9</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">extracting</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">00046</span><span class="n">d1e755ea94fa55a700ca9a10597e4fac7c47be19d970a3</span><span class="w">  </span><span class="mf">0.4</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">extracting</span><span class="w"> </span><span class="n">sha256</span>:<span class="mi">9</span><span class="n">f13f5a53d118643c1f1ff294867c09f224d00edca21f56caa7</span><span class="w">  </span><span class="mf">1.6</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">extracting</span><span class="w"> </span><span class="n">sha256</span>:<span class="nc">e13e76ad6279c3d69aa6842a935288c7db66878ec3b7815edd3</span><span class="w">  </span><span class="mf">4.6</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">extracting</span><span class="w"> </span><span class="n">sha256</span>:<span class="nc">f5b255a946cc52ffae479ef24bcde1d8454459f9832876e8b3d</span><span class="w">  </span><span class="mf">3.2</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">stage</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">FROM</span><span class="w"> </span><span class="n">docker</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">ubuntu</span>:<span class="mf">22.04</span><span class="o">@</span><span class="n">sha256</span>:<span class="nc">aabed3296a3d45c</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">internal</span><span class="p">]</span><span class="w"> </span><span class="n">load</span><span class="w"> </span><span class="n">build</span><span class="w"> </span><span class="n">context</span><span class="w">                                            </span><span class="mf">60.7</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">transferring</span><span class="w"> </span><span class="n">context</span>: <span class="mf">87.07</span><span class="n">MB</span><span class="w">                                         </span><span class="mf">60.7</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">builder</span><span class="w"> </span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">WORKDIR</span><span class="w"> </span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">app</span><span class="w">                                        </span><span class="mf">0.1</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">builder</span><span class="w"> </span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">COPY</span><span class="w"> </span><span class="p">.</span><span class="w"> </span><span class="p">.</span><span class="w">                                                    </span><span class="mf">0.7</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">builder</span><span class="w"> </span><span class="mi">4</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">RUN</span><span class="w"> </span><span class="o">--</span><span class="n">mount</span><span class="o">=</span><span class="k">type</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span><span class="n">target</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">cargo</span><span class="p">,</span><span class="n">from</span><span class="o">=</span><span class="n">rust</span>:  <span class="mf">15.3</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">CACHED</span><span class="w"> </span><span class="p">[</span><span class="n">stage</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">RUN</span><span class="w"> </span><span class="n">useradd</span><span class="w"> </span><span class="o">-</span><span class="n">ms</span><span class="w"> </span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span><span class="w"> </span><span class="n">app</span><span class="w">                        </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="no">CACHED</span><span class="w"> </span><span class="p">[</span><span class="n">stage</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">WORKDIR</span><span class="w"> </span><span class="o">/</span><span class="n">app</span><span class="w">                                         </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">stage</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="mi">4</span><span class="o">/</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="no">COPY</span><span class="w"> </span><span class="o">--</span><span class="n">from</span><span class="o">=</span><span class="n">builder</span><span class="w"> </span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">rust</span><span class="o">-</span><span class="n">fly</span><span class="o">-</span><span class="n">test</span><span class="w"> </span><span class="o">/</span><span class="n">app</span><span class="o">/</span><span class="n">rust</span><span class="o">-</span><span class="n">f</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">exporting</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">image</span><span class="w">                                                        </span><span class="mf">0.1</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">exporting</span><span class="w"> </span><span class="n">layers</span><span class="w">                                                       </span><span class="mf">0.1</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">writing</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">sha256</span>:<span class="nc">bddb01e433aa7d67840a325310078fb2e4dd0775a42ff7f7</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">naming</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">registry</span><span class="p">.</span><span class="n">fly</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">rust</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">tutorial</span>:<span class="nc">deployment</span><span class="o">-</span><span class="mi">01</span><span class="n">H9TAK66R</span><span class="w">  </span><span class="mf">0.0</span><span class="n">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">-</span>-&gt; <span class="nc">Building</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">done</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">==&gt;</span><span class="w"> </span><span class="n">Pushing</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">fly</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">The</span><span class="w"> </span><span class="n">push</span><span class="w"> </span><span class="n">refers</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">repository</span><span class="w"> </span><span class="p">[</span><span class="n">registry</span><span class="p">.</span><span class="n">fly</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">rust</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">tutorial</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="mi">08</span><span class="n">f3667d177c</span>: <span class="nc">Pushed</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">abd33ec8f1b9</span>: <span class="nc">Layer</span><span class="w"> </span><span class="n">already</span><span class="w"> </span><span class="n">exists</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="mi">07</span><span class="n">f5e88cb1a8</span>: <span class="nc">Layer</span><span class="w"> </span><span class="n">already</span><span class="w"> </span><span class="n">exists</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">dc0585a4b8b7</span>: <span class="nc">Layer</span><span class="w"> </span><span class="n">already</span><span class="w"> </span><span class="n">exists</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">deployment</span><span class="o">-</span><span class="mi">01</span><span class="n">H9TAK66R1HK83C4C03ETF2DH</span>: <span class="nc">digest</span>: <span class="nc">sha256</span>:<span class="mi">12</span><span class="n">c4587aecff26f31a73c8d7acfa98ca92eedf5b70fd67fd951dbf4c16e7663c</span><span class="w"> </span><span class="n">size</span>: <span class="mi">1154</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">-</span>-&gt; <span class="nc">Pushing</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">done</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">image</span>: <span class="nc">registry</span><span class="p">.</span><span class="n">fly</span><span class="p">.</span><span class="n">io</span><span class="o">/</span><span class="n">rust</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">tutorial</span>:<span class="nc">deployment</span><span class="o">-</span><span class="mi">01</span><span class="n">H9TAK66R1HK83C4C03ETF2DH</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">image</span><span class="w"> </span><span class="n">size</span>: <span class="mi">94</span><span class="w"> </span><span class="no">MB</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Watch</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">deployment</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">https</span>:<span class="c1">//fly.io/apps/rust-web-app-tutorial/monitoring
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Updating</span><span class="w"> </span><span class="n">existing</span><span class="w"> </span><span class="n">machines</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="na">&#39;rust</span><span class="o">-</span><span class="n">web</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">tutorial</span><span class="na">&#39;</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">rolling</span><span class="w"> </span><span class="n">strategy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="n">Machine</span><span class="w"> </span><span class="mf">6e82775</span><span class="n">c243987</span><span class="w"> </span><span class="p">[</span><span class="n">app</span><span class="p">]</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="n">finished</span>: <span class="nc">success</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">Finished</span><span class="w"> </span><span class="n">deploying</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Visit</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">newly</span><span class="w"> </span><span class="n">deployed</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">https</span>:<span class="c1">//rust-web-app-tutorial.fly.dev/
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>deploy가 성공됐다고 나오네요.</p>
+<p>심지어 image size는 조금 무거운 ubuntu를 썼는데도 94MB밖에 안 됩니다.</p>
+<p>이게 바로 Rust의 장점이죠.</p>
+<p>이제 최종 주소인 <code>https://rust-web-app-tutorial.fly.dev/</code>로 가볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjmZm5FhrMNh5rGp_Txtbzr-hH-5unJkCYvzmMiXpJynvLSV9px8HNYTECI_a8OiZ9PBcG4a5KH2XjnkFFHOwzYlodqyJPkqO2l7TJLsDxeGj2AoP_qUCtY1Sp_aMor4mrXmCq6GW-4c4HjI02ej0jY-VshcpSun929SkzZhQbde-xXrcFysUoxAeylKwo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그런데, 이상합니다.</p>
+<p>위와 같이 페이지를 찾을 수 없다고 나오네요.</p>
+<p>그러면 api/get-vpn 주소로 가볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiXtJmxQSw49gDGQyPV3DaW5JbD6hPGsac8LIJzicQvKZZNg5jNs_8d2CE-Rw6aO_ynN4FeN-LYgz0BSnYE8WbNHWGP0mL4KM3SjEFUHPcVpJFgg6v0RXqqYWberRjiQ8dvCRzPCcwZFw01Giwomp2eBYG0XkkT7fCKUKMtnwDZ_h6hoeiw8KzZ4qhQ4NM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리가 만든 api/get-vpn 주소도 작동하지 않습니다.</p>
+<p>그럼 문제를 해결해 볼까요?</p>
+<p>먼저, Fly.io 서버에 가볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 명령어를 입력하면 ssh 접속으로 Fly.io의 가상 머신 즉, 우분투 도커로 원격 접속하게 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@6e82775c243987:/app# ls -l
+</span></span><span class="line"><span class="cl">total <span class="m">15944</span>
+</span></span><span class="line"><span class="cl">-rwxr-xr-x <span class="m">1</span> root root <span class="m">16323656</span> Sep  <span class="m">8</span> 12:01 rust-fly-test
+</span></span><span class="line"><span class="cl">root@6e82775c243987:/app#</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 rust-fly-test라고 러스트 파일을 컴파일한 최종 파일만 있습니다.</p>
+<p>ui/build라는 우리의 Static Site가 없네요.</p>
+<p>당연한 얘기지만 Dockerfile에서 실행파일만 /app 폴더로 복사했고 ui/build 폴더는 복사를 하지 않았네요.</p>
+<p>아래와 같이 dockerfile에 ui/build를 복사하는 명령어를 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Get compiled binaries from builder&#39;s cargo install directory</span>
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>builder /usr/src/app/rust-fly-test /app/rust-fly-test
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>builder /usr/src/app/ui/build /app/ui/build</span></span></code></pre></div>
+  </figure>
+</div>
+<p>두 번째, 에러인 SSL 관련인데요.</p>
+<p>이건 서버문제입니다.</p>
+<p>ssl-certificate가 없어서 우리 서버에서 원격 서버인 vpngate.net으로 접속이 안되는 거죠.</p>
+<p>http 말고 https 통신을 위해서는 SSL 인증이 있어야 하는데요.</p>
+<p>Fly.io는 그 인증이 있습니다.</p>
+<p>아마 우리가 도커로 사용한 우분투 문제인 거 같네요.</p>
+<p>Dockerfile을 다음과 같이 수정합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Runtime image</span>
+</span></span><span class="line"><span class="cl">FROM ubuntu:22.04
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y openssl ca-certificates</span></span></code></pre></div>
+  </figure>
+</div>
+<p>우분투를 설정할 때 openssl과 ca-certificates 패키지를 설치하라는 뜻입니다.</p>
+<p>이제 다시 Fly.io에 fly deploy 해볼까요?</p>
+<p>Deploy가 에러 나면 다시 fly deploy 해보시면 됩니다.</p>
+<p>최종적으로 성공 메시지가 나왔네요.</p>
+<p>이제 다시 한번 우리 주소인 <code>https://rust-web-app-tutorial.fly.dev/</code>로 가볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj6k7kakhEk7vdRxJqcRXTFg0fsNqvU2j1DoBzQZs4Bb31tmrCsF199NVFxsMfquE-CXj5038KdSMaGZS0HTzoAwnI0A2iyGl2yU4x_L4_oGspDll7eV0eQqD4Xt_8B8jhIImXvBSkyUGvisefaSksK3Z6u41mjkhX5RQ25knnXbiHt8DGS7C16FjtaT0I"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 대성공입니다.</p>
+<p>데이터가 나오는 걸로 봐서는 api/get-vpn 라우팅도 잘 작동되고 있는 거죠.</p>
+<p>지금까지 Rust로 웹서버 만들기를 해봤는데요.</p>
+<p>이걸 기초로 해서 자신만의 웹 애플리케이션을 꼭 만들어 보시기 바랍니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/sveltejs/" role="button">sveltejs</a>
+        <a class="btn btn-light" href="/tags/rust/" role="button">rust</a>
+        <a class="btn btn-light" href="/tags/actix-web/" role="button">actix-web</a>
+        <a class="btn btn-light" href="/tags/web-server/" role="button">web server</a>
+        <a class="btn btn-light" href="/tags/web-application/" role="button">web application</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web/">Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기</a></h2>
+                  <p>Rust로 가볍고 빠른 웹 서버 만들기 그리고 실제 서버로 배포하기</p>
+                  <p>
+  <small>September 4, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-07-rust-web-server-how-to-use-scraper/">Rust 웹 서버 만들기 3편. scraper를 이용해서 러스트로 웹 스크래핑하기</a></h2>
+                  <p>reqwest로 요청해서 얻어온 HTML에서 scraper로 데이터 뽑아내기</p>
+                  <p>
+  <small>September 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-04-how-to-use-rust-reqwest-http-get-post/">Rust 웹 서버 만들기 2편. Rust에서 Reqwest를 이용해서 HTTP 요청(Request)하기</a></h2>
+                  <p>웹 서버를 만들기 전에 가장 기본적인 Reqwest 사용법에 관해 공부해 봅시다.</p>
+                  <p>
+  <small>September 4, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

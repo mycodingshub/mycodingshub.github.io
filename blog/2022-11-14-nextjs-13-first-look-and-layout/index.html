@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해</title>
+<meta name="description" content="Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2022-11-14-nextjs-13-first-look-and-layout/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해" />
+<meta property="og:description" content="Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2022-11-14-nextjs-13-first-look-and-layout/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2022-11-14T11:14:28Z" />
+<meta property="article:modified_time" content="2022-11-14T11:14:28Z" />
+<meta property="article:tag" content="next.js" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해" />
+<meta name="twitter:description" content="Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해\"",
+  "description": "\"Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해\"",
+  "datePublished": "\"2022-11-14T11:14:28Z\"",
+  "dateModified": "\"2022-11-14T11:14:28Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2022-11-14-nextjs-13-first-look-and-layout/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해</h1>
+        <p>
+  <small>November 14, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEimNTZae_0VPdkLTHLn29SuTWCB0KdexrpaVhqbDUkXvjnoFzoXmusY7ZjO64-6UjxKGSbZubaGn0dK1aEEZ5yP8_N9NJjg6YAxz6Ax_o_SE9k12r5Xe2n-IerYo6eM-oNlGzaPDWVty0CShde9RmCT-_XtNkpJWnDU_GNb2MGiHCQh4HO5PuGTA7lV=s16000"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>안녕하세요?</p>
+<p>Next.js가 메이저 업데이트가 되었는데요.</p>
+<p>기존 12 버전에서 13 버전으로 큰 폭의 업데이트가 되면서 정말 많은 부분에서 변화가 생겼습니다.</p>
+<p>앞으로 몇 차례에 걸쳐 Next.js 13에 대해 알아보겠습니다.</p>
+<hr />
+## Next.js 13 설치
+<p>설치하는 방법은 기존과 동일합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx create-next-app@latest -e with-tailwindcss nextjs13-layout-example</span></span></code></pre></div>
+  </figure>
+</div>
+<p>TailwindCSS를 사용하기 위해 위와 같이 설정했습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhgocnlHpt7rvaPt2QFuAdlA3nOP_M4LJ5penmFqRJgJ0LPYWEiJ8tlWjfHWzlARSLRDnXKVWAxUMNOmZj225OruMTTw_DWiHTISkoLUMD8-aeZkFzzV7DqRV5fnB-NtMJca8yX9rFdKVlgtlCSVk4fKShOJngCCVJNWOWD_mvDv89eHFnzgIJ6e5w8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>설치를 끝냈으면 위 그림과 같이 기존 Next.js 12 버전의 pages 폴더가 보이는데요.</p>
+<p>Next.js 13은 좀 더 혁신적인 Nested Layout을 위해 새로운 폴더를 선보였습니다.</p>
+<p>바로 app 폴더인데요.</p>
+<p>그럼 Next.js 13으로 어떻게 바꿔야 할까요?</p>
+<p>먼저, 과감히 pages 폴더를 삭제합시다.</p>
+<p>그리고 최상위 폴더에 app 폴더를 만들고 그 아래 page.tsx 파일을 작성합니다.</p>
+<p>page.tsx 파일은 아래와 같이 하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Home</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Home</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Home</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 app 폴더를 사용하게끔 next.config.js 파일을 수정해 줘야 합니다.</p>
+<p>다음과 같이 수정해주시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="cm">/** @type {import(&#39;next&#39;).NextConfig} */</span>
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">reactStrictMode</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">experimental</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">appDir</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>app 폴더 방식은 아직은 실험적이라는 의미이지만 beta 버전이어서 조금은 안정적이고 향후 Next.js가 가고자 하는 방향이 app 폴더이기 때문에 지금부터라도 배워두는 게 좋을 듯합니다.</p>
+<p>이제 npm run dev 명령어를 실행해서 개발 서버를 돌려 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjdKk9EAOAbkKIu1uoWAB3OffNAvoAINo_eCqED1XphNqFaunNcukEImbc751Gd8D7ILvKOcnNBL_UcdOVRC_H3csACsIb61CqhwbvbnYgMjydY6mh2hdZl5QR6jC72TFuM6wWnAiDLuZTOdSMJzBTvQXqpIYlvscHX9ih8McZuyO0sqZr1gs2RjPGr=s16000"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>개발 서버를 돌리면 위 그림과 같이 Next.js가 app폴더 밑에 layout.tsx 파일과 head.tsx 파일을 생성했다고 나옵니다.</p>
+<p>Next.js 13 버전은 기존 12 버전에서 사용한 파일 이름 라우팅 방식이 아니라 온전히 폴더 방식 라우팅 방식을 씁니다.</p>
+<p>즉, 기존 12 버전에서 /pages/todo.tsx 파일이 /todo 라우팅이 되었다면 이번에 나온 13 버전에서는 무조건 /app/todo/page.tsx 파일이라고 만들어야 합니다.</p>
+<p>즉, todo까지가 폴더 방식 라우팅이고 그 라우팅의 기본이 바로 page.tsx라는 뜻입니다.</p>
+<p>기존 웹 표준인 index.tsx 파일을 안 쓴 거는 조금 의아한데요. 어쩔 수 없죠.</p>
+<p>그리고 라우팅이 되는 폴더에는 여러 가지 예약된 파일 이름이 있는데요.</p>
+<p>위 그림에서처럼 자동으로 만들어진 layout.tsx파일과 head.tsx파일도 있고, 그 외 아래 그림처럼 여러 가지가 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgTzdxBEe-ZXLaQhVASlwMKOb3JXTH97CBF35vFmBd2gmv3RzAV4Pjac-Xf7fHZntmRHQGnQlgcwYBfSOegLyH7YLETwH8HNfi8TPpzQQdSkpBSerNBVm79imVO9DlFG5MDPT_ALy8GrZsO3f3ROjVhRaTNrWI2-jw8n-PluBHyHS9ORljyAkcg5zSo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>loading.tsx 파일도 만들 수 있고, error.tsx 파일도 만들 수 있습니다.</p>
+<p>그리고 not-found.tsx 파일도 만들 수 있습니다.</p>
+<p>이 파일들은 차차 알아보기로 하고 가장 중요한 layout.tsx 파일과 head.tsx 파일에 대해 알아봅시다.</p>
+<p>app 폴더 바로 밑에는 무조건 한 개의 layout.tsx 파일이 있어야 되는데요.</p>
+<p>기존 pages 폴더 밑에 있던 _app.tsx 파일과 _document.tsx 파일의 역할을 한다고 보시면 됩니다.</p>
+<p>먼저, layout.tsx 파일을 살펴볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactNode</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">head</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/html&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 RootLayout 컴포넌트가 있습니다. Next.js 13부터는 app 폴더 밑에 이렇게 꼭 한 개의 layout.tsx 파일이 있어야 합니다.</p>
+<p>그리고 head.tsx 파일을 살펴볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Head</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;&lt;</span><span class="err">/title&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&#34;width=device-width, initial-scale=1&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;viewport&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&#34;icon&#34;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/favicon.ico&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 파일은 해당 라우팅의 메타 정보를 지정할 수 있습니다.</p>
+<p>왜냐하면 각 라우팅마다 title을 다르게 할 수 있으니까요!</p>
+<p>app 폴더에 있는 layout.tsx 파일을 이용하면 보통 홈페이지 맨 위에 있는 Header 파일을 지정할 수 있습니다.</p>
+<p>그럼 app 폴더에 Header.tsx 파일을 만들어 볼까요?</p>
+<p>app 폴더 밑에 Header.tsx 파일을 만들어도 /header 경로로 라우팅 되지 않습니다.</p>
+<p>기존 12 버전에서는 라우팅이 됐었는데요.</p>
+<p>13 버전부터는 무조건 폴더 밑에 있는 page.tsx 파일이 첫 번째로 읽히는 파일이 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Link</span> <span class="nx">from</span> <span class="s2">&#34;next/link&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Header</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">nav</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex space-x-4 mb-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Link</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/&#34;</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-blue-200 rounded px-4 py-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Home</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/Link&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Link</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/todos&#34;</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-cyan-200 rounded px-4 py-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Todos</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/Link&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/nav&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Header</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 Header 컴포넌트를 RootLayout에 적용해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="s2">&#34;../styles/globals.css&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Headers</span> <span class="nx">from</span> <span class="s2">&#34;./Header&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">head</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">body</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border-4 border-red-400 p-2 w-full&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Headers</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">children</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/html&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>첫 번째 줄에서 TailwindCSS 관련 파일을 import를 했고,</p>
+<p>밑에 보시면 body 태그 밑에 Headers 컴포넌트를 넣었습니다.</p>
+<p>그러 이제 실행 화면을 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEheFnGhdA8PPAuIjuXGjkNBzn3JvoGaUxGjhMdm5G6HRuFJL-Xygvo1X65NmQufCadvojwxqgQCzmJVfN8Cyfr3UQ7ovcAc5SZsG5Zu1Pm6ihgLjBYyQGjs5cfpEdmP4PA1MRcDebcOHD7bnKBJH6XYUjbe-OfJsuIJVnnJId1oX6tohNwyc123OEAL=s16000"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리가 앞으로 만들 Todos 라우팅까지 넣었습니다.</p>
+<p>Todos 링크를 클릭하면 아직 만들지 않았기 때문에 404 에러 페이지가 나타나는데요.</p>
+<p>이 에러 페이지는 Next.js 13 버전의 기본 템플릿입니다.</p>
+<p>우리가 /todos 라우팅에 즉 /todos 폴더 밑에 error.tsx파일을 만들면 우리가 원하는 에러 페이지를 작성할 수 도 있습니다.</p>
+<p>참고로 빨간색 border를 넣은 거는 나중에 Nested Layout을 쉽게 이해하기 위해 넣었습니다.</p>
+<p>이제 기본적인 첫번째 페이지를 만들었으니까 두 번째 파트로 넘어가 볼까요?</p>
+<hr />
+## Todos 라우팅 만들기
+<p>라우팅을 만들기 위해서는 폴더를 만들어야 하는데요.</p>
+<p>app 폴더 밑에 /app/todos라는 폴더를 만들고 그 밑에 기본 파일인 page.tsx 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Todos</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border-4 border-yellow-500 text-2xl text-yellow-400 p-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">This</span> <span class="nx">is</span> <span class="nx">Todos</span> <span class="nx">Page</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Todos</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgP_alVUgq7bEKbt0X3BGcDIxOz4gZPMgl-0WKQjWp7aZDKs80yrW1nyeyYCDdBMLkMknlbeYbt_YQdGbMLjGqMxa20yHN9uV-JMBGBuL5ZxdJ-RlUs3dxFdFWC5wgSVO2zZ9U25cRau_JsYehB8L8N4UV1LhVFJeN3ZglzMHRkihq6o3dOwlqeeM2w"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 나오는데요.</p>
+<p>빨간색 사각형이 app 폴더 밑에 있는 layout.tsx 파일에 있는 거고,</p>
+<p>노란색 사각형이 바로 app/todos 폴더 밑에 있는 page.tsx파일에 있는 겁니다.</p>
+<p>아직까지는 app/todos 폴더 밑에 layout.tsx 파일을 만들지는 않았습니다.</p>
+<p>나중에 만들건데요. 지금은 그냥 지나갑시다.</p>
+<p>사진을 보니까 이제 중첩된 레이아웃에 대해 이해할 수 있겠죠?</p>
+<p>Todos 라우팅도 만들었으니까 지금부터는 데이터를 fetching 하는 방법을 알아보겠습니다.</p>
+<hr />
+## Next.js 13 버전부터는 모든 React 컴포넌트는 서버사이드 컴포넌트입니다.
+<p>13 버전부터 Next.js가 의도하는 게 바로 기본 서버 사이드 컴포넌트인데요.</p>
+<p>이게 뭘 의미하는지 앞으로 차차 살펴볼 예정입니다.</p>
+<p>todos 폴더 밑에 page.tsx 파일에 todos 관련 데이터를 가져올 수 있는 로직을 작성합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">TodosList</span> <span class="nx">from</span> <span class="s2">&#34;./TodosList&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Todos</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border-4 border-yellow-500 text-2xl text-yellow-400 p-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">This</span> <span class="nx">is</span> <span class="nx">Todos</span> <span class="nx">Page</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="cm">/* @ts-ignore */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">TodosList</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Todos</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 일단 TodosList 컴포넌트를 추가하고 있습니다.</p>
+<p>{/* @ts-ignore */}라고 쓴 부분은 ES-Lint 에러인데요.</p>
+<p>향후 Next.js 13 버전이 안정화되면 없애도 됩니다.</p>
+<p>지금은 이게 없으면 계속 TypeScript 경고가 떠서 귀찮기 때문입니다.</p>
+<p>그럼 TodosList 컴포넌트를 따로 만들어야겠네요.</p>
+<p>버전 13부터는 /app/todos 폴더 밑에 컴포넌트를 만들어도 됩니다.</p>
+<p>예전에는 별도 컴포넌트 폴더를 만들어서 그곳에 모두 저장했었는데요.</p>
+<p>Next.js 13부터는 해당 라우팅 폴더에 직접 저장해도 됩니다.</p>
+<p>뭔가 더 직관적이랄까요!!!</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Link</span> <span class="nx">from</span> <span class="s2">&#34;next/link&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchTodos</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;https://jsonplaceholder.typicode.com/todos&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">todos</span><span class="o">:</span> <span class="nx">TodoType</span><span class="p">[]</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">results</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">todos</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">TodosList</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">todos</span><span class="o">:</span> <span class="nx">TodoType</span><span class="p">[]</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetchTodos</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">//   console.log(todos);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">todos</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">todo</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">p</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-base&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">Link</span> <span class="nx">href</span><span class="o">=</span><span class="p">{</span><span class="sb">`/todos/</span><span class="si">${</span><span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">Todo</span> <span class="err">#</span><span class="p">{</span><span class="nx">todo</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/Link&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">TodosList</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 기존 Next.js 코드에서는 상상할 수 도 없던 일이 일어나고 있는데요.</p>
+<p>서버사이드 데이터 가져오기를 그냥 리액트 컴포넌트 안에서 하고 있습니다.</p>
+<p>예전에는 getServerSideProps 함수를 통해서만 할 수 있었던 일이었는데요.</p>
+<p>13 버전부터는 모든 컴포넌트가 서버 사이드 컴포넌트이기 때문입니다.</p>
+<p>그래서 위 코드와 같이 작성해도 전혀 문제가 없습니다.</p>
+<p>todos 자료는 jsonplaceholder API를 이용했고요.</p>
+<p>여기서 잠깐 TodoType 타입 지정을 해야 하는데요.</p>
+<p>프로젝트 최상위 폴더 즉, tsconfig.json 파일이 있는 폴더에 typings.d.ts 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">TodoType</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">userId</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">id</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">title</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">completed</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 타입스크립트 타입을 저장하면 타입스크립트가 알아서 해당 타입을 찾아줍니다.</p>
+<p>이제 실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhYw5uoe8nCltpmFcHm89gqWmDf_3GmTix6lOCLxR-J10xXuvzAGBVcpETEy4rHpu99_Plf2XmeX9iGSz8_IA-l8neOgyXwdkhDm1O9IbpC2EWImWuJJjAk5gpIuujslN9JKHe_ic_q2auXvuG7frVcQMt7YAYptO1XHRXP-EH4GqE3tgklAjT60CYD"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리가 사용하려는 todos API는 총 200개를 반환해 줍니다.</p>
+<p>위 그림처럼 아주 잘 작동하고 있네요.</p>
+<hr />
+## 다이내믹 라우팅 만들기
+<p>이제 남은 거는 바로 각각의 Todo 넘버를 눌렀을 때 라우팅 되는 상세 페이지인데요.</p>
+<p>Todo Id를 이용해야 하기 때문에 다이내믹 라우팅이 되어야 합니다.</p>
+<p>13 버전도 12 버전처럼 다이내믹 라우팅은 브래킷 &lsquo;[]&rsquo; 방식을 이용합니다.</p>
+<p>그럼 &lsquo;/app/todos/[todoId]&rsquo; 폴더를 만 들고 그 밑에 page.tsx 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">todoId</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchTodo</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">todoId</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="sb">`https://jsonplaceholder.typicode.com/todos/</span><span class="si">${</span><span class="nx">todoId</span><span class="si">}</span><span class="sb">`</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">todo</span><span class="o">:</span> <span class="nx">TodoType</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">result</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">todo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">TodoId</span><span class="p">({</span> <span class="nx">params</span><span class="o">:</span> <span class="p">{</span> <span class="nx">todoId</span> <span class="p">}</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">todo</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetchTodo</span><span class="p">(</span><span class="nx">todoId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-slate-300 space-y-2 p-2 border-4 border-blue-400&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Todo</span> <span class="nx">Id</span> <span class="o">:</span> <span class="p">{</span><span class="nx">todoId</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Todo</span> <span class="nx">Title</span> <span class="o">:</span> <span class="p">{</span><span class="nx">todo</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border-t border-black py-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Completed</span> <span class="o">:</span><span class="p">{</span><span class="nx">todo</span><span class="p">.</span><span class="nx">completed</span> <span class="o">?</span> <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span> <span class="nx">Yes</span><span class="o">&lt;</span><span class="err">/span&gt; : &lt;span&gt; No&lt;/span&gt;}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">TodoId</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다이내믹 라우팅의 params를 가져오는 방식은 간단합니다.</p>
+<p>폴더 구조가 바로 &lsquo;/app/todos/[todoId]&rsquo; 이기 때문에 해당 params는 todoId가 되고, 이 todoId에 string 값이 저장됩니다.</p>
+<p>그래서 아래와 같이 Props 타입을 지정하면 쉽게 이용할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">todoId</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>todoId를 알았으면 다시 서버단에서 해당 todo를 가져와야 하는데요.</p>
+<p>여기서도 바로 서버 사이드 코드를 실행했습니다.</p>
+<p>뭔가 백엔드 코드를 작성하고 있다는 느낌이 지워지지 않는데요.</p>
+<p>정말 괜찮게 느껴집니다.</p>
+<p>얼마나 서버가 버텨줄 수 있는지 지켜봐야겠지만요.</p>
+<p>실행 결과를 사진으로 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh4t9IX6Wseviu5Y4YxJrndY7PxtM9--q5z2g8N1kwxPadig4cH2-w2CAKfqi8vsNDPGSvCZWvHxvBjfvFmGivrz_iDfg9xu8kKdCFpydx4FmHa-m9cSED-4zr1jtNryxWmbXPVHskXJmiGFdmn3-PAawj52YEcZ3zMC81BHcRp0FTrOqzDpCzkTBf6"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>역시나 생각대로 잘 작동되고 있습니다.</p>
+<hr />
+## Nested Layout 살펴보기
+<p>이제 Next.js 13 버전의 가장 중요한 기능인 Nested Layout에 대해 알아보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEigewcVGHrro5whpisbHYkKac2PQogYCVpGoF9PFPfnXBe2b8R9t7Y436FtwqMfGGKk16_0CWK615yYlKQbui4ifPtcGfa52v6V4vCqha22RrNN5g0RdhpPQiF_Mv8RAqmWDaGgVjYoWSMUapx6nvUktfciPWaR-iMt9cPt_eoj8Bz4otYz0QfimjK5=s16000"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 보듯이 왼쪽은 처음 화면이 로드될 시점이고 오른쪽이 화면이 완전히 로드된 상태인데요.</p>
+<p>화면의 위쪽은 메뉴 리스트이고 옆 쪽은 todo 아이템 리스트일 거고 화면 중앙이 바로 todo 상세 페이지입니다.</p>
+<p>Nested Layout을 적용하면 이렇게 세 가지의 분할된 로딩이 가능한데요.</p>
+<p>화면 옆의 todo 번호를 누르면 화면 중앙의 상세페이지만 로드되는 방식인데요.</p>
+<p>기존 React에서는 전체 화면이 갱신되는 방식인데요.</p>
+<p>Nested Layout 방식을 쓰면 필요한 부분만 다시 렌더링 되기 때문에 전체적으로 페이지가 정말 빠르게 작동됩니다.</p>
+<p>그럼 Nested Layout을 어떻게 작성할까요?</p>
+<p>우리의 예제에서는 아래와 같이 작성해야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjq3M4qp9sgxC31qj-KBFdmYRhyP5rWRfxqtYKW6oULPrUqk6mIrP1d0Sd7jGWrrO6DoNZQgz498Kp6LnEpfk4X9xf_VAa4KCBLpNsJRmRDhhAYAp0T_lTPoaC9HXPDqKLYLY3a1RefWoLSOziFyalR-RJwol7xttwq6gJkXkeL5kWOmKwili6OgB_2"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보시면 맨 위는 Header 컴포넌트이고 옆이 바로 Todo 넘버가 표시되는 부분이고 화면 중앙이 해당 Todo의 상세 페이지입니다.</p>
+<p>위와 같이 만들려면 어떻게 해야 할까요?</p>
+<p>일단 Header 컴포넌트는 안 건들어도 되고요.</p>
+<p>기존에는 todos 폴더 밑에 layout.tsx 파일을 안 만들었었는데요.</p>
+<p>todos 폴더에 새롭게 layout.tsx 파일을 만들어서 상세페이지를 todos 폴더에 있는 layout.tsx 파일에 삽입해야 합니다.</p>
+<p>최종적으로 중첩 레이아웃을 구성하려면 /app/todos/layout.tsx 파일을 아래와 같이 만들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">TodosList</span> <span class="nx">from</span> <span class="s2">&#34;./TodosList&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">TodosLayout</span><span class="p">({</span> <span class="nx">children</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="cm">/* @ts-ignore */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">TodosList</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;w-full&#34;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">TodosLayout</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아까 위에서 잠깐 봤던 todos 폴더 밑의 page.tsx 파일의 내용과 비슷한데요.</p>
+<p>todos/pages.tsx 파일의 내용을 위 layout.tsx에 그대로 옮기고 그리고 마지막으로 children을 추가했습니다.</p>
+<p>그리고 todos/pages.tsx 파일은 다음과 같이 수정하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Todos</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border-4 border-yellow-500 text-2xl text-yellow-400 p-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">This</span> <span class="nx">is</span> <span class="nx">Todos</span> <span class="nx">Page</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Todos</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러면 최종 실행 결과는 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjSdCFAUHgeKFHWewuOCHX6IYEwGWHJlo4JRP2UGLplgyZ3RtQQDKLS3XI_pQVnlowY-6PUXbO9GpgP33DbrTRTsb9xqxNMzTeWdQlid-FXfujp032yJ4yYnkmufOVFcWoNhA_pszmi-G2g7gQgwgPUr_Jb7-vSaqqF_rT2D4_gQX_naQq2f35alD4g"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>todos 폴더 밑에 있는 layout.tsx 파일을 잘 보시면 children 이라는 props가 있는데요.</p>
+<p>바로 todos 폴더 밑에 있는 &lsquo;[todoId]&rsquo; 라우팅이 바로 이 children props 자리에 들어가는 방식입니다.</p>
+<p>그래서 실제 todo 넘버를 클릭하면 아래 그림과 같이 작동하게 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgxjbX3oRTfg5hdmO2oiHWxssgfW2KIpSL-cImgx6ceNE7BdT5wkGXxeEYurdbRFkN01ykRyooLatf0GaVitn-Mk1XqjfTPyMqfHbGlSSKFdKiprwMEV6f3_glPVLBtjQIi6pYVEs9gu4i0Z7KPekvS-mz5zL3sfUqeylGIUoya2eA0lLjgow3CFBSt"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 Nested Layout 방식이 좋은 점은 바로 Todo 넘버들은 다시 로드되지 않고, 해당 Todo 상세 페이지만 로드된다는 점입니다.</p>
+<p>이걸로 중접 레이아웃을 완성했는데요.</p>
+<p>오늘은 여기까지만 살펴 보겠습니다.</p>
+<hr />
+## Next.js 13 버전 처음 살펴본 소감
+<p>제가 Remix Framework에 심취해서 블로그도 Remix를 이용해서 새로 개편하고 여러 가지 사이드 프로젝트를 만들어 봤는데요.</p>
+<p>Next.js 13 버전이 추구하는 게 바로 Remix Framework가 추구하는 방식과 거의 비슷합니다.</p>
+<p>Remix에서도 한 개의 파일에서 서버사이드 코드도 작성할 수 있고 클라이언트 코드도 작성할 수 있고,</p>
+<p>중첩 구조의 라우팅도 제공하고 있고, 여러 가지가 비슷한데요.</p>
+<p>다른 점은 Remix에서는 폴더 구조와 함께 파일 이름으로도 라우팅을 구성할 수 있다면 Next.js 13 버전은 오로지 폴더 라우팅 방식인 점이 틀립니다.</p>
+<p>결론적으로 계속해서 코드를 작성하다 보면 Remix와 정말 닮았다고 느끼게 되는데요.</p>
+<p>Next.js 13 버전의 중첩 레이아웃 구성도 쉽게 이해되는 점이 바로 Remix에서 한번 살펴보았기 때무이 아닐까 생각합니다.</p>
+<p>그리고 여러분들도 Remix를 꼭 한번 사용해 보시길 바랍니다.</p>
+<p>Next.js도 좋은 Framework이지만 Remix도 정말 좋은 Framework이라고 자부합니다.</p>
+<p>다음 시간에는 Next.js 13 버전의 ISR, SSR 등등에 대해 알아보겠습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-11-21-nextjs-export-asset-path-issue-solved/">Next.js export 할 때 /_next/static 경로 설정 문제</a></h2>
+                  <p>next</p>
+                  <p>
+  <small>November 21, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>1&nbsp;minute</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-11-17-nextjs-13-client-component/">Next.js 13의 Client Component 살펴보기</a></h2>
+                  <p>Next.js 13의 Client Component 살펴보기</p>
+                  <p>
+  <small>November 17, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-11-16-nextjs-13-how-to-ssg-isr-and-not-found/">Next.js 13에서 SSG와 ISR 적용하기</a></h2>
+                  <p>Next.js 13에서 SSG와 ISR 적용하기, 그리고 not-found 컴포넌트 작성</p>
+                  <p>
+  <small>November 16, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 1편 - 기본 개념부터 차근차근!</title>
+<meta name="description" content="제너릭이라는 도구가 왜 필요하게 되었는지, 그리고 가장 기본적으로 어떻게 사용하는지 함께 알아보는 시간을 갖겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-04-27-go-generics-tutorial-1-basics/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 1편 - 기본 개념부터 차근차근!" />
+<meta property="og:description" content="제너릭이라는 도구가 왜 필요하게 되었는지, 그리고 가장 기본적으로 어떻게 사용하는지 함께 알아보는 시간을 갖겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-04-27-go-generics-tutorial-1-basics/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-04-27T08:50:56Z" />
+<meta property="article:modified_time" content="2025-04-27T08:50:56Z" />
+<meta property="article:tag" content="Go" />
+<meta property="article:tag" content="Golang" />
+<meta property="article:tag" content="제너릭" />
+<meta property="article:tag" content="Generics" />
+<meta property="article:tag" content="Go 1.18" />
+<meta property="article:tag" content="타입 파라미터" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 1편 - 기본 개념부터 차근차근!" />
+<meta name="twitter:description" content="제너릭이라는 도구가 왜 필요하게 되었는지, 그리고 가장 기본적으로 어떻게 사용하는지 함께 알아보는 시간을 갖겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 1편 - 기본 개념부터 차근차근!\"",
+  "description": "\"제너릭이라는 도구가 왜 필요하게 되었는지, 그리고 가장 기본적으로 어떻게 사용하는지 함께 알아보는 시간을 갖겠습니다.\"",
+  "datePublished": "\"2025-04-27T08:50:56Z\"",
+  "dateModified": "\"2025-04-27T08:50:56Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-04-27-go-generics-tutorial-1-basics/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 1편 - 기본 개념부터 차근차근!</h1>
+        <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요!</p>
+<p>Go 언어는 그 단순함과 강력함으로 많은 개발자에게 사랑받는 언어인데요.</p>
+<p>특히 2022년 3월, Go 1.18 버전이 등장하면서 Go의 생태계를 뒤흔들 만한 아주 중요한 기능이 추가되었습니다.</p>
+<p>바로 많은 분이 기다려온 <strong>제너릭(Generics)</strong> 입니다!</p>
+<p>&ldquo;제너릭? 그게 뭐지? 이름부터 뭔가 어려워 보이는데&hellip;&rdquo; 라고 생각하실 수도 있는데요.</p>
+<p>하지만 걱정은 잠시 접어두셔도 좋습니다!</p>
+<p>이 시리즈를 통해 Go 언어를 처음 접하시는 분들도 제너릭의 세계를 쉽고 재미있게 여행하실 수 있도록 제가 길잡이가 되어 드릴게요.</p>
+<p>오늘은 그 첫 번째 여정으로, 제너릭이라는 도구가 왜 필요하게 되었는지, 그리고 가장 기본적으로 어떻게 사용하는지 함께 알아보는 시간을 갖겠습니다.</p>
+<p>자, 준비되셨으면 출발해 볼까요?</p>
+<h2 id="제너릭-왜-필요하게-된-걸까요"><strong>제너릭, 왜 필요하게 된 걸까요?</strong></h2>
+<p>제너릭이 없던 시절의 Go 코드를 잠시 떠올려 봅시다.</p>
+<p>만약 우리가 정수(<code>int</code>) 값들이 담긴 슬라이스와 문자열(<code>string</code>) 값들이 담긴 슬라이스의 내용을 하나씩 출력하는 함수를 만들어야 한다면, 아마도 아래처럼 각 타입에 맞는 함수를 별도로 만들어야 했을 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="s">&#34;fmt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// Function to print each element of an integer slice</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">printIntSlice</span><span class="p">(</span><span class="nx">slice</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;--- Printing Integer Slice ---&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">slice</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// Function to print each element of a string slice</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">printStringSlice</span><span class="p">(</span><span class="nx">slice</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;--- Printing String Slice ---&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">slice</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">intSlice</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">stringSlice</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;apple&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;banana&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;cherry&#34;</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nf">printIntSlice</span><span class="p">(</span><span class="nx">intSlice</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nf">printStringSlice</span><span class="p">(</span><span class="nx">stringSlice</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>어떤가요?</p>
+<p>두 함수는 매개변수로 받는 슬라이스의 요소 타입(<code>int</code> 와 <code>string</code>)만 다를 뿐, 내부에서 하는 일(요소를 하나씩 반복하며 출력하는 것)은 완전히 똑같습니다.</p>
+<p>만약 여기에 <code>float64</code> 타입 슬라이스, <code>bool</code> 타입 슬라이스를 출력하는 기능까지 필요하다면&hellip;?</p>
+<p>네, 비슷한 코드를 계속 복사하고 붙여넣어야 하는 상황이 발생하는 것이죠.</p>
+<p>이렇게 타입만 다르고 로직은 동일한 코드를 반복해서 작성하는 것은 여러모로 비효율적입니다.</p>
+<ol>
+<li><strong>코드 중복:</strong> 똑같은 코드가 여러 곳에 흩어져 있으면 전체 코드 길이가 늘어납니다.</li>
+<li><strong>유지보수 어려움:</strong> 만약 출력 방식에 변경이 필요하다면, 관련된 모든 함수를 찾아서 일일이 수정해야 합니다. 실수가 발생할 가능성도 커지죠.</li>
+<li><strong>확장성 저하:</strong> 새로운 타입을 지원해야 할 때마다 비슷한 함수를 또 만들어야 합니다.</li>
+</ol>
+<p>바로 이런 &lsquo;코드 중복&rsquo;과 그로 인한 문제점들을 해결하기 위해 <strong>제너릭</strong>이 등장했습니다!</p>
+<p>제너릭을 사용하면, 특정 타입에 묶이지 않고 <strong>다양한 타입을 아우를 수 있는 유연한 코드를 단 한 번만 작성</strong>할 수 있습니다.</p>
+<p>마치 여러 가지 모양의 과자를 찍어낼 수 있는 &lsquo;만능 과자 틀&rsquo;과 같다고 생각하면 이해가 쉬울 겁니다.</p>
+<h2 id="go-제너릭의-핵심-문법-타입-파라미터-type-parameters"><strong>Go 제너릭의 핵심 문법: 타입 파라미터 (Type Parameters)</strong></h2>
+<p>Go에서 제너릭을 구현하는 핵심은 바로 <strong>타입 파라미터(Type Parameter)</strong> 입니다.</p>
+<p>함수나 타입을 정의할 때, 실제 사용될 타입을 확정하지 않고 &lsquo;이 자리에는 어떤 타입이든 올 수 있어!&lsquo;라고 알려주는 일종의 <strong>자리 표시자(placeholder)</strong> 인데요.</p>
+<p>가장 기본적인 형태는 대괄호 <code>[]</code> 와 함께 사용됩니다.</p>
+<ul>
+<li><strong>제너릭 함수 정의:</strong>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// FunctionName 뒤 대괄호 안에 타입 파라미터 T를 선언합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nx">FunctionName</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">](</span><span class="nx">parameter</span><span class="w"> </span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 함수 내부에서 T를 실제 타입처럼 사용할 수 있습니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+<li><strong>제너릭 타입 정의:</strong>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// TypeName 뒤 대괄호 안에 타입 파라미터 T를 선언합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">TypeName</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">]</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">fieldName</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="c1">// 필드의 타입 등으로 T를 사용할 수 있습니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+</ul>
+<p>여기서 대괄호 <code>[]</code> 안에 있는 <code>T</code>가 바로 <strong>타입 파라미터</strong>입니다.</p>
+<p>꼭 <code>T</code>라는 이름을 써야 하는 것은 아니고, <code>V</code>, <code>K</code>, <code>Element</code> 등 원하는 이름을 붙일 수 있습니다.</p>
+<p>중요한 것은 이 <code>T</code>가 &lsquo;나중에 실제 타입으로 채워질 변수 같은 것&rsquo;이라고 이해하는 것입니다.</p>
+<p>그리고 <code>T</code> 옆에 붙은 <code>any</code>는 <strong>제약조건(Constraint)</strong> 이라고 부르는데요.</p>
+<p><code>any</code>는 Go 1.18부터 <code>interface{}</code> (빈 인터페이스)를 대신하는 새로운 키워드입니다.</p>
+<p>이름 그대로 <strong>&ldquo;어떤 타입이든(any type) 제약 없이 허용한다&rdquo;</strong> 라는 가장 넓은 범위의 제약조건이죠.</p>
+<p>일단은 &lsquo;타입 파라미터 T는 아무 타입이나 와도 괜찮아!&lsquo;라는 의미로 받아들이시면 됩니다.</p>
+<p>이 제약조건에 대해서는 다음 시간에 더 깊이 파고들 예정이니 기대해 주십시오.</p>
+<h2 id="첫-번째-제너릭-함수-타입-걱정-없는-출력-함수-만들기"><strong>첫 번째 제너릭 함수: 타입 걱정 없는 출력 함수 만들기</strong></h2>
+<p>자, 그럼 이론은 잠시 접어두고, 아까 봤던 슬라이스 출력 함수를 제너릭 버전으로 직접 만들어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="s">&#34;fmt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 어떤 타입(T)의 슬라이스든 받을 수 있는 제너릭 함수를 정의합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// [T any]는 &#39;T&#39;라는 이름의 타입 파라미터를 선언하고, 어떤 타입이든 허용(any)한다는 뜻입니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nx">printSlice</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">](</span><span class="nx">inputSlice</span><span class="w"> </span><span class="p">[]</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;--- Printing Slice Contents ---&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">element</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">inputSlice</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">intSlice</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">stringSlice</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="s">&#34;hello&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;generics&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;world&#34;</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">floatSlice</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kt">float64</span><span class="p">{</span><span class="mf">3.14</span><span class="p">,</span><span class="w"> </span><span class="mf">2.71</span><span class="p">,</span><span class="w"> </span><span class="mf">1.618</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 이제 printSlice 함수 하나로 다양한 타입의 슬라이스를 처리할 수 있습니다!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nf">printSlice</span><span class="p">(</span><span class="nx">intSlice</span><span class="p">)</span><span class="w">     </span><span class="c1">// 컴파일러가 T를 int로 추론합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nf">printSlice</span><span class="p">(</span><span class="nx">stringSlice</span><span class="p">)</span><span class="w">  </span><span class="c1">// 컴파일러가 T를 string으로 추론합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nf">printSlice</span><span class="p">(</span><span class="nx">floatSlice</span><span class="p">)</span><span class="w">   </span><span class="c1">// 컴파일러가 T를 float64로 추론합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cm">/* 출력 결과:
+</span></span></span><span class="line"><span class="cl"><span class="cm">--- Printing Slice Contents ---
+</span></span></span><span class="line"><span class="cl"><span class="cm">1
+</span></span></span><span class="line"><span class="cl"><span class="cm">2
+</span></span></span><span class="line"><span class="cl"><span class="cm">3
+</span></span></span><span class="line"><span class="cl"><span class="cm">--- Printing Slice Contents ---
+</span></span></span><span class="line"><span class="cl"><span class="cm">hello
+</span></span></span><span class="line"><span class="cl"><span class="cm">generics
+</span></span></span><span class="line"><span class="cl"><span class="cm">world
+</span></span></span><span class="line"><span class="cl"><span class="cm">--- Printing Slice Contents ---
+</span></span></span><span class="line"><span class="cl"><span class="cm">3.14
+</span></span></span><span class="line"><span class="cl"><span class="cm">2.71
+</span></span></span><span class="line"><span class="cl"><span class="cm">1.618
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>놀랍지 않습니까? <code>printIntSlice</code>, <code>printStringSlice</code> 등 각 타입별 함수를 만들 필요 없이, 단 하나의 <code>printSlice[T any]</code> 함수로 모든 종류의 슬라이스를 처리할 수 있게 되었습니다!</p>
+<p>코드가 훨씬 간결해졌고, 새로운 타입의 슬라이스를 출력해야 할 때도 이 함수를 그대로 사용하면 되니 재사용성도 극대화되었습니다.</p>
+<p>여기서 한 가지 더 주목할 점은, 우리가 함수를 호출할 때 <code>printSlice[int](intSlice)</code> 처럼 <code>T</code>가 무슨 타입인지 명시적으로 알려주지 않았다는 것인데요.</p>
+<p>Go 컴파일러는 함수에 전달된 <code>intSlice</code> 변수의 타입이 <code>[]int</code>라는 것을 보고, &lsquo;아하! 여기서 T는 <code>int</code> 타입이겠구나!&rsquo; 하고 스스로 똑똑하게 <strong>추론(Type Inference)</strong> 해줍니다.</p>
+<p>정말 편리한 기능이죠?</p>
+<p>이 타입 추론 덕분에 많은 경우 우리는 타입 파라미터를 생략하고 코드를 작성할 수 있습니다.
+(물론, 타입 추론이 항상 가능한 것은 아니며, 이에 대해서는 3편에서 자세히 다룰 예정입니다.)</p>
+<h2 id="첫-번째-제너릭-타입-모든-것을-담는-스택stack-만들기"><strong>첫 번째 제너릭 타입: 모든 것을 담는 스택(Stack) 만들기</strong></h2>
+<p>이번에는 제너릭 <strong>타입</strong>을 정의해 볼까요? 자료구조의 고전이라 할 수 있는 스택(Stack)을 제너릭으로 구현해 보겠습니다.</p>
+<p>스택은 마지막에 넣은 데이터가 가장 먼저 나오는 &lsquo;후입선출(Last-In, First-Out, LIFO)&rsquo; 구조를 가지는데요.</p>
+<p>어떤 타입의 데이터든 담을 수 있는 만능 스택을 만들어 봅시다!</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="s">&#34;fmt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// T 타입의 요소를 저장하는 제너릭 스택 타입을 선언합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 내부적으로 T 타입 요소로 구성된 슬라이스를 사용합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">Stack</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">]</span><span class="w"> </span><span class="p">[]</span><span class="nx">T</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 새로운 빈 스택을 생성하는 제너릭 함수입니다. (생성자 역할)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// T 타입의 빈 스택에 대한 포인터를 반환합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nx">NewStack</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">]()</span><span class="w"> </span><span class="o">*</span><span class="nx">Stack</span><span class="p">[</span><span class="nx">T</span><span class="p">]</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">s</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="nx">Stack</span><span class="p">[</span><span class="nx">T</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c1">// T 타입의 빈 슬라이스로 스택을 초기화합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 스택에 값을 추가하는 Push 메서드입니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 메서드의 리시버(s *Stack[T])에도 타입 파라미터 T를 명시해야 합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Stack</span><span class="p">[</span><span class="nx">T</span><span class="p">])</span><span class="w"> </span><span class="nf">Push</span><span class="p">(</span><span class="nx">value</span><span class="w"> </span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">*</span><span class="nx">s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="o">*</span><span class="nx">s</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="c1">// 포인터 리시버이므로 *s를 사용해 슬라이스에 직접 추가합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 스택에서 값을 제거하고 반환하는 Pop 메서드입니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Stack</span><span class="p">[</span><span class="nx">T</span><span class="p">])</span><span class="w"> </span><span class="nf">Pop</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// 값과 성공 여부를 함께 반환하도록 수정</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="o">*</span><span class="nx">s</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="kd">var</span><span class="w"> </span><span class="nx">zeroValue</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="c1">// T 타입의 제로 값 (int면 0, string이면 &#34;&#34;, 포인터면 nil 등)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="k">return</span><span class="w"> </span><span class="nx">zeroValue</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="c1">// 스택이 비었음을 알립니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">index</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="o">*</span><span class="nx">s</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="c1">// 마지막 요소의 인덱스</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">value</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">s</span><span class="p">)[</span><span class="nx">index</span><span class="p">]</span><span class="w">    </span><span class="c1">// 마지막 요소 가져오기</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">*</span><span class="nx">s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">s</span><span class="p">)[:</span><span class="nx">index</span><span class="p">]</span><span class="w">       </span><span class="c1">// 마지막 요소를 제외한 슬라이스로 업데이트</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nx">value</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="w">      </span><span class="c1">// 가져온 값과 성공 여부 반환</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 스택이 비어있는지 확인하는 IsEmpty 메서드입니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="o">*</span><span class="nx">Stack</span><span class="p">[</span><span class="nx">T</span><span class="p">])</span><span class="w"> </span><span class="nf">IsEmpty</span><span class="p">()</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="o">*</span><span class="nx">s</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 문자열을 저장하는 스택을 만들어 봅시다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// NewStack은 인수가 없어서 T를 추론할 수 없으므로, [string]으로 타입을 명시해야 합니다!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">stringStack</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">NewStack</span><span class="p">[</span><span class="kt">string</span><span class="p">]()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">stringStack</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="s">&#34;Go&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">stringStack</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="s">&#34;is&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">stringStack</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="s">&#34;fun!&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;--- String Stack Operations ---&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">for</span><span class="w"> </span><span class="p">!</span><span class="nx">stringStack</span><span class="p">.</span><span class="nf">IsEmpty</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="nx">value</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">stringStack</span><span class="p">.</span><span class="nf">Pop</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">			</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Popped:&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 이번에는 정수를 저장하는 스택입니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">intStack</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">NewStack</span><span class="p">[</span><span class="kt">int</span><span class="p">]()</span><span class="w"> </span><span class="c1">// 마찬가지로 [int] 명시</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">intStack</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">intStack</span><span class="p">.</span><span class="nf">Push</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;\n--- Integer Stack Operations ---&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">poppedVal</span><span class="p">,</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">intStack</span><span class="p">.</span><span class="nf">Pop</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Popped:&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">poppedVal</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Is intStack empty?&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">intStack</span><span class="p">.</span><span class="nf">IsEmpty</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">intStack</span><span class="p">.</span><span class="nf">Pop</span><span class="p">()</span><span class="w"> </span><span class="c1">// 마지막 남은 100 제거</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Is intStack empty after one more pop?&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">intStack</span><span class="p">.</span><span class="nf">IsEmpty</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cm">/* 출력 결과:
+</span></span></span><span class="line"><span class="cl"><span class="cm">--- String Stack Operations ---
+</span></span></span><span class="line"><span class="cl"><span class="cm">Popped: fun!
+</span></span></span><span class="line"><span class="cl"><span class="cm">Popped: is
+</span></span></span><span class="line"><span class="cl"><span class="cm">Popped: Go
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">--- Integer Stack Operations ---
+</span></span></span><span class="line"><span class="cl"><span class="cm">Popped: 200
+</span></span></span><span class="line"><span class="cl"><span class="cm">Is intStack empty? false
+</span></span></span><span class="line"><span class="cl"><span class="cm">Is intStack empty after one more pop? true
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>Stack[T any]</code>라는 제너릭 타입을 정의함으로써,</p>
+<p>이제 우리는 <code>string</code>을 담는 스택(<code>Stack[string]</code>)이든, <code>int</code>를 담는 스택(<code>Stack[int]</code>)이든,</p>
+<p>심지어 우리가 직접 만든 복잡한 구조체(<code>struct</code>)를 담는 스택이든 필요에 따라 아주 쉽게 만들어 사용할 수 있게 되었습니다!</p>
+<p>여기서 주의 깊게 볼 점 두 가지가 있습니다.</p>
+<ol>
+<li><strong>메서드 리시버:</strong> <code>Push</code>, <code>Pop</code>, <code>IsEmpty</code> 메서드를 정의할 때, 리시버 부분에도 <code>(s *Stack[T])</code>처럼 타입 파라미터 <code>T</code>를 반드시 명시해주어야 합니다. 그래야 이 메서드들이 어떤 <code>Stack[T]</code> 타입에 속하는지 알 수 있습니다.</li>
+<li><strong>명시적 타입 인수:</strong> <code>NewStack[string]()</code>이나 <code>NewStack[int]()</code>처럼, <code>NewStack</code> 함수를 호출할 때 대괄호와 함께 타입을 명시적으로 지정해주었는데요. <code>NewStack</code> 함수는 받는 인수가 없기 때문에 컴파일러가 <code>T</code>가 무엇이 되어야 할지 추론할 단서가 전혀 없습니다. 이처럼 타입 추론이 불가능한 경우에는 우리가 직접 <code>T</code>가 될 타입을 알려주어야 하는 것입니다.</li>
+</ol>
+<h2 id="정리하고-다음으로"><strong>정리하고 다음으로!</strong></h2>
+<p>자, 오늘 우리는 Go 제너릭의 세계에 첫발을 내디뎠습니다.</p>
+<p>제너릭이 왜 필요한지 코드 중복 문제를 통해 체감했고, 타입 파라미터 <code>[T any]</code>를 사용하여 가장 기본적인 제너릭 함수와 타입을 만드는 방법을 함께 실습해 보았습니다.</p>
+<p>오늘 배운 내용을 간단히 요약해 볼까요?</p>
+<ul>
+<li>제너릭은 <strong>타입에 구애받지 않는</strong> 코드를 작성하게 해주어 <strong>코드 재사용성</strong>을 극대화합니다.</li>
+<li>함수나 타입 이름 뒤에 <code>[T]</code>와 같이 <strong>타입 파라미터</strong>를 선언하여 제너릭을 정의합니다.</li>
+<li><code>any</code>는 <strong>어떤 타입이든 허용</strong>하는 가장 기본적인 <strong>제약조건</strong>입니다.</li>
+<li>제너릭 타입에 대한 메서드를 정의할 때는 <code>(receiver *TypeName[T])</code>처럼 <strong>리시버에도 타입 파라미터를 명시</strong>해야 합니다.</li>
+<li>Go 컴파일러는 <strong>타입 추론</strong>을 통해 타입 파라미터를 알아서 결정하는 경우가 많지만, 추론이 불가능할 때는 <code>FuncName[ConcreteType](...)</code>처럼 <strong>명시적으로 타입을 지정</strong>해주어야 합니다.</li>
+</ul>
+<p>제너릭의 강력함이 조금씩 느껴지시나요? 하지만 이제 시작일 뿐입니다!</p>
+<p>다음 시간에는 <code>any</code>라는 느슨한 제약조건을 넘어, 좀 더 <strong>구체적이고 강력한 제약조건</strong>들을 사용하는 방법을 알아볼 것입니다.</p>
+<p>예를 들어, &lsquo;숫자 타입만 받겠다&rsquo;거나 &lsquo;비교 가능한 타입만 받겠다&rsquo;, 또는 &lsquo;특정 메서드를 가진 타입만 받겠다&rsquo; 와 같이 말이죠.</p>
+<p>그럼. 다음 시간에 뵐게요!</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/go/" role="button">Go</a>
+        <a class="btn btn-light" href="/tags/golang/" role="button">Golang</a>
+        <a class="btn btn-light" href="/tags/%EC%A0%9C%EB%84%88%EB%A6%AD/" role="button">제너릭</a>
+        <a class="btn btn-light" href="/tags/generics/" role="button">Generics</a>
+        <a class="btn btn-light" href="/tags/go-1.18/" role="button">Go 1.18</a>
+        <a class="btn btn-light" href="/tags/%ED%83%80%EC%9E%85-%ED%8C%8C%EB%9D%BC%EB%AF%B8%ED%84%B0/" role="button">타입 파라미터</a>
+        <a class="btn btn-light" href="/tags/%EC%BD%94%EB%93%9C-%EC%9E%AC%EC%82%AC%EC%9A%A9/" role="button">코드 재사용</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-04-27-go-generics-tutorial-3-instance/">(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 3편 - 마법의 비밀, 인스턴스화와 타입 추론</a></h2>
+                  <p>우리가 탐험할 주제, 인스턴스화(Instantiation)와 타입 추론(Type Inference)입니다. 제너릭이라는 마법이 실제로 어떻게 구현되는지, 그 비밀의 문을 함께 열어보겠습니다!</p>
+                  <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-04-27-go-generics-tutorial-4-exercise/">(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 4편 - 실전 활용과 주의사항</a></h2>
+                  <p>실제 코드에서 제너릭을 활용할 때 마주칠 수 있는 몇 가지 흥미로운 지점들과, 더 깊은 이해를 위한 개념, 그리고 제너릭을 사용할 때 염두에 두어야 할 점들을 살펴보겠습니다.</p>
+                  <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-04-27-go-generics-tutorial-2-constraint/">(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 2편 - 제약조건으로 날개 달기!</a></h2>
+                  <p>제너릭 코드의 안정성과 표현력을 한층 높여주는 제약조건(Constraints)에 대해 더 깊이 알아볼 예정입니다.</p>
+                  <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

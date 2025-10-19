@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기</title>
+<meta name="description" content="Rust로 가볍고 빠른 웹 서버 만들기 그리고 실제 서버로 배포하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기" />
+<meta property="og:description" content="Rust로 가볍고 빠른 웹 서버 만들기 그리고 실제 서버로 배포하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-09-04T05:44:15Z" />
+<meta property="article:modified_time" content="2023-09-04T05:44:15Z" />
+<meta property="article:tag" content="rust" />
+<meta property="article:tag" content="actix-web" />
+<meta property="article:tag" content="web server" />
+<meta property="article:tag" content="web application" />
+<meta property="article:tag" content="fly.io" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기" />
+<meta name="twitter:description" content="Rust로 가볍고 빠른 웹 서버 만들기 그리고 실제 서버로 배포하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기\"",
+  "description": "\"Rust로 가볍고 빠른 웹 서버 만들기 그리고 실제 서버로 배포하기\"",
+  "datePublished": "\"2023-09-04T05:44:15Z\"",
+  "dateModified": "\"2023-09-04T05:44:15Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기</h1>
+        <p>
+  <small>September 4, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘부터 새롭게 연재할 시리즈는 최근 빠져있는 Rust 언어 관련인데요.</p>
+<p>웹 개발을 Next.js, Remix Framework, SvelteKit으로 다양하게 만들어 봤는데요.</p>
+<p>좀 더 가볍고 빠른 웹 서버를 개발하고자 이번에는 그 어렵다는 Rust 언어로 도전해 봤습니다.</p>
+<p>최종적으로 만들 웹 서버는 바로 아래와 같습니다.</p>
+<p><a href="https://myopenvpn.fly.dev">myopenvpn.fly.dev</a></p>
+<p>이 사이트는 vpngate.net 사이트의 내용을 Rust scraper 크레이트로 웹 스크랩해서 서버로 뿌려주는 앱입니다.</p>
+<p>백엔드에서 웹 스크래핑을 하므로 기존 NodeJS 보다는 빠른 Rust를 선택했습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiXsRF2BTLaoKveL3ZcjW8TiVdG9pyInymVKywbGEUbmVbPMJA7PHqM19uQa_i4jrVzjCCceF6C5WFiObZqMv_REjx8VICI1NP1MFlTbquu6uoPWaPr9yqgxa-ax4S7gnjYC1tHUs_9oDonJWzSo4iB6qfvB8-38xYoClOHL7PYX057YxCvv1iv8G51mfk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>최종적으로 위와 같은 사이트를 만들건대요.</p>
+<p>UI는 SvelteKit으로 Static 사이트로 만들었습니다.</p>
+<hr>
+<h2 id="rust로-웹-애플리케이션-만들기">Rust로 웹 애플리케이션 만들기</h2>
+<p>Actix Web이 최근 Rust에서 뜨는 프레임워크인데요.</p>
+<p>기존 Rocket 보다 훨씬 빠르고 가볍다고 합니다.</p>
+<p>그래서 Actix로 선택했습니다.</p>
+<p>먼저, 빈 Rust 프로그램을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cargo new rust-fly-test
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> rust-fly-test
+</span></span><span class="line"><span class="cl">cargo add actix-web</span></span></code></pre></div>
+  </figure>
+</div>
+<p>아래와 같이 actix-web을 설치가 정상적으로 되면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Updating crates.io index
+</span></span><span class="line"><span class="cl">      Adding actix-web v4.4.0 to dependencies.
+</span></span><span class="line"><span class="cl">             Features:
+</span></span><span class="line"><span class="cl">             + __compress
+</span></span><span class="line"><span class="cl">             + actix-macros
+</span></span><span class="line"><span class="cl">             + actix-web-codegen
+</span></span><span class="line"><span class="cl">             + compress-brotli
+</span></span><span class="line"><span class="cl">             + compress-gzip
+</span></span><span class="line"><span class="cl">             + compress-zstd
+</span></span><span class="line"><span class="cl">             + cookie
+</span></span><span class="line"><span class="cl">             + cookies
+</span></span><span class="line"><span class="cl">             + http2
+</span></span><span class="line"><span class="cl">             + macros
+</span></span><span class="line"><span class="cl">             - actix-tls
+</span></span><span class="line"><span class="cl">             - experimental-io-uring
+</span></span><span class="line"><span class="cl">             - openssl
+</span></span><span class="line"><span class="cl">             - rustls
+</span></span><span class="line"><span class="cl">             - rustls-0_20
+</span></span><span class="line"><span class="cl">             - rustls-0_21
+</span></span><span class="line"><span class="cl">             - secure-cookies
+</span></span><span class="line"><span class="cl">    Updating crates.io index</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 가장 기본적인 Actix 웹 서버를 만들 건대요.</p>
+<p>Actix 홈페이지에 있는 Tutorial을 그대로 베낀 겁니다.</p>
+<p>일단 오늘의 목표는 Fly.io 서버에 Deploy해서 원격 서버에서 제대로 작동되는지만 테스트해 보는 게 목적이거든요.</p>
+<p>저는 항상 실제 Deploy 해보고 앱 진행을 합니다.</p>
+<p>개발 서버에서만 작동하는 앱은 의미가 없고, 그래서 저는 제가 만든 앱이 모든 인터넷에서 작동하는지 꼭 체크하고 앱 개발을 진행해 나갑니다.</p>
+<p>그러면, src 폴더의 main.rs 파일을 열어서 아래와 같이 바꿔 줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">use</span><span class="w"> </span><span class="n">actix_web</span>::<span class="p">{</span><span class="n">get</span><span class="p">,</span><span class="w"> </span><span class="n">post</span><span class="p">,</span><span class="w"> </span><span class="n">web</span><span class="p">,</span><span class="w"> </span><span class="n">App</span><span class="p">,</span><span class="w"> </span><span class="n">HttpResponse</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServer</span><span class="p">,</span><span class="w"> </span><span class="n">Responder</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cp">#[get(</span><span class="s">&#34;/&#34;</span><span class="cp">)]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">hello</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nc">impl</span><span class="w"> </span><span class="n">Responder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpResponse</span>::<span class="nb">Ok</span><span class="p">().</span><span class="n">body</span><span class="p">(</span><span class="s">&#34;Hello world!&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cp">#[post(</span><span class="s">&#34;/echo&#34;</span><span class="cp">)]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">echo</span><span class="p">(</span><span class="n">req_body</span>: <span class="nb">String</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nc">impl</span><span class="w"> </span><span class="n">Responder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpResponse</span>::<span class="nb">Ok</span><span class="p">().</span><span class="n">body</span><span class="p">(</span><span class="n">req_body</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">manual_hello</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nc">impl</span><span class="w"> </span><span class="n">Responder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpResponse</span>::<span class="nb">Ok</span><span class="p">().</span><span class="n">body</span><span class="p">(</span><span class="s">&#34;Hey there!&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cp">#[get(</span><span class="s">&#34;/healthcheck&#34;</span><span class="cp">)]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">healthcheck</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nc">impl</span><span class="w"> </span><span class="n">Responder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpResponse</span>::<span class="nb">Ok</span><span class="p">().</span><span class="n">body</span><span class="p">(</span><span class="s">&#34;Health Check Completed!&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cp">#[actix_web::main]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nc">std</span>::<span class="n">io</span>::<span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Rust Actix-web server started at 127.0.0.1:8080&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpServer</span>::<span class="n">new</span><span class="p">(</span><span class="o">||</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">App</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">healthcheck</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">&#34;/hey&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">web</span>::<span class="n">get</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">manual_hello</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="n">bind</span><span class="p">((</span><span class="s">&#34;127.0.0.1&#34;</span><span class="p">,</span><span class="w"> </span><span class="mi">8080</span><span class="p">))</span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="n">run</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="k">await</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 여러 가지를 만들었습니다.</p>
+<p>테스트를 위해 cargo run을 실행해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ cargo run
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Compiling actix-server v2.3.0
+</span></span><span class="line"><span class="cl">   Compiling actix-macros v0.2.4
+</span></span><span class="line"><span class="cl">   Compiling actix-web-codegen v4.2.2
+</span></span><span class="line"><span class="cl">   Compiling zstd v0.12.4
+</span></span><span class="line"><span class="cl">   Compiling actix-http v3.4.0
+</span></span><span class="line"><span class="cl">   Compiling actix-web v4.4.0
+</span></span><span class="line"><span class="cl">   Compiling rust-fly-test v0.1.0 <span class="o">(</span>/Users/cpro95/Codings/Rust/imsi/rust-fly-test<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    Finished dev <span class="o">[</span>unoptimized + debuginfo<span class="o">]</span> target<span class="o">(</span>s<span class="o">)</span> in 1m 41s
+</span></span><span class="line"><span class="cl">     Running <span class="sb">`</span>target/debug/rust-fly-test<span class="sb">`</span>
+</span></span><span class="line"><span class="cl">Rust Actix-web server started at 127.0.0.1:8080</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 처음 컴파일하는 거라 상당히 긴 시간이 걸립니다.</p>
+<p>그리고 println! 문으로 작성한 문구가 보이면서 서버가 시작되었다고 합니다.</p>
+<p>이제 테스트해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ curl http://127.0.0.1:8080
+</span></span><span class="line"><span class="cl">Hello world!%
+</span></span><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ curl http://127.0.0.1:8080/hey
+</span></span><span class="line"><span class="cl">Hey there!%
+</span></span><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ curl http://127.0.0.1:8080/healthcheck
+</span></span><span class="line"><span class="cl">Health Check Completed!%
+</span></span><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ curl http://127.0.0.1:8080/echo -X POST -d <span class="s2">&#34;data&#34;</span>
+</span></span><span class="line"><span class="cl">data%
+</span></span><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ curl http://127.0.0.1:8080/echo -X POST -d <span class="s2">&#34;{&#34;</span>id<span class="s2">&#34;:&#34;</span>1<span class="s2">&#34;, &#34;</span>name<span class="s2">&#34;:&#34;</span>cpro95<span class="s2">&#34;}&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span>id:1, name:cpro95<span class="o">}</span>%
+</span></span><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 커맨드 라인상에서 curl 명령어를 이용해서 작업한 request가 제대로 작동하고 있습니다.</p>
+<p>심지어, POST 메서드에서 데이터를 JSON을 전달해도 정상 작동됩니다.</p>
+<p>이제 Fly.io에 배포하기 위한 준비는 끝났습니다.</p>
+<hr>
+<h2 id="flyio에-배포하기">Fly.io에 배포하기</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ flyctl auth login
+</span></span><span class="line"><span class="cl">Opening https://fly.io/app/auth/cli/c5886b873cd561dc35f147ff0211775d ...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Waiting <span class="k">for</span> session... Done
+</span></span><span class="line"><span class="cl">successfully logged in as cpro95@gmail.com</span></span></code></pre></div>
+  </figure>
+</div>
+<p>먼저, flyctl 명령어를 이용해서 커맨드 라인상에서 login을 합시다.</p>
+<p>그러면 웹페이지가 뜨면서 로그인하라고 합니다.</p>
+<p>로그인하시면 다시 터미널에 로그인됐다고 나옵니다.</p>
+<p>이제 fly launch 명령어를 입력해서 fly 앱 설정을 시작합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ fly launch
+</span></span><span class="line"><span class="cl">Creating app in /Users/cpro95/Codings/Rust/rust-fly-test
+</span></span><span class="line"><span class="cl">Scanning <span class="nb">source</span> code
+</span></span><span class="line"><span class="cl">Could not find a Dockerfile, nor detect a runtime or framework from <span class="nb">source</span> code. Continuing with a blank app.
+</span></span><span class="line"><span class="cl">? Choose an app name <span class="o">(</span>leave blank to generate one<span class="o">)</span>:rust-web-app-tutorial</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 앱 이름을 넣으면 아래와 같이 서버 위치를 정하라고 나오는데요.</p>
+<p>Fly.io는 아쉽게도 Seoul이 없습니다.</p>
+<p>가장 가까운 Tokyo를 선택하면 그나마 빠릅니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">automatically selected personal organization: cpro95
+</span></span><span class="line"><span class="cl">Some regions require a paid plan <span class="o">(</span>bom, fra, maa<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">See https://fly.io/plans to <span class="nb">set</span> up a plan.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">? Choose a region <span class="k">for</span> deployment:  <span class="o">[</span>Use arrows to move, <span class="nb">type</span> to filter<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  Hong Kong, Hong Kong <span class="o">(</span>hkg<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Ashburn, Virginia <span class="o">(</span>US<span class="o">)</span> <span class="o">(</span>iad<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Johannesburg, South Africa <span class="o">(</span>jnb<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Los Angeles, California <span class="o">(</span>US<span class="o">)</span> <span class="o">(</span>lax<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  London, United Kingdom <span class="o">(</span>lhr<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Madrid, Spain <span class="o">(</span>mad<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Miami, Florida <span class="o">(</span>US<span class="o">)</span> <span class="o">(</span>mia<span class="o">)</span>
+</span></span><span class="line"><span class="cl">&gt; Tokyo, Japan <span class="o">(</span>nrt<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Chicago, Illinois <span class="o">(</span>US<span class="o">)</span> <span class="o">(</span>ord<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Bucharest, Romania <span class="o">(</span>otp<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Phoenix, Arizona <span class="o">(</span>US<span class="o">)</span> <span class="o">(</span>phx<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Querétaro, Mexico <span class="o">(</span>qro<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Santiago, Chile <span class="o">(</span>scl<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Seattle, Washington <span class="o">(</span>US<span class="o">)</span> <span class="o">(</span>sea<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  Singapore, Singapore <span class="o">(</span>sin<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  App will use <span class="s1">&#39;nrt&#39;</span> region as primary
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Created app <span class="s1">&#39;rust-fly-test1&#39;</span> in organization <span class="s1">&#39;personal&#39;</span>
+</span></span><span class="line"><span class="cl">Admin URL: https://fly.io/apps/rust-web-app-tutorial
+</span></span><span class="line"><span class="cl">Hostname: rust-web-app-tutorial.fly.dev
+</span></span><span class="line"><span class="cl">? Create .dockerignore from <span class="m">1</span> .gitignore files? <span class="o">(</span>y/N<span class="o">)</span> y
+</span></span><span class="line"><span class="cl">Created /Users/cpro95/Codings/Rust/rust-fly-test/.dockerignore from <span class="m">1</span> .gitignore files.
+</span></span><span class="line"><span class="cl">Wrote config file fly.toml</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 Hostname도 지정해서 줍니다.</p>
+<p>앱 이름이 Hostname이기 때문에 기존에 누군가 사용하는 앱 이름과 겹치지 않도록 잘 선택하시면 됩니다.</p>
+<p>마지막으로 .dockerignore 관련해서 물어보면 y라고 입력하면 됩니다.</p>
+<p>그러면, 생기는 파일이 fly.toml 파일인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">app</span> <span class="o">=</span> <span class="s2">&#34;rust-web-app-tutorial&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">primary_region</span> <span class="o">=</span> <span class="s2">&#34;nrt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">http_service</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">internal_port</span> <span class="o">=</span> <span class="mi">8080</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">force_https</span> <span class="o">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auto_stop_machines</span> <span class="o">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auto_start_machines</span> <span class="o">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">min_machines_running</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">processes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;app&#34;</span><span class="p">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>primary_region에서 &ldquo;nrt&quot;가 tokyo를 뜻합니다.</p>
+<p>그리고 내부 포트가 8080이라고 지정했네요.</p>
+<p>fly.toml에서 http_service 부분이 가장 중요한데요.</p>
+<p>Fly 가상 머신이 V2로 오면서 자동으로 http, https 포트에 대응해 줍니다.</p>
+<p>http는 80으로 https는 443 포트로 매칭시켜 줍니다.</p>
+<p>즉, 가상머신 내부적으로 Rust 웹 앱은 8080으로 작동하지만, 외부적으로는 http 80 포트, https 443 포트로 매칭시켜 줍니다.</p>
+<p>그 명령어가 바로 http_service 설정입니다.</p>
+<p>일단 healthcheck을 위해 아래와 같은 http_service.checks 부분을 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">http_service</span><span class="p">.</span><span class="nx">checks</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">grace_period</span> <span class="o">=</span> <span class="s2">&#34;10s&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">interval</span> <span class="o">=</span> <span class="s2">&#34;30s&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">method</span> <span class="o">=</span> <span class="s2">&#34;GET&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">timeout</span> <span class="o">=</span> <span class="s2">&#34;5s&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">path</span> <span class="o">=</span> <span class="s2">&#34;/healthcheck&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 서비스는 주기적으로 사이트에 접속해서 정상 작동하는지 체크하는 건데요.</p>
+<p>그래서 앱이 잠들지 않게 됩니다.</p>
+<hr>
+<h2 id="dockerfile-만들기">Dockerfile 만들기</h2>
+<p>이제, fly.toml 파일을 완성했으니 Dockerfile을 만들겠습니다.</p>
+<p>Fly.io는 deploy하면 Docker를 만들어서 실행하게 됩니다.</p>
+<p>루트 폴더에 Dockerfile이라는 이름으로 아래와 같이 작성합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">FROM rust:latest as builder
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WORKDIR /usr/src/app
+</span></span><span class="line"><span class="cl">COPY . .
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Will build and cache the binary and dependent crates in release mode</span>
+</span></span><span class="line"><span class="cl">RUN --mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>cache,target<span class="o">=</span>/usr/local/cargo,from<span class="o">=</span>rust:latest,source<span class="o">=</span>/usr/local/cargo <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>cache,target<span class="o">=</span>target <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    cargo build --release <span class="o">&amp;&amp;</span> mv ./target/release/rust-fly-test ./rust-fly-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Runtime image</span>
+</span></span><span class="line"><span class="cl">FROM ubuntu:22.04
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Run as &#34;app&#34; user</span>
+</span></span><span class="line"><span class="cl">RUN useradd -ms /bin/bash app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">USER app
+</span></span><span class="line"><span class="cl">WORKDIR /app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Get compiled binaries from builder&#39;s cargo install directory</span>
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>builder /usr/src/app/rust-fly-test /app/rust-fly-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Run the app</span>
+</span></span><span class="line"><span class="cl">CMD ./rust-fly-test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>보통 도커 이미지는 debian bullseye를 많이 쓰는데요.</p>
+<p>debian bullseye로는 actix 최신버전이랑 rust 최신버전에서 GLIBC 버전이 맞지 않아 계속 에러가 나더라고요.</p>
+<p>그래서 ubuntu:22.04 버전을 넣은 겁니다.</p>
+<p>Dockerfile을 잘 보시면 cargo로 빌드했을 때 실행파일을 루트로 이동하는 명령어가 있습니다.</p>
+<p>그리고 최종적으로 그 파일을 실행하는 건데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  rust-fly-test git:<span class="o">(</span>master<span class="o">)</span> ✗ fly <span class="nv">deploy</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Verifying app config
+</span></span><span class="line"><span class="cl">Validating /Users/cpro95/Codings/Rust/rust-fly-test/fly.toml
+</span></span><span class="line"><span class="cl">Platform: machines
+</span></span><span class="line"><span class="cl">✓ Configuration is valid
+</span></span><span class="line"><span class="cl">--&gt; Verified app <span class="nv">config</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Building image
+</span></span><span class="line"><span class="cl">Remote builder fly-builder-snowy-sun-1195 <span class="nv">ready</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Building image with Docker
+</span></span><span class="line"><span class="cl">--&gt; docker host: 20.10.12 linux x86_64
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Building 10.7s <span class="o">(</span>15/15<span class="o">)</span> <span class="nv">FINISHED</span>
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load build definition from Dockerfile                                              1.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring dockerfile: 651B                                                              1.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load .dockerignore                                                                 1.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring context: 94B                                                                  1.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load metadata <span class="k">for</span> docker.io/library/rust:latest                                    0.5s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load metadata <span class="k">for</span> docker.io/library/ubuntu:22.04                                   0.6s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load build context                                                                 0.8s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring context: 33.67kB                                                              0.7s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; FROM docker.io/library/rust:latest                                                            0.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; resolve docker.io/library/rust:latest                                                      0.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>builder 1/4<span class="o">]</span> FROM docker.io/library/rust:latest@sha256:94530b7512eddf3207e50801c1ecb  0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>stage-1 1/4<span class="o">]</span> FROM docker.io/library/ubuntu:22.04@sha256:aabed3296a3d45cede1dc866a24476c4d7e  0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>builder 2/4<span class="o">]</span> WORKDIR /usr/src/app                                                     0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>builder 3/4<span class="o">]</span> COPY . .                                                                        0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>builder 4/4<span class="o">]</span> RUN --mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>cache,target<span class="o">=</span>/usr/local/cargo,from<span class="o">=</span>rust:latest,source<span class="o">=</span>/usr/lo  8.5s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>stage-1 2/4<span class="o">]</span> RUN useradd -ms /bin/bash app                                            0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; CACHED <span class="o">[</span>stage-1 3/4<span class="o">]</span> WORKDIR /app                                                             0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>stage-1 4/4<span class="o">]</span> COPY --from<span class="o">=</span>builder /usr/src/app/rust-fly-test /app/rust-fly-test               0.1s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; exporting to image                                                                            0.1s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; exporting layers                                                                           0.1s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; writing image sha256:28dffd3b2f5bf993b6cb677e392c0dfb2e0c9c258c201ed6ee252996a6772fcc      0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; naming to registry.fly.io/rust-web-app-tutorial:deployment-01H9FE9WM2CMKKGRSXB1D8CBR8      0.0s
+</span></span><span class="line"><span class="cl">--&gt; Building image <span class="k">done</span>
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">No machines in group app, launching a new machine
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>1/1<span class="o">]</span> Waiting <span class="k">for</span> 6e82775c243987 <span class="o">[</span>app<span class="o">]</span> to become healthy: 0/1</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나오는데요.</p>
+<p>마지막에 healthy 부분에서 진행이 안 됩니다.</p>
+<p>실제, fly.io 대시보드로 가서 Monitoring 부분에 보면 아래와 같이 나오는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">2023-09-04T06:33:33.875 app<span class="o">[</span>6e82775c243987<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> Rust Actix-web server started at 127.0.0.1:8080
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-04T06:33:57.570 health<span class="o">[</span>6e82775c243987<span class="o">]</span> nrt <span class="o">[</span>error<span class="o">]</span> Health check on port <span class="m">8080</span> has failed. Your app is not responding properly. Services exposed on ports <span class="o">[</span>80, 443<span class="o">]</span> will have intermittent failures <span class="k">until</span> the health check passes.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이에 실제 앱의 로그 내용인데요.</p>
+<p>로그 내용을 잘 보시면 Actix-web이 127.0.0.1:8080으로 시작했다고 분명히 나옵니다.</p>
+<p>이 문구가 출력되는 걸로 봐서 우리가 만든 Rust 프로그램이 컴파일이 제대로 됐고, 실행도 됐다는 얘기인데요.</p>
+<p>마지막 문구를 보시면 Health check이 에러가 납니다.</p>
+<p>왜 그런 걸까요?</p>
+<p>저도 이걸로 고생했는데요.</p>
+<p>우리가 Rust main.rs에서 주소를 127.0.0.1:8080으로 줬었는데요.</p>
+<p>이건 개발 서버를 돌릴 때 주는 주소입니다.</p>
+<p>실제 배포할 때는 특히, fly.io에서는 0.0.0.0:8080이라는 주소를 줘야 합니다.</p>
+<p>다시 main.rs 파일을 아래와 같이 바꾸고 다시 fly deploy 해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="cp">#[actix_web::main]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">async</span><span class="w"> </span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nc">std</span>::<span class="n">io</span>::<span class="nb">Result</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Rust Actix-web server started at 127.0.0.1:8080&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">HttpServer</span>::<span class="n">new</span><span class="p">(</span><span class="o">||</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">App</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">echo</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">service</span><span class="p">(</span><span class="n">healthcheck</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">&#34;/hey&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">web</span>::<span class="n">get</span><span class="p">().</span><span class="n">to</span><span class="p">(</span><span class="n">manual_hello</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// .bind((&#34;127.0.0.1&#34;, 8080))?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="p">.</span><span class="n">bind</span><span class="p">((</span><span class="s">&#34;0.0.0.0&#34;</span><span class="p">,</span><span class="w"> </span><span class="mi">8080</span><span class="p">))</span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="n">run</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">.</span><span class="k">await</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 fly deploy 해보겠습니다.</p>
+<p>아까 만들었던 Docker 이미지라서 금발 끝날 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">--&gt; Pushing image <span class="k">done</span>
+</span></span><span class="line"><span class="cl">image: registry.fly.io/rust-web-app-tutorial:deployment-01H9FEPA8SMVGFMY73PW583SVP
+</span></span><span class="line"><span class="cl">image size: <span class="m">90</span> MB
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Watch your deployment at https://fly.io/apps/rust-web-app-tutorial/monitoring
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Updating existing machines in <span class="s1">&#39;rust-web-app-tutorial&#39;</span> with rolling strategy
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>1/1<span class="o">]</span> Machine 6e82775c243987 <span class="o">[</span>app<span class="o">]</span> update finished: success
+</span></span><span class="line"><span class="cl">  Finished deploying
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Visit your newly deployed app at https://rust-web-app-tutorial.fly.dev/</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 success 라고 나오네요.</p>
+<p>다시 아래와 같이 fly.io 대시보드에서도 Health check이 passing이라고 나옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">2023-09-04T06:40:12.619 app<span class="o">[</span>6e82775c243987<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> Rust Actix-web server started at 127.0.0.1:8080
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-04T06:40:41.718 health<span class="o">[</span>6e82775c243987<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> Health check on port <span class="m">8080</span> is now passing.</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="실제-주소에서-테스트해-보기">실제 주소에서 테스트해 보기</h2>
+<p>이제 우리의 Rust 웹 앱이 서버에 배포가 완료되었습니다.</p>
+<p>테스트만 남았는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjVossbFpZB3OI2meYHeB0S_kVmzK7FZB1Lc7DHupO9aRx0hQ_b43IwnxEDeUbgAXEtLMHjyzfAqEqZ7eBFUqoldDJFpCY82upPxV_JyVHLX1EmHaZeWmH4c40oGvZHAnN7jjPbueVrsEqqiwDo4z1ImfRR3mmBfx44w28jdycwtzGeewMyV-WXB5BPBZg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh00-NlYUPgBS6pH73x2qWlHKjEIXgUvcUyAvHg2E327beswehj3ZpO--VvaMDkdBPhDavj61TETF6lfRgxl9sYvL3RYqsiIu_Q0c-XJqZqEIi57qWH5cY1KcXdjn3PjZt7qOMfOMCG8XtKpNvKGnpMl_7efCccFL34ntk4uUY_wGh3gS8pt7VEtaNJl_g"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5iwkAbXEQadgVbDibuUghhUrH5LV2nP8j871liUz9ZXy_5Ta0ABwEMaF02jxZ_Pkaku4QBR-vCxCz4joFzUJ7QARRLkHgDclljy58CveknKuAyA94oPPEa4PKSjWQRwS9ZClgakWD3QEJkPrhM9O26oQcMRBvBlEFRCmVH7jw9Kr90jTO7scVoOMmTTw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보시면 GET, POST 메서드 모두 정상 작동합니다.</p>
+<p>그리고 실제 Fly.io 대시보드에 가서 앱의 메모리 사용량을 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgovz7r6QzWQYT5G8ZQlPwYRKfOAATG-E3fOJEV19Ugi-H5gaHPuaz3SOWpGELm6YFvRHLFmeys-bKKHkIXZ0DQHuwrBkO_G2PEC3286KmndOiXTfHSm8zU9QOh0G-czeTrj42ZA_2wpnAI7rmLxU_CwueOnPLHoyiqjRpalYa1GEkiFbVJISL1DPYbKIs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiRwW_-gyyLF7blA3pkfhKiCnPA3hTf-Zm1Wd3WUUlEfhnwyfH8DpajgTRxbv69XqzVN5zozmS7AuvF71pb9FCvQcNBHBX9HEOiczkpgt-C6rZDcbfdk7jjN5Wmx-QYPD9YrXGQbPF35M9gFCD_2Mi2-U8IcULbj51vPOqHbBFpVURtBI8gE_yAOcWD2Qo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Rust 앱이 43MB이고 예전에 SvelteKit으로 만든 앱이 106MB입니다.</p>
+<p>확실히 Rust가 가볍고 빠르네요.</p>
+<p>그럼, 다음 시간에는 본격적인 Rust 웹 서버 개발에 들어가 보도록 하겠습니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/rust/" role="button">rust</a>
+        <a class="btn btn-light" href="/tags/actix-web/" role="button">actix-web</a>
+        <a class="btn btn-light" href="/tags/web-server/" role="button">web server</a>
+        <a class="btn btn-light" href="/tags/web-application/" role="button">web application</a>
+        <a class="btn btn-light" href="/tags/fly.io/" role="button">fly.io</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-08-rust-web-server-add-ui-sveltekit-static-site/">Rust 웹 서버 만들기 4편. SvelteKit으로 FrontEnd를 만들고 Actix-Web에서 직접 서빙(serving)하기</a></h2>
+                  <p>FrontEnd 서버를 따로 만들지 않고, Static Site로 만들어 Actix-Web에서 직접 서빙</p>
+                  <p>
+  <small>September 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-07-rust-web-server-how-to-use-scraper/">Rust 웹 서버 만들기 3편. scraper를 이용해서 러스트로 웹 스크래핑하기</a></h2>
+                  <p>reqwest로 요청해서 얻어온 HTML에서 scraper로 데이터 뽑아내기</p>
+                  <p>
+  <small>September 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-04-how-to-use-rust-reqwest-http-get-post/">Rust 웹 서버 만들기 2편. Rust에서 Reqwest를 이용해서 HTTP 요청(Request)하기</a></h2>
+                  <p>웹 서버를 만들기 전에 가장 기본적인 Reqwest 사용법에 관해 공부해 봅시다.</p>
+                  <p>
+  <small>September 4, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

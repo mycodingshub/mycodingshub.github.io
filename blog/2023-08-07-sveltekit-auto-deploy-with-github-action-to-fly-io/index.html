@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)</title>
+<meta name="description" content="Github Action 살펴보기 및 SvelteKit을 Fly.io에 자동으로 배포해 보기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)" />
+<meta property="og:description" content="Github Action 살펴보기 및 SvelteKit을 Fly.io에 자동으로 배포해 보기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-08-07T04:18:52Z" />
+<meta property="article:modified_time" content="2023-08-07T04:18:52Z" />
+<meta property="article:tag" content="github action" />
+<meta property="article:tag" content="sveltekit" />
+<meta property="article:tag" content="sveltejs" />
+<meta property="article:tag" content="fly.io" />
+<meta property="article:tag" content="ssr" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)" />
+<meta name="twitter:description" content="Github Action 살펴보기 및 SvelteKit을 Fly.io에 자동으로 배포해 보기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)\"",
+  "description": "\"Github Action 살펴보기 및 SvelteKit을 Fly.io에 자동으로 배포해 보기\"",
+  "datePublished": "\"2023-08-07T04:18:52Z\"",
+  "dateModified": "\"2023-08-07T04:18:52Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)</h1>
+        <p>
+  <small>August 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>이번 시간에는 지난 시간에 약속한 Github Action을 이용한 자동 배포 방식에 대해 알아보겠습니다.</p>
+<p><strong>-지난 시간 강좌 보기-</strong></p>
+<p><a href="https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering">SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy">SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기</a></p>
+<p>그러면 시작하겠습니다.</p>
+<hr>
+<h2 id="github-repository-만들기">Github Repository 만들기</h2>
+<p>먼저, Github Action을 사용하려면 Github Repository 새로 만들어야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git init
+</span></span><span class="line"><span class="cl">git add .
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;initial commit&#34;</span>
+</span></span><span class="line"><span class="cl">git remote add origin https://github.com/cpro95/sveltekit-deploy-on-fly-io.git
+</span></span><span class="line"><span class="cl">git branch -M main
+</span></span><span class="line"><span class="cl">git push -u origin main</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Fly.io에 배포하기 위한 Github Secrets를 먼저 설정하겠습니다.</p>
+<p>먼저, 필요한 Secrets는 FLY_API_TOKEN입니다.</p>
+<p>이 토큰이 있어야 Github Action으로 Fly.io에 배포할 수 있는 권한이 생깁니다.</p>
+<p>FLY_API_TOKEN을 구하는 방법은 쉽습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">flyctl auth token</span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEglrv_NPUkvRkBlkP-K9j82FX5YWRUGHIw4GQJO7R6EUJZeHDJ209uYdTQsA5o6pDfwnkSrhYsN4AVYbh2v6oPPUnFdWGQSQZhxB0IeNeVPGm5X517LS0ihediVcM0lRcbJza9o3uI4SECbzoiyjgyTh8sYSW0a-Gh7QUDRO_UqWlYuvNMYtW_wpMyOxp4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나오면 이걸 꼭 복사해 두십시오.</p>
+<p>마지막으로 앱 구동에 필요한 TMDB_API_KEY가 필요합니다.</p>
+<p>요건 지난 시간에 구해 놨을 겁니다.</p>
+<p>그럼, 아까 만든 Github Reposity에서 Secrets를 만들도록 하겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEioputzDNc1J6FSsXDSlUSHcB_XctLvWdU4mhbvfM-tghVUPaekM6KQEC-Kjl6COz-kJn1NIDrXkupFXlG08rvdjfthjWN0Dmj0avKjfh6ooElJm0yLX-6gqLmLoTvTY6KfO3BIuKuh4hEkDLpIGhOBLwAzzemfmLeih9W7b4-EooZm_saBGfgF_29QiAI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi8RD_J_wc8xpmJZlR5viNf50-Tm0rs-Kc0IN8gEt2VC9EaCr_YRoVdHA1rI16kva77pBaB0b2-Y6176RlizsPLdcBWoEJtUTnteyFyWWB3hZ0wI1XH_dEbYMD2B-MWWk44Q8KTTPEml1aP-J4bZHafqkecFKyZT1kxOXAXrXiugnBXtYE5DVvW3LaJtws"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 세팅을 했으면 Github에서 준비는 끝났습니다.</p>
+<hr>
+<h2 id="github-action-만들기">Github Action 만들기</h2>
+<p>Github Action은 자신의 프로젝트에서 .github 폴더를 만들고 그 밑에 workflows 폴더를 만들고 그 밑에 Action을 yaml 파일로 저장하면 됩니다.</p>
+<p>우리는 배포가 목적이기 때문에 deploy.yaml 파일로 하겠습니다.</p>
+<p>확장자는 .yml도 가능합니다.</p>
+<p>최종 위치는 <code>.github/workflows/deploy.yaml</code>입니다.</p>
+<p>그럼 deploy.yaml 파일에 내용을 작성해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">GitHub Actions Push to Fly_io</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">run-name</span><span class="p">:</span><span class="w"> </span><span class="l">${{ github.actor }} is testing out GitHub Actions 🚀</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">push</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">jobs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">lint</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;My ESLint&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Checkout Repo&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Setup Node&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/setup-node@v3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">node-version</span><span class="p">:</span><span class="w"> </span><span class="m">16</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Download deps&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">npm install</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Lint&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">npm run lint</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>YAML 형식은 파이선처럼 탭을 중요시하기 때문에 조심하셔야 합니다.</p>
+<p>먼저, 위에 만든 걸 설명해 보면,</p>
+<p>첫 번째 name은 이 Action의 이름입니다.</p>
+<p>run-name은 Github Repository에서 보이게 되는 이름입니다.</p>
+<p>그리고 on 이 부분이 중요한데요.</p>
+<p>on 과 push 그리고 branches 가 main이라고 YAML 형식에 맞게 지정했는데요.</p>
+<p>이것의 뜻은 바로 branch main의 git push가 발생했을 때 이 Action이 작동한다는 뜻입니다.</p>
+<p>그럼, Action의 목적은 바로 jobs 인데요.</p>
+<p>즉, 무언가 일을 해야하잖아요. 그게 여기서는 jobs 밑에 넣습니다.</p>
+<p>jobs 다음 줄에 lint 라고 되어 있는게 보이실 겁니다.</p>
+<p>lint는 제가 정한 이름입니다.</p>
+<p>원하는 이름으로 해도 됩니다.</p>
+<p>결국 jobs에는 여러 가지 job이 있을 수 있는데요.</p>
+<p>먼저, lint라는 job을 작성한 거라고 볼 수 있습니다.</p>
+<hr>
+<h2 id="lint-job에-대해-알아보기">lint job에 대해 알아보기</h2>
+<p>lint job을 찬찬히 살펴보면 name은 다 아실 겁니다.</p>
+<p>runs-on은 실행 환경인데요.</p>
+<p>보통 서버는 ubuntu-latest 즉, 우분투 최신판에서 돌리는 게 일반적입니다.</p>
+<p>그리고 중요한 steps 라고 있는데요.</p>
+<p>이게 단계적으로 작업하라는 명령어입니다.</p>
+<p>steps에는 총 4개의 name이 있는데요.</p>
+<p>즉, 4개의 작업이 있다는 뜻입니다.</p>
+<p>첫 번째가 Checkout Repo라는 건데요.</p>
+<p>Github Repository에서 지금 Repository를 사용하라는 뜻입니다.</p>
+<p>uses에는 actions/checkout@v3라고 쓰여있는데요.</p>
+<p>이건 일종의 패키지로 Checkout Repo를 수행하는 패키지입니다.</p>
+<p>Github에서 만든 것도 있고, 다른 사람들이 만든 것도 있습니다.</p>
+<p>두 번째가 Setup Node인데요.</p>
+<p>우리 앱은 NodeJS앱이니까 NodeJS를 준비하라는 얘기입니다.</p>
+<p>Node Version은 16을 사용하라고 했습니다.</p>
+<p>세 번째는 npm install 입니다.</p>
+<p>마지막으로 우리가 lint job에 맞게 npm run lint를 수행하라는 뜻입니다.</p>
+<p>이제 여기까지 저장했으면 테스트해 볼까요?</p>
+<hr>
+<h2 id="잠깐-layoutsvelte-수정해서-헤더-부분-손보기">잠깐, +layout.svelte 수정해서 헤더 부분 손보기</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="s2">&#34;../app.postcss&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;p-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">header</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;mb-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">nav</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex space-x-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/&#34;</span><span class="o">&gt;</span><span class="nx">Home</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/nav&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/header&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">slot</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/div&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 부분은 지난 시간에 Header를 안 만들었었는데요.</p>
+<p>이렇게 만들어 놓으면 모든 페이지에서 Home으로 가는 링크가 나오게 됩니다.</p>
+<hr>
+<h2 id="github-action-작동되는-걸-보기">Github Action 작동되는 걸 보기</h2>
+<p>이제 git commit을 다시하면 Github 홈페이지에서 해당 Repository로 간 다음 Actions로 들어가 보면 아래와 같이 나올겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgmR_DTutHwWnlkCveS-GdrQt285bcS6zf6WzU5fYIAiQqnLXzePqi_ZQgYOqWfsBii3choippfg_OML0lkBGqptP6YYy0TJ66Pie7SQZivX0mhkqITP5bj0VIXDYFDKtvVMRBhEsN_r__waW_5qLbug1hBAluZB-pV0RKhQSvuU4onQQPbPgExvvKWyG8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나올 겁니다.</p>
+<p>Github Action은 정상적으로 작동하네요.</p>
+<hr>
+<h2 id="flyio에-deploy하는-job-만들기">Fly.io에 Deploy하는 Job 만들기</h2>
+<p>이제 다시 deploy.yaml 파일을 더 작성해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">GitHub Actions Push to Fly_io</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">run-name</span><span class="p">:</span><span class="w"> </span><span class="l">${{ github.actor }} is testing out GitHub Actions 🚀</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">push</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">jobs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">lint</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;My ESLint&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Checkout Repo&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Setup Node&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/setup-node@v3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="c"># cache: npm</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="c"># cache-dependency-path: ./package.json</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">node-version</span><span class="p">:</span><span class="w"> </span><span class="m">16</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Download deps&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">npm install</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;Lint&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">npm run lint</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">deploy</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">🚀 Deploy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">lint]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">⬇️ Checkout repo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">👀 Read app name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">SebRollen/toml-action@v1.0.2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">app_name</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l">fly.toml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">field</span><span class="p">:</span><span class="w"> </span><span class="l">app</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">🚀 Deploy Production</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">superfly/flyctl-actions@1.4</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="l">deploy --remote-only --build-arg COMMIT_SHA=${{ github.sha }} --build-arg TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} --app ${{ steps.app_name.outputs.value }}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">FLY_API_TOKEN</span><span class="p">:</span><span class="w"> </span><span class="l">${{ secrets.FLY_API_TOKEN }}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>마지막에 보시면 deploy 부분이 추가됐는데요.</p>
+<p>needs 라는게 보이실 건데요.</p>
+<p>needs는 deploy가 실행하기 위해 필요한 선제 Job을 가리킵니다.</p>
+<p>즉, needs에서 지정한 Job이 성공하지 못하면 deploy는 아예 실행도 되지 않는 거죠.</p>
+<p>우리 입장에서는 lint 부분이 정상적으로 작동하면 deploy 하는 방식인 거죠.</p>
+<p>지극히 당연한 수순인 거죠.</p>
+<p>이제 steps를 볼까요?</p>
+<p>첫 번째는 Checkout Repo입니다.</p>
+<p>아까 설명해 드렸었고요.</p>
+<p>두 번째는 Read app name입니다.</p>
+<p>요거는 fly.toml 파일에서 app 항목의 이름을 가져오는 겁니다.</p>
+<p>다음 작업에서 필요하기 때문이죠.</p>
+<p>그리고 마지막으로 Deploy Production 항목인데요.</p>
+<p>가장 중요합니다.</p>
+<p>uses라는 부분에서는 superfly/flyctl-actions@1.4 패키지를 사용하는데요.</p>
+<p>이건 Fly.io 측에서 만든 Github Action 패키지입니다.</p>
+<p>즉, 이 패키지는 flyctl을 터미널상에서 실행하는 것과 똑같은 겁니다.</p>
+<p>그래서 with라는 옵션에 무언가를 적으면 되는데요.</p>
+<p>args 부분이 deploy로 시작합니다.</p>
+<p>즉, 우리가 터미널상에서 첫 번째 강좌에서 했듯이 <code>fly deploy --build-args TMDB_API_KEY=adsfasfa</code> 라고 실행한 것과 같습니다.</p>
+<p>그런데 좀 더 옵션이 많네요.</p>
+<p>&ndash;remote-only는 리모트에서의 Docker 작업을 하라는 겁니다. 꼭 필요한 거죠.</p>
+<p>그리고 &ndash;build-args 부분이 두 개가 있는데요.</p>
+<p>하나는 COMMIT_SHA 라고 어떤 Git Commit을 빌드하라는지 명확하게 지정 하는거죠.</p>
+<p>이 옵션은 없어도 잘 작동합니다.</p>
+<p>그리고 <code>${{ github.sha }}</code> 이 부분은 Github Action의 내장 변수 같은 겁니다.</p>
+<p>github repository에서 현재 commit의 sha 변수에 접근할 수 있는 거죠.</p>
+<p>두번째 &ndash;build-args는 바로 <code>TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}</code> 인데요.</p>
+<p>TMDB_API_KEY를 왜 &ndash;build-args로 넘겨줘야 하는지는 2편에 잘 나와 있습니다.</p>
+<p>Dockerfile에서 아랫부분 때문이죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Set TMDB API key at build time</span>
+</span></span><span class="line"><span class="cl">ARG TMDB_API_KEY
+</span></span><span class="line"><span class="cl">ENV <span class="nv">VITE_TMDB_API_KEY</span><span class="o">=</span><span class="nv">$TMDB_API_KEY</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 TMDB_API_KEY를 어떻게 얻었냐면 바로 Github Repository의 Secrets에서 얻은 겁니다.</p>
+<p>맨 처음 세팅했던 그 Secrets인데요.</p>
+<p><code>${{ secrets.TMDB_API_KEY }}</code> 이런 식으로 접근할 수 있습니다.</p>
+<p>그리고 마지막으로 env 라는 부분이 있는데요.</p>
+<p>이건 superfly/flyctl-actions@1.4 를 실행할 때 env 변수로써 FLY_API_TOKEN을 메모리에 넣으라는 뜻입니다.</p>
+<p>이게 없으면 자신의 fly.io에 접근할 수 없기 때문입니다.</p>
+<p>이제 실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjYVSUDIr2s4GDXsjwkLgqgwZTeclF43pXUcudn0SvDAvrmdMtT2fgXRz-6l6fjrSONE-Y2HoqD5BYOAWZYMuoLSo3qb_djklf9Ds0MgMT-QHQsx5tMcLDWWMSK_-g_oolZ-9PHlQrogXm8907lAQx_o54HlfOMRWmbu253F2rUaAWOxNw0tNIVEVULoC0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>역시나 잘 됐습니다.</p>
+<hr>
+<h2 id="npm-run-build는-어디서-실행되나요">npm run build는 어디서 실행되나요?</h2>
+<p>우리가 만든 Github Action은 lint를 실행하고 통과하면 deploy를 하라는 건데요.</p>
+<p>deploy는 &ldquo;fly deploy&rdquo; 명령어를 Github Action 방식으로 실행한 겁니다.</p>
+<p>그러면 Fly.io가 Dockerfile을 읽고 그걸 실행하게 되는 거죠.</p>
+<p>그래서 지난 시간에 Dockerfile을 분석했듯이 거기서 npm run build와 최종적으로 아래와 같이 서버 실행명령어도 실행됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Start the server by default, this can be overwritten at runtime</span>
+</span></span><span class="line"><span class="cl">EXPOSE <span class="m">3000</span>
+</span></span><span class="line"><span class="cl">CMD <span class="o">[</span> <span class="s2">&#34;npm&#34;</span>, <span class="s2">&#34;run&#34;</span>, <span class="s2">&#34;start&#34;</span> <span class="o">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 실행결과를 보시면 아주 잘 작동되는걸 볼 수 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgFc44LCkxpDNFGu34it2tiTW6wfXS7OvfwlrfZzfkBHcshWfay4m2qTNeR_3RcK8k-mWOOq6soRg_AZERanXp66MS0W3Jb9dbIbs22x8jsfV_4mBbk_C9Ggl2Uij_7bV9wOTXeJ4fOiUcJzNg1w1eQmNwn3EK48qwmLzNh9efupnlXEL7vHL9--RyaNds"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그럼. 다음 시간에는 Fly.io에서 이용할 수 있는 Prisma를 이용한 백 엔드 DB 작업에 대해 알아보겠습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/github-action/" role="button">github action</a>
+        <a class="btn btn-light" href="/tags/sveltekit/" role="button">sveltekit</a>
+        <a class="btn btn-light" href="/tags/sveltejs/" role="button">sveltejs</a>
+        <a class="btn btn-light" href="/tags/fly.io/" role="button">fly.io</a>
+        <a class="btn btn-light" href="/tags/ssr/" role="button">ssr</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy/">SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기</a></h2>
+                  <p>SvelteKit을 이용해서 서버 사이드 렌더링 풀 스택 무비 앱 만들기</p>
+                  <p>
+  <small>August 5, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering/">SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링</a></h2>
+                  <p>SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링</p>
+                  <p>
+  <small>August 3, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-21-how-to-avoid-my-fly-io-app-sleep-issue/">SvelteKit 실전 예제 6편 - Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</a></h2>
+                  <p>Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</p>
+                  <p>
+  <small>August 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

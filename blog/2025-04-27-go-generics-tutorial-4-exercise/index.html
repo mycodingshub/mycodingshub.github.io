@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 4편 - 실전 활용과 주의사항</title>
+<meta name="description" content="실제 코드에서 제너릭을 활용할 때 마주칠 수 있는 몇 가지 흥미로운 지점들과, 더 깊은 이해를 위한 개념, 그리고 제너릭을 사용할 때 염두에 두어야 할 점들을 살펴보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-04-27-go-generics-tutorial-4-exercise/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 4편 - 실전 활용과 주의사항" />
+<meta property="og:description" content="실제 코드에서 제너릭을 활용할 때 마주칠 수 있는 몇 가지 흥미로운 지점들과, 더 깊은 이해를 위한 개념, 그리고 제너릭을 사용할 때 염두에 두어야 할 점들을 살펴보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-04-27-go-generics-tutorial-4-exercise/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-04-27T09:10:03Z" />
+<meta property="article:modified_time" content="2025-04-27T09:10:03Z" />
+<meta property="article:tag" content="Go" />
+<meta property="article:tag" content="Golang" />
+<meta property="article:tag" content="Generics" />
+<meta property="article:tag" content="제너릭" />
+<meta property="article:tag" content="포인터 리시버" />
+<meta property="article:tag" content="Core Type" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 4편 - 실전 활용과 주의사항" />
+<meta name="twitter:description" content="실제 코드에서 제너릭을 활용할 때 마주칠 수 있는 몇 가지 흥미로운 지점들과, 더 깊은 이해를 위한 개념, 그리고 제너릭을 사용할 때 염두에 두어야 할 점들을 살펴보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 4편 - 실전 활용과 주의사항\"",
+  "description": "\"실제 코드에서 제너릭을 활용할 때 마주칠 수 있는 몇 가지 흥미로운 지점들과, 더 깊은 이해를 위한 개념, 그리고 제너릭을 사용할 때 염두에 두어야 할 점들을 살펴보겠습니다.\"",
+  "datePublished": "\"2025-04-27T09:10:03Z\"",
+  "dateModified": "\"2025-04-27T09:10:03Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-04-27-go-generics-tutorial-4-exercise/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 4편 - 실전 활용과 주의사항</h1>
+        <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요!</p>
+<p>지금까지 우리는 Go 제너릭의 기본 문법부터 제약조건, 그리고 컴파일러의 마법 같은 인스턴스화와 타입 추론까지 많은 것을 배웠는데요.</p>
+<p>이제 이론을 넘어 실제 코드에서 제너릭을 활용할 때 마주칠 수 있는 몇 가지 흥미로운 지점들과, 더 깊은 이해를 위한 개념, 그리고 제너릭을 사용할 때 염두에 두어야 할 점들을 살펴보겠습니다.</p>
+<p>마지막까지 집중해서 함께 완주해 볼까요?</p>
+<h2 id="실전-팁-1-포인터-리시버와-제너릭-조금-까다로운-만남"><strong>실전 팁 1: 포인터 리시버와 제너릭, 조금 까다로운 만남</strong></h2>
+<p>Go에서는 메서드를 정의할 때 값 리시버(<code>func (t MyType) Method()</code>)와 포인터 리시버(<code>func (t *MyType) Method()</code>)를 사용할 수 있다는 것을 기억하실 겁니다.</p>
+<p>특히 구조체의 필드 값을 변경하는 메서드는 보통 포인터 리시버로 정의하는데요.</p>
+<p>이것이 제너릭 제약조건과 만날 때 약간의 주의가 필요합니다.</p>
+<p>2편에서 <code>fmt.Stringer</code> 인터페이스를 제약조건으로 사용했던 예를 떠올려 봅시다.</p>
+<p>만약 어떤 타입 <code>T</code>가 <strong>포인터 리시버</strong>로 <code>Set(string)</code> 메서드를 구현하고 있다고 가정해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;fmt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;strconv&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 값을 설정하는 Set 메서드를 요구하는 인터페이스</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">Setter</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nf">Set</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// SettableInt 타입 정의</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">SettableInt</span><span class="w"> </span><span class="kt">int</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// Set 메서드는 *SettableInt 타입, 즉 포인터 리시버로 구현되었습니다!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">si</span><span class="w"> </span><span class="o">*</span><span class="nx">SettableInt</span><span class="p">)</span><span class="w"> </span><span class="nf">Set</span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">i</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">strconv</span><span class="p">.</span><span class="nf">Atoi</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">*</span><span class="nx">si</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">SettableInt</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// T는 Setter 인터페이스를 만족해야 합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nx">SetValueFromString</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="nx">Setter</span><span class="p">](</span><span class="nx">value</span><span class="w"> </span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">s</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">value</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="kd">var</span><span class="w"> </span><span class="nx">myInt</span><span class="w"> </span><span class="nx">SettableInt</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// SetValueFromString(myInt, &#34;100&#34;)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 컴파일 에러! SettableInt does not implement Setter (Set method has pointer receiver)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// SettableInt 타입 자체는 Set(string) 메서드를 가지고 있지 않습니다. *SettableInt가 가지고 있죠!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 그럼 포인터 타입을 타입 인수로 넘겨주면 될까요?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// SetValueFromString[*SettableInt](&amp;myInt, &#34;100&#34;) // 이 코드는 컴파일은 되지만... 뭔가 이상합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 아래에서 더 나은 방법을 알아봅시다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;Initial value:&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">myInt</span><span class="p">)</span><span class="w"> </span><span class="c1">// 만약 위 코드를 실행했다면? 여전히 0일 수 있습니다!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 <code>SetValueFromString(myInt, &quot;100&quot;)</code> 호출은 컴파일 에러가 납니다.</p>
+<p>왜냐하면 <code>Setter</code> 인터페이스를 구현한 것은 <code>SettableInt</code> 타입 자체가 아니라 <code>*SettableInt</code> 타입이기 때문입니다.</p>
+<p>그래서 <code>SetValueFromString[*SettableInt](&amp;myInt, &quot;100&quot;)</code> 처럼 포인터 타입을 타입 인수로 명시적으로 넘겨주면 컴파일은 통과합니다.</p>
+<p>하지만 이 경우 <code>SetValueFromString</code> 함수 내부의 <code>value</code>는 <code>*SettableInt</code> 타입이 되는데, <strong><code>value</code> 자체가 <code>nil</code>일 가능성</strong>을 고려해야 하는 등 추가적인 복잡성이 생길 수 있고, 의도와 다르게 동작할 수도 있습니다.</p>
+<p>특히 제너릭 함수 내부에서 <code>make([]T, ...)</code> 와 같이 제로 값을 생성해야 할 때 <code>T</code>가 포인터 타입이면 <code>nil</code> 슬라이스가 만들어져 바로 <code>panic</code>이 발생할 수 있습니다!
+(3편의 공식 문서 예제 설명 부분 참조)</p>
+<h2 id="포인터-리시버-문제를-해결하는-더-나은-접근법-두-개의-타입-파라미터"><strong>포인터 리시버 문제를 해결하는 더 나은 접근법: 두 개의 타입 파라미터</strong></h2>
+<p>이런 상황을 더 안전하고 명확하게 처리하는 일반적인 패턴은 <strong>두 개의 타입 파라미터</strong>를 사용하는 것입니다.</p>
+<p>하나는 기본 타입(<code>T</code>)을 위한 것이고, 다른 하나는 그 기본 타입의 포인터 타입이면서 제약조건을 만족하는 타입(<code>PT</code>)을 위한 것입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;fmt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;strconv&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// SettableInt 타입 (변경 없음)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">SettableInt</span><span class="w"> </span><span class="kt">int</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">si</span><span class="w"> </span><span class="o">*</span><span class="nx">SettableInt</span><span class="p">)</span><span class="w"> </span><span class="nf">Set</span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">i</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">strconv</span><span class="p">.</span><span class="nf">Atoi</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">*</span><span class="nx">si</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">SettableInt</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// PT는 T의 포인터 타입이어야 하고, Set(string) 메서드를 가져야 함을 명시하는 제약조건 인터페이스</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 인터페이스 내부에 *T 를 포함시켜 PT가 *T 타입임을 강제합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">PointerSetter</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">]</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nf">Set</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">*</span><span class="nx">T</span><span class="w"> </span><span class="c1">// PT must be a pointer to T</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// T는 기본 타입, PT는 T의 포인터 타입이자 Setter 역할을 하는 타입 파라미터입니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 반환값은 기본 타입 T의 슬라이스라고 가정해봅시다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nx">CreateAndSet</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="kt">any</span><span class="p">,</span><span class="w"> </span><span class="nx">PT</span><span class="w"> </span><span class="nx">PointerSetter</span><span class="p">[</span><span class="nx">T</span><span class="p">]](</span><span class="nx">s</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="kd">var</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="c1">// T 타입의 제로 값을 생성합니다 (포인터가 아님!)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">p</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nf">PT</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">result</span><span class="p">)</span><span class="w"> </span><span class="c1">// result의 주소를 가져와 PT 타입 포인터로 만듭니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">p</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w">         </span><span class="c1">// PT는 Set 메서드를 가지고 있으므로 호출 가능합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nx">result</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 타입 인수를 두 개 모두 명시적으로 전달합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">createdInt</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">CreateAndSet</span><span class="p">[</span><span class="nx">SettableInt</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="nx">SettableInt</span><span class="p">](</span><span class="s">&#34;123&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Created int: %d, Type: %T\n&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">createdInt</span><span class="p">,</span><span class="w"> </span><span class="nx">createdInt</span><span class="p">)</span><span class="w"> </span><span class="c1">// Created int: 123, Type: main.SettableInt</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 여기서 마법! 제약조건 타입 추론 덕분에 PT(*SettableInt)는 생략 가능할 수 있습니다!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 컴파일러는 T가 SettableInt이고, PointerSetter[SettableInt] 제약조건을 통해</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// PT가 *SettableInt 여야 함을 추론할 수 있습니다. (3편에서 언급)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">createdIntSimplified</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">CreateAndSet</span><span class="p">[</span><span class="nx">SettableInt</span><span class="p">](</span><span class="s">&#34;456&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;Created int (simplified): %d, Type: %T\n&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">createdIntSimplified</span><span class="p">,</span><span class="w"> </span><span class="nx">createdIntSimplified</span><span class="p">)</span><span class="w"> </span><span class="c1">// Created int (simplified): 456, Type: main.SettableInt</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 패턴을 사용하면, 제너릭 함수 내부에서는 안전하게 기본 타입 <code>T</code>의 값을 생성하고 다룰 수 있으며, 메서드 호출이 필요할 때만 명시적으로 포인터 타입 <code>PT</code>로 변환하여 사용하므로 <code>nil</code> 포인터 걱정을 덜 수 있습니다.</p>
+<p>더욱 흥미로운 점은, 3편에서 잠시 언급했던 <strong>제약조건 타입 추론</strong> 덕분에 <code>CreateAndSet[SettableInt](&quot;456&quot;)</code> 처럼 두 번째 타입 인수(<code>*SettableInt</code>)를 생략해도 컴파일러가 알아서 추론해주는 경우가 많다는 것입니다!</p>
+<p>제약조건 <code>PointerSetter[T]</code> 자체가 <code>PT</code>가 <code>*T</code> 타입이어야 한다는 정보를 담고 있기 때문이죠. 정말 똑똑하지 않습니까? 😉</p>
+<h2 id="내부-개념-엿보기-코어-타입-core-type"><strong>내부 개념 엿보기: 코어 타입 (Core Type)</strong></h2>
+<p>제너릭의 내부 동작과 관련하여 알아두면 좋은 심화 개념 중 하나로 <strong>코어 타입(Core Type)</strong> 이 있습니다.</p>
+<p>모든 타입 파라미터 제약조건이 코어 타입을 가지는 것은 아니지만, 만약 가진다면 몇 가지 중요한 동작에 영향을 미칩니다.</p>
+<p>코어 타입의 정확한 정의는 다소 복잡하지만, 간단히 말해 <strong>제약조건이 나타내는 타입들의 &lsquo;구조적인 본질&rsquo;</strong> 이라고 생각할 수 있습니다.</p>
+<p>예를 들어, <code>interface{ ~[]int }</code> 제약조건의 코어 타입은 <code>[]int</code> 이고, <code>interface{ ~int | ~string }</code> 처럼 구조가 다른 타입들의 유니온은 코어 타입을 갖지 못합니다.</p>
+<p>코어 타입이 중요한 이유는 다음과 같습니다.</p>
+<ol>
+<li><strong><code>for range</code> 사용 가능 여부:</strong> 타입 파라미터 <code>T</code>에 대해 <code>for range</code> 루프를 사용하려면, <code>T</code>의 제약조건이 <strong>반드시 코어 타입</strong>을 가져야 합니다.
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// 제약조건 I는 코어 타입 []int를 가집니다. -&gt; OK</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">I1</span><span class="w"> </span><span class="kd">interface</span><span class="p">{</span><span class="w"> </span><span class="p">~[]</span><span class="kt">int</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nx">Loop1</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="nx">I1</span><span class="p">](</span><span class="nx">x</span><span class="w"> </span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 제약조건 I2는 코어 타입이 없습니다. -&gt; Compile Error!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">I2</span><span class="w"> </span><span class="kd">interface</span><span class="p">{</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// func Loop2[T I2](x T) { for range x { /* ... */ } } // cannot range over x (T has no core type)</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+<li><strong>컴포지트 리터럴(Composite Literal) 생성 가능 여부:</strong> <code>T{...}</code> 와 같이 타입 파라미터를 이용해 리터럴 값을 생성하려면, 해당 제약조건이 <strong>코어 타입</strong>을 가져야 합니다.
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// 제약조건 C1은 코어 타입 struct{ F int }를 가집니다. -&gt; OK</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">C1</span><span class="w"> </span><span class="kd">interface</span><span class="p">{</span><span class="w"> </span><span class="kd">struct</span><span class="p">{</span><span class="w"> </span><span class="nx">F</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nx">Create1</span><span class="p">[</span><span class="nx">T</span><span class="w"> </span><span class="nx">C1</span><span class="p">]()</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">T</span><span class="p">{</span><span class="nx">F</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 제약조건 C2는 태그 유무로 인해 코어 타입이 없습니다. -&gt; Compile Error!</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">C2</span><span class="w"> </span><span class="kd">interface</span><span class="p">{</span><span class="w"> </span><span class="kd">struct</span><span class="p">{</span><span class="w"> </span><span class="nx">F</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="kd">struct</span><span class="p">{</span><span class="w"> </span><span class="nx">F</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="s">`tag`</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// func Create2[T C2]() T { return T{F: 1} } // cannot use composite literal type T</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+<li><strong>제약조건 타입 추론:</strong> 3편에서 살펴본 제약조건 타입 추론이 작동하기 위한 <strong>필수 조건</strong> 중 하나가 바로 제약조건이 코어 타입을 가지는 것입니다.</li>
+</ol>
+<p>코어 타입은 제너릭의 내부 동작 방식을 이해하는 데 중요한 열쇠이지만, 일상적인 코딩에서 직접적으로 다룰 일은 많지 않을 수 있습니다.</p>
+<p>다만, <code>for range</code>나 컴포지트 리터럴 사용 시 예상치 못한 컴파일 에러를 만난다면 코어 타입의 부재를 의심해볼 수 있습니다.</p>
+<h2 id="제너릭-사용-시-주의할-점--현명한-활용-팁"><strong>제너릭 사용 시 주의할 점 &amp; 현명한 활용 팁</strong></h2>
+<p>제너릭은 강력한 도구이지만, 모든 문제를 해결하는 만능 열쇠는 아닙니다.</p>
+<p>현명하게 사용하기 위해 몇 가지 점을 염두에 두면 좋습니다.</p>
+<ol>
+<li><strong>남용은 금물! 꼭 필요할 때 사용합시다:</strong> 모든 함수를 제너릭으로 만들 필요는 없습니다. 제너릭이 코드 중복을 <strong>실질적으로</strong> 줄여주거나 <strong>타입 안전성</strong>을 명확히 높여주는 경우에 사용하는 것이 좋습니다. 때로는 구체적인 타입의 함수 여러 개가 더 명확하고 이해하기 쉬울 수 있습니다.</li>
+<li><strong>지나치게 복잡한 제약조건은 피합시다:</strong> 너무 많은 타입 파라미터와 복잡하게 얽힌 제약조건은 코드를 읽고 사용하기 어렵게 만듭니다. 제약조건은 필요한 만큼만, 최대한 간결하게 정의하는 것이 좋습니다.</li>
+<li><strong>포인터 리시버 메서드를 다시 한번 확인합시다:</strong> 인터페이스 제약조건을 사용할 때, 해당 인터페이스를 구현하는 것이 값 타입인지 포인터 타입인지 주의 깊게 확인해야 합니다. 앞서 살펴본 것처럼 예상치 못한 동작이나 컴파일 에러의 원인이 될 수 있습니다.</li>
+<li><strong>성능 영향은 미미하지만 인지합시다:</strong> Go 제너릭은 컴파일 시 인스턴스화를 통해 효율적으로 구현되므로 대부분의 경우 성능 저하는 거의 없습니다. 하지만 아주 극단적인 고성능 코드에서는 약간의 오버헤드가 발생할 가능성도 이론적으로는 존재합니다. (일반적인 웹 개발 등에서는 크게 걱정할 필요는 없습니다.)</li>
+<li><strong>타입 추론에 너무 의존하지 맙시다:</strong> 타입 추론은 편리하지만, 때로는 명시적으로 타입 인수를 적어주는 것이 코드의 가독성을 높이고 의도를 명확하게 전달하는 데 도움이 될 수 있습니다.</li>
+</ol>
+<h2 id="미래를-향해-go-제너릭의-진화와-더-깊은-학습"><strong>미래를 향해: Go 제너릭의 진화와 더 깊은 학습</strong></h2>
+<p>Go 제너릭은 Go 1.18에서 처음 도입된 이후 계속해서 개선되고 있습니다.</p>
+<p>예를 들어 Go 1.21에서는 타입 추론 알고리즘이 더욱 강력해지고, 표준 라이브러리의 제약조건 패키지(<code>constraints</code>)가 <code>cmp</code> 패키지로 통합되는 등의 변화가 있었습니다.</p>
+<p>앞으로도 Go 언어의 발전에 따라 제너릭은 더욱 편리하고 강력하게 진화할 것으로 기대됩니다.</p>
+<p>제너릭에 대해 더 깊이 알고 싶다면 아래 자료들을 참고하는 것이 좋습니다.</p>
+<ul>
+<li><strong>Go 공식 문서 (go.dev):</strong> 언어 명세(Language Specification), Effective Go, 공식 블로그의 제너릭 관련 포스트들은 가장 정확하고 신뢰할 수 있는 정보의 원천입니다.</li>
+<li><strong>Go 커뮤니티:</strong> Gophers Slack, Go Forum 등에서 다른 개발자들과 제너릭 사용 경험을 나누고 질문하는 것도 좋은 학습 방법입니다.</li>
+</ul>
+<h2 id="시리즈를-마치며-제너릭과-함께-go-코딩-레벨-업"><strong>시리즈를 마치며: 제너릭과 함께 Go 코딩 레벨 업!</strong></h2>
+<p>길고도 흥미진진했던 Go 제너릭 탐험 여정이 드디어 끝났습니다!</p>
+<p>이 시리즈를 통해 여러분은 제너릭의 기본 개념부터 다양한 제약조건 활용법, 내부 동작 원리, 그리고 실전 활용 팁과 주의사항까지 폭넓은 지식을 얻으셨기를 바랍니다.</p>
+<p>제너릭은 단순히 코드를 줄이는 것을 넘어, 더 <strong>타입 안전하고</strong>, <strong>재사용 가능하며</strong>, <strong>표현력 높은</strong> Go 코드를 작성할 수 있게 해주는 강력한 도구입니다.</p>
+<p>처음에는 조금 낯설게 느껴질 수 있지만, 오늘 배운 내용들을 바탕으로 실제 프로젝트에 조금씩 적용해보면서 제너릭의 매력을 직접 느껴보시기를 강력히 추천합니다!</p>
+<p>그동안 함께 탐험해주신 모든 분께 감사드립니다.</p>
+<p>앞으로 Go 제너릭을 자유자재로 활용하며 더욱 즐겁고 효율적인 Go 개발 여정을 이어가시길 응원하겠습니다!</p>
+<p>궁금한 점이나 나누고 싶은 이야기가 있다면 언제든지 댓글을 남겨주세요.</p>
+<p>감사합니다!</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/go/" role="button">Go</a>
+        <a class="btn btn-light" href="/tags/golang/" role="button">Golang</a>
+        <a class="btn btn-light" href="/tags/generics/" role="button">Generics</a>
+        <a class="btn btn-light" href="/tags/%EC%A0%9C%EB%84%88%EB%A6%AD/" role="button">제너릭</a>
+        <a class="btn btn-light" href="/tags/%ED%8F%AC%EC%9D%B8%ED%84%B0-%EB%A6%AC%EC%8B%9C%EB%B2%84/" role="button">포인터 리시버</a>
+        <a class="btn btn-light" href="/tags/core-type/" role="button">Core Type</a>
+        <a class="btn btn-light" href="/tags/%EC%A0%9C%EB%84%88%EB%A6%AD-%EC%A3%BC%EC%9D%98%EC%82%AC%ED%95%AD/" role="button">제너릭 주의사항</a>
+        <a class="btn btn-light" href="/tags/go-1.21/" role="button">Go 1.21</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-04-27-go-generics-tutorial-3-instance/">(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 3편 - 마법의 비밀, 인스턴스화와 타입 추론</a></h2>
+                  <p>우리가 탐험할 주제, 인스턴스화(Instantiation)와 타입 추론(Type Inference)입니다. 제너릭이라는 마법이 실제로 어떻게 구현되는지, 그 비밀의 문을 함께 열어보겠습니다!</p>
+                  <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-04-27-go-generics-tutorial-2-constraint/">(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 2편 - 제약조건으로 날개 달기!</a></h2>
+                  <p>제너릭 코드의 안정성과 표현력을 한층 높여주는 제약조건(Constraints)에 대해 더 깊이 알아볼 예정입니다.</p>
+                  <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-04-27-go-generics-tutorial-1-basics/">(Go 언어 날개 달기) 제너릭(Generics) 완전 정복 1편 - 기본 개념부터 차근차근!</a></h2>
+                  <p>제너릭이라는 도구가 왜 필요하게 되었는지, 그리고 가장 기본적으로 어떻게 사용하는지 함께 알아보는 시간을 갖겠습니다.</p>
+                  <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

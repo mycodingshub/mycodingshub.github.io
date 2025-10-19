@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</title>
+<meta name="description" content="astrojs에서 SSR(Server Side Rendering) 사용하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석" />
+<meta property="og:description" content="astrojs에서 SSR(Server Side Rendering) 사용하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-10-30T11:55:49Z" />
+<meta property="article:modified_time" content="2023-10-30T11:55:49Z" />
+<meta property="article:tag" content="astrojs" />
+<meta property="article:tag" content="ssr" />
+<meta property="article:tag" content="server side rendering" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석" />
+<meta name="twitter:description" content="astrojs에서 SSR(Server Side Rendering) 사용하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석\"",
+  "description": "\"astrojs에서 SSR(Server Side Rendering) 사용하기\"",
+  "datePublished": "\"2023-10-30T11:55:49Z\"",
+  "dateModified": "\"2023-10-30T11:55:49Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</h1>
+        <p>
+  <small>October 30, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>astrojs 강좌가 벌써 7번째네요.</p>
+<p>전체 astrojs 강좌 목록입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs">astrojs 강좌 1편. astrojs에서 데이터 가져오기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme">astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component">astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture">astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing">astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing">astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering">astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token">astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia">astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목차 **</p>
+<ol>
+<li>
+<p><a href="#1-server-side-rendering">Server Side Rendering</a></p>
+</li>
+<li>
+<p><a href="#2-ssr-%eb%b0%a9%ec%8b%9d%ec%97%90%ec%84%9c-%ec%a0%95%ec%a0%81-%ed%8e%98%ec%9d%b4%ec%a7%80%eb%8f%84-%ea%b0%99%ec%9d%b4-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">SSR 방식에서 정적 페이지도 같이 사용하기</a></p>
+</li>
+<li>
+<p><a href="#3-request-response">Request, Response</a></p>
+</li>
+<li>
+<p><a href="#4-cookies-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">cookies 사용하기</a></p>
+</li>
+<li>
+<p><a href="#5-request-ip-%ec%96%b4%eb%93%9c%eb%a0%88%ec%8a%a4">request IP 어드레스</a></p>
+</li>
+<li>
+<p><a href="#6-%ed%99%98%ea%b2%bd%eb%b3%80%ec%88%98-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">환경변수 사용하기</a></p>
+</li>
+<li>
+<p><a href="#7-public-%ed%99%98%ea%b2%bd%eb%b3%80%ec%88%98">PUBLIC 환경변수</a></p>
+</li>
+<li>
+<p><a href="#8-server-endpoints">Server Endpoints</a></p>
+</li>
+<li>
+<p><a href="#9-%eb%8b%a4%ec%9d%b4%eb%82%b4%eb%af%b9-%ec%84%9c%eb%b2%84-%ec%97%94%eb%93%9c-%ed%8f%ac%ec%9d%b8%ed%8a%b8">다이내믹 서버 엔드 포인트</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-server-side-rendering">1. Server Side Rendering</h2>
+<p>최근 자바스크립트 프레임워크의 추세인 서버 사이드 렌더링도 AstroJS에서도 가능한데요.</p>
+<p>실제 예를 들어 알아보겠습니다.</p>
+<p>먼저, astrojs 템플릿을 설치해서 진행해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm create astro@latest --  --template<span class="o">=</span>minimal --yes --skip-houston astro-ssr</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 한 번에 바로 AstroJS 템플릿이 설치됩니다.</p>
+<p>이제 SSR과 SSG의 차이점을 보기 위해 한번 build 해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗ npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; astro-ssr@0.0.1 build
+</span></span><span class="line"><span class="cl">&gt; astro check <span class="o">&amp;&amp;</span> astro build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Result <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> errors
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> warnings
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> hints
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">오후 06:57:23 <span class="o">[</span>content<span class="o">]</span> No content directory found. Skipping <span class="nb">type</span> generation.
+</span></span><span class="line"><span class="cl">오후 06:57:23 <span class="o">[</span>build<span class="o">]</span> output target: static
+</span></span><span class="line"><span class="cl">오후 06:57:23 <span class="o">[</span>build<span class="o">]</span> Collecting build info...
+</span></span><span class="line"><span class="cl">오후 06:57:23 <span class="o">[</span>build<span class="o">]</span> Completed in 57ms.
+</span></span><span class="line"><span class="cl">오후 06:57:23 <span class="o">[</span>build<span class="o">]</span> Building static entrypoints...
+</span></span><span class="line"><span class="cl">오후 06:57:23 <span class="o">[</span>build<span class="o">]</span> Completed in 0.89s.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> generating static <span class="nv">routes</span>   <span class="o">==</span>&gt; 여기를 보시면 static 방식으로 build 되었습니다.
+</span></span><span class="line"><span class="cl">▶ src/pages/index.astro
+</span></span><span class="line"><span class="cl">  └─ /index.html <span class="o">(</span>+13ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Completed in 17ms.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">오후 06:57:24 <span class="o">[</span>build<span class="o">]</span> <span class="m">1</span> page<span class="o">(</span>s<span class="o">)</span> built in 0.98s
+</span></span><span class="line"><span class="cl">오후 06:57:24 <span class="o">[</span>build<span class="o">]</span> Complete!
+</span></span><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<p>&rsquo;npm run build&rsquo; 명령을 실행시켰을 때 AstroJS의 기본 방식인 Static Site Generation이 작동되어 index.html 파일이 생성되었습니다.</p>
+<p>그러면, AstroJS에서 SSR은 어떻게 설정해야 할까요?</p>
+<p>역시나 astro.config.mjs 파일을 수정하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;astro/config&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// https://astro.build/config
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">output</span><span class="o">:</span> <span class="s1">&#39;server&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 defineConfig 함수를 이용해서 &lsquo;output&rsquo; 부분에서 &lsquo;server&rsquo; 라고 쓰면 되는데요.</p>
+<p>output에 들어갈 수 있는 문자열은 &ldquo;server&rdquo;, &ldquo;hybrid&rdquo;, &ldquo;static&rdquo; 세 가지가 있는데요.</p>
+<p>hybrid는 server와 static의 중간 역할이라고 생각하시면 됩니다.</p>
+<p>이제 다시 &rsquo;npm run build&rsquo; 해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗ npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">error   Cannot use <span class="sb">`</span>output: <span class="s1">&#39;server&#39;</span><span class="sb">`</span> or <span class="sb">`</span>output: <span class="s1">&#39;hybrid&#39;</span><span class="sb">`</span> without an adapter. Please install and configure the appropriate server adapter <span class="k">for</span> your final deployment.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 에러가 나오는데요.</p>
+<p>adapter가 없다고 나옵니다.</p>
+<p>서버 사이드 렌더링에는 서버 구동을 위한 런타임이 필요한데요.</p>
+<p>AstroJS에서는 adapter이라고 합니다.</p>
+<p>AstroJS가 SSR을 제공하는 런타임은 아래 링크와 같이 여러 가지가 있습니다.</p>
+<p><a href="https://docs.astro.build/en/guides/deploy/">AstroJS Deployment Guides</a></p>
+<p>그중에 대표적인 게, cloudfare, deno, netlify, node, vercel 등이 있습니다.</p>
+<p>우리는 node를 adapter로 설치해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗ npx astro add node
+</span></span><span class="line"><span class="cl">✔ Resolving packages...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  Astro will run the following command:
+</span></span><span class="line"><span class="cl">  If you skip this step, you can always run it yourself later
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ╭────────────────────────────╮
+</span></span><span class="line"><span class="cl"> │ npm install @astrojs/node  │
+</span></span><span class="line"><span class="cl"> ╰────────────────────────────╯
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Continue? … yes
+</span></span><span class="line"><span class="cl">✔ Installing dependencies...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  Astro will make the following changes to your config file:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ╭ astro.config.mjs ─────────────────────────────╮
+</span></span><span class="line"><span class="cl"> │ import <span class="o">{</span> defineConfig <span class="o">}</span> from <span class="s1">&#39;astro/config&#39;</span><span class="p">;</span>  │
+</span></span><span class="line"><span class="cl"> │                                               │
+</span></span><span class="line"><span class="cl"> │ import node from <span class="s2">&#34;@astrojs/node&#34;</span><span class="p">;</span>             │
+</span></span><span class="line"><span class="cl"> │                                               │
+</span></span><span class="line"><span class="cl"> │ // https://astro.build/config                 │
+</span></span><span class="line"><span class="cl"> │ <span class="nb">export</span> default defineConfig<span class="o">({</span>                 │
+</span></span><span class="line"><span class="cl"> │   output: <span class="s1">&#39;server&#39;</span>,                           │
+</span></span><span class="line"><span class="cl"> │   adapter: node<span class="o">({</span>                             │
+</span></span><span class="line"><span class="cl"> │     mode: <span class="s2">&#34;standalone&#34;</span>                        │
+</span></span><span class="line"><span class="cl"> │   <span class="o">})</span>                                          │
+</span></span><span class="line"><span class="cl"> │ <span class="o">})</span><span class="p">;</span>                                           │
+</span></span><span class="line"><span class="cl"> ╰───────────────────────────────────────────────╯
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  For <span class="nb">complete</span> deployment options, visit
+</span></span><span class="line"><span class="cl">  https://docs.astro.build/en/guides/deploy/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Continue? … yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   success  Added the following integration to your project:
+</span></span><span class="line"><span class="cl">  - @astrojs/node
+</span></span><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하시면 설정파일도 알아서 고쳐줍니다.</p>
+<p>이제 다시 &rsquo;npm run build&rsquo;를 해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗ npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; astro-ssr@0.0.1 build
+</span></span><span class="line"><span class="cl">&gt; astro check <span class="o">&amp;&amp;</span> astro build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">오후 07:03:56 <span class="o">[</span>content<span class="o">]</span> No content directory found. Skipping <span class="nb">type</span> generation.
+</span></span><span class="line"><span class="cl">오후 07:03:56 <span class="o">[</span>check<span class="o">]</span> Getting diagnostics <span class="k">for</span> Astro files in /Users/cpro95/Codings/Javascript/astro-test/astro-ssr...
+</span></span><span class="line"><span class="cl">Result <span class="o">(</span><span class="m">3</span> files<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> errors
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> warnings
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> hints
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">오후 07:04:00 <span class="o">[</span>content<span class="o">]</span> No content directory found. Skipping <span class="nb">type</span> generation.
+</span></span><span class="line"><span class="cl">오후 07:04:00 <span class="o">[</span>build<span class="o">]</span> output target: <span class="nv">server</span>   <span class="o">===</span>&gt; 여기를 보시면 server side rendering입니다.
+</span></span><span class="line"><span class="cl">오후 07:04:00 <span class="o">[</span>build<span class="o">]</span> deploy adapter: @astrojs/node
+</span></span><span class="line"><span class="cl">오후 07:04:00 <span class="o">[</span>build<span class="o">]</span> Collecting build info...
+</span></span><span class="line"><span class="cl">오후 07:04:00 <span class="o">[</span>build<span class="o">]</span> Completed in 72ms.
+</span></span><span class="line"><span class="cl">오후 07:04:00 <span class="o">[</span>build<span class="o">]</span> Building server entrypoints...
+</span></span><span class="line"><span class="cl">오후 07:04:01 <span class="o">[</span>build<span class="o">]</span> Completed in 1.24s.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> finalizing server assets
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">오후 07:04:01 <span class="o">[</span>build<span class="o">]</span> Rearranging server assets...
+</span></span><span class="line"><span class="cl">오후 07:04:01 <span class="o">[</span>build<span class="o">]</span> Server built in 1.35s
+</span></span><span class="line"><span class="cl">오후 07:04:01 <span class="o">[</span>build<span class="o">]</span> Complete!
+</span></span><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<p>AstroJS를 build 하면 디폴트 폴더로 dist 폴더가 생성되는데요.</p>
+<p>한번 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  dist git:<span class="o">(</span>main<span class="o">)</span> ✗ tree -L <span class="m">2</span>
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── client
+</span></span><span class="line"><span class="cl">│   └── favicon.svg
+</span></span><span class="line"><span class="cl">└── server
+</span></span><span class="line"><span class="cl">    ├── _empty-middleware.mjs
+</span></span><span class="line"><span class="cl">    ├── chunks
+</span></span><span class="line"><span class="cl">    ├── entry.mjs
+</span></span><span class="line"><span class="cl">    ├── manifest_350e45ba.mjs
+</span></span><span class="line"><span class="cl">    └── renderers.mjs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">4</span> directories, <span class="m">5</span> files
+</span></span><span class="line"><span class="cl">➜  dist git:<span class="o">(</span>main<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 client 폴더에는 HTML 파일이 아예 없습니다.</p>
+<p>그리고 server 폴더에 여러 가지 mjs 파일이 있는데요.</p>
+<p>그러면 Node 서버를 어떻게 실행할까요?</p>
+<p>바로 entry.mjs 파일을 node로 실행하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗ node ./dist/server/entry.mjs
+</span></span><span class="line"><span class="cl">오후 09:11:52 <span class="o">[</span>@astrojs/node<span class="o">]</span> Server listening on http://127.0.0.1:4321</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 실행하면 서버가 열립니다.</p>
+<p>이런 식으로 작동하는 거니까요, 나만의 서버 같은 데서 작동시키면 됩니다.</p>
+<p>자체적으로 만든 서버 거나, 오라클 서버 같은 데서 NodeJS 로 웹서버를 돌린다고 생각하시면 됩니다.</p>
+<hr>
+<h2 id="2-ssr-방식에서-정적-페이지도-같이-사용하기">2. SSR 방식에서 정적 페이지도 같이 사용하기</h2>
+<p>astro.config.mjs 파일에 output을 &ldquo;server&quot;로 명기하면 AstroJS는 전체적으로 모두 서버 사이드 렌더링이 작동됩니다.</p>
+<p>그런데, 홈페이지를 만들다 보면 모두 다 서버 사이드로 만드는 건 비효율적인데요.</p>
+<p>그래서 일부 페이지만 정적 사이트로 만들어야 하는 경우가 있는데요.</p>
+<p>이 방식도 AstroJS는 제공해 주는데요.</p>
+<p>Astro 컴포넌트에서 아래 문구만 넣으면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 👀 note the prerender export
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">prerender</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;en&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">&#34;utf-8&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&#34;icon&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;image/svg+xml&#34;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/favicon.svg&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;viewport&#34;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&#34;width=device-width&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;generator&#34;</span> <span class="nx">content</span><span class="o">=</span><span class="p">{</span><span class="nx">Astro</span><span class="p">.</span><span class="nx">generator</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">Astro</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/head&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Astro</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/html&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>prerender 변수를 true로 지정하면 해당 페이지는 prerender 되는 겁니다.</p>
+<p>즉, 정적사이트로 변환되는 거죠.</p>
+<p>이렇게 하고 다시 &rsquo;npm run build&rsquo; 해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Result <span class="o">(</span><span class="m">13</span> files<span class="o">)</span>:
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> errors
+</span></span><span class="line"><span class="cl">- <span class="m">0</span> warnings
+</span></span><span class="line"><span class="cl">- <span class="m">5</span> hints
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">오후 07:12:45 <span class="o">[</span>content<span class="o">]</span> No content directory found. Skipping <span class="nb">type</span> generation.
+</span></span><span class="line"><span class="cl">오후 07:12:45 <span class="o">[</span>build<span class="o">]</span> output target: server
+</span></span><span class="line"><span class="cl">오후 07:12:45 <span class="o">[</span>build<span class="o">]</span> deploy adapter: @astrojs/node
+</span></span><span class="line"><span class="cl">오후 07:12:45 <span class="o">[</span>build<span class="o">]</span> Collecting build info...
+</span></span><span class="line"><span class="cl">오후 07:12:45 <span class="o">[</span>build<span class="o">]</span> Completed in 64ms.
+</span></span><span class="line"><span class="cl">오후 07:12:45 <span class="o">[</span>build<span class="o">]</span> Building server entrypoints...
+</span></span><span class="line"><span class="cl">오후 07:12:46 <span class="o">[</span>build<span class="o">]</span> Completed in 1.07s.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> prerendering static <span class="nv">routes</span>  <span class="o">==</span>&gt; 여기를 보시면 index.html 정적 사이트가 만들어졌습니다.
+</span></span><span class="line"><span class="cl">▶ src/pages/index.astro
+</span></span><span class="line"><span class="cl">  └─ /index.html <span class="o">(</span>+11ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Completed in 25ms.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> finalizing server <span class="nv">assets</span>   <span class="o">==</span>&gt; 전체적으로 서버 사이드로 작동되고 있고요.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">오후 07:12:46 <span class="o">[</span>build<span class="o">]</span> Rearranging server assets...
+</span></span><span class="line"><span class="cl">오후 07:12:46 <span class="o">[</span>build<span class="o">]</span> Server built in 1.19s
+</span></span><span class="line"><span class="cl">오후 07:12:46 <span class="o">[</span>build<span class="o">]</span> Complete!
+</span></span><span class="line"><span class="cl">➜  astro-ssr git:<span class="o">(</span>main<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="3-request-response">3. Request, Response</h2>
+<p>서버 사이드 렌더링이면 서버 사이드 코드인데요.</p>
+<p>서버 사이드 코드에서 가장 중요한 게 바로 Request, Response입니다.</p>
+<p>AstroJS에서 Request 객체는 다음과 같이 접근할 수 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"> <span class="kr">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">request</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실제 console.log 해보면 아래와 같이 나옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Request <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>Symbol<span class="o">(</span>realm<span class="o">)]</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    settingsObject: <span class="o">{</span> baseUrl: undefined, origin: <span class="o">[</span>Getter<span class="o">]</span>, policyContainer: <span class="o">[</span>Object<span class="o">]</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>Symbol<span class="o">(</span>state<span class="o">)]</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    method: <span class="s1">&#39;GET&#39;</span>,
+</span></span><span class="line"><span class="cl">    localURLsOnly: false,
+</span></span><span class="line"><span class="cl">    unsafeRequest: false,
+</span></span><span class="line"><span class="cl">    body: null,
+</span></span><span class="line"><span class="cl">    client: <span class="o">{</span> baseUrl: undefined, origin: <span class="o">[</span>Getter<span class="o">]</span>, policyContainer: <span class="o">[</span>Object<span class="o">]</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    reservedClient: null,
+</span></span><span class="line"><span class="cl">    replacesClientId: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    window: <span class="s1">&#39;client&#39;</span>,
+</span></span><span class="line"><span class="cl">    keepalive: false,
+</span></span><span class="line"><span class="cl">    serviceWorkers: <span class="s1">&#39;all&#39;</span>,
+</span></span><span class="line"><span class="cl">    initiator: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    destination: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    priority: null,
+</span></span><span class="line"><span class="cl">    origin: <span class="s1">&#39;client&#39;</span>,
+</span></span><span class="line"><span class="cl">    policyContainer: <span class="s1">&#39;client&#39;</span>,
+</span></span><span class="line"><span class="cl">    referrer: <span class="s1">&#39;client&#39;</span>,
+</span></span><span class="line"><span class="cl">    referrerPolicy: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    mode: <span class="s1">&#39;cors&#39;</span>,
+</span></span><span class="line"><span class="cl">    useCORSPreflightFlag: false,
+</span></span><span class="line"><span class="cl">    credentials: <span class="s1">&#39;same-origin&#39;</span>,
+</span></span><span class="line"><span class="cl">    useCredentials: false,
+</span></span><span class="line"><span class="cl">    cache: <span class="s1">&#39;default&#39;</span>,
+</span></span><span class="line"><span class="cl">    redirect: <span class="s1">&#39;follow&#39;</span>,
+</span></span><span class="line"><span class="cl">    integrity: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    cryptoGraphicsNonceMetadata: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    parserMetadata: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    reloadNavigation: false,
+</span></span><span class="line"><span class="cl">    historyNavigation: false,
+</span></span><span class="line"><span class="cl">    userActivation: false,
+</span></span><span class="line"><span class="cl">    taintedOrigin: false,
+</span></span><span class="line"><span class="cl">    redirectCount: 0,
+</span></span><span class="line"><span class="cl">    responseTainting: <span class="s1">&#39;basic&#39;</span>,
+</span></span><span class="line"><span class="cl">    preventNoCacheCacheControlHeaderModification: false,
+</span></span><span class="line"><span class="cl">    <span class="k">done</span>: false,
+</span></span><span class="line"><span class="cl">    timingAllowFailed: false,
+</span></span><span class="line"><span class="cl">    headersList: HeadersList <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      cookies: null,
+</span></span><span class="line"><span class="cl">      <span class="o">[</span>Symbol<span class="o">(</span>headers map<span class="o">)]</span>: <span class="o">[</span>Map<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="o">[</span>Symbol<span class="o">(</span>headers map sorted<span class="o">)]</span>: null
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    urlList: <span class="o">[</span> <span class="o">[</span>URL<span class="o">]</span> <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">    url: URL <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      href: <span class="s1">&#39;http://localhost:4321/&#39;</span>,
+</span></span><span class="line"><span class="cl">      origin: <span class="s1">&#39;http://localhost:4321&#39;</span>,
+</span></span><span class="line"><span class="cl">      protocol: <span class="s1">&#39;http:&#39;</span>,
+</span></span><span class="line"><span class="cl">      username: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">      password: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">      host: <span class="s1">&#39;localhost:4321&#39;</span>,
+</span></span><span class="line"><span class="cl">      hostname: <span class="s1">&#39;localhost&#39;</span>,
+</span></span><span class="line"><span class="cl">      port: <span class="s1">&#39;4321&#39;</span>,
+</span></span><span class="line"><span class="cl">      pathname: <span class="s1">&#39;/&#39;</span>,
+</span></span><span class="line"><span class="cl">      search: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">      searchParams: URLSearchParams <span class="o">{}</span>,
+</span></span><span class="line"><span class="cl">      hash: <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>Symbol<span class="o">(</span>signal<span class="o">)]</span>: AbortSignal <span class="o">{</span> aborted: <span class="nb">false</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>Symbol<span class="o">(</span>headers<span class="o">)]</span>: HeadersList <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    cookies: null,
+</span></span><span class="line"><span class="cl">    <span class="o">[</span>Symbol<span class="o">(</span>headers map<span class="o">)]</span>: Map<span class="o">(</span>16<span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;accept&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;accept-encoding&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;accept-language&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;connection&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;cookie&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;dnt&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;host&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;sec-ch-ua&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;sec-ch-ua-mobile&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;sec-ch-ua-platform&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;sec-fetch-dest&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;sec-fetch-mode&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;sec-fetch-site&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;sec-fetch-user&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;upgrade-insecure-requests&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;user-agent&#39;</span> <span class="o">=</span>&gt; <span class="o">[</span>Object<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    <span class="o">[</span>Symbol<span class="o">(</span>headers map sorted<span class="o">)]</span>: null
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>Symbol<span class="o">(</span>astro.clientAddress<span class="o">)]</span>: <span class="s1">&#39;::1&#39;</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>Symbol<span class="o">(</span>astro.locals<span class="o">)]</span>: <span class="o">{}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Astro.request의 Typescript interface를 보시면 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Request</span> <span class="kr">extends</span> <span class="nx">Body</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">cache</span><span class="o">:</span> <span class="nx">RequestCache</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">credentials</span><span class="o">:</span> <span class="nx">RequestCredentials</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">destination</span><span class="o">:</span> <span class="nx">RequestDestination</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">headers</span><span class="o">:</span> <span class="nx">Headers</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">integrity</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">keepalive</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">method</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">mode</span><span class="o">:</span> <span class="nx">RequestMode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">redirect</span><span class="o">:</span> <span class="nx">RequestRedirect</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">referrer</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">referrerPolicy</span><span class="o">:</span> <span class="nx">ReferrerPolicy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">signal</span><span class="o">:</span> <span class="nx">AbortSignal</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">url</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">clone</span><span class="p">()</span><span class="o">:</span> <span class="nx">Request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>AstroJS에서는 웹페이지의 headers나 url을 Astro.request.headers나 Astro.request.url 로 쉽게 접근할 수 있습니다.</p>
+<p>이에 반해 Response는 Astro.response를 사용하는 게 아니라, 웹 표준을 이용해서 Response를 만들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">body</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>예를 들어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">getIsLoggedOut</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">isLoggedOut</span> <span class="o">=</span> <span class="nx">getIsLoggedOut</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isLoggedOut</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Response</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">Astro</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="sb">about`</span><span class="p">,</span> <span class="mi">307</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;en&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">&#34;utf-8&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&#34;icon&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;image/svg+xml&#34;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/favicon.svg&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;viewport&#34;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&#34;width=device-width&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;generator&#34;</span> <span class="nx">content</span><span class="o">=</span><span class="p">{</span><span class="nx">Astro</span><span class="p">.</span><span class="nx">generator</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">Astro</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/head&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Astro</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/html&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 Response 객체에 의해 바로 redirect 되는데요.</p>
+<p>여기서, 좀 더 편한 redirect 방법이 있습니다.</p>
+<p>redirect를 위해서는 Astro.redirect를 사용하는 게 훨씬 편합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/about&#34;</span><span class="p">,</span> <span class="mi">307</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Response로 redirect 하려면 절대 경로를 써야 하는데요.</p>
+<p>Astro.redirect를 이용하시면 상대 경로로 써도 됩니다.</p>
+<p>그리고, 꼭 기억해야 될 중요한 차이점이 있는데요.</p>
+<p>Astro.response를 위와 같이 사용하시면 에러가 납니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isLoggedOut</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">(</span><span class="s2">&#34;app not available - check back&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">status</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">statusText</span><span class="o">:</span> <span class="s2">&#34;Excellent!&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 아래 그림과 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEicu8LKUfyWxALw1YYRrcKDqA9qR80lDkH9AriaQoDmS7EHydxG7zLCkFcbA9aMbUB1Tq8uSHlW4LhHKaZcIRXEfMG10Gpdpj9ACUSWczmOMqrljb6Ti3WtHV6XUuSz8WqvWeUVV8NCWLhx0944hmUhs2Wg5ZnhzZ3v5p-wdfX3wo0xB87fCwSuwglSnXk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그러면 Astro.resopnse 는 뭔 역할이 있을까요?</p>
+<p>Astro.resopnse는 Response의 options 부분에 들어가는 status, statusText, headers 같은 옵션을 저장해서 쓰는 일종의 initialiser 역할을 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">,</span> <span class="s2">&#34;mycodings&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 사용하시면 아래 그림과 같이 헤더 부분에 원하는 데이터를 넣어서 페이지에 전송할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgCI5om7UGYb2O1E48eVX3_sW7sqClcrWAreZW6m_3Q23iFTd9jzqYSpfN0jHGF-mGR5FOC3DU2Y532HBWFkAN7VGW8e2owiOQ8CsajKItlbGBJMuvq4NnIPIEbdDK3FLddXPEgL-E3lbqGLt2aruKtPvmCdIsPfV350zYj-mXEStqoF45wcXa7NpLb-rQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="4-cookies-사용하기">4. cookies 사용하기</h2>
+<p>AstroJS는 서버사이드 코드를 위해 자체적으로 cookies 객체를 지원합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">,</span> <span class="s2">&#34;mycodings&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Set a cookie
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;cooookiees&#34;</span><span class="p">,</span> <span class="s2">&#34;the-cookie-value&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// check if the &#34;cooooookies&#34; cookie exists. returns a boolean
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">hasCookie</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="s2">&#34;cooookiees&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">hasCookie</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//Get an AstroCookie object
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">cookieObject</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;cooookiees&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cookieObject</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아래 그림과 같이 쿠키 작동도 잘 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjeXaaq-GXl5Un_BYsQg9lu-en-jYk0S4WOMQZeIPDd1uonR6QG80KpcR2WYBieJuPTvpwSpdK8QnWvvKf1GzdLswlTqAlJB45jkRKPzn6s-S4ozG3R5KGi8N3WRGnfm4qOajH4WOvIomS_mS4C1UCIfbxrhzYAHiKKMNUHG4roPVyVBPtn29z9eMwgiOM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">true</span>
+</span></span><span class="line"><span class="cl">AstroCookie <span class="o">{</span> value: <span class="s1">&#39;the-cookie-value&#39;</span> <span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>cookie 관련 유틸리티 메서드는 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">cookieValue</span> <span class="o">=</span> <span class="nx">cookieObject</span><span class="o">?</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">cookieValue</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// JSON으로 Parsing 할 때
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">cookieJSON</span> <span class="o">=</span> <span class="nx">cookieObject</span><span class="o">?</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 넘버로 파싱
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">cookieNumber</span> <span class="o">=</span> <span class="nx">cookieObject</span><span class="o">?</span><span class="p">.</span><span class="nx">number</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// boolean로 파싱
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">cookieBoolean</span> <span class="o">=</span> <span class="nx">cookieObject</span><span class="o">?</span><span class="p">.</span><span class="kr">boolean</span><span class="p">();</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="5-request-ip-어드레스">5. request IP 어드레스</h2>
+<p>AstroJS는 서버 사이드 코드를 지원해 줘서 클라이언트의 IP 주소를 알려주는데요.</p>
+<p>아래와 같이 Astro.clientAddress 객체를 사용하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">ip</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">clientAddress</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Your</span> <span class="nx">IP</span> <span class="nx">address</span> <span class="nx">is</span><span class="o">:</span> <span class="p">{</span><span class="nx">ip</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="6-환경변수-사용하기">6. 환경변수 사용하기</h2>
+<p>AstroJS의 템플릿은 Vite를 이용해서 만들어졌기 때문에 환경변수는 import.meta.env 방식으로 사용해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MY_API_TOKEN</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>일반적은 Create React App에서는 process.env 객체를 사용해서 사용자 환경변수를 사용했었는데요.</p>
+<p>Vite 방식은 import.meta.env 방식이니까 헷갈리지 마십시오.</p>
+<p>그리고, Vite에는 Default 환경 변수가 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// Get the mode the Astro site is running in: &#34;development&#34; | &#34;production&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MODE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Is the site running in production? returns true or false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PROD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Is the site running in development? returns true or false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DEV</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// The base URL of the Astro site
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">BASE_URL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Get the final deployed URL of the Astro site
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SITE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Get prefix for Astro-generated asset links
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ASSETS_PREFIX</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>import.meta.env.BASE_URL 환경변수는 defineConfig에 base 항목으로 지정된 경우가 아니면 &lsquo;/&lsquo;로 지정됩니다.</p>
+<p>import.meta.env.SITE 환경변수는 defineConfig에서 site 항목으로 지정하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro/config&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">site</span><span class="o">:</span> <span class="s2">&#34;https://mycodingshub.github.io&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>import.meta.env.ASSETS_PREFIX 환경변수는 아래와 같이 지정하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">defineConfig</span> <span class="nx">from</span> <span class="s2">&#34;astro/config&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">build</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">assetsPrefix</span><span class="o">:</span> <span class="s2">&#34;https://cdn.example.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="7-public-환경변수">7. PUBLIC 환경변수</h2>
+<p>기본적으로 환경변수는 클라이언트에는 절대 공개되지 않는데요.</p>
+<p>일부러 클라이언트에 공개돼도 되는 환경변수를 만들 경우가 있는데요.</p>
+<p>환경변수 이름 앞에 &lsquo;PUBLIC_&lsquo;를 붙이면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">PUBLIC_INSENSITIVE_TOKEN</span> <span class="o">=</span> <span class="s2">&#34;this-is-public&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="8-server-endpoints">8. Server Endpoints</h2>
+<p>서버 엔드 포인트는 일종의 서버 사이드 REST API 같은 건데요.</p>
+<p>pages 폴더 밑에 .ts, .js 확장자로 파일을 만들면 이 파일은 웹페이지로 변환되는 게 아니라 일종의 API 코드가 되는 겁니다.</p>
+<p>.json.ts 확장자도 가능합니다.</p>
+<p>서버 엔드 포인트는 APIRoute를 export 해야 하는데요.</p>
+<p>GET, POST, DELETE, PUT, UPDATE 같이 REST API에서 사용하는 HTML 메서드 이름을 export 하면 됩니다.</p>
+<p>예를 들어볼까요?</p>
+<p>src/pages/api.ts 파일을 만들어서 아래와 같이 작성합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">GET</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">message</span><span class="o">:</span> <span class="s2">&#34;Hello world&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 브라우저에서 위 주소로 가면 아래 그림과 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjAdxntWJdqhmxaOKvaFW-MNsJBQwTgspPW-QTAINw2xrHkg4MzICIr0J0FkJQOXsQviTaV6bw92pLufXAtQ9FjMB7dLIud4hfX10HjOLd-MdJxQZZPzNS9IHacAY4fH3GzJIEX8Gs9QjtYGCZvwos_4Py9r1irXeQcVw9srswXsmiFVJQ8MZ9mDkPT9_o"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 확장자를 .json.ts로 작성하면 아래와 같이 됩니다.</p>
+<p>src/pages/data.json.ts</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">nameData</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">id</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Kim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">id</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Park&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">GET</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">nameData</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgWts7affqjo2qoCJqnRRKebNVWDiaqpG9ctM8V2oL8n5oo6vUs-Ws5wO8F5EWGEAs3MJ6cA_3Ky-aZCJYyq4hDQ6CPhEpE7dsEIHYN3n296DG0BGKMBajJ6y6k2E2sVNR50SH1mQMOlkzBzyIP2Wqjd_yoEZGSVaEoPrN-i-cttOVM00_D5bncm2worh4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나옵니다.</p>
+<p>이제, 서버 엔드 포인트를 이용해서 REST API 코드도 작성할 수 있게 되었네요.</p>
+<hr>
+<h2 id="9-다이내믹-서버-엔드-포인트">9. 다이내믹 서버 엔드 포인트</h2>
+<p>API를 만들 때도 다이내믹 방식으로 작동할 수 있습니다.</p>
+<p>&lsquo;src/pages/api/product/[id].ts&rsquo; 파일을 만든다고 칩시다.</p>
+<p>product의 id를 다이내믹하게 얻어서 코드를 작성해야 하는데요.</p>
+<p>아래와 같이 ctx.params.id로 쉽게 접근할 수 있습니다.</p>
+<p>그리고 <code>GET api/products/astro-book-001?version=2&amp;publishedDate=2023-06-12</code> 같이 URL에 파리미터가 있다면 해당 파라미터를 어떻게 뽑아낼까요?</p>
+<p>바로 웹 표준 API를 사용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">GET</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">productId</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// retrieve relevant search parameters, aka URL query parameters
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">searchParams</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">url</span><span class="p">.</span><span class="nx">searchParams</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">version</span> <span class="o">=</span> <span class="nx">searchParams</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;version&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">publishedDate</span> <span class="o">=</span> <span class="nx">searchParams</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;publishedDate&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;https://fakestoreapi.com/products/1&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Return a new response with the retrieved
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// &#34;version&#34; and &#34;publishedDate&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...</span><span class="nx">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">version</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">publishedDate</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span><span class="o">:</span> <span class="nx">productId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">status</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">message</span><span class="o">:</span> <span class="s2">&#34;An error occurred&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">status</span><span class="o">:</span> <span class="mi">500</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<p>지금까지 astrojs 서버 사이드 렌더링에 대해 알아보았습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/astrojs/" role="button">astrojs</a>
+        <a class="btn btn-light" href="/tags/ssr/" role="button">ssr</a>
+        <a class="btn btn-light" href="/tags/server-side-rendering/" role="button">server side rendering</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></h2>
+                  <p>Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session/">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></h2>
+                  <p>Firebase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm/">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></h2>
+                  <p>풀스택 개발하기 AstroJS + Cloudflare pages + D1 + Drizzle ORM</p>
+                  <p>
+  <small>December 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

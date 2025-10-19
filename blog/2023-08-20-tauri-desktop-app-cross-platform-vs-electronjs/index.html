@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기</title>
+<meta name="description" content="1편. Tauri 설치 및 컴파일 그리고 일렉트론JS와 비교" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기" />
+<meta property="og:description" content="1편. Tauri 설치 및 컴파일 그리고 일렉트론JS와 비교" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-08-20T08:50:44Z" />
+<meta property="article:modified_time" content="2023-08-20T08:50:44Z" />
+<meta property="article:tag" content="rust" />
+<meta property="article:tag" content="tauri" />
+<meta property="article:tag" content="sveltejs" />
+<meta property="article:tag" content="desktop app" />
+<meta property="article:tag" content="cross platform" />
+<meta property="article:tag" content="electronjs" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기" />
+<meta name="twitter:description" content="1편. Tauri 설치 및 컴파일 그리고 일렉트론JS와 비교" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기\"",
+  "description": "\"1편. Tauri 설치 및 컴파일 그리고 일렉트론JS와 비교\"",
+  "datePublished": "\"2023-08-20T08:50:44Z\"",
+  "dateModified": "\"2023-08-20T08:50:44Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기</h1>
+        <p>
+  <small>August 20, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>저는 항상 데스크탑 앱 개발에 있어 크로스 플랫폼을 가장 우선순위에 두는데요.</p>
+<p>해킨토시에서 개발하고 집안 메인 컴퓨터인 윈도우 머신에서 돌릴 수 있는 완벽한 크로스 플랫폼 앱을 생각해 보면 단연코 일렉트론JS를 이용한 앱 개발이라고 생각합니다.</p>
+<p>그런데, 사실 일렉트론JS 자체가 크롬을 얹어 놓은 거라 상당히 무겁습니다.</p>
+<p>그러고 사실 느리고요.</p>
+<p>그런 와중에 러스트 진영에 있던 Tauri를 예전부터 주시했었는데요.</p>
+<p>오늘은 Tauri를 이용한 실전 예제를 몇 편에 걸쳐 진행해 볼까 합니다.</p>
+<p>단순히 설치만 하고, UI만 보여주려면 실전 강의가 필요 없죠.</p>
+<p>러스트로 백엔드 로직을 만들고 그걸 UI로 연결해 주는 게 크로스 플랫폼 앱 개발에 있어 가장 중요하다고 생각합니다.</p>
+<hr>
+<h2 id="tauri-템플릿-설치">Tauri 템플릿 설치</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  Rust&gt; npm create tauri-app@latest tauri-test
+</span></span><span class="line"><span class="cl">✔ Choose which language to use <span class="k">for</span> your frontend · TypeScript / JavaScript - <span class="o">(</span>pnpm, yarn, npm<span class="o">)</span>
+</span></span><span class="line"><span class="cl">✔ Choose your package manager · npm
+</span></span><span class="line"><span class="cl">✔ Choose your UI template · Svelte - <span class="o">(</span>https://svelte.dev/<span class="o">)</span>
+</span></span><span class="line"><span class="cl">✔ Choose your UI flavor · TypeScript
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Template created! To get started run:
+</span></span><span class="line"><span class="cl">  <span class="nb">cd</span> tauri-test
+</span></span><span class="line"><span class="cl">  npm install
+</span></span><span class="line"><span class="cl">  npm run tauri dev
+</span></span><span class="line"><span class="cl">➜  Rust&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>Tauri와 Svelte 조합은 최고라고 생각하는데요.</p>
+<p>Svelte의 특성이 일반 자바스크립트로 컴파일해 주는 UI Framework이라 가장 바닐라 자바스크립트와 같은 속도를 자랑합니다.</p>
+<p>그런 면에서 Svelte를 택했습니다.</p>
+<p>물론, React나 Vue도 선택할 수 있고요.</p>
+<p>UI 부분이야 편한 거 선택하시면 됩니다.</p>
+<p>가장 중요한 백엔드 로직과 UI 부분으로의 커뮤니케이션이 중요하니까요?</p>
+<hr>
+<h2 id="tauri-실행해-보기">Tauri 실행해 보기</h2>
+<p>Tauri 앱을 보시면 전체적으로 npm package 같습니다.</p>
+<p>그래서 npm 명령어로 쉽게 시작할 수 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  Rust&gt; <span class="nb">cd</span> tauri-test
+</span></span><span class="line"><span class="cl">➜  tauri-test&gt; npm i
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">added <span class="m">99</span> packages, and audited <span class="m">100</span> packages in 23s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">12</span> packages are looking <span class="k">for</span> funding
+</span></span><span class="line"><span class="cl">  run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">found <span class="m">0</span> vulnerabilities
+</span></span><span class="line"><span class="cl">➜  tauri-test&gt; npm run tauri dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; tauri-test@0.0.0 tauri
+</span></span><span class="line"><span class="cl">&gt; tauri dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     Running BeforeDevCommand <span class="o">(</span><span class="sb">`</span>npm run dev<span class="sb">`</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; tauri-test@0.0.0 dev
+</span></span><span class="line"><span class="cl">&gt; vite
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        Warn Waiting <span class="k">for</span> your frontend dev server to start on http://localhost:1420/...
+</span></span><span class="line"><span class="cl">Forced re-optimization of dependencies
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  VITE v4.4.9  ready in <span class="m">1434</span> ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ➜  Local:   http://127.0.0.1:1420/
+</span></span><span class="line"><span class="cl">  ➜  Network: use --host to expose
+</span></span><span class="line"><span class="cl">        Info Watching /Users/cpro95/Codings/Rust/tauri-test/src-tauri <span class="k">for</span> changes...
+</span></span><span class="line"><span class="cl">    Updating crates.io index
+</span></span><span class="line"><span class="cl">    ...
+</span></span><span class="line"><span class="cl">    ...</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 npm install 실행시켜 주고, 그러고 나서 npm run tauri dev 명령어를 실행시켜 주면 되는데요.</p>
+<p>npm run tauri는 package.json에서 보시면 그냥 tauri라고 되어 있습니다.</p>
+<p>이 tauri 명령어에 dev도 있고 build도 있고 여러 가지 명령어를 입력할 수 있는 겁니다.</p>
+<p>맨 처음 tauri 컴파일이 시간이 조금 걸리는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgss8XUVAq4f2SQvFMkvydsVul8S5-vMQJOUEnSoViFPtMb-wuerAZxs-1VibvFsP8jvcrzYemZIt5qyuLbnV2FmhsrhJfwUodS5LmPi_g9vol7N4I0qWzbRhzkYSWcKgMdAVqxKAq1CoB5TDGG1qltAOlIqNwd9q4ROD1irKhrLIz6Zd6bumEjAQBZazk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 실행 창이 뜹니다.</p>
+<p>그러고 Input 태그에 Test라고 입력하고 Greet 버튼을 누르면 밑에 텍스트가 보이는데요.</p>
+<p>이 부분이 Rust와 자바스크립트 간 커뮤니케이션에 의해 실행되는 코드인 겁니다.</p>
+<hr>
+<h2 id="ui를-위해-tailwindcss-설치하기">UI를 위해 TailwindCSS 설치하기</h2>
+<p>Svelte에서는 아래와 같이 간단히 설치 가능합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  tauri-test&gt; npx svelte-add@latest add tailwindcss
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Need to install the following packages:
+</span></span><span class="line"><span class="cl">  svelte-add@2023.8.20-0.0
+</span></span><span class="line"><span class="cl">Ok to proceed? <span class="o">(</span>y<span class="o">)</span> y
+</span></span><span class="line"><span class="cl">➕ Svelte Add <span class="o">(</span>Version 2023.08.200.00<span class="o">)</span>
+</span></span><span class="line"><span class="cl">The project directory you<span class="s1">&#39;re giving to this command cannot be determined to be guaranteed fresh — ma
+</span></span></span><span class="line"><span class="cl"><span class="s1">ybe it is, maybe it isn&#39;</span>t. If any issues arise after running this command, please try again, making sure you<span class="err">&#39;</span>ve run it on a freshly initialized SvelteKit or Vite–Svelte app template.
+</span></span><span class="line"><span class="cl">PostCSS
+</span></span><span class="line"><span class="cl"> ✅ successfully <span class="nb">set</span> up and repaired <span class="o">(</span>it looks like it was in a broken setup before this <span class="nb">command</span> was
+</span></span><span class="line"><span class="cl"> run<span class="o">)</span>!                                                                                              Create or find an existing issue at https://github.com/svelte-add/svelte-add/issues <span class="k">if</span> this is wrong
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">Tailwind CSS
+</span></span><span class="line"><span class="cl"> ✅ successfully <span class="nb">set</span> up!
+</span></span><span class="line"><span class="cl">Create or find an existing issue at https://github.com/svelte-add/svelte-add/issues <span class="k">if</span> this is wrong
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">Run npm install to install new dependencies, and <span class="k">then</span> reload your IDE before starting your app.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">tauri-test&gt; npm install</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 npm install 한 번만 더 해주면 됩니다. 꼭 해줘야 합니다.</p>
+<p>그러면 tailwind.config.cjs 파일도 보일 거고, postcss.config.cjs 파일도 보일 거고, src 폴더 밑에 app.postcss 파일도 보일 겁니다.</p>
+<p>Svelte에서 TailwindCSS를 사용할 준비가 완벽히 되었네요.</p>
+<p>styles.css 파일은 필요 없으니까 지우도록 합시다.</p>
+<p>그러고 main.ts 파일에서 styles.css 파일을 import 하는 문구도 삭제합시다.</p>
+<p>src/public 폴더에 있는 svg 파일들도 지워주면 됩니다.</p>
+<p>이 src/public 폴더에는 UI 부분에서 필요한 이미지나 기타 자료를 넣으면 됩니다.</p>
+<p>그러고 App.svelte 파일을 아래와 같이 수정하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="nx">Search</span> <span class="nx">from</span> <span class="s2">&#34;./lib/Search.svelte&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">main</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;min-w-[320] flex flex-col mx-auto items-center justify-center p-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;font-bold text-4xl&#34;</span><span class="o">&gt;</span><span class="nx">Welcome</span> <span class="nx">to</span> <span class="nx">My</span> <span class="nx">Search</span> <span class="nx">App</span> <span class="kd">with</span> <span class="nx">Tauri</span><span class="o">!&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;w-full flex flex-col items-center justify-center py-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">Search</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러고 src/lib/Greet.svelte 파일도 Search.svelte 파일로 이름을 바꿔 줍시다.</p>
+<p>Search.svelte 파일도 아래와 같이 바꿔줍시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">invoke</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@tauri-apps/api/tauri&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">name</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">greetMsg</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="kd">function</span> <span class="nx">greet</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">greetMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;greet&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">name</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">section</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;w-full space-y-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span>
+</span></span><span class="line"><span class="cl">      <span class="k">for</span><span class="o">=</span><span class="s2">&#34;default-search&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span><span class="nx">Search</span><span class="o">&lt;</span><span class="err">/label</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;relative&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">svg</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;w-4 h-4 text-gray-500 dark:text-gray-400&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">aria</span><span class="o">-</span><span class="nx">hidden</span><span class="o">=</span><span class="s2">&#34;true&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">xmlns</span><span class="o">=</span><span class="s2">&#34;http://www.w3.org/2000/svg&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">fill</span><span class="o">=</span><span class="s2">&#34;none&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">viewBox</span><span class="o">=</span><span class="s2">&#34;0 0 20 20&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">path</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">=</span><span class="s2">&#34;currentColor&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">-</span><span class="nx">linecap</span><span class="o">=</span><span class="s2">&#34;round&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">-</span><span class="nx">linejoin</span><span class="o">=</span><span class="s2">&#34;round&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">-</span><span class="nx">width</span><span class="o">=</span><span class="s2">&#34;2&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">d</span><span class="o">=</span><span class="s2">&#34;m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/svg&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;search&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;default-search&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;css-input&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&#34;Search...&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">bind</span><span class="o">:</span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">required</span>
+</span></span><span class="line"><span class="cl">      <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span> <span class="nx">on</span><span class="o">:</span><span class="nx">click</span><span class="o">|</span><span class="nx">preventDefault</span><span class="o">=</span><span class="p">{</span><span class="nx">greet</span><span class="p">}</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;css-button&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span><span class="nx">Search</span><span class="o">&lt;</span><span class="err">/button</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;li-style&#34;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">greetMsg</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/section&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">style</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;postcss&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">css</span><span class="o">-</span><span class="nx">input</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">block</span> <span class="nx">w</span><span class="o">-</span><span class="nx">full</span> <span class="nx">p</span><span class="o">-</span><span class="mi">4</span> <span class="nx">pl</span><span class="o">-</span><span class="mi">10</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">text</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">900</span> <span class="nx">border</span> <span class="nx">border</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">300</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">50</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">500</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">border</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">500</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">700</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">border</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">600</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">placeholder</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">400</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">text</span><span class="o">-</span><span class="nx">white</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">500</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">focus</span><span class="o">:</span><span class="nx">border</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">css</span><span class="o">-</span><span class="nx">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">text</span><span class="o">-</span><span class="nx">white</span> <span class="nx">absolute</span> <span class="nx">right</span><span class="o">-</span><span class="mf">2.5</span> <span class="nx">bottom</span><span class="o">-</span><span class="mf">2.5</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">700</span> <span class="nx">hover</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">800</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="mi">4</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">outline</span><span class="o">-</span><span class="nx">none</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">300</span> <span class="nx">font</span><span class="o">-</span><span class="nx">medium</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">px</span><span class="o">-</span><span class="mi">4</span> <span class="nx">py</span><span class="o">-</span><span class="mi">2</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">600</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">hover</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">700</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">800</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">ul</span><span class="o">-</span><span class="nx">style</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">w</span><span class="o">-</span><span class="nx">full</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">font</span><span class="o">-</span><span class="nx">medium</span> <span class="nx">text</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">900</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">white</span> <span class="nx">border</span> <span class="nx">border</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">200</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">700</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">border</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">600</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">text</span><span class="o">-</span><span class="nx">white</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">li</span><span class="o">-</span><span class="nx">style</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">w</span><span class="o">-</span><span class="nx">full</span> <span class="nx">px</span><span class="o">-</span><span class="mi">4</span> <span class="nx">py</span><span class="o">-</span><span class="mi">2</span> <span class="nx">border</span><span class="o">-</span><span class="nx">b</span> <span class="nx">border</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">200</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">t</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">border</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">600</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/style&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>UI는 FlowBite에서 가져왔습니다.</p>
+<p>다시 npm run tauri dev라고 실행해서 개발 창을 돌려봅니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgR9L-CfW-CLN1Q8kOlnl3jinlpQL4MMrVlay-KBMt24H-_4vltmPOxbCK0UdMT-cU_Fcr4o45RqKsLN7zVkqAM5Sl98pPlZbAVHFOYd3ya1bwLqf8OfbeOjV0LCY6_04J1fLNXcGrY3zv0HFN1mTuzr6xwbcEsq7vR6Gn4Y-Bn0biXUVdVnNkBXl3uOTc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 아주 깔끔한 UI가 나왔네요.</p>
+<hr>
+<h2 id="tauri-source-파일-살펴보기">Tauri Source 파일 살펴보기</h2>
+<p>Tauri Source 파일은 src-tauri 폴더에 있는데요.</p>
+<p>여기서 main.rs 파일을 살펴 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#![cfg_attr(not(debug_assertions), windows_subsystem = </span><span class="s">&#34;windows&#34;</span><span class="cp">)]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">greet</span><span class="p">(</span><span class="n">name</span>: <span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">format!</span><span class="p">(</span><span class="s">&#34;Hello, </span><span class="si">{}</span><span class="s">! You&#39;ve been greeted from Rust!&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">tauri</span>::<span class="n">Builder</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">invoke_handler</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_handler!</span><span class="p">[</span><span class="n">greet</span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_context!</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;error while running tauri application&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>main 함수에서 tauri Builder를 이용해서 greet 함수를 UI 부분과 연결해 주고 있습니다.</p>
+<p>여기서 greet 함수가 바로 tauri command라는 함수인데요.</p>
+<p>이 tauri command 함수는 tauri::generate_handler 매크로를 이용해서 등록시키면 자바스크립트에서 호출할 수 있게 됩니다.</p>
+<p>자바스크립트에서 호출하는 부분은 아까 Search.svelte 파일에 있는 invoke 함수에 의해서인데요.</p>
+<p>테스트를 위해 tauri command 함수를 하나 더 만들어 볼 가요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#![cfg_attr(not(debug_assertions), windows_subsystem = </span><span class="s">&#34;windows&#34;</span><span class="cp">)]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">greet</span><span class="p">(</span><span class="n">name</span>: <span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">format!</span><span class="p">(</span><span class="s">&#34;Hello, </span><span class="si">{}</span><span class="s">! You&#39;ve been greeted from Rust!&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">hello</span><span class="p">(</span><span class="n">name</span>: <span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="fm">format!</span><span class="p">(</span><span class="s">&#34;안녕하세요?, </span><span class="si">{}</span><span class="s">!&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">tauri</span>::<span class="n">Builder</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">invoke_handler</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_handler!</span><span class="p">[</span><span class="n">greet</span><span class="p">,</span><span class="n">hello</span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_context!</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;error while running tauri application&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위에서 볼 수 있듯이 hello 라는 tauri command를 만들었으면 invoke_handler(tauri::generate_handler![greet,hello])처럼 generate_handler 에 등록시켜줘야 합니다.</p>
+<p>그럼, Svelte 코드에서 hello 함수를 invoke하는 부분을 추가해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">invoke</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@tauri-apps/api/tauri&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">name</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">greetMsg</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">helloMsg</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="kd">function</span> <span class="nx">greet</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">greetMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;greet&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">name</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">helloMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;hello&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">name</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">section</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;w-full space-y-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;li-style&#34;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">greetMsg</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;li-style&#34;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">helloMsg</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/section&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 invoke에 첫 번째는 Tauri command 이름이고요.</p>
+<p>두 번째가 InvokeArgs 라고 아규먼트라고 하는데요.</p>
+<p>객체입니다. 그래서 실제 아래와 같은 형식으로 쓰면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span><span class="o">:</span> <span class="s2">&#34;test@test.com&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위에서 name: name 부분은 ES6 규칙에 의해 그냥 name이라고 써도 됩니다.</p>
+<p>그래서 예제 코드에서는 name이라고 쓴 거죠.</p>
+<p>위와 같이 간단한 테스트로 UI에 추가해 봤습니다.</p>
+<p>실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEid3K_M8vzZb9OXPGHIOXhsq3qU-_7PWtSkb8c5UidDjFlvlwCdYiQjjICSrVHqIN58teDG-SBooZfymnJWmSuENuDuK3Bdd03IHFFF8gY8iPcRtVOuTqTDSLL4rzh5qstCTdGPWQKXR__gAjvQE6XHFc4cW3FlAPHpLdBCYMq6mgfrrSQSs5u33_OnCH8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 UI 부분도 반영되었네요.</p>
+<p>어떤가요? 아주 간단하죠.</p>
+<hr>
+<h2 id="tauri-앱-빌드">Tauri 앱 빌드</h2>
+<p>데스크탑 앱은 컴파일해야 하는데요.</p>
+<p>당연히 Tauri가 이것도 편하게 지원해 줍니다.</p>
+<p>저 같은 경우는 해킨토시라서 MacOS로 빌드 될 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run tauri build</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 build 명령어를 입력하면 release 버전을 빌드합니다.</p>
+<p>개발 서버를 끄고 한번 싫행해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  tauri-test&gt; npm run tauri build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; tauri-test@0.0.0 tauri
+</span></span><span class="line"><span class="cl">&gt; tauri build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       Error You must change the bundle identifier in <span class="sb">`</span>tauri.conf.json &gt; tauri &gt; bundle &gt; identifier<span class="sb">`</span>. The default value <span class="sb">`</span>com.tauri.dev<span class="sb">`</span> is not allowed as it must be unique across applications.
+</span></span><span class="line"><span class="cl">➜  tauri-test&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 에러가 나오는데요.</p>
+<p>MacOS라서 그런겁니다.ㅓ</p>
+<p>identifier 를 바꿔야 합니다.</p>
+<p>src-tauri 폴더에서 tauri.conf.json 파일을 열어서, 아래와 같이 바꿔주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;bundle&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;active&#34;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;targets&#34;</span><span class="o">:</span> <span class="s2">&#34;all&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// &#34;identifier&#34;: &#34;com.tauri.dev&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// com.tauri.dev라는 identifier는 에약된 거라 본인의 것으로 바꾸면 됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="s2">&#34;identifier&#34;</span><span class="o">:</span> <span class="s2">&#34;com.cpro95&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;icon&#34;</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/32x32.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/128x128.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/128x128@2x.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/icon.icns&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/icon.ico&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다시 build 를 실행해 보면 러스트 컴파일이 되면서 시간이 오래 걸리는데요.</p>
+<p>잘 보시면 맨 처음 Svelte 코드가 컴파일되는 것도 볼 수 있을 겁니다.</p>
+<p>컴파일이 완료되면 아래 폴더로 가서 확인하시면 됩니다.</p>
+<p>rc-tauri/target/release/bundle</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  bundl&gt;e ls -l
+</span></span><span class="line"><span class="cl">total <span class="m">0</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">6</span> cpro95  staff  <span class="m">192</span>  <span class="m">8</span> <span class="m">20</span> 18:51 dmg
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">3</span> cpro95  staff   <span class="m">96</span>  <span class="m">8</span> <span class="m">20</span> 18:51 macos
+</span></span><span class="line"><span class="cl">➜  bundle&gt; </span></span></code></pre></div>
+  </figure>
+</div>
+<p>친절하게도 dmg 파일도 제공해 줍니다.</p>
+<p>그리고 macos 폴더로 가시면 앱이 보일 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  macos&gt; ls -l
+</span></span><span class="line"><span class="cl">total <span class="m">0</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">3</span> cpro95  staff  <span class="m">96</span>  <span class="m">8</span> <span class="m">20</span> 18:50 tauri-test.app
+</span></span><span class="line"><span class="cl">➜  macos&gt; open .</span></span></code></pre></div>
+  </figure>
+</div>
+<p>맥의 Finder에서 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh__baW7GsGP-TjYJcvaOmtqkND3nutfMfmfjqzpoDixVd3ja9Knvu1ebp0VBmbUxDlNoKc7YWs6r3QVI4h_Xf-w0SYRgUtIMg2XYzJ72AtS4AmDNJEG5RFpn3H27c-Ctqs8BDYBlPBb3tZj3K9lndcmry8spi0C4RlRB53xUK0xqrNNXidiRdAm8rvPcI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>6.4MB 밖에 안 합니다.</p>
+<p>대단하네요.</p>
+<p>일렉트론에 비해 엄청 작은 바이너리 파일 크기입니다.</p>
+<p>이에 왜 가능하냐면요.</p>
+<p>Tauri는 시스템에 기본 장착된 WebView를 UI로 사용하기 때문입니다.</p>
+<p>윈도우는 Edge WebView를 사용합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEionYy43Jdbatj1R7k0xmI4KRpi-VnOGf_xtGPlPy8G2TdBiJBzwJF4JFlsdIXLON5JavDqAdEx2bfflOvw-Vkbj49gvv9O78DEKe0g6WmNCUsz3kVt2D3KwNHN4r4J2Rct0mr8LTTkRgE0G_SMn7SFEiobXsrv6jAQvtDYLVu98ttWt3If89yUnsac1zk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림은 인터넷에서 찾은 일렉트론JS와의 비교표입니다.</p>
+<p>확실히 Tauri가 이점이 많은데요.</p>
+<p>단지, Rust 언어가 어렵다는 것만 단점이 될 거 같습니다.</p>
+<hr>
+<p>다음 시간에는 Sqlite3를 이용한 DB Viewer를 만들어 볼 건데요.</p>
+<p>실제 UI 상에서 sqlite3를 이용할 수 없으니까요.</p>
+<p>sqlite3 wasm을 이용할 수 있지만 너무 복잡하니까요.</p>
+<p>또한, 이런 작업은 백엔드에서 처리해야 합니다.</p>
+<p>그리고 백엔드에서 러스트로 처리하니까 속도도 엄청 빠르고요.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/rust/" role="button">rust</a>
+        <a class="btn btn-light" href="/tags/tauri/" role="button">tauri</a>
+        <a class="btn btn-light" href="/tags/sveltejs/" role="button">sveltejs</a>
+        <a class="btn btn-light" href="/tags/desktop-app/" role="button">desktop app</a>
+        <a class="btn btn-light" href="/tags/cross-platform/" role="button">cross platform</a>
+        <a class="btn btn-light" href="/tags/electronjs/" role="button">electronjs</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-02-tauri-custom-menu-and-events-to-javascript/">Tauri 실전 코딩 5편 - Tauri의 커스텀 메뉴 만들기와 이벤트(event)로 자바스크립트와 통신하기</a></h2>
+                  <p>커스텀 메뉴 만들기와 이벤트를 이용해서 백엔드에서 프로트엔드로 통신하기</p>
+                  <p>
+  <small>September 2, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-30-tauri-dialog-save-to-local-file/">Tauri 실전 코딩 4편 - Tauri에서 dialog save 또는 writeTextFile 함수로 로컬에 파일 쓰기</a></h2>
+                  <p>dialog save 함수, 또는 writeTextFile 함수로 로컬에 파일 쓰기</p>
+                  <p>
+  <small>August 30, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-28-tauri-dialog-open-read-local-file/">Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기</a></h2>
+                  <p>3편, 자바스크립트에서 tauri/api/dialog의 open 함수 사용</p>
+                  <p>
+  <small>August 28, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

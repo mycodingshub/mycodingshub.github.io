@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Cloudflare Workers에서 password hashing(패스워드 해싱하기)</title>
+<meta name="description" content="Cloudflare에서는 bcrypt 라이브러리를 못 씁니다. 그래서 Cloudflare에서 사용할 수 있는 password hashing 로직을 구글링을 통해 구했습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-10-27-cloudflare-password-hashing-logic/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cloudflare Workers에서 password hashing(패스워드 해싱하기)" />
+<meta property="og:description" content="Cloudflare에서는 bcrypt 라이브러리를 못 씁니다. 그래서 Cloudflare에서 사용할 수 있는 password hashing 로직을 구글링을 통해 구했습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-10-27-cloudflare-password-hashing-logic/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-10-27T02:30:56Z" />
+<meta property="article:modified_time" content="2024-10-27T02:30:56Z" />
+<meta property="article:tag" content="cloudflare" />
+<meta property="article:tag" content="password" />
+<meta property="article:tag" content="crypto" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cloudflare Workers에서 password hashing(패스워드 해싱하기)" />
+<meta name="twitter:description" content="Cloudflare에서는 bcrypt 라이브러리를 못 씁니다. 그래서 Cloudflare에서 사용할 수 있는 password hashing 로직을 구글링을 통해 구했습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Cloudflare Workers에서 password hashing(패스워드 해싱하기)\"",
+  "description": "\"Cloudflare에서는 bcrypt 라이브러리를 못 씁니다. 그래서 Cloudflare에서 사용할 수 있는 password hashing 로직을 구글링을 통해 구했습니다.\"",
+  "datePublished": "\"2024-10-27T02:30:56Z\"",
+  "dateModified": "\"2024-10-27T02:30:56Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-10-27-cloudflare-password-hashing-logic/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Cloudflare Workers에서 password hashing(패스워드 해싱하기)</h1>
+        <p>
+  <small>October 27, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>최근에 Cloudflare Workers를 사용하여 API의 인증 엔드포인트를 구축하면서 비밀번호를 해싱해야 할 필요가 있었습니다.</p>
+<p>아래에 제 전체 코드를 포함했는데, 이렇게 준비된 예제를 한 곳에서 찾기가 어려웠기 때문입니다.</p>
+<h4 id="왜-cloudflare-workers에서는-비밀번호-해싱-로직이-필요한가">왜 Cloudflare Workers에서는 비밀번호 해싱 로직이 필요한가?</h4>
+<p>Cloudflare Workers는 서버리스 환경에서 JavaScript 코드를 실행할 수 있는 플랫폼입니다.</p>
+<p>이 환경에서는 일반적인 Node.js 환경과는 다른 제약이 있는데, 특히 특정 Node.js 라이브러리를 사용할 수 없습니다.</p>
+<p>예를 들어, 널리 사용되는 비밀번호 해싱 라이브러리인 <strong>bcrypt</strong>는 Node.js에서 C++로 작성된 추가 모듈을 사용하기 때문에, Cloudflare Workers와 같은 서버리스 환경에서는 사용할 수 없습니다.</p>
+<p>대신, Cloudflare Workers는 브라우저 환경과 유사한 <code>crypto</code> API를 제공하여 암호화 및 해싱을 위한 기본 기능을 사용할 수 있게 합니다.</p>
+<p>따라서 비밀번호 해싱을 위해서는 이 API를 활용하여 직접 구현해야 합니다.</p>
+<h4 id="pbkdf2-알고리즘이란">PBKDF2 알고리즘이란?</h4>
+<p>PBKDF2(Password-Based Key Derivation Function 2)는 비밀번호를 안전하게 해싱하기 위해 설계된 알고리즘입니다.</p>
+<p>이 알고리즘은 입력된 비밀번호를 바탕으로 고유한 키를 생성하는 데 사용되며, 다음과 같은 주요 요소를 포함합니다:</p>
+<ul>
+<li><strong>Salt</strong>: 비밀번호 해싱 과정에서 사용되는 랜덤 데이터로, 동일한 비밀번호라도 다른 해시값을 생성할 수 있게 도와줍니다. 이를 통해 무차별 대입 공격을 방지합니다.</li>
+<li><strong>Iterations</strong>: 비밀번호 해싱 과정에서 알고리즘이 반복되는 횟수입니다. 이 횟수를 늘리면 해싱 과정이 느려져, 공격자가 비밀번호를 추측하는 데 소요되는 시간을 증가시킵니다.</li>
+<li><strong>Hash Function</strong>: PBKDF2는 SHA-256과 같은 다양한 해시 함수를 사용할 수 있습니다.</li>
+</ul>
+<p>이러한 요소들 덕분에 PBKDF2는 비밀번호 보안에 매우 효과적입니다.</p>
+<h3 id="비밀번호-해싱-함수">비밀번호 해싱 함수</h3>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">hashPassword</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">password</span><span class="o">:</span> <span class="nx">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">providedSalt</span><span class="o">?:</span> <span class="nx">Uint8Array</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span><span class="o">:</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">encoder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TextEncoder</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 제공된 소금이 있을 경우 사용하고, 그렇지 않으면 새로 생성
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">salt</span> <span class="o">=</span> <span class="nx">providedSalt</span> <span class="o">||</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">getRandomValues</span><span class="p">(</span><span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="mi">16</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">keyMaterial</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">subtle</span><span class="p">.</span><span class="nx">importKey</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;raw&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">encoder</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="nx">password</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;PBKDF2&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s2">&#34;deriveBits&#34;</span><span class="p">,</span> <span class="s2">&#34;deriveKey&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">key</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">subtle</span><span class="p">.</span><span class="nx">deriveKey</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;PBKDF2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">salt</span><span class="o">:</span> <span class="nx">salt</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">iterations</span><span class="o">:</span> <span class="mi">100000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">hash</span><span class="o">:</span> <span class="s2">&#34;SHA-256&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">keyMaterial</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;AES-GCM&#34;</span><span class="p">,</span> <span class="nx">length</span><span class="o">:</span> <span class="mi">256</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s2">&#34;encrypt&#34;</span><span class="p">,</span> <span class="s2">&#34;decrypt&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">exportedKey</span> <span class="o">=</span> <span class="p">(</span><span class="kr">await</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">subtle</span><span class="p">.</span><span class="nx">exportKey</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;raw&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">key</span>
+</span></span><span class="line"><span class="cl">  <span class="p">))</span> <span class="nx">as</span> <span class="nx">ArrayBuffer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">hashBuffer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="nx">exportedKey</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">hashArray</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">hashBuffer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">hashHex</span> <span class="o">=</span> <span class="nx">hashArray</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="nx">padStart</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&#34;0&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">saltHex</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nx">salt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">).</span><span class="nx">padStart</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&#34;0&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="sb">`</span><span class="si">${</span><span class="nx">saltHex</span><span class="si">}</span><span class="sb">:</span><span class="si">${</span><span class="nx">hashHex</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="keymaterial와-aes-gcm-설명"><code>keyMaterial</code>와 <code>AES-GCM</code> 설명</h3>
+<p><code>keyMaterial</code>은 비밀번호를 바탕으로 생성된 원시 키 데이터를 의미합니다.</p>
+<p>이 데이터는 PBKDF2 알고리즘을 통해 안전한 키로 변환되기 전에, 입력된 비밀번호를 바탕으로 생성됩니다.</p>
+<p>비밀번호와 함께 사용되는 <strong>salt</strong>와 <strong>iterations</strong>는 이 키를 더욱 안전하게 만드는 데 중요한 요소입니다.</p>
+<p><code>{ name: &quot;AES-GCM&quot;, length: 256 }</code>는 생성된 키를 AES-GCM(Advanced Encryption Standard in Galois/Counter Mode) 암호화 알고리즘에 사용할 것임을 나타냅니다.</p>
+<p>AES는 대칭키 암호화 방식 중 하나로, 256비트 길이의 키를 사용하여 데이터를 암호화합니다.</p>
+<p>GCM 모드는 인증과 암호화를 동시에 수행하여 데이터 무결성을 보장합니다.</p>
+<p>이 조합은 비밀번호 해싱 및 저장 과정에서 보안을 강화하는 데 중요한 역할을 합니다.</p>
+<h3 id="비밀번호-검증-함수">비밀번호 검증 함수</h3>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">verifyPassword</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">storedHash</span><span class="o">:</span> <span class="nx">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">passwordAttempt</span><span class="o">:</span> <span class="nx">string</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span><span class="o">:</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">boolean</span><span class="o">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">saltHex</span><span class="p">,</span> <span class="nx">originalHash</span><span class="p">]</span> <span class="o">=</span> <span class="nx">storedHash</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&#34;:&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">matchResult</span> <span class="o">=</span> <span class="nx">saltHex</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/.{1,2}/g</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">matchResult</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Invalid salt format&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">salt</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="nx">matchResult</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="kr">byte</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nb">parseInt</span><span class="p">(</span><span class="kr">byte</span><span class="p">,</span> <span class="mi">16</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">attemptHashWithSalt</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">hashPassword</span><span class="p">(</span><span class="nx">passwordAttempt</span><span class="p">,</span> <span class="nx">salt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[,</span> <span class="nx">attemptHash</span><span class="p">]</span> <span class="o">=</span> <span class="nx">attemptHashWithSalt</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&#34;:&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">attemptHash</span> <span class="o">===</span> <span class="nx">originalHash</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="함수-사용-예제">함수 사용 예제</h3>
+<h4 id="1-비밀번호-해싱하기">1. 비밀번호 해싱하기</h4>
+<p>사용자가 비밀번호를 입력하면 이를 해싱하여 저장할 수 있습니다.</p>
+<p>예를 들어:</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">registerUser</span><span class="p">(</span><span class="nx">password</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">hashedPassword</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">hashPassword</span><span class="p">(</span><span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Hashed Password:&#34;</span><span class="p">,</span> <span class="nx">hashedPassword</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 이 hashedPassword를 데이터베이스에 저장하세요.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h4 id="2-비밀번호-검증하기">2. 비밀번호 검증하기</h4>
+<p>사용자가 로그인할 때 입력한 비밀번호가 저장된 해시와 일치하는지 확인할 수 있습니다.</p>
+<p>예를 들어:</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">loginUser</span><span class="p">(</span><span class="nx">storedHash</span><span class="o">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">passwordAttempt</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">isMatch</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">storedHash</span><span class="p">,</span> <span class="nx">passwordAttempt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isMatch</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Password is valid!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 로그인 성공 로직
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Invalid password.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 로그인 실패 로직
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">cloudflare</a>
+        <a class="btn btn-light" href="/tags/password/" role="button">password</a>
+        <a class="btn btn-light" href="/tags/crypto/" role="button">crypto</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db/">React Router V7과 Cloudflare Pages 그리고 D1 Database 사용</a></h2>
+                  <p>React Router V7를 Cloudflare Pages에 D1 DB를 이용해서 배포할 수 있게 개조하기</p>
+                  <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-10-19-cloudflare-remix-hono-todo-app/">Fullstack 강좌 - Hono RPC &#43; Remix &#43; Cloudflare &#43; D1 DB 조합으로 Todo 앱 만들기</a></h2>
+                  <p>Hono RPC 기능을 활용하여 API Endpoint 구축하여 Remix Framework으로 Todo 앱 만들기</p>
+                  <p>
+  <small>October 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>24&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-10-14-cloudflare-remix-framework-hono-rpc-api-endpoint/">Cloudflare에서 Remix Framework과 Hono의 RPC 기능을 활용한 API Endpoint 구축하기</a></h2>
+                  <p>이 글에서는 Cloudflare 환경에서 Remix Framework과 Hono의 RPC 기능을 활용하여 API Endpoint를 구축하는 방법을 단계별로 설명합니다. 효율적인 API 통신을 위한 실용적인 팁과 함께 배포 과정을 안내합니다.</p>
+                  <p>
+  <small>October 14, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>16&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Tauri 실전 코딩 5편 - Tauri의 커스텀 메뉴 만들기와 이벤트(event)로 자바스크립트와 통신하기</title>
+<meta name="description" content="커스텀 메뉴 만들기와 이벤트를 이용해서 백엔드에서 프로트엔드로 통신하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-09-02-tauri-custom-menu-and-events-to-javascript/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tauri 실전 코딩 5편 - Tauri의 커스텀 메뉴 만들기와 이벤트(event)로 자바스크립트와 통신하기" />
+<meta property="og:description" content="커스텀 메뉴 만들기와 이벤트를 이용해서 백엔드에서 프로트엔드로 통신하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-09-02-tauri-custom-menu-and-events-to-javascript/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-09-02T05:20:55Z" />
+<meta property="article:modified_time" content="2023-09-02T05:20:55Z" />
+<meta property="article:tag" content="tauri" />
+<meta property="article:tag" content="rust" />
+<meta property="article:tag" content="sveltejs" />
+<meta property="article:tag" content="desktop app" />
+<meta property="article:tag" content="cross platform" />
+<meta property="article:tag" content="custom menu" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Tauri 실전 코딩 5편 - Tauri의 커스텀 메뉴 만들기와 이벤트(event)로 자바스크립트와 통신하기" />
+<meta name="twitter:description" content="커스텀 메뉴 만들기와 이벤트를 이용해서 백엔드에서 프로트엔드로 통신하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Tauri 실전 코딩 5편 - Tauri의 커스텀 메뉴 만들기와 이벤트(event)로 자바스크립트와 통신하기\"",
+  "description": "\"커스텀 메뉴 만들기와 이벤트를 이용해서 백엔드에서 프로트엔드로 통신하기\"",
+  "datePublished": "\"2023-09-02T05:20:55Z\"",
+  "dateModified": "\"2023-09-02T05:20:55Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-09-02-tauri-custom-menu-and-events-to-javascript/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Tauri 실전 코딩 5편 - Tauri의 커스텀 메뉴 만들기와 이벤트(event)로 자바스크립트와 통신하기</h1>
+        <p>
+  <small>September 2, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Tauri 관련 블로그를 몇 개만 하려고 했는데 벌써 5편까지 왔네요.</p>
+<p>1편. <a href="https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs">Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기</a></p>
+<p>2편. <a href="https://mycodingshub.github.io/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte">Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성</a></p>
+<p>3편. <a href="https://mycodingshub.github.io/blog/2023-08-28-tauri-dialog-open-read-local-file">Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기</a></p>
+<p>4편. <a href="https://mycodingshub.github.io/blog/2023-08-30-tauri-dialog-save-to-local-file">Tauri 실전 코딩 4편 - Tauri에서 dialog save 또는 writeTextFile 함수로 로컬에 파일 쓰기</a></p>
+<hr>
+<h2 id="메뉴-만들기">메뉴 만들기</h2>
+<p>데스크탑 앱이라면 무조건 있는 메뉴를 만들어 볼 건데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEibFOramFy0Wh97Rc_hPdiks3ipRd3b_CzZZzDh9MuQ7IeXacXcNjEYOTXugFJlr4WoxqiZVeEALKCzBqsYDxULRVCfBB0_ceQS7c5if-lqLaWQrixeO_grSYNdySC_ravKSAtCQ6hAE0BW2rohWeezx3w0XAMfQeR3Dr7UP19UOvNq4RgjKvbu_63j11E"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에 나오는 메뉴는 커스텀 메뉴가 아닌 Tauri가 기본으로 제공하는 메뉴입니다.</p>
+<p>이 메뉴는 우리가 원하는 메뉴가 아니죠.</p>
+<p>그래서 만드려고 하는 앱의 특성에 맞게 메뉴를 구성해야 하는데요.</p>
+<p>일단 main.rs 함수에서 menu관련 코드를 작성해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">use</span><span class="w"> </span><span class="n">tauri</span>::<span class="p">{</span><span class="n">Menu</span><span class="p">,</span><span class="w"> </span><span class="n">MenuItem</span><span class="p">,</span><span class="w"> </span><span class="n">Submenu</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">menu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s">&#34;App&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_native_item</span><span class="p">(</span><span class="n">MenuItem</span>::<span class="n">Quit</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">tauri</span>::<span class="n">Builder</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">menu</span><span class="p">(</span><span class="n">menu</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">invoke_handler</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_handler!</span><span class="p">[</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">search</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">get_count</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">read_config_file</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">save_config_file</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">save_file</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_context!</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;error while running tauri application&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 tauri에서 Menu, MenuItem, Submenu를 import 했습니다.</p>
+<p>그리고 tauri::Builder에서 menu를 추가했는데요.</p>
+<p>menu 객체는 Menu::new()로 만들면 됩니다.</p>
+<p>이제 실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiziqEVPUNfYjaHu6lNuV7wOTBD_YXSzIkABtvah7f1ox_SKVzEaDh26EFuN84RIGmBtOk_GzLy0auZ9YsdR5XHYTC3OSpb0vZrMWnF5W3X2oDdKx7NEKcT5-7dtbRG7ooayfzcRtgiENTmcjreiulwy6uUi0y4JBKokKEG3DI6-fi__fmvyetSqgx-d8s"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나옵니다.</p>
+<p>우리가 추가한 거는 Tauri Menu에 있는 add_native_item인데요.</p>
+<p>native_item이라서 Quit, Copy, Cut, Paste, Hide, Minimize, About 등 여러 가지 기본적으로 내장된 명령어를 추가할 수 있습니다.</p>
+<p>아래와 같이 About 서브 메뉴를 추가해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">menu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;App&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_native_item</span><span class="p">(</span><span class="n">MenuItem</span>::<span class="n">Quit</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;About&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_native_item</span><span class="p">(</span><span class="n">MenuItem</span>::<span class="n">About</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="s">&#34;tauri-test&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">AboutMetadata</span>::<span class="n">new</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">));</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행 결과는 아래와 같습니다.</p>
+<p>참고로, AboutMetadata는 Linux에서만 작동하니 그냥 AboutMetadata::new()라고 넣으시면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhMEv0jPVsO7HKu5H2FQD2CC_tR5u1YiFC016d16EGKi5FOXw-FBpiKaE126U7-sgVE3wz4FfAmIpnJsOCQB2OB8xRFvgeO9kA-o7CAhlH-uyo_Z319kUcRhsRVH9F_yv4pbaLVAPQGVfPTlp_ryc1TNnT66GowVpY3Bk2T9pHBJRSa7Qy_UdSTvzathIQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="본격적인-custommenu-추가하기">본격적인 CustomMenu 추가하기</h2>
+<p>이제 시스템 기본 메뉴를 살펴봤으니까요?</p>
+<p>커스텀 메뉴를 추가해 보겠습니다.</p>
+<p>참고로 submenu title인 &ldquo;App&quot;은 Tauri에서 기본적으로 내장되어 있습니다.</p>
+<p>그래서 이름을 &ldquo;App&quot;으로 지으면 기본 메뉴를 쓰는게 됩니다.</p>
+<p>그러면 submenu &ldquo;App&quot;과 &ldquo;About&rdquo; 사이에 &ldquo;File&quot;이라는 서브메뉴를 추가해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// 아까 import 하지 못한 AboutMetadata와 더불어 CustomMenuItem도 import 합시다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">use</span><span class="w"> </span><span class="n">tauri</span>::<span class="p">{</span><span class="n">AboutMetadata</span><span class="p">,</span><span class="w"> </span><span class="n">CustomMenuItem</span><span class="p">,</span><span class="w"> </span><span class="n">Menu</span><span class="p">,</span><span class="w"> </span><span class="n">MenuItem</span><span class="p">,</span><span class="w"> </span><span class="n">Submenu</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">let</span><span class="w"> </span><span class="n">menu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;App&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_native_item</span><span class="p">(</span><span class="n">MenuItem</span>::<span class="n">Quit</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;File&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">CustomMenuItem</span>::<span class="n">new</span><span class="p">(</span><span class="s">&#34;new&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="s">&#34;New&#34;</span><span class="p">).</span><span class="n">accelerator</span><span class="p">(</span><span class="s">&#34;CmdOrCtrl+N&#34;</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;About&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_native_item</span><span class="p">(</span><span class="n">MenuItem</span>::<span class="n">About</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="s">&#34;tauri-test&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">AboutMetadata</span>::<span class="n">new</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">));</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&ldquo;File&quot;이란 서브메뉴에 add_item으로 CustomMenuItem을 추가했는데요.</p>
+<p>accelerator도 지정할 수 있습니다.</p>
+<p>단축키죠.</p>
+<p>&ldquo;CmdOrCtrl+N&rdquo; 같은 형식이니까 아무 키 조합도 가능합니다.</p>
+<p>그리고 CustomMenuItem::new() 함수에 들어가는 첫 번째 인자는 id라는 인자인데요.</p>
+<p>이 id가 바로 우리가 사용할 이벤트에서 쓰이는 id입니다.</p>
+<p>그리고 두 번째 인자는 화면에 보일 텍스트이고요.</p>
+<p>실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjlDE_Y06A_K2B6lDmKa_agA7bJwuphZ48a37Mrfgi-AyVtaYkEC9GSzppimkagd3cyh08miEUp1fIMMFK3kRvC9GW0owM9A73H5C4qE6ctZPd9N3agauRG0Ih8Dc4WQO63OEvc72T4h4iBcBQjiFPkRC6o1GHjGnSvXzp5F7k4TynM4ByXVWEi8K4qq0A"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>아주 잘 되고 있네요.</p>
+<p>그러면 &ldquo;File&rdquo; 메뉴를 마저 완성시키죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="kd">let</span><span class="w"> </span><span class="n">menu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;App&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_native_item</span><span class="p">(</span><span class="n">MenuItem</span>::<span class="n">Quit</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;File&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">CustomMenuItem</span>::<span class="n">new</span><span class="p">(</span><span class="s">&#34;new&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="s">&#34;New&#34;</span><span class="p">).</span><span class="n">accelerator</span><span class="p">(</span><span class="s">&#34;CmdOrCtrl+N&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="n">add_item</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">CustomMenuItem</span>::<span class="n">new</span><span class="p">(</span><span class="s">&#34;open&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="s">&#34;Open&#34;</span><span class="p">).</span><span class="n">accelerator</span><span class="p">(</span><span class="s">&#34;CmdOrCtrl+O&#34;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">CustomMenuItem</span>::<span class="n">new</span><span class="p">(</span><span class="s">&#34;save&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;Save&#34;</span><span class="p">).</span><span class="n">accelerator</span><span class="p">(</span><span class="s">&#34;CmdOrCtrl+S&#34;</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">add_submenu</span><span class="p">(</span><span class="n">Submenu</span>::<span class="n">new</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;About&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Menu</span>::<span class="n">new</span><span class="p">().</span><span class="n">add_native_item</span><span class="p">(</span><span class="n">MenuItem</span>::<span class="n">About</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="s">&#34;tauri-test&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">AboutMetadata</span>::<span class="n">new</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">));</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행결과는 당연히 아래와 같이 나올 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhdiz84efe0gAKhpgAe1tx4hpBkZF4IZ2M98o4dWW3NNPXgxGrBL5leIY2fT1EZEzthUMw2TxCNA_omtoQZQ0UqbP8otjuRqx3UtCHZT5zHX_FfnT1nKDhNjP3ccPW4epZQDhCAokXdy9FRjGeAKjqgi2k2PS9bU2XN9NtN8M1S7hje3uMcXlHeyOvp2bE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<hr>
+<h2 id="메뉴를-클릭했을-때-코드-작성하기">메뉴를 클릭했을 때 코드 작성하기</h2>
+<p>메뉴 UI는 전체적으로 완성했는데요.</p>
+<p>메뉴를 클릭했을 때 어떻게 작동되는지는 아직 작성하지 않았는데요.</p>
+<p>아래와 같이 하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="n">tauri</span>::<span class="n">Builder</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">menu</span><span class="p">(</span><span class="n">menu</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">on_menu_event</span><span class="p">(</span><span class="o">|</span><span class="n">event</span><span class="o">|</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">menu_item_id</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;new&#34;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;New menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;open&#34;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Open menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;save&#34;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Save menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;None of menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">invoke_handler</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_handler!</span><span class="p">[</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">search</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">get_count</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">read_config_file</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">save_config_file</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">save_file</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_context!</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;error while running tauri application&#34;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 on_menu_event 함수에서 event와 event.menu_item_id() 함수를 이용했습니다.</p>
+<p>그리고 아까 서브 메뉴 만들 때 지정했던 메뉴의 id를 match 시켜서 코드를 완성했습니다.</p>
+<p>이제 테스트를 위해 메뉴를 각각 클릭해 볼까요?</p>
+<p>아래와 같이 터미널상에 해당 문구가 잘 나타나고 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgn2AKj0SFT-WivG66MgYEWhhPYMaLo61mvx7-KznRZLwqtBoM-UB9JToomdfhDiA4PWE_NVTwJZtthq3WXbGUmoPO_250hJlhcAkThCGrstA2RTz0ggsrE3mwuKHxKQLDSq444tKzfGpRdEUn9g-vzCYWyAzPV_qLn0eQne-hvKjwZNlhC65WXLrB5ArQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="자바스크립트와-통신하기">자바스크립트와 통신하기</h2>
+<p>이제 백엔드 부분에서의 메뉴 작성은 끝났습니다.</p>
+<p>그러면 UI부분과 연결해야 하는데요.</p>
+<p>방법은 백엔드에서 이벤트를 emit() 함수를 이용해서 발산만 하면 됩니다.</p>
+<p>다시 코드를 고쳐 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="n">tauri</span>::<span class="n">Builder</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// .menu(create_app_menu())
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">        </span><span class="p">.</span><span class="n">menu</span><span class="p">(</span><span class="n">menu</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">on_menu_event</span><span class="p">(</span><span class="o">|</span><span class="n">event</span><span class="o">|</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="n">menu_item_id</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;new&#34;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">event</span><span class="p">.</span><span class="n">window</span><span class="p">().</span><span class="n">emit</span><span class="p">(</span><span class="s">&#34;new-content&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;New menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;open&#34;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">event</span><span class="p">.</span><span class="n">window</span><span class="p">().</span><span class="n">emit</span><span class="p">(</span><span class="s">&#34;open-content&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Open menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;save&#34;</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">event</span><span class="p">.</span><span class="n">window</span><span class="p">().</span><span class="n">emit</span><span class="p">(</span><span class="s">&#34;save-content&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Save menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">_</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;None of menu item clicked&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">invoke_handler</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_handler!</span><span class="p">[</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">search</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">get_count</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">read_config_file</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">save_config_file</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">save_file</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_context!</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;error while running tauri application&#34;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>event 객체에는 window() 함수가 있는데요.</p>
+<p>이 window()함수를 호출하면 윈도우를 가져올 수 있습니다.</p>
+<p>그리고 이 윈도우에서 emit() 함수를 실행하는 거죠.</p>
+<p>emit 함수에는 자바스크립트에서 구별할 수 있는 독특하고 유니크한 문자열을 전달해 주면 됩니다.</p>
+<p>저는 &rsquo;new-content&rsquo;라고 지정했습니다.</p>
+<p>어차피 앱이 작아서 중복될 일이 없으니까요.</p>
+<p>이제 진짜 백엔드쪽에서의 코드는 끝났습니다.</p>
+<hr>
+<h2 id="ui쪽의-자바스크립트-손보기">UI쪽의 자바스크립트 손보기</h2>
+<p>저는 Svelte로 작성했는데요.</p>
+<p>지난 시간에 작성한 Editor.svelte 파일에서 작업하겠습니다.</p>
+<p>먼저, 이벤트를 리스닝(listening)해야 하니까요.</p>
+<p>appWindow 객체를 불러오겠습니다.</p>
+<p>그리고 onMount 함수도 필요합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">onMount</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;svelte&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">appWindow</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@tauri-apps/api/window&#39;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 onMount 함수안에 appWindow.listen 함수를 이용해서 작성해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">onMount</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;svelte&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">appWindow</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@tauri-apps/api/window&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">messages</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">onMount</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Editor mounted!!!&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">appWindow</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="s1">&#39;new-content&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;new-content event emitted&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">messages</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 &rsquo;new-content&rsquo;라는 이벤트 메시지가 오면 콘솔 로그와 함께 messaes라는 변수를 초기화하고 있습니다.</p>
+<p>messages는 지난 시간에 작성한 textarea와 bind 되어 있기 때문에 messages를 빈칸으로 초기화하면 textarea에 있는 내용이 지워지는 효과가 생깁니다.</p>
+<p>즉, &ldquo;File&rdquo; 메뉴에서 &ldquo;New&rdquo; 서브 메뉴를 클릭하면 textarea를 새로 쓴다는 의미로 textarea에 입력되어 있던 자료를 지운다는 뜻이죠.</p>
+<p>이제 실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhcMprC3UTcJ2y54b-iwV59FxHIzd3xhpWTZLjz-qffmYr_8xbvrIXehtOwhsuemzNbNdoE8ocR55FzkMrI_8fxZradPd_1NGjSYOXvbr-GpzufoVdMBP1LTT1QOlx-kfZ-7lgPXDYCmj0hW3VTzMbftGYrEy2fn0DkMMfExgCi2bo6GOJZ0vMpikMYoeI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 Tauri 앱의 inspect element 화면의 콘솔창에 우리가 작성했던 문구가 정확히 나오고 있습니다.</p>
+<hr>
+<h2 id="open-메뉴를-readtextfile-함수를-이용해서-작성해-보기">Open 메뉴를 readTextFile 함수를 이용해서 작성해 보기</h2>
+<p>지난 시간에 writeTextFile을 이용해서 자바스크립트 상에서 텍스트 파일을 로컬디스크에 직접 저장하는 코드를 완성하고 그다음에 readTextFile 함수도 있다고 했었습니다.</p>
+<p>이 함수를 &ldquo;Open&rdquo; 서브 메뉴에 활용해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">readTextFile</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@tauri-apps/api/fs&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">open</span><span class="p">,</span> <span class="nx">save</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@tauri-apps/api/dialog&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">onMount</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Editor mounted!!!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">appWindow</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="s2">&#34;new-content&#34;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;new-content event emitted&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">messages</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">appWindow</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="s2">&#34;open-content&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;open-content event emitted&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">filePath</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">open</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;Select text file&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">filters</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Text&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">extensions</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;txt&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">          <span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">filePath</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">fileContent</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">readTextFile</span><span class="p">(</span><span class="nx">filePath</span> <span class="nx">as</span> <span class="nx">string</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">messages</span> <span class="o">=</span> <span class="nx">fileContent</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 보듯이 appWindow.listen을 onMount 함수 안에 여러 개 만들면 됩니다.</p>
+<p>&lsquo;open-content&rsquo; 이벤트에 실행할 코드는 tauri/api/dialog의 open을 사용했기 때문에 async로 작성해야 합니다.</p>
+<p>코드 내용은 쉽습니다.</p>
+<p>이제 테스트 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgzeldcqutMhrijQZm-ckaglRC6U7j1lHK7zcjrDszgH1Qzxzu8NBgLDqn4A6b7KiTjxnX8G3GVOFQtpOBSNJjygrJYUdI_ef9s55EvZ2rIt58w2C_3QM8eQ8m_167a0iAcnaWRxlTh9t35i9RJVPjikzmcnaOBpKtqwOlgSwhryULrXsvzlatpqC39cLY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhXhg_Bt_2zEnWlhOACFtYhK9pHVMeWMJVw6eRPvNI9f_IFp_6sHUYthLbEmAOku5ZGNGKM0P8gA3yYHuqIr3MxKWfnlVT79w_PxmoKrjkBhH_Gv_AVKLSwk_BmDcfifq4eGKfq7fvkyYDysmQF7UvmXmYmjs8d2f10GknrFYq8Kbx1urtyojeyj2KKGuc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>테스트를 위해서는 개발 서버를 한번 중지시키고 다시 시작해야 합니다.</p>
+<p>open 함수를 사용할 때 Vite의 핫 모듈 리로드에서 꼬여버리는 현상이 나타납니다.</p>
+<p>다시 &ldquo;npm run tauri dev&quot;를 실행하면 정상 작동하니 걱정하지 마심이어요.</p>
+<p>어떤가요?</p>
+<p>&ldquo;Open&rdquo; 메뉴도 정상 작동합니다.</p>
+<hr>
+<p>지금까지 Tauri의 메뉴와 함께 백엔드에서 프로트엔드쪽으로 이벤트를 보내는 방식에 대해 알아봤는데요.</p>
+<p>이 정도까지면 Tauri의 모든 기본 기능은 충분히 이해하셨을 거로 판단됩니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/tauri/" role="button">tauri</a>
+        <a class="btn btn-light" href="/tags/rust/" role="button">rust</a>
+        <a class="btn btn-light" href="/tags/sveltejs/" role="button">sveltejs</a>
+        <a class="btn btn-light" href="/tags/desktop-app/" role="button">desktop app</a>
+        <a class="btn btn-light" href="/tags/cross-platform/" role="button">cross platform</a>
+        <a class="btn btn-light" href="/tags/custom-menu/" role="button">custom menu</a>
+        <a class="btn btn-light" href="/tags/events/" role="button">events</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-30-tauri-dialog-save-to-local-file/">Tauri 실전 코딩 4편 - Tauri에서 dialog save 또는 writeTextFile 함수로 로컬에 파일 쓰기</a></h2>
+                  <p>dialog save 함수, 또는 writeTextFile 함수로 로컬에 파일 쓰기</p>
+                  <p>
+  <small>August 30, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-28-tauri-dialog-open-read-local-file/">Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기</a></h2>
+                  <p>3편, 자바스크립트에서 tauri/api/dialog의 open 함수 사용</p>
+                  <p>
+  <small>August 28, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte/">Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성</a></h2>
+                  <p>2편, 백엔드 로직을 위한 rusqlite, serde_json 설치 및 코드 작성</p>
+                  <p>
+  <small>August 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

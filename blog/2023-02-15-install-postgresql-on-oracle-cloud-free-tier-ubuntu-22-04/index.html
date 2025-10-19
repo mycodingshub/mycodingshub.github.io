@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>오라클 클라우드 Free Tier에 PostgreSQL 서버 설치하기(Ubuntu 22.04)</title>
+<meta name="description" content="평생 공짜인 오라클 Free Tier에 PostgreSQL 서버 설치, 우분투 22.04 버전" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-02-15-install-postgresql-on-oracle-cloud-free-tier-ubuntu-22-04/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="오라클 클라우드 Free Tier에 PostgreSQL 서버 설치하기(Ubuntu 22.04)" />
+<meta property="og:description" content="평생 공짜인 오라클 Free Tier에 PostgreSQL 서버 설치, 우분투 22.04 버전" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-02-15-install-postgresql-on-oracle-cloud-free-tier-ubuntu-22-04/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-02-15T13:39:31Z" />
+<meta property="article:modified_time" content="2023-02-15T13:39:31Z" />
+<meta property="article:tag" content="postgresql" />
+<meta property="article:tag" content="oracle_cloud" />
+<meta property="article:tag" content="free_tier" />
+<meta property="article:tag" content="ubuntu" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="오라클 클라우드 Free Tier에 PostgreSQL 서버 설치하기(Ubuntu 22.04)" />
+<meta name="twitter:description" content="평생 공짜인 오라클 Free Tier에 PostgreSQL 서버 설치, 우분투 22.04 버전" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"오라클 클라우드 Free Tier에 PostgreSQL 서버 설치하기(Ubuntu 22.04)\"",
+  "description": "\"평생 공짜인 오라클 Free Tier에 PostgreSQL 서버 설치, 우분투 22.04 버전\"",
+  "datePublished": "\"2023-02-15T13:39:31Z\"",
+  "dateModified": "\"2023-02-15T13:39:31Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-02-15-install-postgresql-on-oracle-cloud-free-tier-ubuntu-22-04/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>오라클 클라우드 Free Tier에 PostgreSQL 서버 설치하기(Ubuntu 22.04)</h1>
+        <p>
+  <small>February 15, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>작년쯤인가 아랫글을 작성했었는데요.</p>
+<p><a href="https://mycodingshub.github.io/blog/2022-08-07-complete-introduction-of-oracle-cloud-free-tier">오라클 클라우드(Oracle Cloud)로 무료로 웹 서버 구축하기</a></p>
+<p>평생 무료 서버 구축해 놓고 쓰고 있지 않아서 아까웠는데요.</p>
+<p>원래는 Strapi 서버를 구축하려고 했는데 좀 더 좋은 PostgreSQL 서버가 좀 더 나은 선택이라 결론지었습니다.</p>
+<p>그래서 오늘은 퇴근 후 많은 시간을 투자해서 PostgreSQL 서버를 구축했습니다.</p>
+<p>제가 나중에 잊어버리지 않게 이 글을 노트 삼아 작성할 예정이오니 참고 바랍니다.</p>
+<hr>
+<h2 id="오라클-클라우드에-postgresql-포트-오픈시키기">오라클 클라우드에 PostgreSQL 포트 오픈시키기</h2>
+<p>PostgreSQL 서버를 오라클 클라우드에서 작동시키려면 외부에서 접속할 수 있는 포트를 열어야 하는데요.</p>
+<p>예전 글을 잘 살펴보시면 포트 추가하는 곳이 나옵니다.</p>
+<p>간략히 큰 메뉴에서 설명하자면,</p>
+<p>&ldquo;네트워킹 - 가상 클라우드 네트워크&quot;를 선택한 다음</p>
+<p>예전에 구획을 main, sub 두 개를 나누었었는데요.</p>
+<p>원하는 구획을 선택하고 VCN을 클릭해서 들어갑니다.</p>
+<p>그러면 아래와 같이 나오는데요.</p>
+<p>먼저, 왼쪽 리소스 메뉴 밑에 &ldquo;보안 목록(2개)&ldquo;를 눌러야지 오른쪽 화면이 아래 그림과 같이 바뀝니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi0GeI9zJfdY5q9lmnca44lsxznwRD5OQEDwQUtKBQskmYtuV_kByrqgQwUHLEWGNrwcsOHKL4V1shx1FA3juSOFJ23tY0baRK43C9hFXjU2x8CXZoAC6WDzm0n1LbzhlpuUHCXVpnEeB-tXx9QVkzByqf5LHbTZnhTizy0LKpuzCc_vE6w6qCfTxmy"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 그림에서 &ldquo;Default Security List for main-VCN&quot;을 선택한 다음 아래 그림과 같이 수신 규칙을 하나 추가합니다.</p>
+<p>아래는 PostgreSQL 포트인 5432 포트를 추가하는 예제입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg2WVzHa8wNUoDrjQfTrB0lLK5MCKK48uuH7ujiQr_Edb7FOVgVU1dQ0Zn9rofdOaH2ffNsAGgVGXRLTsiGn5I_x3a02FR6o5ohGkmeAa1yruvs0G-HiFz_Rj9-lZyqcqZoXmdzq6odWvlZFc5Oh0iOgdwgZvsDSMF3wKNQ5nM_QGp_Mf4EXfPN3sKq"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 포트까지 열었으니까 상위 메뉴에서 인스턴스로 가서 main 구획이 있는 인스턴스를 클릭한 다음 재부팅을 해야 합니다.</p>
+<p>그런데, 재부팅은 조금 있다 하시고요.</p>
+<hr>
+<h2 id="ssh로-오라클-서버로-접속-및-postgresql-설치">SSH로 오라클 서버로 접속 및 PostgreSQL 설치</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -i oracle-server-ssh.key ubuntu@222.222.222.222</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 오라클 서버로 접속하는 ssh 접속 명령어입니다.</p>
+<p>주소는 예전에 저장해 놨을 거고, 접속 key도 저장해 놨을 텐데요.</p>
+<p>일단 접속하시면 ubuntu 콘솔 창이 나옵니다.</p>
+<p>여기서 이제 PostgreSQL 설치를 해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt update
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo apt install postgresql postgresql-contrib</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러면 현재 기준 PostgreSQL 버전 14가 설치되는데요.</p>
+<p>이제 PostgreSQL 초기 세팅을 해줘야 합니다.</p>
+<h2 id="postgresql-세팅">PostgreSQL 세팅</h2>
+<p>일단 설치를 했으면 잘 실행되는지 테스트해 봐야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@main-instance:~$ sudo -i -u postgres
+</span></span><span class="line"><span class="cl">postgres@main-instance:~$</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 postgres 아이디로 사용자를 바꾸고,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">postgres@main-instance:~$ psql</span></span></code></pre></div>
+  </figure>
+</div>
+<p>psql 명령어를 입력해 봅니다.</p>
+<p>그러면 다음과 같이 나오는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">postgres@main-instance:~$ psql
+</span></span><span class="line"><span class="cl">psql <span class="o">(</span>14.6 <span class="o">(</span>Ubuntu 14.6-0ubuntu0.22.04.1<span class="o">))</span>
+</span></span><span class="line"><span class="cl">Type <span class="s2">&#34;help&#34;</span> <span class="k">for</span> help.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">postgres</span><span class="o">=</span><span class="c1"># \q</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>잘 실행되네요.</p>
+<p>postgres 프로그램에서 나오려면 <code>\q</code>를 입력하면 됩니다.</p>
+<h3 id="creating-a-new-role">Creating a New Role</h3>
+<p>postgres 는 디폴트 사용자라서 보통 다른 사용자를 추가하는데요.</p>
+<p>postgres 사용자로 전환했다고 가정하고 아래와 같이 해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">postgres@main-instance:~$ createuser --interactive
+</span></span><span class="line"><span class="cl">Enter name of role to add: <span class="nb">test</span>
+</span></span><span class="line"><span class="cl">Shall the new role be a superuser? <span class="o">(</span>y/n<span class="o">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러면 이름하고 superuser로 지정하겠냐고 묻는데요.</p>
+<p>이름은 본인 아이디로 하시고 superuser는 Y를 선택합시다.</p>
+<h3 id="creating-a-new-database">Creating a New Database</h3>
+<p>PostgreSQL은 user 이름과 똑같은 데이터베이스를 디폴트로 불러오는데요.</p>
+<p>그래서 유저 이름과 같은 데이터베이스를 만드는 게 좋습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">postgres@main-instance:~$ createdb test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>저는 이름을 test로 했는데, 본인 아이디로 하시든가 프로젝트 이름으로 하시든가 마음대로 하면 됩니다.</p>
+<h3 id="user-추가하기">User 추가하기</h3>
+<p>PostgreSQL 로그인 방법 중에 ident based authentication 이란게 있는데요.</p>
+<p>이건 리눅스 서버 유저 이름과 PostgreSQL Role 이름과 DB 이름이 같다고 전제하는 방식입니다.</p>
+<p>그래서 오라클 리눅스 서버에 아까 만들었던 PostgreSQL Role 이름과 똑같은 유저를 생성해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo adduser test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 새로 만든 유저 이름으로 전환해서 psql 명령어를 실행해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo -i -u <span class="nb">test</span>
+</span></span><span class="line"><span class="cl">psql</span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">test</span><span class="o">=</span><span class="c1"># \conninfo</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 명령어는 connection info 라는 명령어인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">test</span><span class="o">=</span><span class="c1"># \conninfo</span>
+</span></span><span class="line"><span class="cl">You are connected to database <span class="s2">&#34;test&#34;</span> as user <span class="s2">&#34;test&#34;</span> via socket in <span class="s2">&#34;/var/run/postgresql&#34;</span> at port <span class="s2">&#34;5432&#34;</span>.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나올 겁니다.</p>
+<p>여기서 중요한 게 나중에 pgAdmin이란 프로그램으로 외부에서 접속할 때 비밀번호를 물어보거든요.</p>
+<p>그래서 아래와 같이 한번 입력해 주십시오.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">test</span><span class="o">=</span><span class="c1"># ALTER USER test PASSWORD &#39;myPassword&#39;;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 명령어는 test 유저의 PASSWORD를 &lsquo;myPassword&rsquo;로 바꾼다는 뜻입니다.</p>
+<p>위 명령어가 성공적으로 작동된다면 &ldquo;ALTER ROLE&quot;이라는 문구가 나올 겁니다.</p>
+<p>이제 PostgreSQL 서버 설치는 끝났는데요.</p>
+<p>설정 부분만 남았습니다.</p>
+<hr>
+<h2 id="외부-접속이-가능하게끔-postgresql-설정-파일-고치기">외부 접속이 가능하게끔 PostgreSQL 설정 파일 고치기</h2>
+<p>먼저, 오라클 클라우드 서버에 접속하셨으면 아래와 같이 입력합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo vim /etc/postgresql/14/main/pg_hba.conf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">또는
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo nano /etc/postgresql/14/main/pg_hba.conf</span></span></code></pre></div>
+  </figure>
+</div>
+<p>편집기를 이용해서 아래와 같이 고치면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Database administrative login by Unix domain socket</span>
+</span></span><span class="line"><span class="cl"><span class="nb">local</span>   all             postgres                                peer
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># TYPE  DATABASE        USER            ADDRESS                 METHOD</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># &#34;local&#34; is for Unix domain socket connections only</span>
+</span></span><span class="line"><span class="cl"><span class="nb">local</span>   all             all                                     scram-sha-256
+</span></span><span class="line"><span class="cl"><span class="c1"># IPv4 local connections:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#host    all             all             127.0.0.1/32            scram-sha-256</span>
+</span></span><span class="line"><span class="cl">host    all             all             0.0.0.0/0               scram-sha-256
+</span></span><span class="line"><span class="cl"><span class="c1"># IPv6 local connections:</span>
+</span></span><span class="line"><span class="cl">host    all             all             ::1/128                 scram-sha-256
+</span></span><span class="line"><span class="cl"><span class="c1"># Allow replication connections from localhost, by a user with the</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># replication privilege.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#local   replication     all                                     peer</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#host    replication     all             127.0.0.1/32            scram-sha-256</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#host    replication     all             ::1/128                 scram-sha-256</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 중요한 게 바로 아래와 같이 두 부분인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">local</span>   all             all                                     scram-sha-256
+</span></span><span class="line"><span class="cl">host    all             all             0.0.0.0/0               scram-sha-256</span></span></code></pre></div>
+  </figure>
+</div>
+<p>scram-sha-256 방식은 인증 방식인데요.</p>
+<p>인증 방식은 PostgreSQL 공식 문서에 보면 3가지가 나오는데요.</p>
+<p>가장 좋은 게 바로 scram-sha-256 방식입니다.</p>
+<p>간략하게 설명서를 보여드리겠습니다.</p>
+<table>
+  <thead>
+      <tr>
+          <th>인증방식</th>
+          <th>설명</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>peer</td>
+          <td>피어(peer) 인증 방법은 클라이언트의 운영 체제 사용자 이름을 커널로부터 획득하고, 허용된 데이터베이스 사용자 이름으로 사용함으로써 작동된다 (선택적 사용자 이름 매핑 사용 ex: all, postgres 등으로 사용자 매핑 ) 이 방법은 로컬 연결에만 지원된다.</td>
+      </tr>
+      <tr>
+          <td>md5</td>
+          <td>암호 스니핑을 방지하고 일반 텍스트로 서버에 암호를 저장하는 것을 방지(암호화)하지만 공격자가 서버에서 암호 해시를 훔치는 경우 보호 기능을 제공하지 않는다. 또한 MD5 해시 알고리즘은 이제 더 이상 결정된 공격에 대해 안전한 것으로 간주되지 않는다.</td>
+      </tr>
+      <tr>
+          <td>scram-sha-256</td>
+          <td>신뢰할 수없는 연결에서 암호 스니핑을 방지하고 안전한 것으로 간주되는 암호화 해시 된 형식으로 서버에 암호를 저장하는 것을 지원하는 시도 응답 체계다. 이것은 현재 제공되는 방법 중 가장 안전하지만 이전 클라이언트 라이브러리에서는 지원되지 않는다.</td>
+      </tr>
+  </tbody>
+</table>
+<p>이제, 두 번째 설정 파일을 고쳐야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo vim /etc/postgresql/14/main/postgresql.conf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">또는
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo nano /etc/postgresql/14/main/postgresql.conf</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 파일에서는 다음과 같이 바꾸면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CONNECTIONS AND AUTHENTICATION</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># - Connection Settings -</span>
+</span></span><span class="line"><span class="cl"><span class="nv">listen_addresses</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#listen_addresses = &#39;localhost&#39;         # what IP address(es) to listen on;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>listen_addresses 를 &lsquo;*&lsquo;로 지정한다는 뜻은 어느 IP에서든 접속을 허락한다는 뜻입니다.</p>
+<p>이제 PostgreSQL 서버를 재시작하고 상태를 살펴볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@main-instance:~$ sudo systemctl restart postgresql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ubuntu@main-instance:~$ sudo systemctl status postgresql
+</span></span><span class="line"><span class="cl">● postgresql.service - PostgreSQL RDBMS
+</span></span><span class="line"><span class="cl">     Loaded: loaded <span class="o">(</span>/lib/systemd/system/postgresql.service<span class="p">;</span> enabled<span class="p">;</span> vendor preset: enabled<span class="o">)</span>
+</span></span><span class="line"><span class="cl">     Active: active <span class="o">(</span>exited<span class="o">)</span> since Wed 2023-02-15 22:19:49 KST<span class="p">;</span> 59min ago
+</span></span><span class="line"><span class="cl">    Process: <span class="m">2892</span> <span class="nv">ExecStart</span><span class="o">=</span>/bin/true <span class="o">(</span><span class="nv">code</span><span class="o">=</span>exited, <span class="nv">status</span><span class="o">=</span>0/SUCCESS<span class="o">)</span>
+</span></span><span class="line"><span class="cl">   Main PID: <span class="m">2892</span> <span class="o">(</span><span class="nv">code</span><span class="o">=</span>exited, <span class="nv">status</span><span class="o">=</span>0/SUCCESS<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        CPU: 1ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Feb <span class="m">15</span> 22:19:49 main-instance systemd<span class="o">[</span>1<span class="o">]</span>: Starting PostgreSQL RDBMS...
+</span></span><span class="line"><span class="cl">Feb <span class="m">15</span> 22:19:49 main-instance systemd<span class="o">[</span>1<span class="o">]</span>: Finished PostgreSQL RDBMS.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>systemctl로 재시작하고 상태도 살펴봤는데 잘 실행되고 있네요.</p>
+<p>그런데 여기서 끝이 아닙니다.</p>
+<hr>
+<h2 id="외부접속을-위한-방화벽-iptables-설정하기">외부접속을 위한 방화벽, iptables 설정하기</h2>
+<p>오라클 클라우드 서버는 방화벽이 기본 설정되어 있어서 풀어줘야 합니다.</p>
+<p>다음과 같이 하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo firewall-cmd --permanent --add-port<span class="o">=</span>5432/tcp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo firewall-cmd --reload</span></span></code></pre></div>
+  </figure>
+</div>
+<p>방화벽에 5432/tcp 포트를 열어 두는 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@main-instance:~$ sudo firewall-cmd --list-all
+</span></span><span class="line"><span class="cl">public
+</span></span><span class="line"><span class="cl">  target: default
+</span></span><span class="line"><span class="cl">  icmp-block-inversion: no
+</span></span><span class="line"><span class="cl">  interfaces:
+</span></span><span class="line"><span class="cl">  sources:
+</span></span><span class="line"><span class="cl">  services: dhcpv6-client ssh
+</span></span><span class="line"><span class="cl">  ports: 5432/tcp
+</span></span><span class="line"><span class="cl">  protocols:
+</span></span><span class="line"><span class="cl">  forward: yes
+</span></span><span class="line"><span class="cl">  masquerade: no
+</span></span><span class="line"><span class="cl">  forward-ports:
+</span></span><span class="line"><span class="cl">  source-ports:
+</span></span><span class="line"><span class="cl">  icmp-blocks:
+</span></span><span class="line"><span class="cl">  rich rules:
+</span></span><span class="line"><span class="cl">ubuntu@main-instance:~$</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나오면 잘되고 있는 겁니다.</p>
+<p>이제 패킷 관련 iptables을 건들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo iptables -I INPUT -p tcp --dport <span class="m">5432</span> -j ACCEPT</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 완료되었습니다.</p>
+<p>그럼, 아까 맨 위에서 재부팅 나중에 하라고 했던 그 부분으로 가서 오라클 클라우드 서버를 재부팅 합시다.</p>
+<h2 id="pgadmin으로-접속하기">pgAdmin으로 접속하기</h2>
+<p>PostgreSQL 관련 가장 좋은 Client Tool은 바로 pgAdmin 앱인데요.</p>
+<p><a href="https://www.pgadmin.org/">pgAdmin 홈페이지</a></p>
+<p>여기서 다운로드하시면 됩니다.</p>
+<p>받아서 설치하고 실행하면 마스터 패스워드를 물어보는데요.</p>
+<p>pgAdmin 프로그램의 마스터 패스워드라서 잘 선택하고 외우시기를 바랍니다.</p>
+<p>이제 오라클 PostgreSQL 서버에 접속해 볼까요?</p>
+<p>왼쪽 Browser에서 Servers를 고르신 후 오른쪽 버튼을 누르면 아래와 같이 나오는데요.</p>
+<p>여기서 아래와 같이 Register Server를 선택합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjNbtWUyn8AaKMUOHlxAUN_kzMw4qD4KtiGjWB_Ltuoll5z-_t1s0F7vle3bHXGIoFuEg7VuD5cfTCb_sdhJxroFaWfpwQEdO_4tdhV1baKbJ01g8tR5XhHIzMrY4jLCGlQj2tb3TKQyXEOhDyy9HKNHai6Pstyh17F8aq-RN2np_t-J5AMSV-ByxUa"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 아래와 같이 General 탭에서는 적당한 이름을 적어주시고</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhxBmShO6n_HMjL_imIfq7CV2xF4mrdFNM6aZVUhpDQs7RXMKbKLkJ7smqVxq6Ov2HQ3DR-GCauQUYOn0dnh3HfvVZEgdBkGdGvqcRx-bpfmjKC6YQ3qrgG1-tV2tyRyY6ufyPDWAxXrKPyv_ZQ7HxKqIWrX3gNbcRs-Nst9XoRL5IAIIHbsdjtC8RX"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>아래와 같이 서버 주소, 포트, 사용자 아이디, 그리고 패스워드도 넣어줍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi4qPjS7zt6qQrZvpjqh0rHVdCX2OCsM_1IbMmgZBtwngqSPJcpBniNWJm3yx0lwM6fHyPET6evzI08eLAflEw2VqcjYpPY9mEjz96PJhA3_0f_4AU5of78eBugucFIujXCKq8lr2clEXOE43Qz57Ui8mAqlv0vvaXPr9kq6GDoL6AAm9Yfbsj9iFl3"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Username과 함께 Password 가 필요한 이유가 우리가 위에서 선택한 scram-sha-256 방식입니다.</p>
+<p>password를 설정 안 했다면 이 글 중간쯤에 ALTER USER 관련 패스워드 변경 방법이 나옵니다.</p>
+<p>아래처럼요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">test</span><span class="o">=</span><span class="c1"># ALTER USER test PASSWORD &#39;myPassword&#39;;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>패스워드가 생각나신다면 적으시고 이제 맨 아래 오른쪽 Save 버튼을 누르면 성공입니다.</p>
+<p>화면에 서버이름이 잘 나오네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjX8hrPXtBxq_mwQDSp5djTXKmNcVADaKqO6QKBIoyh1Dkdsr_tzIrHRkP_4YcmxIpwRI7LqKMfGokHRiDL98PoQL8f8aMW_8B_6wTut-FWe57F9jqxCyEEB0yz3Y0N_0Aoiv93Tv_ofgN-eMePxztwmVhL9l5upFlz2FfHq-fmso5NePFoKY_ClwHf"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나온다면 완성입니다.</p>
+<p>지금까지 오라클 클라우드 프리 티어에 PostgreSQL 서버를 설치하는 방법에 대해 설명드렸는데요.</p>
+<p>이제 웹 개발할 때 위에서 설치한 서버를 이용해서 DB 관련 작업을 하면 될 거 같네요.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/postgresql/" role="button">postgresql</a>
+        <a class="btn btn-light" href="/tags/oracle_cloud/" role="button">oracle_cloud</a>
+        <a class="btn btn-light" href="/tags/free_tier/" role="button">free_tier</a>
+        <a class="btn btn-light" href="/tags/ubuntu/" role="button">ubuntu</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-08-07-complete-introduction-of-oracle-cloud-free-tier/">오라클 클라우드(Oracle Cloud)로 무료로 웹 서버 구축하기</a></h2>
+                  <p>오라클 클라우드 Free Tier로 월 1TB 트래픽의 무료 가상 머신 구축하기</p>
+                  <p>
+  <small>August 7, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-03-24-ubuntu-strapi-sever-how-to/">오라클 클라우드 Free Tier에 Strapi 서버 설치하기</a></h2>
+                  <p>오라클 클라우드 Free Tier에 Strapi 서버 설치하기</p>
+                  <p>
+  <small>March 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

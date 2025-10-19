@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Query 강좌 8편. useMutation 사용법과 Optimistic Updates</title>
+<meta name="description" content="React Query에서 useMutaion 사용법과 최상의 UX를 위한 Optimistic Updates 구현하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-10-02-react-query-howto-usemutation-in-depth/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Query 강좌 8편. useMutation 사용법과 Optimistic Updates" />
+<meta property="og:description" content="React Query에서 useMutaion 사용법과 최상의 UX를 위한 Optimistic Updates 구현하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-10-02-react-query-howto-usemutation-in-depth/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-10-02T11:07:53Z" />
+<meta property="article:modified_time" content="2023-10-02T11:07:53Z" />
+<meta property="article:tag" content="react query" />
+<meta property="article:tag" content="useMutation" />
+<meta property="article:tag" content="Optimistic Updates" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Query 강좌 8편. useMutation 사용법과 Optimistic Updates" />
+<meta name="twitter:description" content="React Query에서 useMutaion 사용법과 최상의 UX를 위한 Optimistic Updates 구현하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Query 강좌 8편. useMutation 사용법과 Optimistic Updates\"",
+  "description": "\"React Query에서 useMutaion 사용법과 최상의 UX를 위한 Optimistic Updates 구현하기\"",
+  "datePublished": "\"2023-10-02T11:07:53Z\"",
+  "dateModified": "\"2023-10-02T11:07:53Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-10-02-react-query-howto-usemutation-in-depth/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Query 강좌 8편. useMutation 사용법과 Optimistic Updates</h1>
+        <p>
+  <small>October 2, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>여덟 번째 React Query 강좌 시리즈입니다</p>
+<p>전체 시리즈 링크는 아래와 같습니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-17-how-to-use-react-query-and-usequery">React Query 강좌 1편. useQuery 사용법 기초</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-17-react-query-cachetime-staletime-refetch-poll">React Query 강좌 2편. 캐시로 움직이는 useQuery 작동 원리(cachetime,staletime,refetch,poll)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-refetch-on-click-success-callback-data-transformation">React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-tutorial-query-by-id-and-parallel-queries">React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-dynamic-parallel-queries-and-dependent-query">React Query 강좌 5편. 동적 병렬 쿼리(dynamic parallel queries)와 필요충분 쿼리 만들기(dependent query)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-usequeryclient-initialdata-using-cache">React Query 강좌 6편. useQueryClient와 initialData를 이용해서 캐시된 데이터 활용하여 상세 페이지에서 보여주기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-paginated-query-and-infinite-query">React Query 강좌 7편. 페이지네이션 구현하기와 useInfiniteQuery로 무한스크롤 구현하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-02-react-query-howto-usemutation-in-depth">React Query 강좌 8편. useMutation 사용법과 Optimistic Updates</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ol>
+<li>
+<p><a href="#1-usemutaion-%ea%b8%b0%eb%b3%b8-%ec%82%ac%ec%9a%a9%eb%b2%95">useMutaion 기본 사용법</a></p>
+</li>
+<li>
+<p><a href="#2-post-%ec%95%a1%ec%85%98-%ed%9b%84-%eb%b0%94%eb%a1%9c-%ec%bf%bc%eb%a6%ac-%ea%b0%b1%ec%8b%a0%ec%8b%9c%ed%82%a4%ea%b8%b0">POST 액션 후 바로 쿼리 갱신시키기</a></p>
+</li>
+<li>
+<p><a href="#3-invalidatequeries-%eb%a7%90%ea%b3%a0-setquerydata%eb%a1%9c-%ec%a7%81%ec%a0%91-%ec%bf%bc%eb%a6%ac%ec%97%90-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ec%b6%94%ea%b0%80%ed%95%98%ea%b8%b0">invalidateQueries 말고 setQueryData로 직접 쿼리에 데이터 추가하기</a></p>
+</li>
+<li>
+<p><a href="#4-optimistic-updates-%ea%b5%ac%ed%98%84">Optimistic Updates 구현</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-usemutaion-기본-사용법">1. useMutaion 기본 사용법</h2>
+<p>React Query를 이용해서 Data를 POST 할 수 있는데요.</p>
+<p>이때 사용하는 React Query의 훅이 useMutaion입니다.</p>
+<p>리액트에서 POST 액션을 위한 기본적인 input, button을 만들어야겠죠.</p>
+<p>기존 ReactQuery.jsx 파일에 아래와 같이 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactQuery</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">price</span><span class="p">,</span> <span class="nx">setPrice</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">handleCreate</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">({</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">price</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-4xl&#34;</span><span class="o">&gt;</span><span class="nx">ReactQuery</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;space-x-2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setName</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;number&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">price</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setPrice</span><span class="p">(</span><span class="nb">Number</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">))}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border&#34;</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleCreate</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Create</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhrnf2W5xGabw9qxCL9yoIhNPGlxCaJkcRiGRjROm32yI4n0Ppv6Ar0j_CJ6WI9t8g_o4Cp355Z9oqwC1kcIS97zO-3jwQCtl0IboA1uq7UF1dUBcCZMlxO3Any-5CiFSIamD-WIXSeSzZE-TSvZlFTzTVXlll05R59a4RdQ7VaDw4hffe4sOwK_e1MP6M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나오네요.</p>
+<p>콘솔창에 우리가 입력했던 데이터도 잘 출력되고 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjrlYS3gINlA29eO5NogbPIV7nPpJkXQrVIiRzEBy-OoRDYuHsFjJ3eK7ahTCcl9l74gKke8Vgkm48mh3M4ZN-d15ex_jysmuSAzMelNE1w0OJ8EqMcbZIOmMJMG14KZGCFa2DsfYMbudJzPqlau05fVYRHem5BGj4IT3O_FnSLl6Mjtj2rJvieqkUzJuA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>UI를 완성했으니까 이제, useMutaion 코드를 작성해야 하는데요.</p>
+<p>먼저, 기존에 사용했던 <code>/src/hooks/useProductName</code> 파일에 커스텀 useMutaion 훅을 만들어 보겠습니다.</p>
+<p>참고로 기존의 fly.io 서버 말고 로컬에서 돌리는 pocketbase 서버를 이용했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span><span class="p">,</span> <span class="nx">useMutation</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">addProduct</span> <span class="o">=</span> <span class="p">(</span><span class="nx">product</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://127.0.0.1:8090/api/collections/products/records&#34;</span><span class="p">,</span> <span class="nx">product</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useAddProduct</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useMutation</span><span class="p">(</span><span class="nx">addProduct</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리가 만들 커스텀 훅은 단순하게 그냥 useMutaion 훅을 리턴하면 되는데요.</p>
+<p>useMutaion이 받는 인자는 POST 액션을 위한 axios 콜백함수면 됩니다.</p>
+<p>그냥 콜백함수만 넘기면 됩니다.</p>
+<p>이제, 우리가 만든 커스텀 useAddProduct 훅을 ReactQuery.jsx 컴포넌트에서 사용해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useProductName</span><span class="p">,</span> <span class="nx">useAddProduct</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./hooks/useProductName&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">mutate</span><span class="o">:</span> <span class="nx">addProduct</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useAddProduct</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handleCreate</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">({</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">price</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">price</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">addProduct</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>useAddProduct 훅에서 useMutation 훅을 받는데 거기서 mutate라는 함수만 받습니다.</p>
+<p>그리고 mutate 함수의 이름을 addProduct라고 alias 형태로 새로 이름 지었습니다.</p>
+<p>그리고 마지막으로 handleCreate 함수에서 addProduct 함수를 실행시키면 됩니다.</p>
+<p>addProduct 함수에 우리가 입력받았던 데이터를 객체 형태로 인자로 넣어주면 되죠.</p>
+<p>테스트를 해보면 나중에 밑에 추가된 리스트가 보입니다.</p>
+<p>왜냐하면 React Query의 useQuery 훅에 의해 백그라운드에서 fetch가 계속 일어나고 있으니까요.</p>
+<p>그래서 우리가 DB에 업데이트된 게 보일 겁니다.</p>
+<p>그러면 pocketbase 서버에 제대로 되어 있는지 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi1vcCH2FwiZ6Ijeg8Yw3fpFFP0YH1-JclDgJQUpKVKeRlXXh0RXqcS7-IR50AMT2YZOSUSdQr9NPrXlHLkVVayYtOKxWMcdRQoUF--xwLJ9F0JS8QvyvYxomZzG4uGgLDTIALE8dCH8rN1YDZlgWYkEsiqWmy35i-riZr725T-7Mh-hlmuBP7oqfragM4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 정상 작동하네요.</p>
+<p>pocketbase의 POST 액션 작동을 위해 API Rule을 아래와 같이 다 오픈해주면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjSiqdHn-vzG-3ap-HujQ_18-IZ4bw5RLSejfCh8I1HxzvXm5qAxIQSNs4F709aiSmxKrE3SPhWCzKlLEcQcuUaE2wJMMb-6s0CtKBWcb3_tbYzKp6jelsCbadQniW80MFdICINBiTP5xibKvWrD5muqDFyUGxb8QwEg6J6x9rDkGJ6cOuZHzCFbrE-pzo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 해주시면 API를 이용해서 POST, DELETE, PUT 등 여러 가지 HTTP 액션을 이용할 수 있습니다.</p>
+<hr>
+<h2 id="2-post-액션-후-바로-쿼리-갱신시키기">2. POST 액션 후 바로 쿼리 갱신시키기</h2>
+<p>위에서 새로운 아이템을 추가하는 버튼을 누르면 백그라운드로 React Query가 fetching 하게 되는데요.</p>
+<p>조금 시간이 걸립니다.</p>
+<p>유저 입장에서는 조금 난감한 상황인데요.</p>
+<p>빠른 반응을 위해 useMutaion 이 성공했을 때 바로 쿼리를 갱신하는 방법이 있습니다.</p>
+<p>바로 우리가 useQuery로 등록했던 쿼리 이름(queryKey)를 이용해서 invalidate 하는 방식인데요.</p>
+<p>다음과 같이 하면 됩니다.</p>
+<p>커스텀 훅으로 만들었던 useAddProduct 훅을 아래와 같이 고치면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span><span class="p">,</span> <span class="nx">useMutation</span><span class="p">,</span> <span class="nx">useQueryClient</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-query&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useAddProduct</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useMutation</span><span class="p">(</span><span class="nx">addProduct</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSuccess</span><span class="o">:</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">invalidateQueries</span><span class="p">(</span><span class="s1">&#39;get-product&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>useMutaion 함수는 두 번째 인자로 옵션 객체를 받을 수 있는데요. 여기서 onSuccess 항목을 이용한 겁니다.</p>
+<p>useQueryClient를 이용해서 메모리상의 queryClient 객체를 얻어서 바로 invalidateQueries 함수를 실행하는 건데요.</p>
+<p>invalidateQueries 함수에는 우리가 useQeury 훅을 이용해서 만들었던 queryKey를 넣어주면 됩니다.</p>
+<p>invalidateQueries 함수는 queryKey의 쿼리를 즉시 무효화 시키고 다시 fetching 시키게 되는데요.</p>
+<p>그래서 POST 액션 후에 잠깐의 시간 지체없이 바로 화면에 업데이트된 정보가 보이게 됩니다.</p>
+<hr>
+<h2 id="3-invalidatequeries-말고-setquerydata로-직접-쿼리에-데이터-추가하기">3. invalidateQueries 말고 setQueryData로 직접 쿼리에 데이터 추가하기</h2>
+<p>invalidateQueries를 이용하면 메모리에 있던 쿼리가 다시 fetching 하게 되는데요.</p>
+<p>여기서 우리가 입력했던 데이터를 우리가 알고 있기 때문에 클라이언트 상에서 메모리의 쿼리에 직접 데이터를 업데이트하여 useQuery가 feching을 하지 않게 만들 수 있습니다.</p>
+<p>즉, POST 액션 후에 GET 액션이 무조건 일어나는데 POST 액션 후에 일어나는 GET 액션을 방지하는 거죠.</p>
+<p>불필요한 GET 액션을 없애는 건데요.</p>
+<p>기존 useAddProduct 커스텀 훅에 아래와 같이 작성하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useAddProduct</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useMutation</span><span class="p">(</span><span class="nx">addProduct</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSuccess</span><span class="o">:</span> <span class="nx">data</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// queryClient.invalidateQueries(&#34;get-product&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">(</span><span class="s1">&#39;get-product&#39;</span><span class="p">,</span> <span class="nx">oldProductData</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="p">...</span><span class="nx">oldProductData</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">data</span><span class="o">:</span> <span class="p">[...</span><span class="nx">oldProductData</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 data 항목에 &hellip;oldProductData.data.items라고 쓴 이유는 제 pocketbase의 데이터가 items 항목안에 있어서 그런겁니다.</p>
+<p>즉, pocketbase가 리턴하는 데이터에서 items가 우리가 원하는 배열이기 때문입니다.</p>
+<p>다른 DB를 사용하시면 꼭 data 객체 밑에 배열인 부분을 꼭 찾으시기 바랍니다.</p>
+<p>실행 결과는 아래와 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjSj4NhMFx3aR10qZdNhbIuNTJjzZrp_6rEkFSK1My2HqWXnufEAJ0hYIF2pkPkf3XualJ8GIjaXnCKEoIl8t1BY8V72YAfjJMRyffKJq9fedJr7EtnsdLVX94xp2e8cG7_icYRM4nAIr24P8DT82-OBu2uLH8v78nQx38a613sp9kFgpoP7WE2--3pqNE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 실행 결과를 보시면 queryClient의 setQueryData 함수로 직접 데이터를 추가했습니다.</p>
+<p>그리고 추가된 데이터는 DEV Tools에서 보듯이 추가가 완료되어 나오고 있네요.</p>
+<hr>
+<h2 id="4-optimistic-updates-구현">4. Optimistic Updates 구현</h2>
+<p>가장 이상적인 POST 액션은 클라이언트 상에서 유저가 입력을 마치고 버튼을 누르면 바로 화면에 반응이 나타나고,</p>
+<p>실제 POST 액션은 백그라운드로 실행되는 것을 뜻합니다.</p>
+<p>그리고 이런 걸 바로 Optimistic Updates라고 하는데요.</p>
+<p>React Query를 이용해서 Optimistic Updates를 구현해 보겠습니다.</p>
+<p>이때 사용하는 콜백이 바로 onMutate와 onError, onSettled 인데요.</p>
+<p>아래와 같이 각각 구현해 보겠습니다.</p>
+<p>그리고, async 방식을 사용해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">v4</span> <span class="nx">as</span> <span class="nx">uuid</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;uuid&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useAddProduct</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useMutation</span><span class="p">(</span><span class="nx">addProduct</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// onSuccess: (data) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//   // queryClient.invalidateQueries(&#34;get-product&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//   queryClient.setQueryData(&#34;get-product&#34;, (oldProductData) =&gt; {
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//     return {
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//       ...oldProductData,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//       data: [...oldProductData, data.data],
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//     };
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//   });
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// },
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">onMutate</span><span class="o">:</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">newProduct</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">await</span> <span class="nx">queryClient</span><span class="p">.</span><span class="nx">cancelQueries</span><span class="p">(</span><span class="s2">&#34;get-product&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">previousProductData</span> <span class="o">=</span> <span class="nx">queryClient</span><span class="p">.</span><span class="nx">getQueryData</span><span class="p">(</span><span class="s2">&#34;get-product&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">(</span><span class="s2">&#34;get-product&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">oldProductData</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="p">...</span><span class="nx">oldProductData</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">data</span><span class="o">:</span> <span class="p">[...</span><span class="nx">oldProductData</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="p">{</span> <span class="nx">id</span><span class="o">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="p">...</span><span class="nx">newProduct</span> <span class="p">}],</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">previousProductData</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>onMutate 항목에서 중요한 점은 setQueryData의 콜백함수에 리턴되는 항목을 잘 보시면 data 부분에 oldProductData.data.items라고 되어 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjXgKUdOWRLYGbdWRrmGIfda2ilIqxDnxc30qU87klyv3sH7buJPtV7UsZ8eNvbaiEYeLS-eZCIESenanADO3nzqy_tNkXg31MIdwdNltCsjyZLfk9MgkD4wLteQMTEAtVnFuXK0ZPq3pq24CsVermi34u3FIX6N8RGrw_PsZNTi318NinMUttdOKkc6LE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>저는 pocketbase를 사용했기 때문에 위 그림과 같이 data 다음에 items라는 항목이 더 있는데요.</p>
+<p>실제 items 항목이 배열로써 iterable한 데이터가 되는 겁니다.</p>
+<p>그래서 &hellip;oldProductData.data.items라고 사용했습니다.</p>
+<p>본인이 사용하는 DB가 리턴하는 JSON 데이터의 형식을 꼭 확인하고 숙지해야 하는 거죠.</p>
+<p>일반적으로 React Query는 객체 뒤에 data 항목을 이름으로 이용하기 때문에 꼭 &hellip;oldProductData.data 라고 써야 합니다.</p>
+<p>먼저, onSuccess는 사용하지 않을 거라 주석 처리하시면 됩니다.</p>
+<p>그리고 onMutate 항목을 async로 작동되게 하고, 위와 같이 작성하시면 되는데요.</p>
+<p>작동 원리는 &lsquo;get-product&rsquo; 쿼리를 먼저 취소하고, 그다음 예전 &lsquo;get-product&rsquo; 데이터를 previousProductData에 불러옵니다.</p>
+<p>그리고 setQueryData를 이용해서 직접 데이터를 수작업으로 쿼리에 업데이트하는데요.</p>
+<p>여기서 중요한 거는 바로 pocketbase의 id 부분인데요.</p>
+<p>pocketbase의 id는 아래 그림과 같이 랜덤 텍스트인데요.</p>
+<p>uuid 패키지를 이용해서 만들면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjSj4NhMFx3aR10qZdNhbIuNTJjzZrp_6rEkFSK1My2HqWXnufEAJ0hYIF2pkPkf3XualJ8GIjaXnCKEoIl8t1BY8V72YAfjJMRyffKJq9fedJr7EtnsdLVX94xp2e8cG7_icYRM4nAIr24P8DT82-OBu2uLH8v78nQx38a613sp9kFgpoP7WE2--3pqNE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그래서 위와 같이 직접 id 부분을 uuid로 작성해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i uuid</span></span></code></pre></div>
+  </figure>
+</div>
+<p>마지막으로 previousProductData 를 리턴해 주는 이유는 onError 항목에서 처리하기 위합니다.</p>
+<p>즉, 실제 POST 액션이 에러가 나서 취소가 됐을 때 원상복구하기 위함입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">onError</span><span class="o">:</span> <span class="p">(</span><span class="nx">_error</span><span class="p">,</span> <span class="nx">_product</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">(</span><span class="s1">&#39;get-product&#39;</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">previousProductData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>onError 항목은 간단한데요.</p>
+<p>인자로 첫 번째는 error 객체, 두 번째는 사용자가 입력한 데이터, 세 번째가 바로 query 컨텍스트입니다.</p>
+<p>위와 같이 previousProductData로 원상복구(setQueryData)하시면 됩니다.</p>
+<p>세 번째, onSettled 항목만 남았네요.</p>
+<p>onSettled 항목이 실행되는 조건은 POST 액션이 에러가 났거나 아니면 성공했을 때 실행되는 항목입니다.</p>
+<p>그래서 onSettled에서는 단순하게 &lsquo;get-product&rsquo; 쿼리를 무효화시켜서 쿼리를 다시 fetching 하게끔 하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useAddProduct</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useMutation</span><span class="p">(</span><span class="nx">addProduct</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onMutate</span><span class="o">:</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">newProduct</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">await</span> <span class="nx">queryClient</span><span class="p">.</span><span class="nx">cancelQueries</span><span class="p">(</span><span class="s2">&#34;get-product&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">previousProductData</span> <span class="o">=</span> <span class="nx">queryClient</span><span class="p">.</span><span class="nx">getQueryData</span><span class="p">(</span><span class="s2">&#34;get-product&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">(</span><span class="s2">&#34;get-product&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">oldProductData</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="p">...</span><span class="nx">oldProductData</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">data</span><span class="o">:</span> <span class="p">[...</span><span class="nx">oldProductData</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">items</span><span class="p">,</span> <span class="p">{</span> <span class="nx">id</span><span class="o">:</span> <span class="nx">uuid</span><span class="p">(),</span> <span class="p">...</span><span class="nx">newProduct</span> <span class="p">}],</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">previousProductData</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onError</span><span class="o">:</span> <span class="p">(</span><span class="nx">_error</span><span class="p">,</span> <span class="nx">_product</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">(</span><span class="s1">&#39;get-product&#39;</span><span class="p">,</span> <span class="nx">context</span><span class="p">.</span><span class="nx">previousProductData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSettled</span><span class="o">:</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">invalidateQueries</span><span class="p">(</span><span class="s1">&#39;get-product&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjK84I4MxFT6rLmQZxHTjDI5xAaAeCQiMvlGr08lqTVUVuW99kIiVLDQN6GA9maSDWRaRvl7uOF4MejRLYqKeb7cr2jXHjJSyIvGqOFfjA6xYHYeds6raqnHV0CSfJQ8vcoJdUGlaPtWKs4vXewh1LLO3uXbI5uu2n2BKlqDAtgOFEPQsYEqpRaw-0es94"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 입력하면 아래와 같이 DEV Tools에 바로 data가 업데이트됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg8SPKZJn_UGpdglcLOsNsk2mS3HPBayNRd8n3OaF3-LhTgiGRtwSh14y-Q5MhWUZiwM6HxSsvJ9Y2HPmHNGLa_i6yiBU3Aq0wRwm7SCOLZeHerOPCZBTHyi-Lso4gowIsQkUCGJw0bSQWTDq0dfKg7-VFwmO1IWxGvFUk68E32kcZuw4C5QDaR3Kt0jiE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 pocketbase DB도 살펴볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhgh5K6QjkzfeBVvZhG8jgXk4LgFT-GRKKR05ApCNkWVXl18oIWeiXvnwUl0dYeGzW01B8Edgs8rDM9loU2idNKqoxiiQmhNuKmCmCp9Tb9puO52IgdwZi6WAQ-rc8mv5qC7Z_Rs_duKv65Qlhao_OtfyahbPm1j8BNfVUsWk5sn2ie0xB99rqQqDQiVPk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 정상 작동되고 있네요.</p>
+<hr>
+<p>지금까지 useMutaion을 사용하는 기본적인 방식을 배웠는데요.</p>
+<p>위와 같이 Optimistic Updates 방식 말고도 여러 가지 방식이 있으니 꼭 여건에 맞는 방식을 사용해서 유저 경험을 조금 더 빠릿하게 해주시기 바랍니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react-query/" role="button">react query</a>
+        <a class="btn btn-light" href="/tags/usemutation/" role="button">useMutation</a>
+        <a class="btn btn-light" href="/tags/optimistic-updates/" role="button">Optimistic Updates</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-24-react-query-paginated-query-and-infinite-query/">React Query 강좌 7편. 페이지네이션 구현하기와 useInfiniteQuery로 무한스크롤 구현하기</a></h2>
+                  <p>페이지네이션 구현하기와 useInfiniteQuery로 무한스크롤 구현하기</p>
+                  <p>
+  <small>September 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-24-react-query-dynamic-parallel-queries-and-dependent-query/">React Query 강좌 5편. 동적 병렬 쿼리(dynamic parallel queries)와 필요충분 쿼리 만들기(dependent query)</a></h2>
+                  <p>동적 병렬 쿼리(dynamic parallel queries)와 필요충분 쿼리 만들기(dependent query)</p>
+                  <p>
+  <small>September 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-24-react-query-tutorial-query-by-id-and-parallel-queries/">React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법</a></h2>
+                  <p>id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법</p>
+                  <p>
+  <small>September 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

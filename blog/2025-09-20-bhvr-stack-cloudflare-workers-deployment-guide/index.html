@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>BHVR 풀스택 앱을 Cloudflare Workers에 배포하는 완벽 가이드</title>
+<meta name="description" content="Bun, Hono, Vite, React로 구성된 BHVR 스택을 활용해 풀스택 앱을 만들고 Cloudflare Workers에 배포하는 방법을 실전 예제와 함께 상세히 설명합니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-09-20-bhvr-stack-cloudflare-workers-deployment-guide/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="BHVR 풀스택 앱을 Cloudflare Workers에 배포하는 완벽 가이드" />
+<meta property="og:description" content="Bun, Hono, Vite, React로 구성된 BHVR 스택을 활용해 풀스택 앱을 만들고 Cloudflare Workers에 배포하는 방법을 실전 예제와 함께 상세히 설명합니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-09-20-bhvr-stack-cloudflare-workers-deployment-guide/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-09-21T14:24:17Z" />
+<meta property="article:modified_time" content="2025-09-21T14:24:17Z" />
+<meta property="article:tag" content="BHVR" />
+<meta property="article:tag" content="Cloudflare Workers" />
+<meta property="article:tag" content="Hono" />
+<meta property="article:tag" content="React" />
+<meta property="article:tag" content="Bun" />
+<meta property="article:tag" content="Vite" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="BHVR 풀스택 앱을 Cloudflare Workers에 배포하는 완벽 가이드" />
+<meta name="twitter:description" content="Bun, Hono, Vite, React로 구성된 BHVR 스택을 활용해 풀스택 앱을 만들고 Cloudflare Workers에 배포하는 방법을 실전 예제와 함께 상세히 설명합니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"BHVR 풀스택 앱을 Cloudflare Workers에 배포하는 완벽 가이드\"",
+  "description": "\"Bun, Hono, Vite, React로 구성된 BHVR 스택을 활용해 풀스택 앱을 만들고 Cloudflare Workers에 배포하는 방법을 실전 예제와 함께 상세히 설명합니다.\"",
+  "datePublished": "\"2025-09-21T14:24:17Z\"",
+  "dateModified": "\"2025-09-21T14:24:17Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-09-20-bhvr-stack-cloudflare-workers-deployment-guide/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>BHVR 풀스택 앱을 Cloudflare Workers에 배포하는 완벽 가이드</h1>
+        <p>
+  <small>September 21, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?<br /></p>
+<p>오늘은 제가 예전부터 관심있게 지켜봤던 &lsquo;BHVR 스택&rsquo;을 실제로 사용해보려고 하는데요.<br /></p>
+<p>이 스택은 현재 존재하는 가장 가볍고 빠른 기술들을 모두 모아놓은 조합입니다.<br /></p>
+<h2 id="bhvr이-뭐길래">BHVR이 뭐길래</h2>
+<p>BHVR은 번(Bun) + 호노(Hono) + 바이트(Vite) + 리액트(React)의 약자인데요.<br /></p>
+<p>각각의 기술이 자기 분야에서 최고의 성능을 자랑하는 녀석들입니다.<br /></p>
+<p>공식 홈페이지도 있는데요.<br /></p>
+<p><a href="https://bhvr.dev/">https://bhvr.dev/</a>에서 자세한 정보를 확인할 수 있습니다.<br /></p>
+<p>저는 여기서 더 나아가서 이 모노리포 앱을 실제로 &lsquo;클라우드플레어 워커스(Cloudflare Workers)&lsquo;에 배포하는 방법까지 다뤄보려고 하는데요.<br /></p>
+<p>클라우드플레어 워커스는 빠르면서도 무료 티어가 넉넉해서 서버리스 앱을 배포하기에 정말 최적인 플랫폼입니다.<br /></p>
+<p>그럼 본격적으로 시작해볼까요?<br /></p>
+<h2 id="bhvr-템플릿-설치하기">BHVR 템플릿 설치하기</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># 명령어 실행</span>
+</span></span><span class="line"><span class="cl">bun create bhvr@latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  _     _
+</span></span><span class="line"><span class="cl"> <span class="p">|</span> <span class="p">|</span>   <span class="p">|</span> <span class="p">|</span>
+</span></span><span class="line"><span class="cl"> <span class="p">|</span> <span class="p">|</span>__ <span class="p">|</span> <span class="p">|</span>____   ___ __
+</span></span><span class="line"><span class="cl"> <span class="p">|</span> <span class="s1">&#39;_ \| &#39;</span>_ <span class="se">\ \ </span>/ / <span class="err">&#39;</span>__<span class="p">|</span>
+</span></span><span class="line"><span class="cl"> <span class="p">|</span> <span class="p">|</span>_<span class="o">)</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="se">\ </span>V /<span class="p">|</span> <span class="p">|</span>
+</span></span><span class="line"><span class="cl"> <span class="p">|</span>_.__/<span class="p">|</span>_<span class="p">|</span> <span class="p">|</span>_<span class="p">|</span><span class="se">\_</span>/ <span class="p">|</span>_<span class="p">|</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ℹ 🦫 Lets build 🦫                                                                                            
+</span></span><span class="line"><span class="cl">ℹ https://github.com/stevedylandev/bhvr                                                                       
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 이름 정해주고</span>
+</span></span><span class="line"><span class="cl">✔ What is the name of your project?
+</span></span><span class="line"><span class="cl">bhvr-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 템플릿은 shadcn/ui로 선택</span>
+</span></span><span class="line"><span class="cl">✔ Select a template:
+</span></span><span class="line"><span class="cl">shadcn <span class="o">(</span>Basic setup + TailwindCSS + shadcn/ui<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Hono RPC 선택하고</span>
+</span></span><span class="line"><span class="cl">✔ Use Hono RPC client <span class="k">for</span> type-safe API communication?
+</span></span><span class="line"><span class="cl">Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 린터는 최근 가장 핫한 Biome 선택</span>
+</span></span><span class="line"><span class="cl">✔ Select a linter:
+</span></span><span class="line"><span class="cl">Biome
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 클라이언트 라우터는 TanStack Router 선택</span>
+</span></span><span class="line"><span class="cl">✔ Select a client router:
+</span></span><span class="line"><span class="cl">TanStack Router
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># TanStack React Query도 선택</span>
+</span></span><span class="line"><span class="cl">✔ Would you like to <span class="nb">enable</span> TanStack Query <span class="k">for</span> data fetching and state management?
+</span></span><span class="line"><span class="cl">Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Template downloaded successfully <span class="o">(</span>shadcn template<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Removed .git directory
+</span></span><span class="line"><span class="cl">✔ RPC client setup completed
+</span></span><span class="line"><span class="cl">✔ Biome setup complete.
+</span></span><span class="line"><span class="cl">✔ TanStack Query setup completed
+</span></span><span class="line"><span class="cl">✔ TanStack Router setup completed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Initialize a git repository?
+</span></span><span class="line"><span class="cl">Yes
+</span></span><span class="line"><span class="cl">✔ Git repository initialized
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Install dependencies?
+</span></span><span class="line"><span class="cl">Yes
+</span></span><span class="line"><span class="cl">✔ Dependencies installed with bun
+</span></span><span class="line"><span class="cl">🎉 Project created successfully!
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Next steps:
+</span></span><span class="line"><span class="cl">  <span class="nb">cd</span> bhvr-test
+</span></span><span class="line"><span class="cl">  bun run dev:client   <span class="c1"># Start the client</span>
+</span></span><span class="line"><span class="cl">  bun run dev:server   <span class="c1"># Start the server in another terminal</span>
+</span></span><span class="line"><span class="cl">  bun run dev          <span class="c1"># Start all</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>저는 몇가지 기본적인 걸 선택했습니다.</p>
+<p>CSS는 당연히 TailwindCSS와 shadcn을 선택했고요.</p>
+<p>Hono API의 타입 안정성을 위해 Hono RPC를 기본적으로 선택했고,</p>
+<p>린터는 최근 핫한 <code>Biome</code>을 선택했습니다.</p>
+<p>그리고 탠스택 쿼리와 탠스택 라우터를 기본으로 설정했습니다.</p>
+<p>싱글 페이지 앱에서 최고의 선택은 바로 React Query죠.</p>
+<p>그리고 라우터는 React Router를 주로 사용했었는데, 여기서는 TanStack React Query와의 조합에 좀 더 좋은 TanStack Router를 기본 설정으로 선택했습니다.</p>
+<p>이제 템플릿 설치가 다 됐는데요.</p>
+<p>위와 같이 실행하고 나서 해당 폴더로 이동하는데요.<br /></p>
+<p>여기서 &lsquo;바이옴(Biome)&rsquo; 세팅을 다시 해줘야 합니다.<br /></p>
+<p>BHVR 템플릿의 바이옴 설정 파일이 예전 버전이라서 최신 버전으로 업데이트가 필요한데요.<br /></p>
+<p>먼저 최상단 폴더에 있는 <code>biome.json</code> 파일을 삭제합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">rm biome.json</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 바이옴을 다시 초기화하는데요.<br />
+아래 명령어를 실행하면 됩니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bunx --bun biome init</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 최신 <code>biome.json</code> 파일이 생성됐는데요.<br /></p>
+<p>여기에 두 가지 설정을 추가해야 합니다.<br /></p>
+<p>첫 번째는 &lsquo;files.includes&rsquo; 부분인데요.<br /></p>
+<p>린터가 검사할 파일들을 명확히 지정해주는 설정입니다.<br /></p>
+<p>두 번째는 &lsquo;javascript.jsxRuntime&rsquo; 부분인데요.<br /></p>
+<p>이걸 설정하지 않으면 리액트 임포트 관련 경고가 계속 뜹니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;files&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;includes&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;**/src/**/*.ts&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;**/src/**/*.tsx&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;!**/node_modules&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;!**/*.gen.ts&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;!**/dist/*.ts&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;!**/*.d.ts&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;ignoreUnknown&#34;</span><span class="p">:</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="err">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">...</span>
+</span></span><span class="line"><span class="cl"><span class="err">...</span>
+</span></span><span class="line"><span class="cl"><span class="err">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;javascript&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;jsxRuntime&#34;</span><span class="p">:</span> <span class="s2">&#34;reactClassic&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;formatter&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;quoteStyle&#34;</span><span class="p">:</span> <span class="s2">&#34;double&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="err">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;탠스택 라우터(TanStack Router)&lsquo;가 자동으로 생성하는 <code>*.gen.ts</code> 파일도 제외시켜줬는데요.<br /></p>
+<p>이런 자동 생성 파일은 린터가 검사할 필요가 없습니다.<br /></p>
+<p>&lsquo;javascript.jsxRuntime&rsquo;을 &lsquo;reactClassic&rsquo;으로 설정한 이유는 &lsquo;shadcn/ui&rsquo; 컴포넌트들이 리액트를 타입으로만 임포트하는 경우가 많아서인데요.<br /></p>
+<p>이 설정을 안 하면 아래와 같은 경고가 계속 나타납니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ biome lint .
+</span></span><span class="line"><span class="cl">client/src/components/ui/button.tsx:1:8 lint/style/useImportType  FIXABLE  ━━━━━━━━━━━━━━━
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ⚠ All these imports are only used as types.
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  &gt; <span class="m">1</span> │ import * as React from <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      │        ^^^^^^^^^^^^^^^^^^^^^^^
+</span></span><span class="line"><span class="cl">    <span class="m">2</span> │ import <span class="o">{</span> Slot <span class="o">}</span> from <span class="s2">&#34;@radix-ui/react-slot&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="m">3</span> │ import <span class="o">{</span> cva, <span class="nb">type</span> VariantProps <span class="o">}</span> from <span class="s2">&#34;class-variance-authority&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 바이옴 린트를 실행해보면 깔끔하게 통과하는데요.<br /></p>
+<p>문제없이 작동하는 걸 확인할 수 있습니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ bun run lint
+</span></span><span class="line"><span class="cl">$ biome lint .
+</span></span><span class="line"><span class="cl">Checked <span class="m">10</span> files in 32ms. No fixes applied.</span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="개발-서버-실행해보기">개발 서버 실행해보기</h2>
+<p>이제 개발 서버를 돌려볼 차례인데요.<br /></p>
+<p>아래 명령어로 실행하면 됩니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bun run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>브라우저에서 확인해보면 기본 템플릿이 잘 실행되는데요.<br /></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjZxNml1e4c-wtAdRmNiJDDJ6l0lUaccB10bqfVwpU4aOnG02SyVuWuqB3zQuxorIdfyJjZB_i2_gvEZYHhQwdZTcEwgjrET4ZGcNvz1-qA9O2Qm-K2dEptwAl5Xyo7PodsLwVD_iBwPA_Bi9fY0sgWa10WyCN0al9uHT_6Z3taKtoSd-Yaujjul6cYwPc=s16000"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기까지 왔으면 1단계는 성공적으로 완료한 겁니다.<br /></p>
+<h2 id="cloudflare-workers-배포를-위한-설정">Cloudflare Workers 배포를 위한 설정</h2>
+<p>제가 BHVR 스택을 좋아하는 이유가 바로 이거인데요.<br /></p>
+<p>클라우드플레어 워커스에 완벽하게 배포할 수 있다는 점입니다.<br /></p>
+<p>공식 문서에도 배포 방법이 나와있긴 한데요.<br /></p>
+<p>실제로 해보니 몇 가지 수정이 필요해서 제가 직접 테스트한 방법을 알려드리겠습니다.<br /></p>
+<h3 id="서버-구성-변경하기">서버 구성 변경하기</h3>
+<p>먼저 호노 서버를 업데이트해야 하는데요.<br /></p>
+<p><code>server/src/index.ts</code> 파일을 수정합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cors</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/cors&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">ApiResponse</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;shared/dist&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">api</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">().</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/hello&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">data</span>: <span class="kt">ApiResponse</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">message</span><span class="o">:</span> <span class="s2">&#34;Hello BHVR!&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">success</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span>: <span class="kt">200</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cors</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;Hello Hono!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s2">&#34;/api&#34;</span><span class="p">,</span> <span class="nx">api</span><span class="p">);</span> <span class="c1">// 이 부분이 핵심입니다!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 중요한 부분은 <code>.route(&quot;/api&quot;, api)</code> 부분인데요.<br /></p>
+<p>호노 RPC가 제대로 작동하기 위해서는 app의 설정이 위 코드와 같이 chaining 방식으로 정의되어야 합니다.</p>
+<p>그래서 위와 같은 방식으로 <code>API</code>를 라우트로 추가한겁니다.</p>
+<p>이렇게 설정해야 호노 RPC가 제대로 작동합니다.<br /></p>
+<h3 id="클라이언트-구성-변경하기">클라이언트 구성 변경하기</h3>
+<p>두 번째로 클라이언트에서 호노 API 서버를 호출하는 방식을 수정해야 하는데요.<br /></p>
+<p><code>client/src/routes/index.tsx</code> 파일을 고쳐보겠습니다.<br /></p>
+<p>여기서 두 가지를 수정할 건데요.<br /></p>
+<p>첫 번째는 API 서버 URL을 환경에 따라 다르게 설정하는 것입니다.<br /></p>
+<p>두 번째는 탠스택 쿼리의 &lsquo;useMutation&rsquo; 대신 &lsquo;useQuery&rsquo;를 사용하는 건데요.<br /></p>
+<p>단순 데이터 조회는 &lsquo;useQuery&rsquo;가 더 적합합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createFileRoute</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">beaver</span> <span class="kr">from</span> <span class="s2">&#34;@/assets/beaver.svg&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Button</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/components/ui/button&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">hcWithType</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;server/dist/client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Route</span> <span class="o">=</span> <span class="nx">createFileRoute</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">)({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">component</span>: <span class="kt">Index</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SERVER_URL</span> <span class="o">=</span> <span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DEV</span> <span class="o">?</span> <span class="s2">&#34;http://localhost:3000&#34;</span> <span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">hcWithType</span><span class="p">(</span><span class="nx">SERVER_URL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchHello</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">client</span><span class="p">.</span><span class="nx">api</span><span class="p">.</span><span class="nx">hello</span><span class="p">.</span><span class="nx">$get</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Server response was not ok&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Index() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">refetch</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;hello&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryFn</span>: <span class="kt">fetchHello</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">enabled</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">handleCallApi</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">refetch</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;max-w-xl mx-auto flex flex-col gap-6 items-center justify-center min-h-screen&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span>
+</span></span><span class="line"><span class="cl">        <span class="na">href</span><span class="o">=</span><span class="s">&#34;https://github.com/stevedylandev/bhvr&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">target</span><span class="o">=</span><span class="s">&#34;_blank&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">rel</span><span class="o">=</span><span class="s">&#34;noopener&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">img</span>
+</span></span><span class="line"><span class="cl">          <span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">beaver</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="na">className</span><span class="o">=</span><span class="s">&#34;w-16 h-16 cursor-pointer&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">alt</span><span class="o">=</span><span class="s">&#34;beaver logo&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-5xl font-black&#34;</span><span class="p">&gt;</span><span class="nx">bhvr</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h2</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-2xl font-bold&#34;</span><span class="p">&gt;</span><span class="nx">Bun</span> <span class="o">+</span> <span class="nx">Hono</span> <span class="o">+</span> <span class="nx">Vite</span> <span class="o">+</span> <span class="nx">React</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">A</span> <span class="nx">typesafe</span> <span class="nx">fullstack</span> <span class="nx">monorepo</span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex items-center gap-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">Button</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleCallApi</span><span class="p">}</span> <span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">isLoading</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">isLoading</span> <span class="o">?</span> <span class="s2">&#34;Loading...&#34;</span> <span class="o">:</span> <span class="s2">&#34;Call API&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">Button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">Button</span> <span class="na">variant</span><span class="o">=</span><span class="s">&#34;secondary&#34;</span> <span class="na">asChild</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">a</span> <span class="na">target</span><span class="o">=</span><span class="s">&#34;_blank&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;https://bhvr.dev&#34;</span> <span class="na">rel</span><span class="o">=</span><span class="s">&#34;noopener&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Docs</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">Button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">data</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">pre</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-gray-100 p-4 rounded-md&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">code</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Message</span><span class="o">:</span> <span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span> <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Success</span><span class="o">:</span> <span class="p">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">success</span><span class="p">.</span><span class="nx">toString</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">code</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Index</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 가장 중요한 부분이 &lsquo;SERVER_URL&rsquo; 설정인데요.<br /></p>
+<p>개발 환경에서는 &rsquo;localhost:3000&rsquo;을 사용하고, 프로덕션에서는 &lsquo;/&lsquo;를 사용합니다.<br /></p>
+<p>왜 프로덕션에서 &lsquo;/&lsquo;를 사용하냐면, 클라우드플레어 워커스에서는 서버와 클라이언트가 같은 도메인에서 실행되기 때문인데요.<br /></p>
+<p>호노 서버가 메인 워커가 되고, 리액트 앱은 에셋으로 서빙됩니다.<br /></p>
+<h3 id="wrangler-설치-및-설정하기">Wrangler 설치 및 설정하기</h3>
+<p>이제 본격적인 배포를 위해 &lsquo;랭글러(Wrangler)&lsquo;를 설치하는데요.<br /></p>
+<p>클라우드플레어 워커스 배포 도구입니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bun add --dev wrangler @cloudflare/workers-types</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 프로젝트 최상단에 <code>wrangler.jsonc</code> 파일을 만드는데요.<br /></p>
+<p>이 파일이 배포 설정의 핵심입니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;$schema&#34;</span><span class="p">:</span> <span class="s2">&#34;./node_modules/wrangler/config-schema.json&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;test-bhvr&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;main&#34;</span><span class="p">:</span> <span class="s2">&#34;./server/dist/index.js&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;compatibility_date&#34;</span><span class="p">:</span> <span class="s2">&#34;2025-05-25&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;assets&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nt">&#34;directory&#34;</span><span class="p">:</span> <span class="s2">&#34;./client/dist&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nt">&#34;not_found_handling&#34;</span><span class="p">:</span> <span class="s2">&#34;single-page-application&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&#34;compatibility_flags&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;nodejs_compat&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;jsonc&rsquo; 확장자를 사용하면 주석을 달 수 있어서 편한데요.<br /></p>
+<p>일반 JSON과 달리 설명을 추가할 수 있습니다.<br /></p>
+<p>&lsquo;assets&rsquo; 설정이 중요한데요.<br /></p>
+<p>클라이언트 빌드 결과물을 워커의 정적 에셋으로 서빙하도록 설정하는 부분입니다.<br /></p>
+<h3 id="배포-스크립트-추가하기">배포 스크립트 추가하기</h3>
+<p>마지막으로 <code>package.json</code>에 배포 스크립트를 추가하는데요.<br /></p>
+<p>터보(Turbo)로 빌드하고 랭글러로 배포하는 명령어입니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;scripts&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;dev&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo dev&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;dev:client&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo dev --filter=client&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;dev:server&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo dev --filter=server&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;build&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo build&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;build:client&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo build --filter=client&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;build:server&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo build --filter=server&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;lint&#34;</span><span class="p">:</span> <span class="s2">&#34;biome lint .&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type-check&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo type-check&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;test&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo test&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;postinstall&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo build --filter=shared --filter=server&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;format&#34;</span><span class="p">:</span> <span class="s2">&#34;biome format . --write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;deploy&#34;</span><span class="p">:</span> <span class="s2">&#34;turbo build &amp;&amp; wrangler deploy --minify&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="실제로-배포해보기">실제로 배포해보기</h2>
+<p>이제 모든 준비가 끝났는데요.<br /></p>
+<p>실제로 배포해보겠습니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">✗ bun run deploy
+</span></span><span class="line"><span class="cl">$ turbo build <span class="o">&amp;&amp;</span> wrangler deploy --minify
+</span></span><span class="line"><span class="cl">turbo 2.5.6
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> WARNING  Unable to calculate transitive closures: No lockfile entry found <span class="k">for</span> <span class="s1">&#39;tslib&#39;</span>
+</span></span><span class="line"><span class="cl">• Packages in scope: client, server, shared
+</span></span><span class="line"><span class="cl">• Running build in <span class="m">3</span> packages
+</span></span><span class="line"><span class="cl">• Remote caching disabled
+</span></span><span class="line"><span class="cl">┌─ shared#build &gt; cache miss, executing c979e581a70a5c49 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ tsc
+</span></span><span class="line"><span class="cl">└─ shared#build ──
+</span></span><span class="line"><span class="cl">┌─ server#build &gt; cache miss, executing 8b1ef528622fce7f 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ tsc
+</span></span><span class="line"><span class="cl">└─ server#build ──
+</span></span><span class="line"><span class="cl">┌─ client#build &gt; cache miss, executing 6eeb71d0d7eedc81 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ tsc -b <span class="o">&amp;&amp;</span> vite build
+</span></span><span class="line"><span class="cl">vite v6.3.6 building <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">Generated route tree in 70ms
+</span></span><span class="line"><span class="cl">✓ <span class="m">188</span> modules transformed.
+</span></span><span class="line"><span class="cl">dist/index.html                    0.45 kB │ gzip:   0.29 kB
+</span></span><span class="line"><span class="cl">dist/assets/beaver-D-LUlnGj.svg    4.98 kB │ gzip:   2.34 kB
+</span></span><span class="line"><span class="cl">dist/assets/index-HIAAjHEk.css    17.43 kB │ gzip:   3.90 kB
+</span></span><span class="line"><span class="cl">dist/assets/index-OYyk7Ouh.js    336.83 kB │ gzip: 105.92 kB
+</span></span><span class="line"><span class="cl">✓ built in 934ms
+</span></span><span class="line"><span class="cl">└─ client#build ──
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> Tasks:    <span class="m">3</span> successful, <span class="m">3</span> total
+</span></span><span class="line"><span class="cl">Cached:    <span class="m">0</span> cached, <span class="m">3</span> total
+</span></span><span class="line"><span class="cl">  Time:    4.346s 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 4.38.0
+</span></span><span class="line"><span class="cl">───────────────────
+</span></span><span class="line"><span class="cl">🌀 Building list of assets...
+</span></span><span class="line"><span class="cl">✨ Read <span class="m">6</span> files from the assets directory
+</span></span><span class="line"><span class="cl">🌀 Starting asset upload...
+</span></span><span class="line"><span class="cl">🌀 Found <span class="m">5</span> new or modified static assets to upload. Proceeding with upload...
+</span></span><span class="line"><span class="cl">+ /index.html
+</span></span><span class="line"><span class="cl">+ /assets/index-HIAAjHEk.css
+</span></span><span class="line"><span class="cl">+ /vite.svg
+</span></span><span class="line"><span class="cl">+ /assets/index-OYyk7Ouh.js
+</span></span><span class="line"><span class="cl">+ /assets/beaver-D-LUlnGj.svg
+</span></span><span class="line"><span class="cl">Uploaded <span class="m">5</span> of <span class="m">5</span> assets
+</span></span><span class="line"><span class="cl">✨ Success! Uploaded <span class="m">5</span> files <span class="o">(</span>3.53 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Total Upload: 33.13 KiB / gzip: 12.36 KiB
+</span></span><span class="line"><span class="cl">Worker Startup Time: <span class="m">13</span> ms
+</span></span><span class="line"><span class="cl">Uploaded test-bhvr <span class="o">(</span>13.31 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Deployed test-bhvr triggers <span class="o">(</span>5.22 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  https://test-bhvr.****.workers.dev
+</span></span><span class="line"><span class="cl">Current Version ID: 7b0d****-1**7-4**f-9**a-d3******9b</span></span></code></pre></div>
+  </figure>
+</div>
+<p>배포가 성공적으로 완료됐는데요.<br /></p>
+<p>클라우드플레어에 로그인이 되어 있어야 배포가 가능합니다.<br /></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjsqRGufHJDnLSHhVfFIKj7SpziSmvMuW0m8XyDin0qyTzWfytC790wguiSwUM4U7QNMpomymVlhrhU5p-Scwx_D76_m9Gd5TkzBpHY4S2Preaak-gFqsEOhsiQF-Mxv59WRr_hAqMmfe2GeB-9U7qinsP9vG9gtowmCo5O6adas52nrxMBrKIbfPdt5DA=s16000"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure>
+실제 배포된 URL로 접속해보면 앱이 잘 작동하는데요.<br /></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhmgQLSAGYvlJNZRRgsaj5wQlzhPasYQPuqhk7uMWBRzrQfxXiN-Ya6-QuHgnHafruwNrBqzBM2qhkC4aRJbWi7ElVMqh56QhmM9cIKP9u_Luip7vLa4mvD-7E45ogDY0ewE2UenHibvMRyeTkZpiVCc2lSTr2EVK8Vpr2PzQTXT2IagkkRSvkk3fUYXkQ=s16000"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>API 호출도 정상적으로 동작하는 걸 확인할 수 있습니다.<br /></p>
+<h2 id="마무리">마무리</h2>
+<p>지금까지 &lsquo;BHVR 스택&rsquo;을 사용해서 풀스택 앱을 만들고 클라우드플레어 워커스에 배포하는 방법을 알아봤는데요.<br /></p>
+<p>정말 빠르고 효율적인 개발 경험을 제공합니다.<br /></p>
+<p>이 스택의 장점은 모든 구성 요소가 최신 기술이라는 점인데요.<br /></p>
+<p>특히 번의 빠른 속도와 호노의 가벼움이 잘 어우러집니다.<br /></p>
+<p>앞으로 이 모노리포로 어떤 프로젝트를 만들어볼지 벌써부터 기대가 되는데요.<br /></p>
+<p>여러분도 한번 사용해보시면 그 매력을 느끼실 수 있을 겁니다.<br /></p>
+<p>그럼 다음에 또 유용한 내용으로 찾아뵙겠습니다.<br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/bhvr/" role="button">BHVR</a>
+        <a class="btn btn-light" href="/tags/cloudflare-workers/" role="button">Cloudflare Workers</a>
+        <a class="btn btn-light" href="/tags/hono/" role="button">Hono</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">React</a>
+        <a class="btn btn-light" href="/tags/bun/" role="button">Bun</a>
+        <a class="btn btn-light" href="/tags/vite/" role="button">Vite</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-09-06-ultimate-template-for-react-router-hono-cloudflare/">리액트 라우터와 Hono로 최고의 Cloudflare 개발 경험 만들기</a></h2>
+                  <p>Cloudflare 환경에서 React Router와 Hono를 사용하는 가장 효율적인 방법을 소개합니다. 공식 템플릿의 느린 개발 속도 문제를 해결하고, Rolldown을 통해 빌드 속도를 극적으로 단축시킨 새로운 템플릿을 만나보세요.</p>
+                  <p>
+  <small>September 7, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-25-golang-gorm-gin-tutorial-4-fullstack-react-frontend-ui-app/">Golang, Gin, GORM 실전 API 개발 4편 - 최첨단 Full-Stack 완성편 Vite, TanStack, Zustand, shadcn/ui</a></h2>
+                  <p>React 개발의 최신 트렌드를 모두 담아 프론트엔드를 재구축합니다. Vite의 빠른 개발 환경, TanStack의 강력한 라우팅 및 데이터 관리, Zustand의 간결한 상태 관리, shadcn/ui의 미려한 UI를 통해 프로덕션급 풀스택 애플리케이션을 완성합니다.</p>
+                  <p>
+  <small>July 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-15-tanstack-start-react-framework-deep-dive/">TanStack Start 깊이 파고들기 - React 프레임워크의 새로운 미래일까</a></h2>
+                  <p>Next.js의 대안으로 떠오르는 이 프레임워크의 설정부터 인증, 배포까지 모든 것을 다룹니다.</p>
+                  <p>
+  <small>July 15, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

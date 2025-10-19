@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리</title>
+<meta name="description" content="Docker 볼륨 (Volume) 사용 방법과 원리" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-04-06-docker-volume-usage-and-principles/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리" />
+<meta property="og:description" content="Docker 볼륨 (Volume) 사용 방법과 원리" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-04-06-docker-volume-usage-and-principles/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-04-06T07:05:00Z" />
+<meta property="article:modified_time" content="2024-04-06T07:05:00Z" />
+<meta property="article:tag" content="docker" />
+<meta property="article:tag" content="volume" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리" />
+<meta name="twitter:description" content="Docker 볼륨 (Volume) 사용 방법과 원리" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리\"",
+  "description": "\"Docker 볼륨 (Volume) 사용 방법과 원리\"",
+  "datePublished": "\"2024-04-06T07:05:00Z\"",
+  "dateModified": "\"2024-04-06T07:05:00Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-04-06-docker-volume-usage-and-principles/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리</h1>
+        <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>네번째 Docker 강좌입니다.</p>
+<p>전체적인 강좌 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-virtualization-and-docker">Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-docker-container-comprehensive-guide">Docker 강좌 2편. 실무에서 쓰이는 Docker 컨테이너 완벽 가이드</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-docker-image-and-dockerfile">Docker 강좌 3편. Docker 이미지 및 Dockerfile 기초</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-volume-usage-and-principles">Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-bind-mount-and-port-publish">Docker 강좌 5편. Docker 바인드 마운트와 포트 publish</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-docker-compose-complete-guide">Docker 강좌 6편. Docker Compose 완벽 가이드</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#docker-%eb%b3%bc%eb%a5%a8-volume-%ec%82%ac%ec%9a%a9-%eb%b0%a9%eb%b2%95%ea%b3%bc-%ec%9b%90%eb%a6%ac">Docker 볼륨 (Volume) 사용 방법과 원리</a>
+<ul>
+<li><a href="#%ec%8b%a4%ec%8a%b5%ed%95%b4%eb%b3%b4%ea%b8%b0">실습해보기</a></li>
+<li><a href="#%eb%b3%bc%eb%a5%a8volume%ec%9d%80-%ec%96%b4%eb%94%94%ec%97%90-%ec%a0%80%ec%9e%a5%eb%90%98%eb%82%98%ec%9a%94">볼륨(Volume)은 어디에 저장되나요?</a></li>
+<li><a href="#%ec%8b%9c%eb%8f%84%ed%95%b4%eb%b3%b4%ea%b8%b0-2">시도해보기 2</a></li>
+<li><a href="#docker-%ec%8a%a4%ed%86%a0%eb%a6%ac%ec%a7%80%ec%97%90-%eb%8c%80%ed%95%9c-%ea%b3%a0%eb%af%bc">Docker 스토리지에 대한 고민</a></li>
+<li><a href="#docker-%ec%8a%a4%ed%86%a0%eb%a6%ac%ec%a7%80-%ec%9b%90%eb%a6%ac">Docker 스토리지 원리</a></li>
+<li><a href="#-v-%ec%98%b5%ec%85%98"><code>-v</code> 옵션</a></li>
+<li><a href="#--mount-%ec%98%b5%ec%85%98"><code>--mount</code> 옵션</a></li>
+<li><a href="#--rm-%ec%98%b5%ec%85%98%ec%9d%84-%ec%82%ac%ec%9a%a9%ed%95%a0-%eb%95%8c"><code>--rm</code> 옵션을 사용할 때</a></li>
+<li><a href="#data-volume-%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%eb%8a%94-%eb%8b%a8%ec%88%9c%ed%95%9c-%eb%94%94%ec%9e%90%ec%9d%b8-%ed%8c%a8%ed%84%b4%ec%9e%85%eb%8b%88%eb%8b%a4">Data Volume 컨테이너는 단순한 디자인 패턴입니다.</a></li>
+<li><a href="#%ea%b2%b0%ea%b5%ad-%ec%96%b4%eb%96%a4-%ea%b2%83%ec%9d%84-%ec%82%ac%ec%9a%a9%ed%95%b4%ec%95%bc-%ed%95%a0%ea%b9%8c%ec%9a%94">결국 어떤 것을 사용해야 할까요?</a></li>
+<li><a href="#%ec%9a%94%ec%95%bd">요약</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="docker-볼륨-volume-사용-방법과-원리">Docker 볼륨 (Volume) 사용 방법과 원리</h1>
+<p>Docker 볼륨은 컨테이너 내에서 생성한 데이터를 영속적으로 저장하기 위한 공간입니다.</p>
+<p>컨테이너에 저장된 데이터는 컨테이너를 삭제하면 함께 사라집니다.</p>
+<p>그러나 볼륨에 저장한 데이터는 컨테이너를 삭제해도 남아 있어 재사용할 수 있습니다.</p>
+<h2 id="실습해보기">실습해보기</h2>
+<p>먼저 볼륨을 생성해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>% docker volume create test-volume
+test-volume
+% docker volume ls
+
+DRIVER    VOLUME NAME
+local     test-volume</code></pre>
+  </figure>
+</div>
+<p>다음으로 생성한 볼륨을 지정하여 컨테이너(Alpine 서버)를 실행합니다.</p>
+<p><code>-v [볼륨명]:[컨테이너의 볼륨 디렉토리]</code> 옵션을 사용하여 볼륨을 지정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>% docker container run           \
+    --interactive                \
+    --rm                         \
+    --name volume-test-container \
+    -v test-volume:/volume_dir   \
+    alpine:latest                \
+    /bin/ash
+
+
+Unable to find image &#39;alpine:latest&#39; locally
+latest: Pulling from library/alpine
+9b3977197b4f: Pull complete
+Digest: sha256:21a3deaa0d32a8057914f36584b5288d2e5ecc984380bc0118285c70fa8c9300
+Status: Downloaded newer image for alpine:latest
+
+ls -al
+total 68
+drwxr-xr-x    1 root     root          4096 Apr  6 06:47 .
+drwxr-xr-x    1 root     root          4096 Apr  6 06:47 ..
+-rwxr-xr-x    1 root     root             0 Apr  6 06:47 .dockerenv
+drwxr-xr-x    2 root     root          4096 Jan 26 17:55 bin
+drwxr-xr-x    5 root     root           340 Apr  6 06:47 dev
+drwxr-xr-x    1 root     root          4096 Apr  6 06:47 etc
+drwxr-xr-x    2 root     root          4096 Jan 26 17:55 home
+drwxr-xr-x    7 root     root          4096 Jan 26 17:55 lib
+drwxr-xr-x    5 root     root          4096 Jan 26 17:55 media
+drwxr-xr-x    2 root     root          4096 Jan 26 17:55 mnt
+drwxr-xr-x    2 root     root          4096 Jan 26 17:55 opt
+dr-xr-xr-x  230 root     root             0 Apr  6 06:47 proc
+drwx------    2 root     root          4096 Jan 26 17:55 root
+drwxr-xr-x    2 root     root          4096 Jan 26 17:55 run
+drwxr-xr-x    2 root     root          4096 Jan 26 17:55 sbin
+drwxr-xr-x    2 root     root          4096 Jan 26 17:55 srv
+dr-xr-xr-x   11 root     root             0 Apr  6 06:47 sys
+drwxrwxrwt    2 root     root          4096 Jan 26 17:55 tmp
+drwxr-xr-x    7 root     root          4096 Jan 26 17:55 usr
+drwxr-xr-x   12 root     root          4096 Jan 26 17:55 var
+drwxr-xr-x    2 root     root          4096 Apr  6 06:32 volume_dir</code></pre>
+  </figure>
+</div>
+<p>성공적으로 컨테이너에 진입했습니다.</p>
+<p>컨테이너 내에 볼륨 디렉토리가 있는지 확인하고, 디렉토리 내에 <code>test.txt</code> 파일을 생성해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code># ls
+bin         etc         lib         mnt         proc        run         srv         tmp         var
+dev         home        media       opt         root        sbin        sys         usr         volume_dir
+# cd volume_dir
+/volume_dir # echo &#34;test&#34; &gt; test.txt
+/volume_dir # cat test.txt
+test</code></pre>
+  </figure>
+</div>
+<p>컨테이너를 종료하고 다시 컨테이너를 실행해보겠습니다.</p>
+<p><code>docker run</code> 옵션에 <code>--rm</code>을 지정했기 때문에 컨테이너를 빠져나올 때 자동으로 컨테이너가 삭제됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>/volume_dir # exit
+% docker container run --interactive --rm --name volume-test-container -v test-volume:/volume_dir alpine:latest /bin/ash
+/ # cat volume_dir/test.txt
+test
+/ #</code></pre>
+  </figure>
+</div>
+<p>볼륨을 사용하지 않았다면 <code>test.txt</code> 파일은 삭제되어 다시 컨테이너를 실행해도 존재하지 않았겠지만, 볼륨에 저장했기 때문에 파일을 다시 확인할 수 있습니다.</p>
+<h2 id="볼륨volume은-어디에-저장되나요">볼륨(Volume)은 어디에 저장되나요?</h2>
+<p>볼륨(Volume)은 호스트(Host)에 저장됩니다.</p>
+<p>그런데 정확히 어디에 저장되는지 궁금하시죠? 아래 명령어를 통해 볼륨의 저장 위치를 확인할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>% docker volume inspect test-volume
+[
+    {
+        &#34;CreatedAt&#34;: &#34;2024-04-06T06:32:50Z&#34;,
+        &#34;Driver&#34;: &#34;local&#34;,
+        &#34;Labels&#34;: null,
+        &#34;Mountpoint&#34;: &#34;/var/lib/docker/volumes/test-volume/_data&#34;,
+        &#34;Name&#34;: &#34;test-volume&#34;,
+        &#34;Options&#34;: null,
+        &#34;Scope&#34;: &#34;local&#34;
+    }
+]</code></pre>
+  </figure>
+</div>
+<p>위 출력에서 <code>Mountpoint</code>의 값인 &ldquo;/var/lib/docker/volumes/test-volume/_data&quot;가 볼륨의 저장 위치입니다.</p>
+<p>그러나 Docker Desktop for Mac을 사용하고 있다면, Docker 환경은 VM(가상 머신)인 HyperKit에서 실행되기 때문에 Mac에서 직접 접근할 수 없습니다.</p>
+<p>하지만 <code>nsenter1</code>이라는 명령어를 사용하여 VM에 진입하여 확인할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>docker container run --interactive --rm --privileged --pid=host justincormack/nsenter1
+Unable to find image &#39;justincormack/nsenter1:latest&#39; locally
+latest: Pulling from justincormack/nsenter1
+726619a9fa8c: Pull complete 
+Digest: sha256:e876f694a4cb6ff9e6861197ea3680fe2e3c5ab773a1e37ca1f13171f7f5798e
+Status: Downloaded newer image for justincormack/nsenter1:latest
+/ # </code></pre>
+  </figure>
+</div>
+<p>실제로 <code>/var/lib/docker/volumes/test-volume/_data</code> 경로에 <code>test.txt</code> 파일이 있는지 확인해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>/ # ls /var/lib/docker/volumes/test-volume/_data
+test.txt</code></pre>
+  </figure>
+</div>
+<p>잘 존재하네요.</p>
+<p><code>/var/lib/docker</code> 디렉토리에는 볼륨 외에도 컨테이너, 이미지, 네트워크 등 Docker의 중요한 요소들이 저장되어 있습니다.</p>
+<p>추가로, 파일을 확인만 하고 싶다면 Docker Desktop에서도 확인할 수 있습니다.</p>
+<p>Volumes 탭을 선택하고 DATA 아래에 있는 <code>test.txt</code> 파일을 선택하시면 호스트 측에서 파일을 저장하고 내용을 확인할 수 있습니다.</p>
+<h2 id="시도해보기-2">시도해보기 2</h2>
+<p>이전에는 미리 볼륨을 생성하고,</p>
+<p><code>-v [볼륨 이름]:[컨테이너의 볼륨 디렉토리]</code></p>
+<p>라는 볼륨 옵션을 사용하여 Docker VM 머신 내의 볼륨을 마운트했습니다.</p>
+<p>이번에는 VM이 아닌 호스트(MacBook)에서 생성한 디렉토리를 마운트해 보겠습니다.</p>
+<p><code>-v [호스트의 절대 경로 디렉토리]:[컨테이너의 볼륨 디렉토리]</code></p>
+<p>라는 볼륨 옵션을 사용합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>% mkdir ~/desktop/volume_dir_mac
+
+% echo &#34;test on mac&#34; &gt; ~/desktop/volume_dir_mac/test_mac.txt
+
+% docker container run --interactive --rm --name volume-test-mac -v ~/desktop/volume_dir_mac:/volume_dir_alpine alpine:latest /bin/ash
+
+/ # cat volume_dir_alpine/test_mac.txt
+test on mac</code></pre>
+  </figure>
+</div>
+<p>호스트 측에서 <code>volume_dir_mac/test_mac.txt</code> 파일을 생성하고, 해당 파일의 절대 경로를 볼륨으로 지정한 컨테이너가 성공적으로 실행되었습니다.</p>
+<p><code>volume_dir_alpine</code> 디렉토리에 호스트 측에서 생성한 파일이 있습니다.</p>
+<p>이 파일의 변경 사항은 호스트와 컨테이너 간에 공유됩니다.</p>
+<h2 id="docker-스토리지에-대한-고민">Docker 스토리지에 대한 고민</h2>
+<p>데이터를 영속적으로 저장하려면 <code>-v</code> 옵션이나 Dockerfile의 <code>VOLUME</code>, 또는 Compose 파일의 <code>volumes</code>를 사용했었습니다. 그러나 이들 간의 차이를 잘 이해하지 못하고 있습니다. 각각의 문법도 여러 가지가 있는 것 같은데, 잘 이해되지 않습니다.</p>
+<p>컨테이너를 삭제할 때 자동으로 삭제되는 경우도 있어서, 호스트 측 디렉토리를 컨테이너 내 디렉토리에 매핑하는 것을 자주 사용합니다. 호스트 측 디렉토리가 보이기 때문에 안심이 되는 것 같습니다.</p>
+<p>Data Volume 컨테이너를 사용하라고 하셔서 사용하고 있지만, 왜 좋은지는 잘 모르겠습니다. 어쨌든 잘 모르는 상태로 사용하고 있습니다.</p>
+<h2 id="docker-스토리지-원리">Docker 스토리지 원리</h2>
+<p>컨테이너 내에서 생성된 데이터는 해당 컨테이너 내의 어딘가에 기록되지만, 컨테이너를 삭제하면 사라집니다.</p>
+<p>그러나 데이터만은 컨테이너가 사라져도 보존하고 싶거나 다른 컨테이너에서 사용하고 싶은 경우, Docker는 데이터 저장 영역을 컨테이너 외부에 만들 수 있는 기능을 제공합니다.</p>
+<p>구체적으로는 다음 세 가지 유형이 있습니다. (정확히 말하면 Windows에서는 Named Pipe라는 것도 있습니다.)</p>
+<ol>
+<li>
+<p><strong>볼륨 (Volume)</strong></p>
+<ul>
+<li>Docker 관리하에 저장 공간을 확보합니다. Linux의 경우 <code>/var/lib/docker/volumes/</code> 아래에 위치합니다.</li>
+<li>Named Volume과 Anonymous Volume이 있으며, Named Volume의 경우 Docker 호스트 내에서 이름을 해결할 수 있어 접근이 쉽습니다. Anonymous Volume은 임의의 해시 값이 할당됩니다.</li>
+<li>다른 프로세스에서 접근할 수 없으므로 안전합니다. 기본적으로 이를 사용하는 것이 좋습니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>바인드 마운트 (Bind Mount)</strong></p>
+<ul>
+<li>호스트 측 디렉토리를 컨테이너 내 디렉토리와 공유합니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>tmpfs</strong></p>
+<ul>
+<li>메모리 상에 저장 공간을 확보합니다. 이름 그대로 일시적인 영역입니다. 기밀성이 높은 정보를 일시적으로 마운트하는 경우 등에 사용됩니다.</li>
+</ul>
+</li>
+</ol>
+<p><code>-v</code> 옵션 및 <code>VOLUME</code> 또는 <code>volumes</code>로 지정하는 것은 기본적으로 위 세 가지 중 하나를 다루게 됩니다.</p>
+<p>일반적으로 볼륨이나 바인드 마운트를 사용하므로, 아래에서 이 두 가지를 주로 설명하겠습니다.</p>
+<p>볼륨에는 볼륨(volume), 바인드(bind), tmpfs의 세 가지 유형이 있음을 알게 되었습니다.</p>
+<h2 id="-v-옵션"><code>-v</code> 옵션</h2>
+<p>개인적으로 <code>-v</code> 옵션을 사용할 때 여러 가지를 지정할 수 있어 혼란이 되는 경우가 있습니다.</p>
+<p>위에서 언급한 세 가지 스토리지 유형을 이해하고 있다면 큰 문제가 없겠지만요.</p>
+<p>예를 들어 <code>sample/image:latest</code> 이미지를 실행한다고 가정하고, 다음은 기호에 따른 차이를 나열합니다.</p>
+<ol>
+<li>
+<p><strong>익명 볼륨 (Anonymous Volume)</strong></p>
+<ul>
+<li><code>$ docker container run -v /some sample/image:latest</code></li>
+<li>호스트 측에는 Linux의 경우 <code>/var/lib/docker/volumes/</code> 아래에 공간이 확보되며, 컨테이너 내의 <code>/some</code> 디렉토리와 공유됩니다. 식별을 위해 해시 값이 할당됩니다. 동일한 네트워크에서 해당 해시 값을 사용하여 액세스할 수 있습니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>이름이 지정된 볼륨 (Named Volume)</strong></p>
+<ul>
+<li><code>$ docker container run -v name:/some sample/image:latest</code></li>
+<li>익명 볼륨과 유사하게 호스트 측에는 Linux의 경우 <code>/var/lib/docker/volumes/</code> 아래에 공간이 확보되며, 컨테이너 내의 <code>/some</code> 디렉토리와 공유됩니다. <code>name</code>이라는 이름이 지정되어 있으므로 동일한 네트워크 내에서 <code>name</code> 호스트 이름으로 액세스할 수 있습니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>바인드 마운트 (Bind Mount)</strong></p>
+<ul>
+<li><code>$ docker container run -v ${PWD}/data:/some sample/image:latest</code></li>
+<li>호스트 측의 현재 디렉토리 아래의 <code>data</code> 디렉토리와 컨테이너 측의 <code>/some</code> 디렉토리가 공유됩니다.</li>
+</ul>
+</li>
+</ol>
+<h2 id="--mount-옵션"><code>--mount</code> 옵션</h2>
+<p>Docker 17.06부터 단일 컨테이너에도 <code>--mount</code> 옵션을 사용할 수 있으며, 공식적으로 <code>-v</code> 대신 이를 사용하는 것이 권장됩니다.</p>
+<p>키-값 형식으로 각 요소를 지정할 수 있으므로 이 쪽이 문법적으로 더 명확합니다. 길지만 다음과 같이 지정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>$ docker container run --mount type=volume,src=name,dst=/some sample/image:latest</code></pre>
+  </figure>
+</div>
+<ul>
+<li><code>type</code>: <code>volume</code>, <code>bind</code>, <code>tmpfs</code>를 지정합니다.</li>
+<li><code>src</code>: Named Volume인 경우 해당 이름을, Bind Mount인 경우 호스트 측 디렉토리를 지정합니다. 익명 볼륨인 경우 생략합니다. 다른 이름으로도 사용할 수 있습니다.</li>
+<li><code>dst</code>: 컨테이너 측 디렉토리를 지정합니다. 다른 이름으로도 사용할 수 있습니다.</li>
+</ul>
+<h2 id="--rm-옵션을-사용할-때"><code>--rm</code> 옵션을 사용할 때</h2>
+<p>컨테이너를 실행할 때 <code>--rm</code> 옵션을 추가하면 익명 볼륨의 경우 컨테이너가 중지되면 동시에 볼륨도 삭제됩니다.</p>
+<p>이름이 지정된 볼륨의 경우 컨테이너가 삭제되어도 볼륨은 삭제되지 않습니다.</p>
+<p>다만 이름이 지정된 볼륨의 경우 마운트된 컨테이너가 없는 상태에서 <code>$ docker volume prune</code> 등을 실행하면 볼륨이 삭제됩니다.</p>
+<h2 id="data-volume-컨테이너는-단순한-디자인-패턴입니다">Data Volume 컨테이너는 단순한 디자인 패턴입니다.</h2>
+<p>Volume을 조사하다보면 자주 나오는 Data Volume 컨테이너입니다.</p>
+<p>이것은 Docker의 기능으로서 존재하는 것이 아니라, 볼륨을 더 쉽게 다루기 위한 디자인 패턴입니다.</p>
+<p>볼륨에 컨테이너를 연결하면 어떤 점이 좋을까요? 볼륨에 대한 액세스를 추상화하여 더 쉽게 다룰 수 있으며, 실수로 prune으로 삭제되지 않아도 된다는 점이 있습니다.</p>
+<h2 id="결국-어떤-것을-사용해야-할까요">결국 어떤 것을 사용해야 할까요?</h2>
+<p>기본적으로 이름이 지정된 볼륨을 사용하세요.</p>
+<p>Docker 영역 내에 볼륨이 생성되기 때문에 안전하며, 이름으로 액세스할 수 있어 편리합니다.</p>
+<p>바인드 마운트는 호스트 환경에 의존하며, 볼륨에 비해 기능이 제한됩니다.</p>
+<p>호스트 측에서 데이터를 주입하고자 할 때나 개발 중에 업데이트한 소스 코드나 빌드를 즉시 반영하고자 할 때 바인드 마운트를 사용하는 것이 좋습니다.</p>
+<h2 id="요약">요약</h2>
+<p>Docker 스토리지에는 볼륨, 바인드 마운트, tmpfs의 세 가지 유형이 있습니다.</p>
+<p><code>--volume</code> 옵션으로 볼륨과 바인드 마운트를 모두 지정할 수 있어서 옵션 이름과 기능 이름이 겹쳐서 혼동스럽습니다.</p>
+<p><code>-v</code> 옵션 대신 <code>--mount</code> 옵션을 사용합시다.</p>
+<p>Data Volume 컨테이너는 해당 기능이 있는 것이 아니라 디자인 패턴입니다.</p>
+<p>이름이 지정된 볼륨을 사용합시다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/docker/" role="button">docker</a>
+        <a class="btn btn-light" href="/tags/volume/" role="button">volume</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-04-06-docker-tutorial-docker-compose-complete-guide/">Docker 강좌 6편. Docker Compose 완벽 가이드</a></h2>
+                  <p>Docker Compose 완벽 가이드</p>
+                  <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-04-06-docker-tutorial-understanding-bind-mount-and-port-publish/">Docker 강좌 5편. 바인드 마운트와 포트 publish</a></h2>
+                  <p>Docker 바인드 마운트와 포트 publish</p>
+                  <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-04-06-docker-tutorial-understanding-docker-image-and-dockerfile/">Docker 강좌 3편. Docker 이미지 및 Dockerfile 기초</a></h2>
+                  <p>Docker 이미지 및 Dockerfile 기초</p>
+                  <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

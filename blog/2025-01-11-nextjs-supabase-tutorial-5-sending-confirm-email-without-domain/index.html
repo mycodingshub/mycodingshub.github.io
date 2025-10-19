@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 컨펌 이메일 보내기</title>
+<meta name="description" content="Next.js와 Supabase를 이용해서 도메인 없이 Brevo를 이용해서 컨펌 Email을 보내는 로직을 테스트해 보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-01-11-nextjs-supabase-tutorial-5-sending-confirm-email-without-domain/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 컨펌 이메일 보내기" />
+<meta property="og:description" content="Next.js와 Supabase를 이용해서 도메인 없이 Brevo를 이용해서 컨펌 Email을 보내는 로직을 테스트해 보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-01-11-nextjs-supabase-tutorial-5-sending-confirm-email-without-domain/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-01-11T10:09:36Z" />
+<meta property="article:modified_time" content="2025-01-11T10:09:36Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="auth" />
+<meta property="article:tag" content="supabase" />
+<meta property="article:tag" content="email password login" />
+<meta property="article:tag" content="confirm email" />
+<meta property="article:tag" content="brevo" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 컨펌 이메일 보내기" />
+<meta name="twitter:description" content="Next.js와 Supabase를 이용해서 도메인 없이 Brevo를 이용해서 컨펌 Email을 보내는 로직을 테스트해 보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 컨펌 이메일 보내기\"",
+  "description": "\"Next.js와 Supabase를 이용해서 도메인 없이 Brevo를 이용해서 컨펌 Email을 보내는 로직을 테스트해 보겠습니다.\"",
+  "datePublished": "\"2025-01-11T10:09:36Z\"",
+  "dateModified": "\"2025-01-11T10:09:36Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-01-11-nextjs-supabase-tutorial-5-sending-confirm-email-without-domain/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 컨펌 이메일 보내기</h1>
+        <p>
+  <small>January 11, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>** 목  차 **</p>
+<ul>
+<li><a href="#nextjs-15-supabase-%ea%b0%95%ec%a2%8c-5%ed%8e%b8-%eb%8f%84%eb%a9%94%ec%9d%b8-%ec%97%86%ec%9d%b4-supabase%ec%97%90%ec%84%9c-%ec%9d%b4%eb%a9%94%ec%9d%bc-%ec%bb%a8%ed%8e%8c-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">Next.js 15, Supabase 강좌 5편. 도메인 없이 Supabase에서 이메일 컨펌 구현하기</a>
+<ul>
+<li><a href="#%ec%9d%b4%eb%a9%94%ec%9d%bc-%ec%a0%84%ec%86%a1%ec%9d%84-%ec%9c%84%ed%95%9c-%ec%bb%a4%ec%8a%a4%ed%85%80-smtp-%ec%84%a4%ec%a0%95-%ec%9a%94%ec%95%bd">이메일 전송을 위한 커스텀 SMTP 설정 요약</a>
+<ul>
+<li><a href="#%ec%a0%9c%ed%95%9c-%ec%82%ac%ed%95%ad">제한 사항</a></li>
+</ul>
+</li>
+<li><a href="#brevo-%ea%b0%80%ec%9e%85%ed%95%98%ea%b8%b0%ec%99%80-%ec%84%a4%ec%a0%95%ed%95%98%ea%b8%b0">Brevo 가입하기와 설정하기</a></li>
+<li><a href="#%ec%9d%b4%eb%a9%94%ec%9d%bc-%ed%85%9c%ed%94%8c%eb%a6%bf-%ec%88%98%ec%a0%95%ed%95%98%ea%b8%b0">이메일 템플릿 수정하기</a></li>
+<li><a href="#brevo%ec%97%90%ec%84%9c-%ea%b2%b0%ea%b3%bc-%eb%b3%b4%ea%b8%b0">Brevo에서 결과 보기</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>안녕하세요?</p>
+<p>Next.js 15, Supabase 강좌 5편입니다.</p>
+<p>참고로, 지난 시간 강좌 리스트입니다.</p>
+<p><a href="https://mycodingshub.github.io/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-2-login-with-google-id-oauth">Next.js 15, Supabase 강좌 2편. Google OAuth를 이용한 로그인 구현</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2025-01-01-nextjs-supabase-tutorial-3-login-with-github-id-oauth">Next.js 15, Supabase 강좌 3편. Github OAuth를 이용한 로그인 구현</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate">Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현</a></p>
+<hr>
+<p>지난 시간에는 패스워드와 이메일을 이용해서 가입하기 그리고 로그인하기에 대해 알아봤는데요.</p>
+<p>지난 시간에는 Supabase에서 제공해 주는 옵션인 Confirm email 기능을 아래와 같이 끄고 사용했었습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgqrGBGGikAkGqUlJ01zOxyXAoHF-2XTBq8sjTIdWWivqlZt6-m3F5AhF3cD_CiL1gASSToJwqvtPr54pz0sEDHSrqWZj6EwNnaBwtVJhSLg4s2yDocHtBpapwE4WOIZGcAnJFMOLuMRMgVn-xXG_hnaGQNBt3HlgsLcDBCrBt8fpGr1pXX1nfPrzXK7ms"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Subapase에서 제공해 주는 기능을 묵히는 것 같아, 오늘은 Confirm email 기능을 활용하는 법을 알아 보겠습니다.</p>
+<p>먼저, 아래와 같이 Confirm email 기능을 켜 놓읍시다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEigSc2nSidULHoKfoGlXK5aMwP3QgJYYWdrbG0qQILSxOx0Jt9SdRXQNFx8XtRt4eOfdcojqYoYQwIRuBFpoyHqi_WTvosKLrxTqnikBSmOBYK-9iMrfd3CyPzxZ3nUJGxYIUvztiZ357Fqx5YtxaI8VyweLdPnXHB4BlqDCZ1pFPgcRqqYVvkim_TxOJo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 개발서버를 돌려 가입하기에서 가입을 진행시켜보는데 실제 이메일을 받을 수 있는 이메일 주소로 가입하기를 진행해 봅시다.</p>
+<p>가입을 완료하면 화면은 아래와 같이 바뀝니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhghU0sGvVF6EgO3Fwr_kf-UX7sZrhr8jKwQYxa-mFKESg7x_Z90h3mEtfZR0XBM0EGSbDA08GQ_iLTwGvEpOar--hyMO-gb2WguD1McvgSdh4X4bD_5xebd3XLb6ZQSc5Teh6X-IO5Pez3v9T61JHwTpQQDKc66XQteXh9r-jrUd2oNjZp8l_72A-cO3I"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 잘 보시면 주소창에 파라미터로 code 값이 보이는데요.</p>
+<p>나중에 이걸 이용해서 로그인을 구현하면 됩니다.</p>
+<p>일단 현 상태는 개발 서버의 홈(&quot;/&quot;) 라우팅으로 돌아갔는데 로그인이 안된 겁니다.</p>
+<p>Supabase 대시보드에 가보면 아래 그림과 같이 &ldquo;Waiting for verification&rdquo; 상태가 되는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjecIKYip5_dYJFqj-hCpdPR5UWHo-iAoknaGgH79-isF2KdZ9q6oowl4DbJTd-864i7ETRoaLmYYW7BEWfUvl3ZTNQE7jDP2ryC1d1RQeCZ2CMmdYKb8Zr6Yst1vJ0UdzbNR4fC8LKkyq5YcDl-BQlS4ju-HS5tKyIf5tjBthCIkoWhEpyIOnK8hhh2_0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이게 바로 Confirm email 기능입니다.</p>
+<p>그러면 제가 쓰는 이메일로 가보면 아래와 같이 Supabase 에서 이메일을 보낸게 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgBjMYGW1nRQVSz5IAnRrWjx2PPe1doSNI8EAyRNgNUrdsNp6l1_RO9r_l191teNcQHwfcRGjvWGKD0qx6KGVo__6zneXcSZhmgD92NHBGLKx0STfGAwRFb7wKZmXvbDJnTsklKKHdOY7aBClxOFOwAw6tLsxH8KeTdQpDL-fVEyIDC8rcXZIQSxfAeXzk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이메일에서 컨펌링크를 누르면 가입하기가 완료되는데요.</p>
+<p>컴펀링크의 실제 주소는 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">https://lricgtqtchaizkuwbmzw.supabase.co/auth/v1/verify?token<span class="o">=</span>pkce_1acacdde821905537d2c2932cf523a41ef409c5f14c586f54070e1e3<span class="p">&amp;</span><span class="nv">type</span><span class="o">=</span>signup<span class="p">&amp;</span><span class="nv">redirect_to</span><span class="o">=</span>http://localhost:3000</span></span></code></pre></div>
+  </figure>
+</div>
+<p>redirect_to 주소는 우리가 현재 쓰고 있는 개발서버 주소네요.</p>
+<p>이제 이메일 verification이 끝났는데요.</p>
+<p>아래 그림과 같이 Supabase 대시보드에 &ldquo;Waiting for verification&quot;가 없어졌습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhcFHP4Ta6dRWcvtA_zqRXNYpfRiudcVtbgGaL65kX-vt3dvuatKVvT7yQBcKSuqC-7Sbl6uhEBkb-jmXmMcrBQhrPcP7en2jV_vq2_MJSNRbgkEHA1IFX1r84oShLOEJcnyYrwTSAFWEmi9pj7EkOQ_oK78EJgb9QPZDo3nn8BCYQ-26ukjEw3Oo33sxQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 다시 로그인 해보면 아래와 같이 제가 사용하는 이메일로 정상적으로 로그인 되는 걸 볼 수 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgH_nDy724dn-XfTQhz5EDNo7ha6PHgiulSXyp3i69QEUnH2fwKATdRVtY6D8TVuaXQtfXYFHy7HHfnvAAFGoAG_mUoKvjdWlbEqjeJeZA1ZdBsk2yZ5iDGtYtGD96cFx0wQhtj8PbpbLOq6ZrJm5O7sYJ63LY8BdrPLn9fSASlVIuQlbfGuLtO-O5UaOw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>아주 쉽죠.</p>
+<p>그러면 왜 Confirm email 기능을 처음부터 끄고 사용했을까요?</p>
+<p>일단 Supabase 공식 문서에서 아래와 같이 얘기해주고 있는데, Supabase는 이메일서버까지 따로 돌리기는 부담스럽고 해서 직접 외부 이메일 서버를 이용해서 구현하라고 합니다.</p>
+<hr>
+<h2 id="이메일-전송을-위한-커스텀-smtp-설정-요약">이메일 전송을 위한 커스텀 SMTP 설정 요약</h2>
+<p>Supabase 공식 문서에서는 특정 경우의 경우 Supabase Auth를 사용할 경우, <strong>커스텀 SMTP 서버</strong>를 설정해야 한다고 합니다.</p>
+<p>그 특정 경우는 아래와 같은 경우인데요.</p>
+<ul>
+<li>이메일 및 비밀번호 계정</li>
+<li>이메일로 전송되는 OTP(일회용 비밀번호), 매직 링크, 초대를 사용하는 패스워드 없는 계정</li>
+<li>사용자 초대를 위한 이메일 (Users 페이지 또는 Auth 관리 API에서)</li>
+<li>소셜 로그인 시 이메일 확인</li>
+</ul>
+<p>그러면 아까 테스트 해 본 결과 Supabase도 이메일을 제공해 주는데, 왜 이렇게 공식문서에서 얘기해 주는 걸까요?</p>
+<p>왜냐하면, Supabase는 테스트용으로 간단한 SMTP 서버를 제공하지만, 이 서버는 몇가지 <strong>제한 사항</strong>이 있으며 <strong>프로덕션 환경</strong>에서는 절대 사용하지 말라고 권하고 있습니다.</p>
+<h3 id="제한-사항">제한 사항</h3>
+<p>아래와 같이 3가지 제한 사항이 있는데요.</p>
+<ol>
+<li>
+<p><strong>허가된 이메일 주소로만 전송 가능</strong></p>
+<ul>
+<li>프로젝트 팀원의 이메일 주소로만 메시지를 보낼 수 있습니다.</li>
+<li>예: <code>person-a@example.com</code>, <code>person-b@example.com</code> 등의 팀원 이메일로만 전송 가능하며, 다른 이메일은 &ldquo;Email address not authorized&rdquo; 오류가 발생합니다.</li>
+<li>팀원 관리는 조직 설정의 <strong>Team 탭</strong>에서 가능합니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>전송 속도 제한</strong></p>
+<ul>
+<li>기본 SMTP는 프로젝트당 시간당 <strong>2개의 메시지</strong>만 전송 가능하며, 이 제한은 예고 없이 변경될 수 있습니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>서비스 품질 보장 없음</strong></p>
+<ul>
+<li>기본 SMTP 서버는 메시지 전송 및 서버 가동 시간에 대한 SLA(서비스 수준 보장)가 없습니다.</li>
+</ul>
+</li>
+</ol>
+<p>결론적으로 위와 같은 제한사항때문에 Confirm email 같은 기능을 사용하려면 반드시 <strong>커스텀 SMTP 서버</strong>를 설정해야 합니다.</p>
+<p>그리고 아래와 같이 Supabase에서 외부 커스텀 SMTP 이메일 서버를 추천해 주고 있는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiPeQ66vVaVgJy7wtF21x3b_gtZ4La14-mT3Yl0uflQZu3PXtFVd7E9ieLCYkYMJSALSE6qz8uLPk7i89DMrwwYwtL6_kJ73W2MiZDJTOOiOfQ2qSiGLVSivVF81G3hnr1W8HYCnDxelrx2q1UHL4rgjzQkazmp_bzpUN6IcPlxVCnl4wCZEFgo8xn-j7Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 여러 서비스 중 Free Tier가 있는 건 바로 Resend와 Brevo입니다.</p>
+<p>그런데 Resend는 도메인 네임이 있어야 하는데요.</p>
+<p>나만의 도메인 네임을 이용해서 메일을 보내기 때문에 나만의 도메인이 없으면 Resend로 이메일을 보내는게 불가능합니다.</p>
+<p>Resend를 사용하려면 도메인 주소를 사야하는데, 있으신 분은 Resend를 사용하면 됩니다.</p>
+<p>저 같은 경우 따로 도메인 주소없이 이렇게 블로그 앱도 운영하고 있는데요.</p>
+<p>그래서 도메인 없이 이메일을 보낼 수 있는 Brevo API를 설정하는 법을 알아 보겠습니다.</p>
+<hr>
+<h2 id="brevo-가입하기와-설정하기">Brevo 가입하기와 설정하기</h2>
+<p>먼저, <a href="https://onboarding.brevo.com/account/register">Brevo</a>로 가서 가입하기를 하면 됩니다.</p>
+<p>가입은 Google과 Apple 아이디로 가능합니다.</p>
+<p>Brevo 한달에 3000건의 이메일을 무료로 보낼 수 있어 저처럼 소규모 개발자들 한테 딱 맞는 서비스입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhJANVCTI7Ez_YT9pSIvYeEACKt_R08KwEeWM4HLgYUHk1thaIG_8ZTIjTogrOELhfXjYNSYmV_7yrqt_5DK5Es2BCcJxSTVz-py7Kj8erQbeBum8wyT3b846HYG09tEvWoVZc_B0wdtObhzl7J_vLHcfVBV4wF3RrwcCGeBrtUiptRXLbnjon5U4cy3Ww"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>가입이 완료되면 화면 오른쪽 위쪽에 자기 아이디를 클릭하고 아래와 같이 SMTP &amp; API 관련 메뉴를 선택하면 되는데요ㅣ.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg3fXxEP4l_xlOLCz9mBNDxHh0sPmd5BI2O9FhFIO0mZvncPiGHF6qO6vXWaFMf9uvio6WllaBi2vRNDx2BU03JQNOidConG3Owx4xuieYoEIOq9gPCiSB9ahjS1pC37J2WW1fG8LiNSa-y7nUkyB2KWzYDvvP8NRaKyzQ2WxCJtZ5vn7rY9RXV8ES01TM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리가 필요한 건 아래와 같이 새로운 SMTP Key가 있어야 합니다.</p>
+<p>아래와 같이 &ldquo;Generate a new SMTP Key&rdquo; 버튼을 누릅시다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhvhjptsoROegfKG7GidErjgk6hstd6IVkWN1dJMQcNALp1AwR9qqbFEwzae3dOu0k29FlXlBssMF8sCAHq79P4pejpdfbhOgw2Xhm20JqkxhgN9JP06p5hSc7N7VX8HPVF42Nlu9n-ZCTMHafq2SfcwI89NRp0rv93zaaE0xEi_M0UBwI0UdadcLRTz5o"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그 밑에 있는 Master password는 건들지 마십시요.</p>
+<p>프로젝트에 맞게 새로 만들어 사용하는 걸 추천드립니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEir19-3_bLzHcCtQhYe4yMcx8iPsfJbaXghMaCemtFjjVmBdcc95gFIvgQ4dV18Ds1u2CYXqRKwNXaZYyf5HJae1NLliiBiEwPo5oV2X2P0-ikKCNolSFWmQdwKOORSbfsza7I-lyhGovVCaeLAeEPjIvfICDjJYKk4DjQJJxy0-ZZ4IhZv3vJC2lNTSAw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgct9Uq2e54m_rj4KUEp9epoPBZsUUO0U8q07QNjARu8kVNW4gBrbxKEEs392Ay0aeS2cuS17DJObU3ftdvKXg8uD3qRyKIICGglrkS9eirSoAOFGh7iSczh1EALDiBHYllnhRVNBAwTttUEZDFqC3EZoy5Ud13K9RCOyjHigJgsPVgNVSRbpo6Zr-vek0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiqHAuxybI_wGOqARWnCqur8rRJVhHYPQvrnIzo2OpwgJUB3Yh3piMN8r0NZ-v328NnQWikgkx32M7ysU6qHrsjeHEfeXIvlGpuyN4qZINU-rcBkzB1BzVNRbnN8aQbcfG58MSssQj7vGul2tybQBj7jimxOgEhseTYszEgUdxspoVgo3-cXA6KMr1GdLc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 새로운 키를 만들었으면 설정이 끝납겁니다.</p>
+<p>우리가 필요로하는 정보는 위와 같이 만든 SMTP Key와 아래 그림에 있는 건데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhvhjptsoROegfKG7GidErjgk6hstd6IVkWN1dJMQcNALp1AwR9qqbFEwzae3dOu0k29FlXlBssMF8sCAHq79P4pejpdfbhOgw2Xhm20JqkxhgN9JP06p5hSc7N7VX8HPVF42Nlu9n-ZCTMHafq2SfcwI89NRp0rv93zaaE0xEi_M0UBwI0UdadcLRTz5o"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>SMTP Server, Port, Login 정보값입니다.</p>
+<p>이 값과 아까 만든 SMTP Key 값을 Supabase 세팅란에 넣어야 Brevo 와 Supabase가 연동되는 겁니다.</p>
+<p>이제 Supabase 대시보드로 갑니다.</p>
+<p>Project Settings 에서 Configuration 쪽에 있는 Authentication 부분을 누르면 아래쪽에 아래와 같이 SMTP Settings 부분이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgaTH-sHEba_4lw7MjA4csLYIEy9cPbylPjJf3xJRLRwThGOj2yc4htjAj_cJQL9V7eYfwZpmCedfH0VgZs3uiPgN64e1BAZEFXESK1sEsoDlMKGK4lZWNIrfDwIsI9bqQT8Pk9UJiIpuP-bS8mXDvIITIbUARmR_6TDJrYycbQTaCxO6A3-ybpByoagtw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Enable Custom SMTP 칸을 활성화 시키고 두 개의 값을 입력해야 하는데요.</p>
+<p>여기서 중요한게 Sender email입니다.</p>
+<p>Sender email에는 꼭 Brevo에 가입한 이메일을 적어야 합니다.</p>
+<p>Brevo에 가시면 세팅쪽에 가보시면 아래와 같이 Senders 쪽에 가입된 이메일이 Verified 된 상태라고 나와야합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi4obXd0HDuuo2tfHh6ZLHgdSCp8KiYKIQ3GLZdnCZGy5xDAXAzz1mOmLWRTgJ_cOwwoFv8y27T1mwEsFqoV-ZvYj83InOoS_npsXj2cT4n66a40k-TzyhFxJP7JaOKwY5L-fK9YRdEwAwHoCVeOKT-Uv3xjpTw8jnR8DjCz_27O3nGj11EI95OdnIM2PA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 잘 보시면 Free Domain은 추천하지 않는다는 주의사항도 있고 한데요.</p>
+<p>Gmail로는 Brevo가 이메일을 보낼 수 있으니 걱정 않으셔도 됩니다.</p>
+<p>그리고 Supabase 대시보드쪽에 아래로 가서 SMTP 서버 관련 코드를 마저 넣어야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiJt_oFxQbbQE2y1xjR5gfZ0XTRYHJEr4XyQaXyPcOZcLqeHgFqNcLBsh3ZDAoIwfALRuLWEJ7kFKUQmAJ_EzRMFXyihfrzs3i6BCBqYUnqpzgsGBkNBW-zhVEO_sJusxcPPGHsXUMPlrONnlYXsOkwaL3ZPlKJyiGw7QT5PCZWi3dAb3S_rS38suB3vwM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Brevo에서 얻은 정보를 넣으면 되는데요.</p>
+<p>Host 칸에는 Brevo 에서 얻은 &ldquo;SMTP Server&rdquo; 값을 넣으면 되고, Port는 Port 값을 넣고, Username쪽에는 Brevo에서 얻은 Login 값을 넣으면 됩니다.</p>
+<p>그리고 마지막으로 Password에는 SMTP Key를 넣으면 끝입니다.</p>
+<p>여기서 주의사항 대시보드를 자세히 보시면 조금 아래 &ldquo;Save&rdquo; 버튼이 있습니다.</p>
+<p>&ldquo;Save&rdquo; 버튼을 꼭 눌러 저장해야 합니다.</p>
+<hr>
+<h2 id="이메일-템플릿-수정하기">이메일 템플릿 수정하기</h2>
+<p>SMTP 서버 등 Brevo 설정이 끝났으면 컨펌 이메일에 대한 템플릿을 다시 구성해 줘야 하는데요.</p>
+<p>이 글의 처음에는 이런 설정이 없이 Supabase가 설정한 템플릿으로 이메일이 전송됐습니다.</p>
+<p>하지만 커스텀 SMTP 서버의 경우 꼭 컨펌 이메일 템플릿을 다시 구성해 줘야 하는데요.</p>
+<p>왜냐하면 토큰값과 같이 컨펌 이메일 링크를 설정해 줘야 합니다.</p>
+<p>이 템플릿도 Supabase Doc 부분에 나와있는데요.</p>
+<p>공식 문서에 나오는 템플릿은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Confirm</span> <span class="nx">your</span> <span class="nx">signup</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Follow</span> <span class="k">this</span> <span class="nx">link</span> <span class="nx">to</span> <span class="nx">confirm</span> <span class="nx">your</span> <span class="nx">user</span><span class="o">:&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">a</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email&amp;next={{ .RedirectTo }}&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span><span class="nx">Confirm</span> <span class="nx">your</span> <span class="nx">email</span><span class="o">&lt;</span><span class="err">/a</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/p&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아주 간단하죠.</p>
+<p>여기서는 &ldquo;.TokenHash&quot;가 중요합니다.</p>
+<p>이 값을 Supabase 대시보드에서 Authentication 탭에 가보면 Configuration 쪽에 있는 Email Templates 부분으로 가서 &ldquo;Confirm signup&rdquo; 부분에다가 넣고 저장하시면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh3LYSCPpcfwT_P7Bx1gsHJMif_ltit3JqJugc6mWd1vckoSQufT6Lav0gwq4C6uyxk1KyTel6Ti_CTNZBE1ppoWgvZDWsrbFG0hVBaiqCHoYVHINtTx3qnXiJadGiYZ0lreYQd0Q6WP0yvn3Z7gTqNZPMQyD9px5YfcK6D2GDytQUQuDZRpU2LyahLAFc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림 부분에 아래와 같이 넣으면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhtWXFJZxLcPa90hj53OG203_IcaVaVn0jJXwgmNDFo-gmsRJcEtXX6b6NmKPmY-Bw4CJOENQcvOwIYHAYAh10Ft8Pr5Zyz5gCOuHoY3qf-TzmO3D5DfhqI1rDME_ZlRjt517m4hTrx43KLSSiDztcYhlmUNy7PVsxZbUP01ENTybc5V5f0gLqYmAUqRec"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 테스트를 위해 &ldquo;cpro95@hotmail.com&rdquo; 이메일 이름으로 가입하기를 진행해 보겠습니다.</p>
+<p>가입하기가 완료되면 라우팅은 Home(&rdquo;/&quot;)으로 이동하는데요.</p>
+<p>사용한 이메일로 가보면 아래와 같이 이메일이 온 게 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgWAYz_8vaiAMDv0gjkTaDZTHM8OuxJ7HLIzlHSH-WBf_-9Hvbz4w8VJZsnAHp4So-pp53CYI2xbpJxcYXUE-3MQ95QOe9NVUlQNXlQFxlqpgldo1in_ufI3pt3xFuYCGqEuIjgXf-AwHFsJB-EB9_DuH37O8F_PnXfv2H89nHkfnx4tzNmcRvp64sQe5k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이메일에 컨펌을 클릭하면 브라우저로 이동하면서 아래와 같이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjNWU7sovhLR4AVwaY6Md-tLlxM9mztUSUVfbwT9Dld-zi4zr31RCPzukAsRIivd7lbSs0KoB7cOscMZHMhxhsxMBfJiZBGgNcHpjkVj49FeqySe1jSZTKkc7G8ZD88YzY3tVmOWFXPOHIxGcWrZIOzquFLAKyUECeJbwnmaPJdc2Un4EENxuStpGwJpdc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 브라우저를 보시면 &ldquo;/auth/confirm&quot;라우팅에서 &ldquo;token_hash&rdquo; 값을 전달하고 있습니다.</p>
+<p>그렇습니다.</p>
+<p>우리가 설정해줘야할 코드는 &ldquo;/auth/confirm&rdquo; 라우팅까지 설정해 줘야 합니다.</p>
+<p>이 부분도 공식 Supabase Doc에 있는데요.</p>
+<p>&ldquo;src/app/auth&rdquo; 폴더 밑에 &ldquo;confirm&rdquo; 폴더를 만들고 그 밑에 &ldquo;route.ts&rdquo; 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">EmailOtpType</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@supabase/supabase-js&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">NextRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createClientForServer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/utils/supabase/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/navigation&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">GET</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">searchParams</span> <span class="p">}</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">token_hash</span> <span class="o">=</span> <span class="nx">searchParams</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;token_hash&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="kr">type</span> <span class="o">=</span> <span class="nx">searchParams</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;type&#34;</span><span class="p">)</span> <span class="kr">as</span> <span class="nx">EmailOtpType</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">next</span> <span class="o">=</span> <span class="nx">searchParams</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;next&#34;</span><span class="p">)</span> <span class="o">??</span> <span class="s2">&#34;/&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">token_hash</span> <span class="o">&amp;&amp;</span> <span class="kr">type</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">supabase</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createClientForServer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">verifyOtp</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">type</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">token_hash</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// redirect user to specified redirect URL or root of app
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">redirect</span><span class="p">(</span><span class="nx">next</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// redirect the user to an error page with some instructions
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/auth/auth-code-error&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 가입하기를 새로 시도해 보면 유저 가입이 정상적으로 된 걸 볼 수 있을 겁니다.</p>
+<p>아래 그림은 Supabase 대시보드에서 가입된 유저리스트입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi4-bLpgmGgdXsgpt53oXEHzFnpdtkPxF3_05MRGWkjZy123NNWYezS1h828z4Wlc6_TFHMuoeZdiFfnxq3-HpWhJjk-0owo1o4aIYk6KRCFA2WGXU5Brb9CL6SNQ8YhDK3RauCjMJrWaSUpB0_HQe-UWcYXAbPfMxsPtPkRL3-tdeuD4oBjunwBhFivMc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="brevo에서-결과-보기">Brevo에서 결과 보기</h2>
+<p>Brevo 사이트에도 대시보드가 있는데요.</p>
+<p>왼쪽 메뉴에 Transactional 부분에 Email 밑에 Statistics 쪽에 보면 현재까지 이메일이 전송된 횟수와 성공여부를 볼 수 있을 겁니다.</p>
+<p>아래 두 그림을 보시면 성공 실패의 로그가 보이는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh57SlNLv0_AlVWrG3hZ9u09te5RlnHRKzl3nxIYfOAruOTaSGWXSeVhddX_tsoqemiF33QnI6DE197OtAOl0_J-PsQwMoIZNKCYRVeyFB1f_jniPyYQzTjFSB9EK4MU17aGvakGuyKljnorX4LQEBlEg5CEn54HeiJmMozEGZXIoH2B8YpLJSM8oG1m-c"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhy9FGO0GZs0mE4XyEmYbTxGdaVzeKfVgwKODhKlCy5PHjvwPNJTq20AEVZ-Hh-8Rnsbu5pcy91hWaAYuIFFABpjJWCOmih6ni3Tnn1l6YKR-soPnpjmoZD2-2iWTCt-sHUCtNkpCfpwmecurGoPLSkXrvQCuoc1uFMlsNqJcz5hJZYxYbEwaYRy4phzbw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>아까도 그랬듯이 아주 중요한 점은 Supabase 설정에서 Sender를 꼭 Brevo 가입한 이메일로 해야한다는 겁니다.</p>
+<p>그렇지 않으면 계속 에러가 나오니 꼭 유념하시길 바랍니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/auth/" role="button">auth</a>
+        <a class="btn btn-light" href="/tags/supabase/" role="button">supabase</a>
+        <a class="btn btn-light" href="/tags/email-password-login/" role="button">email password login</a>
+        <a class="btn btn-light" href="/tags/confirm-email/" role="button">confirm email</a>
+        <a class="btn btn-light" href="/tags/brevo/" role="button">brevo</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-13-nextjs-supabase-tutorial-7-send-magic-link-and-login-with-supabase-brevo/">Next.js 15, Supabase 강좌 7편. 이메일로 Magic Link를 보내서 로그인 구현하기</a></h2>
+                  <p>Next.js와 Supabase를 이용해서 이메일로 Magic Link를 보내서 로그인하는 방법을 구현해 봅시다.</p>
+                  <p>
+  <small>January 13, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-12-nextjs-supabase-tutorial-6-send-email-of-reset-password-and-implementing-reset-password/">Next.js 15, Supabase 강좌 6편. 이메일로 Reset Password 링크 보내기와 Update Password 로직 구현하기</a></h2>
+                  <p>Next.js와 Supabase를 이용해서 이메일로 Reset Password 링크를 보내고 Update Password 로직도 구현해 봅시다.</p>
+                  <p>
+  <small>January 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-04-nextjs-supabase-tutorial-4-login-with-email-and-password-and-useactionstate/">Next.js 15, Supabase 강좌 4편. email, password를 이용한 로그인 구현</a></h2>
+                  <p>Next.js와 Supabase를 이용해서 Email, Password 방식의 로그인을 테스트해 보겠습니다.</p>
+                  <p>
+  <small>January 4, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

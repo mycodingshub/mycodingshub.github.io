@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Query로 구현하는 간단하고 강력한 상태 관리 솔루션</title>
+<meta name="description" content="React Query를 활용하여 Redux나 Zustand 대신 간단하고 강력한 상태 관리 시스템을 구현하는 방법을 소개합니다. 기존 데이터 페칭 라이브러리를 사용해 비동기 상태 관리도 함께 다루어봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-07-16-use-tanstack-react-query-as-global-state-management/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Query로 구현하는 간단하고 강력한 상태 관리 솔루션" />
+<meta property="og:description" content="React Query를 활용하여 Redux나 Zustand 대신 간단하고 강력한 상태 관리 시스템을 구현하는 방법을 소개합니다. 기존 데이터 페칭 라이브러리를 사용해 비동기 상태 관리도 함께 다루어봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-07-16-use-tanstack-react-query-as-global-state-management/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-07-16T12:49:15Z" />
+<meta property="article:modified_time" content="2024-07-16T12:49:15Z" />
+<meta property="article:tag" content="tanstack query" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="react query" />
+<meta property="article:tag" content="state management" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Query로 구현하는 간단하고 강력한 상태 관리 솔루션" />
+<meta name="twitter:description" content="React Query를 활용하여 Redux나 Zustand 대신 간단하고 강력한 상태 관리 시스템을 구현하는 방법을 소개합니다. 기존 데이터 페칭 라이브러리를 사용해 비동기 상태 관리도 함께 다루어봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Query로 구현하는 간단하고 강력한 상태 관리 솔루션\"",
+  "description": "\"React Query를 활용하여 Redux나 Zustand 대신 간단하고 강력한 상태 관리 시스템을 구현하는 방법을 소개합니다. 기존 데이터 페칭 라이브러리를 사용해 비동기 상태 관리도 함께 다루어봅니다.\"",
+  "datePublished": "\"2024-07-16T12:49:15Z\"",
+  "dateModified": "\"2024-07-16T12:49:15Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-07-16-use-tanstack-react-query-as-global-state-management/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Query로 구현하는 간단하고 강력한 상태 관리 솔루션</h1>
+        <p>
+  <small>July 16, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요!</p>
+<p>오늘은 리액트 애플리케이션에서 상태 관리를 다루는 새로운 방법을 소개해드리려고 합니다.</p>
+<p>우리가 흔히 알고 있는 Redux, Zustand, MobX 같은 전통적인 상태 관리 라이브러리 대신, 조금 색다른 접근법을 사용해볼 건데요.</p>
+<p>물론 라이브러리를 사용하긴 하지만, 일반적으로 상태 관리에 쓰이지 않는 것을 활용할 겁니다.</p>
+<p>자, 이제 본격적으로 시작해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜ npm create vite@latest react-state-management-test
+</span></span><span class="line"><span class="cl">Need to install the following packages:
+</span></span><span class="line"><span class="cl">create-vite@5.4.0
+</span></span><span class="line"><span class="cl">Ok to proceed? <span class="o">(</span>y<span class="o">)</span>
+</span></span><span class="line"><span class="cl">✔ Select a framework: › React
+</span></span><span class="line"><span class="cl">✔ Select a variant: › TypeScript
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Scaffolding project in /Users/cpro95/Codings/blog/react-state-management-test...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Done. Now run:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nb">cd</span> react-state-management-test
+</span></span><span class="line"><span class="cl">  npm install
+</span></span><span class="line"><span class="cl">  npm run dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm notice
+</span></span><span class="line"><span class="cl">npm notice New minor version of npm available! 10.5.0 -&gt; 10.8.2
+</span></span><span class="line"><span class="cl">npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.8.2
+</span></span><span class="line"><span class="cl">npm notice Run npm install -g npm@10.8.2 to update!
+</span></span><span class="line"><span class="cl">npm notice
+</span></span><span class="line"><span class="cl">➜ <span class="nb">cd</span> react-state-management-test
+</span></span><span class="line"><span class="cl">➜ npm install
+</span></span><span class="line"><span class="cl">➜ npm run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 터미널에서 보시는 것처럼 아주 간단한 애플리케이션을 준비했습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgatC7D7SZM-q6in4JOPjbC4tCrJzA00vIxXma2Wf3CWldmxZ84-wxmcEKk_wc3UcskK_z1ONtrio060GVCaFxiqNF5Zcaws4xylsIyFQxyA3m-Z7UBb-_B1Ln4rYvTVoMv0SRRthCt3RZvOioUXLr7zTdAf6YwdkzbFFQO22Z_5-NgXv0x2Djdowne6_0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>지금은 위 그림처럼 <code>Vite + React</code> 앱처럼 아무것도 없지만, 이제부터 리액트에서 상태를 관리하는 방법을 알아 보겠습니다.</p>
+<p>앞서 말씀드렸듯이, Redux나 Zustand, MobX 같은 전통적인 상태 관리 라이브러리는 사용하지 않을 겁니다.</p>
+<p>대신 다른 것을 사용할 건데요, 바로 <code>Tanstack Query</code>, 예전이름으로는 <code>React Query</code>입니다.</p>
+<p><code>React Query</code>를 이용해서 간단하면서도 강력한 상태 관리 솔루션을 구현해볼 생각입니다.</p>
+<p>이 방법은 Redux나 Zustand에서 볼 수 있는 것과 비슷한 수준의 기능을 제공할 수 있는데요.</p>
+<p>많은 개발자들이 모르는 사실이지만, React Query는 단순히 데이터를 가져오는 라이브러리가 아닙니다.</p>
+<p>물론 데이터 fetching에 주로 사용되긴 하지만, 공식 문서에서도 볼 수 있듯이 React, Solid, Vue, Svelte, Angular를 위한 강력한 비동기 상태 관리 솔루션입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiqRSC47KNzGOCjZQJRI7_L6wXFZN6GZUvtKYDz_PMiiP1bUI7HO9wpVsakLV5ZoX3onzKnmd_CRJypnZnbw0Wmf0vSN9E_DbXEmfZLmpna9J2gQfwkTVI-sDFovnK-GOKABRksL4rBQGooYTj60aGcYNXn8DSqAkhKsKpz0gIXgrENTHLY8-iXtFwFuhg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>TanStack Query 홈페이지에서 캡쳐한 위 그림을 보시면 중요한 점은 이게 &lsquo;Powerful asynchronous state management(비동기 상태 관리)&lsquo;라는 겁니다.</p>
+<p>단순히 데이터 fetching이 아니라, 비동기 작업을 다루는 상태 관리라는 거죠.</p>
+<p>즉, 우리가 원하는 상태 관리 솔루션을 만드는 데 완벽하다는 얘기입니다.</p>
+<p>이제 React Query를 이용해 상태 관리를 어떻게 구현하는지 보여드리겠습니다.</p>
+<p>이 방법은 매우 간단하고 효율적이며, 필요하다면 복잡한 애플리케이션으로 확장할 수도 있습니다.</p>
+<p>물론 꼭 React Query를 이용해서 상태 관리를 할 필요는 없지만, 원한다면 충분히 가능한 훌륭한 솔루션입니다.</p>
+<p>먼저, Tanstack Query를 설치합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm i @tanstack/react-query</span></span></code></pre></div>
+  </figure>
+</div>
+<p>먼저 src 폴더 안에 &lsquo;state&rsquo;라는 새 폴더를 만듭니다.</p>
+<p>이 폴더에 React Query를 이용한 상태 관리 솔루션에 필요한 모든 파일을 넣을 예정인데요.</p>
+<p>먼저, 이 폴더 안에 &lsquo;index.ts&rsquo; 파일을 만듭니다.</p>
+<p>이게 우리의 상태 관리 솔루션의 메인 파일이 될 겁니다.</p>
+<p>여기에 상태를 만드는 함수를 작성할 건데, 이 함수가 상태 생성의 모든 로직을 처리할 겁니다.</p>
+<p>그리고 이 함수를 이용해 개별 상태들을 만들고, 그걸 애플리케이션의 여러 컴포넌트에서 공유해서 사용할 수 있습니다.</p>
+<p>자, 이제 &lsquo;createGlobalState&rsquo;라는 함수를 만들어 만듭시다.</p>
+<p>이 함수는 특이하게도 그냥 함수를 반환할겁니다.</p>
+<p>전체적인 윤곽은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">createGlobalState() {</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 나머지 로직이 여기에 들어갈 거예요
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>createGlobalState</code> 함수는 전역 상태를 만드는 데 사용할 거고, 반환되는 함수는 개별 컴포넌트에서 사용하게 될 겁니다.</p>
+<p>모든 React Query 관련 상태 관리 로직은 이 내부 함수에 들어갈 건데요.</p>
+<p>먼저, React Query의 캐시를 조작할 거기 때문에, 이 함수 내에서 queryClient에 접근할 수 있어야 합니다.</p>
+<p>그래서 useQueryClient 훅을 사용할 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQueryClient</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;@tanstack/react-query&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">createGlobalState() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 나머지 로직이 여기에 들어갈 거예요
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 함수가 각 컴포넌트에서 커스텀 훅으로 사용될 거라서, 여기에 다른 커스텀 훅을 넣을 수 있습니다.</p>
+<p>바로 훅의 규칙을 따르는 거죠.</p>
+<p>그 다음으로 React Query의 가장 많이 사용되는 Hook인 useQuery를 사용할 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span><span class="p">,</span> <span class="nx">useQueryClient</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">createGlobalState</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">queryKey</span>: <span class="kt">unknown</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">initialData</span>: <span class="kt">T</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryFn</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">initialData</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchInterval</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnMount</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnWindowFocus</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnReconnect</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchIntervalInBackground</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 queryKey와 initialData는 이 함수의 매개변수로 받을 건데요.</p>
+<p>Tanstack Query에서 queryKey의 타입은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">QueryKey</span> <span class="o">=</span> <span class="nx">ReadonlyArray</span><span class="p">&lt;</span><span class="nt">unknown</span><span class="p">&gt;;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그래서 <code>createGlobalState</code> 함수의 매개변수로 첫번째 오는 queryKey 타입을 <code>unknown</code>으로 지정했습니다.</p>
+<p>그리고 초기 데이터 값인 initialData는 타입스크립트의 제너릭을 이용해서 초기화 했습니다.</p>
+<p><code>T | null = null</code> 로 지정해서 T 아니면 null 인데, 초기값은 null인 타입이 되는겁니다.</p>
+<p>이렇게 하면 개별 상태를 만들 때 queryKey와 초기 데이터(initialData는)를 지정할 수 있게 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjCWjutYdUAwIsNCW3rQ0vV9BQBk-JL2xcW0u-V2tEk7S_01ZO0QfZa9PfeFs08OLdJSIf_jPERPr51Ht9aoKiLi26iKLxWW5QoVwN9vWc9aEms61inQ8cUUYmviV2aNKgcA-Mboqud9w7hOIcvYf3GTXo27Pwv2ByXoUURDWBCu5D-NGmKrKTVvTMh8OE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 data의 타입은 <code>Awaited&lt;T&gt;</code> 또는 <code>null</code> 또는 <code>undefined</code>가 됩니다.</p>
+<p>Awaited는 Promise라서 예상한 타입이 왔고, null 도 우리가 예상한 타입인데, <code>undefined</code>는 예상하지 못했는데요.</p>
+<p><code>undefined</code>는 useQuery 초기 실행때문에 생기는거라서 무시해도 됩니다.</p>
+<p>그냥 <code>Awaited&lt;T&gt; | null</code> 타입이라고 보면 됩니다.</p>
+<p>React Query는 주로 데이터 fetching에 사용되지만, 우리는 단순히 데이터 저장소로 사용할 겁니다.</p>
+<p>그래서 queryFn 함수는 단순하게 Promise를 resolve만 합니다.</p>
+<p>그리고 마지막으로 data를 리턴하면 됩니다.</p>
+<p>그리고 자동 리페치 같은 기본 설정들을 비활성화할 필요가 있는데요.</p>
+<p>아래와 같이 refetch 옵션을 false로 설정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl">  <span class="nx">refetchInterval</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refetchOnMount</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refetchOnWindowFocus</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refetchOnReconnect</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refetchIntervalInBackground</span>: <span class="kt">false</span><span class="p">,</span> 
+</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 데이터를 설정하고 초기화하는 함수를 만들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">setData</span><span class="p">(</span><span class="nx">newData</span>: <span class="kt">Partial</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">([</span><span class="nx">queryKey</span><span class="p">],</span> <span class="nx">newData</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 setData 함수의 newData 타입이 Partial이라는 타입스크립트 유틸리티 타입을 써서 T 타입의 일부만 주어져도 setData가 작동하게끔 했습니다.</p>
+<p>이론적으로 initialData에서 일부만 수정할 수 있으니까 Partial을 쓰는게 타당한거죠.</p>
+<p>setData를 이용해서 상태 데이터를 업데이트하면 queryFn 함수가 작동하면서 캐시를 업데이트하는데, 우리가 만든 queryFn 함수는 그냥 Promise.resolve 함수라서 비동기식으로 데이터가 캐시에 업데이트됩니다.</p>
+<p>두 번째로, resetData 함수입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">resetData() {</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">queryClient</span><span class="p">.</span><span class="nx">invalidateQueries</span><span class="p">({</span> <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">queryClient</span><span class="p">.</span><span class="nx">refetchQueries</span><span class="p">({</span> <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 invalidateQueries로 query를 초기화하고 다시 query를 refetchg 하는데요.</p>
+<p>그러면 아까 useQuery에서 만든 queryFn 함수가 실행되서 초기 initialData 값을 리턴하는 Promise가 지정됩니다.</p>
+<p>그리고, 마지막으로 지금까지 만든 함수들을 반환하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="k">return</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span><span class="p">,</span> <span class="nx">resetData</span> <span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 해서 createGlobalState 함수가 완성됐습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span><span class="p">,</span> <span class="nx">useQueryClient</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">createGlobalState</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">queryKey</span>: <span class="kt">unknown</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">initialData</span>: <span class="kt">T</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryFn</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">initialData</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchInterval</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnMount</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnWindowFocus</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnReconnect</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchIntervalInBackground</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">setData</span><span class="p">(</span><span class="nx">newData</span>: <span class="kt">Partial</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">([</span><span class="nx">queryKey</span><span class="p">],</span> <span class="nx">newData</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">resetData() {</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">invalidateQueries</span><span class="p">({</span> <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">refetchQueries</span><span class="p">({</span> <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span><span class="p">,</span> <span class="nx">resetData</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 함수를 이용해 개별 상태를 만들고, 컴포넌트에서 사용할 수 있게 되는 거죠.</p>
+<p>이제 실제로 이 함수를 사용해 상태를 만들어 보겠습니다.</p>
+<p>&lsquo;state&rsquo; 폴더에 &lsquo;user.ts&rsquo; 파일을 만들고, 다음과 같이 작성합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createGlobalState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;.&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserState</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isSignedIn</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useUserState</span> <span class="o">=</span> <span class="nx">createGlobalState</span><span class="p">&lt;</span><span class="nt">UserState</span><span class="p">&gt;(</span><span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;mycodings&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isSignedIn</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>간단한 테스트를 위해 UserState를 이름과 로그인 여부만 넣었습니다.</p>
+<p>그리고 React의 Hook 방식으로 만들려고 <code>use</code>라는 이름으로 함수 이름을 작성했습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhc3i9E8sPuP_VZhHVZaC2rrVKzIwNckDUcGgSsRzX6wFnX75_VjIHkCma8GLmz7PygDL6qJfWvAQvaVFm5rOShmttbviPA2uzLxYbXshDjclU1ll5eRv7mMzPfwxgcZkdOi3fIZfqGkeAPUqOFW5rnvnG5ouGia-hfwCNG5ifgsdJo5_9gASxJ5y3xM7M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 useUserState 훅은 data, setData, resetData를 사용할 수 있는 Custom React Hook이 되었습니다.</p>
+<p>이제 이 useUserState 훅을 컴포넌트에서 사용해 보겠습니다.</p>
+<p>App.tsx에서 아래와 같이 사용해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useUserState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./state/user&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useUserState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">}&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이론상 이렇게 하면 브라우저에 initialData의 디폴트값인 &lsquo;mycodigns&rsquo; 값이 나와야 하는데요.</p>
+<p>아무런 표시도 일어나지 않습니다.</p>
+<p>크롬 개발자 콘솔창을 들여다 보면 <code>QueryClientProvider</code>를 제공하라고 나오는데요.</p>
+<p>맞습니다.</p>
+<p>React Query를 사용하려면 꼭 <code>QueryClientProvider</code>를 지정해야 합니다.</p>
+<p>main.tsx 파일을 아래와 같이 수정합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="kr">from</span> <span class="s2">&#34;react-dom/client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">App</span> <span class="kr">from</span> <span class="s2">&#34;./App.tsx&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">QueryClient</span><span class="p">,</span> <span class="nx">QueryClientProvider</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">QueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">)</span><span class="o">!</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">React.StrictMode</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">QueryClientProvider</span> <span class="na">client</span><span class="o">=</span><span class="p">{</span><span class="nx">queryClient</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">App</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">QueryClientProvider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">React.StrictMode</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>React Query를 사용해서 데이터 fetching을 하려고 할 때 그리고 이 때 전역 상태 관리를 사용하고 싶을 때 이 방법을 쓰면 좋을거 같네요.</p>
+<p>이제 화면에 아래 그림과 같이 나올겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiphSJGoYYtbo0p30rfEM9uJ1sx7dDszC8f6t7s8HNVa6eB3rIgTydN4zj6rIhfZLlc16I4RA7tEH_qaO1BEq3lMsxx7kuloGi-tEYQcu3Z3-yZpMrY9CwbbQIX9rtVXWF3Hd3pfyFtxVIJ-EtM1kJNQB91frLh-uQCZG4iJ3_Tk81O8jwwshSqVVAe24A"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>코드를 조금 더 확장해 보겠습니다.</p>
+<p>먼저, UserCard라는 다른 컴포넌트를 만들겠습니다.</p>
+<p>편의상 App.tsx 파일안에 넣었지만 다른 파일에 넣어도 똑같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useUserState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./state/user&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App() {</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">UserCard</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">UserCard() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useUserState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">}&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 위와 같이 해도 브라우저에서는 똑같이 나올겁니다.</p>
+<p>이제 input 태그를 넣어서 데이터를 변경해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useUserState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./state/user&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useUserState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">UserCard</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setData</span><span class="p">({</span> <span class="nx">name</span>: <span class="kt">e.target.value</span> <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">UserCard() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useUserState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">}&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjbJP6Sdn5L47VN09bvUa5yDlOg0pSbc_AwglkoLDSOav7kCUhwypW1QY7X1tLiX8Mo4VKICosTTsKncrNIhkeCAQEX8tJFgc1znLBVRoAQRIVomeVWaXXcGd8Q0skRAinzRTrmVuAI6bnZJWWUWSSu2h-qgOWvvO61gvBFRax6jWA2KDO1xS8pqT5AJPs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 상태에서 input 태그 안에 글자를 변경하면 useState 훅 처럼 데이터가 연동됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhglPPByGSKjvmqiiaWn9dgKNc2Dlca62rOTmkkabhVLf5hT1pV3IWH7QpsO8tDI8VNcuEmtTZeArUXjS3wskPBpSkuciE_t7gT-YrcjiQ9dCf8i-gYWSLiYwHdGQJtjOpaT5NRlSF3GQIYrst0E-i46tiCHIoNaoWvXJVdw-vTAKstLaTnV7ikgHv-8_M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 resetData 함수를 사용하기 위해 아래와 같이 button 태그도 추가해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span><span class="p">,</span> <span class="nx">resetData</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useUserState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">UserCard</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setData</span><span class="p">({</span> <span class="nx">name</span>: <span class="kt">e.target.value</span> <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">resetData</span><span class="p">}&gt;</span><span class="nx">Reset</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아래 그림과 같이 상태에서 reset 버튼을 클릭하면 initialData 값으로 초기화 되는 걸 볼 수 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhRSbh6YObkpN1nUJLFSp_mBfgXYOcntOtFPyZcUhZ8hmBHlwkZ-Q9nKqGJsASo_3e-7PhJQBLBdGr_B1QrRAdnMfKwAS3CQK0KyC8ONIrfNSBtXH9NYLln3RGSiNE4vD5XSpKXv9cv-6gkZRGbxNYgrQY70OLgNLmX_T_LMNDK3zfhFmK3MbZIlO3lSeE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기서 중요한 점은 App 컴포넌트에서 변경한 데이터가 UserCard라는 다른 컴포넌트에서 그냥 불러온 data 변수에 그대로 반영된다는 점입니다.</p>
+<p>이게 바로 글로벌(전역) 상태 관리라는 거죠.</p>
+<p>이렇게 React Query를 이용한 간단한 상태 관리 시스템이 완성됐습니다.</p>
+<p>이 방식은 프로젝트의 규모와 목적에 따라 유용할 수 있고 그렇지 않을 수도 있는데요.</p>
+<p>특히 이미 React Query를 사용 중이라면 아주 유용할 수 있을겁니다.</p>
+<p>하지만 대규모 프로젝트나 복잡한 상태 관리가 필요한 경우에는 Redux나 Zustand 같은 검증된 라이브러리를 사용하는 것이 더 안전할 수 있습니다.</p>
+<h2 id="react-query를-사용한-상태관리의-장점">React Query를 사용한 상태관리의 장점</h2>
+<p>자, 이제 우리가 만든 상태 관리 시스템을 조금 더 자세히 살펴볼까요?</p>
+<p>먼저, 이 방식의 장점 중 하나는 타입 안정성입니다.</p>
+<p>TypeScript를 사용하고 있기 때문에, 상태의 타입을 명확히 정의할 수 있고 이를 통해 런타임 에러를 줄일 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createGlobalState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;.&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserState</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isSignedIn</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useUserState</span> <span class="o">=</span> <span class="nx">createGlobalState</span><span class="p">&lt;</span><span class="nt">UserState</span><span class="p">&gt;(</span><span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;mycodings&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isSignedIn</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 정의된 UserState 타입은 createGlobalState 함수에 전달되어, 반환된 훅에서 사용되는 data, setData 함수 등의 타입을 정확하게 추론할 수 있게 해줍니다.</p>
+<p>또 다른 장점은 코드의 재사용성입니다.</p>
+<p>createGlobalState 함수를 한 번 정의해두면, 이를 이용해 여러 개의 상태를 쉽게 만들 수 있는데요.</p>
+<p>예를 들어, 다크모드 설정을 위한 상태를 추가로 만들고 싶다면 다음과 같이 할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">ThemeSettings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">theme</span><span class="o">:</span> <span class="s1">&#39;light&#39;</span> <span class="o">|</span> <span class="s1">&#39;dark&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">notifications</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useThemeSettings</span> <span class="o">=</span> <span class="nx">createGlobalState</span><span class="p">&lt;</span><span class="nt">ThemeSettings</span><span class="p">&gt;(</span><span class="s1">&#39;themeSettings&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">theme</span><span class="o">:</span> <span class="s1">&#39;light&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">notifications</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 만든 useThemeSettings 훅은 useUserState와 완전히 독립적으로 동작하면서도, 같은 로직을 재사용하고 있습니다.</p>
+<p>React Query를 사용함으로써 얻는 또 다른 이점은 캐싱과 동기화입니다.</p>
+<p>React Query는 내부적으로 강력한 캐싱 메커니즘을 가지고 있어, 동일한 데이터에 대한 중복 요청을 방지하고 성능을 최적화합니다.</p>
+<p>예를 들어, 여러 컴포넌트에서 useUserState를 사용하더라도 실제로는 하나의 데이터 소스만 유지되며, 이 데이터가 변경될 때 모든 관련 컴포넌트가 자동으로 업데이트됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">UserProfile() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useUserState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="p">,</span> <span class="p">{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Settings() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useUserState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">      <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setData</span><span class="p">({</span> <span class="nx">name</span>: <span class="kt">e.target.value</span> <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위의 예시에서 Settings 컴포넌트에서 이름을 변경하면, UserProfile 컴포넌트도 자동으로 업데이트됩니다.</p>
+<p>이는 React Query가 내부적으로 처리해주는 기능입니다.</p>
+<p>마지막으로, 이 방식은 확장성이 뛰어납니다.</p>
+<p>필요에 따라 createGlobalState 함수를 수정하여 더 많은 기능을 추가할 수 있는데요.</p>
+<p>예를 들어, 상태 변경 로깅, 비동기 상태 업데이트, 혹은 상태 변경에 대한 구독 기능 등을 쉽게 추가할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">createGlobalState</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;(</span><span class="nx">queryKey</span>: <span class="kt">unknown</span><span class="p">,</span> <span class="nx">initialData</span>: <span class="kt">T</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="nx">useQueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryFn</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">initialData</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchInterval</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnMount</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnWindowFocus</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchOnReconnect</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refetchIntervalInBackground</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">setData</span><span class="p">(</span><span class="nx">newData</span>: <span class="kt">Partial</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">setQueryData</span><span class="p">([</span><span class="nx">queryKey</span><span class="p">],</span> <span class="nx">newData</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`State updated: </span><span class="si">${</span><span class="nx">queryKey</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span> <span class="nx">newData</span><span class="p">);</span> <span class="c1">// 로깅 추가
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">resetData() {</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">invalidateQueries</span><span class="p">({</span> <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">queryClient</span><span class="p">.</span><span class="nx">refetchQueries</span><span class="p">({</span> <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">queryKey</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`State reset: </span><span class="si">${</span><span class="nx">queryKey</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span> <span class="c1">// 로깅 추가
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span><span class="p">,</span> <span class="nx">resetData</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 React Query를 이용한 상태 관리는 간단하면서도 강력한 솔루션이 될 수 있습니다.</p>
+<p>특히 이미 React Query를 사용 중인 프로젝트에서는 추가적인 라이브러리 없이도 효과적인 상태 관리를 구현할 수 있죠.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/tanstack-query/" role="button">tanstack query</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/react-query/" role="button">react query</a>
+        <a class="btn btn-light" href="/tags/state-management/" role="button">state management</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-09-18-understanding-react-zustand-deep-dive/">React Zustand 상태관리 실전 예제로 마스터하기</a></h2>
+                  <p>React 상태관리는 이제 Zustand로 마스터하십시요.</p>
+                  <p>
+  <small>September 18, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-25-3-ways-in-data-fetching-with-react/">옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기</a></h2>
+                  <p>이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다.</p>
+                  <p>
+  <small>August 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-01-27-how-to-use-tanstack-query-complete-understanding/">TanStack Query V5 기본 사용법</a></h2>
+                  <p>(구)React Qeury의 최신 버전인 TanStack Query 사용법을 알아봅시다.</p>
+                  <p>
+  <small>January 27, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>20&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>NDC Oslo 2025 - LLM 그냥 쓰면 큰일나요? 모델 성능 측정과 보안 A to Z</title>
+<meta name="description" content="LLM을 프로덕션에 도입하기 전 꼭 알아야 할 성능 측정 방법과 보안 위협 방지 기술을 알아봅니다. RAG 평가부터 에이전트 테스트까지 실용적인 예제와 함께 설명합니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-20-llm-evaluation-and-security-guide/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="NDC Oslo 2025 - LLM 그냥 쓰면 큰일나요? 모델 성능 측정과 보안 A to Z" />
+<meta property="og:description" content="LLM을 프로덕션에 도입하기 전 꼭 알아야 할 성능 측정 방법과 보안 위협 방지 기술을 알아봅니다. RAG 평가부터 에이전트 테스트까지 실용적인 예제와 함께 설명합니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-20-llm-evaluation-and-security-guide/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-22T13:51:16Z" />
+<meta property="article:modified_time" content="2025-08-22T13:51:16Z" />
+<meta property="article:tag" content="LLM 평가" />
+<meta property="article:tag" content="RAG" />
+<meta property="article:tag" content="LLM 보안" />
+<meta property="article:tag" content="딥이벌" />
+<meta property="article:tag" content="프롬프트퓨" />
+<meta property="article:tag" content="LLM 가드" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="NDC Oslo 2025 - LLM 그냥 쓰면 큰일나요? 모델 성능 측정과 보안 A to Z" />
+<meta name="twitter:description" content="LLM을 프로덕션에 도입하기 전 꼭 알아야 할 성능 측정 방법과 보안 위협 방지 기술을 알아봅니다. RAG 평가부터 에이전트 테스트까지 실용적인 예제와 함께 설명합니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"NDC Oslo 2025 - LLM 그냥 쓰면 큰일나요? 모델 성능 측정과 보안 A to Z\"",
+  "description": "\"LLM을 프로덕션에 도입하기 전 꼭 알아야 할 성능 측정 방법과 보안 위협 방지 기술을 알아봅니다. RAG 평가부터 에이전트 테스트까지 실용적인 예제와 함께 설명합니다.\"",
+  "datePublished": "\"2025-08-22T13:51:16Z\"",
+  "dateModified": "\"2025-08-22T13:51:16Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-20-llm-evaluation-and-security-guide/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>NDC Oslo 2025 - LLM 그냥 쓰면 큰일나요? 모델 성능 측정과 보안 A to Z</h1>
+        <p>
+  <small>August 22, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>
+  <figure>
+    <img src="https://img.youtube.com/vi/VP2OlIXVMa0/maxresdefault.jpg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure>
+<a href="https://www.youtube.com/watch?v=VP2OlIXVMa0">NDC Oslo 2025 유튜브 링크</a></p>
+<p>여기 아주 좋은 유튜브 강연이 있는데요, 이 강연의 핵심만 전체적으로 살펴볼까 힙니다.<br /><br />
+LLM을 이용해 뭔가를 만들어내는 건 정말 쉬워졌습니다.<br /><br />
+API 한 번 호출하는 것만으로도 놀라운 결과물을 얻을 수 있거든요.<br /><br />
+발표자도 구글 클라우드의 Vertex AI를 사용해서 비디오를 분석하는 데모를 보여주더라고요.<br /><br />
+리우데자네이루의 아름다운 풍경이 담긴 영상을 넣고, &ldquo;이 비디오를 챕터별로 나누고 핵심 이벤트를 JSON 형식으로 정리해 줘&quot;라고 요청하는 거죠.<br /><br />
+코드를 보면 정말 별게 없습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 파이썬 코드 예시입니다. C# 등 다른 언어로도 가능하죠.</span>
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">=</span> <span class="n">generative_models</span><span class="o">.</span><span class="n">GenerativeModel</span><span class="p">(</span><span class="s2">&#34;gemini-1.5-pro-preview-0409&#34;</span><span class="p">)</span> <span class="c1"># 클라이언트 생성</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">video</span> <span class="o">=</span> <span class="n">Part</span><span class="o">.</span><span class="n">from_uri</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;gs://cloud-samples-data/generative-ai/video/rio.mp4&#34;</span><span class="p">,</span> <span class="n">mime_type</span><span class="o">=</span><span class="s2">&#34;video/mp4&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="c1"># 비디오 파일 지정</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">prompt</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">Please chapterize the video for me.
+</span></span></span><span class="line"><span class="cl"><span class="s2">Break down the key events and highlights.
+</span></span></span><span class="line"><span class="cl"><span class="s2">Give me this information in a JSON format.
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span> <span class="c1"># 프롬프트 작성</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">video</span><span class="p">,</span> <span class="n">prompt</span><span class="p">]</span> <span class="c1"># 비디오와 프롬프트를 함께 전달</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">generate_content</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span> <span class="c1"># API 호출!</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>클라이언트를 만들고, 비디오 파일 경로를 알려주고, 프롬프트를 작성해서 <code>generate_content</code> 딱 한 번 호출하면 끝나는 구조입니다.<br /><br />
+정말 간단하죠?<br /><br />
+하지만 진짜 어려운 문제는 여기서부터 시작됩니다.<br /><br />
+과연 LLM이 뱉어낸 결과물이 &lsquo;좋은&rsquo; 결과물인지 어떻게 알 수 있을까요?<br /><br />
+&lsquo;좋다&rsquo;는 건 또 무슨 의미일까요?<br /><br />
+어떤 사람은 특정 &lsquo;JSON 구조&rsquo;를 원할 수도 있고, 어떤 사람은 내용의 &lsquo;정확성&rsquo;을 중요하게 생각할 수도 있습니다.<br /><br />
+또 내가 물어본 질문과 &lsquo;관련성&rsquo;이 높은 답변을 원할 수도 있고, 내가 제공한 &lsquo;내부 데이터&rsquo;에 기반해서만 답변하기를 바랄 수도 있죠.<br /><br />
+이처럼 &lsquo;좋은 결과&rsquo;의 기준은 상황에 따라 완전히 달라지기 때문에, 이걸 정량적으로 측정하는 건 정말 어려운 일이거든요.<br /><br /></p>
+<h2 id="구조화된-출력-이제는-기본이죠">구조화된 출력 이제는 기본이죠</h2>
+<p>사실 몇 년 전만 해도 LLM이 항상 우리가 원하는 형태로 결과물을 주지는 않았습니다.<br /><br />
+어떨 땐 일반 텍스트, 어떨 땐 마크다운, 운이 좋으면 JSON을 줬는데 그마저도 문법 오류가 있어서 파싱이 안 되는 경우가 허다했죠.<br /><br />
+하지만 다행히도 이 문제는 거의 해결되었습니다.<br /><br />
+최신 모델들은 대부분 &lsquo;구조화된 출력(Structured Outputs)&rsquo; 기능을 지원하는데요.<br /><br />
+이건 우리가 원하는 데이터 구조를 클래스로 미리 정의해두면, LLM이 그 구조에 딱 맞춰서 JSON을 생성해주는 기능입니다.<br /><br />
+예를 들어 파이썬의 Pydantic 라이브러리로 이렇게 클래스를 정의할 수 있죠.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">vertexai.generative_models</span> <span class="kn">import</span> <span class="n">GenerativeModel</span><span class="p">,</span> <span class="n">Part</span><span class="p">,</span> <span class="n">Tool</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">vertexai.generative_models</span> <span class="k">as</span> <span class="nn">generative_models</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Recipe</span><span class="p">(</span><span class="n">generative_models</span><span class="o">.</span><span class="n">Tool</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;A class representing a recipe.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ingredients</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;Recipe&rsquo;라는 클래스를 만들고, 이름(name), 설명(description), 재료(ingredients) 필드를 정의했습니다.<br /><br />
+그리고 LLM을 호출할 때 이 클래스를 출력 스키마로 지정해주면 되는 거예요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># ... (앞부분 생략)</span>
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_content</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;Some popular cookie recipes&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">Recipe</span><span class="p">],</span> <span class="c1"># 우리가 정의한 Recipe 클래스를 도구로 지정</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하면 LLM은 우리가 정의한 &lsquo;Recipe&rsquo; 클래스 구조를 완벽하게 따르는 JSON을 생성해줍니다.<br /><br />
+덕분에 이제 출력 형식이 깨질 걱정은 안 해도 되죠.<br /><br /></p>
+<h2 id="진짜-문제는-내용의-질을-측정하는-것">진짜 문제는 내용의 &lsquo;질&rsquo;을 측정하는 것</h2>
+<p>형식은 해결됐지만, 내용의 질은 어떻게 측정할까요?<br /><br />
+이때 사용하는 것이 바로 &lsquo;LLM 평가 프레임워크&rsquo;입니다.<br /><br />
+구글 클라우드에는 &lsquo;Vertex AI Evaluation Service&rsquo;가 있고, 오픈소스로는 &lsquo;DeepEval&rsquo;, &lsquo;Ragas&rsquo;, &lsquo;Promptfoo&rsquo; 같은 것들이 있는데요.<br /><br />
+이런 프레임워크들은 다양한 &lsquo;평가 지표(Metrics)&lsquo;를 제공합니다.<br /><br />
+그런데 이 지표들이 또 두 가지 종류로 나뉘더라고요.<br /><br /></p>
+<h3 id="1-통계-기반의-결정론적-지표-statisticaldeterministic-metrics">1. 통계 기반의 결정론적 지표 (Statistical/Deterministic Metrics)</h3>
+<p>이건 아주 단순하고 고전적인 방식입니다.<br /><br />
+LLM이 생성한 텍스트와 우리가 미리 준비한 &lsquo;정답&rsquo; 텍스트를 비교해서 점수를 매기는 거죠.<br /><br />
+예를 들어 &lsquo;BLEU&rsquo;나 &lsquo;ROUGE&rsquo; 같은 점수가 여기에 해당합니다.<br /><br />
+발표자가 보여준 예시를 한번 볼까요?<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># ... (데이터셋 설정)</span>
+</span></span><span class="line"><span class="cl"><span class="n">responses</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;hello how are you&#34;</span><span class="p">,</span> <span class="s2">&#34;I&#39;m good&#34;</span><span class="p">,</span> <span class="s2">&#34;the cat lay on the mat&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">references</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;hello how are you&#34;</span><span class="p">,</span> <span class="s2">&#34;I am good&#34;</span><span class="p">,</span> <span class="s2">&#34;the cat sat on the mat&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ... (평가 실행)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 결과:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1. hello how are you vs hello how are you -&gt; exact_match: 1.0, bleu: 1.0, rougeL: 1.0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. I&#39;m good vs I am good -&gt; exact_match: 0.0, bleu: 0.18, rougeL: 0.66</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. the cat lay on the mat vs the cat sat on the mat -&gt; exact_match: 0.0, bleu: 0.48, rougeL: 0.83</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>첫 번째 예시는 완벽하게 일치하니까 모든 점수가 1.0으로 나왔습니다.<br /><br />
+하지만 두 번째를 보세요.<br /><br />
+&ldquo;I&rsquo;m good&quot;과 &ldquo;I am good&quot;은 사람이 보기엔 완전히 똑같은 의미인데요.<br /><br />
+정확히 일치하지 않는다는 이유로 &rsquo;exact_match&rsquo;는 0점, &lsquo;BLEU&rsquo; 점수도 18%로 처참하게 나왔죠.<br /><br />
+세 번째 예시 &ldquo;lay(누웠다)&ldquo;와 &ldquo;sat(앉았다)&ldquo;는 의미가 살짝 다르지만, &lsquo;ROUGE&rsquo; 점수는 83%나 됩니다.<br /><br />
+이처럼 통계 기반 지표들은 언어의 미묘한 의미 차이를 전혀 잡아내지 못하는 한계가 명확하죠.<br /><br /></p>
+<h3 id="2-모델-기반-평가-지표-model-based-metrics">2. 모델 기반 평가 지표 (Model-based Metrics)</h3>
+<p>그래서 등장한 것이 바로 &lsquo;모델 기반 평가&rsquo;입니다.<br /><br />
+이건 다른 LLM을 &lsquo;심판&rsquo;으로 데려와서, 원래 LLM의 답변을 평가하게 만드는 방식인데요.<br /><br />
+&ldquo;한 LLM을 다른 LLM으로 평가하는 걸 믿을 수 있나?&rdquo; 하는 의문이 들 수 있죠.<br /><br />
+그런데 한 연구에 따르면, 명확한 평가 기준과 채점 방식을 제공하면 심판 LLM이 내리는 평가가 인간과 약 80% 수준으로 일치한다고 하더라고요.<br /><br />
+꽤 신뢰할 만한 수준입니다.<br /><br />
+발표자는 &lsquo;Promptfoo&rsquo;와 &lsquo;DeepEval&rsquo; 두 가지 프레임워크를 예시로 보여줬습니다.<br /><br />
+&lsquo;Promptfoo&rsquo;는 YAML 파일에 평가 케이스를 정의하는 방식인데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># promptfoo 예시</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">tests</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;런던 날씨에 대한 유사성 검사&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">vars</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">input</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;런던 날씨는 보통 어때?&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">assert</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;similar&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;온화하고 비가 많이 와&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">threshold</span><span class="p">:</span><span class="w"> </span><span class="m">0.7</span><span class="w"> </span><span class="c"># 70% 이상 유사해야 통과</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>런던 날씨를 물었을 때 &ldquo;온화하고 비가 많이 와(mild and rainy)&ldquo;라는 의미와 70% 이상 유사한 답변이 나와야 테스트를 통과시킨다는 규칙입니다.<br /><br />
+&lsquo;DeepEval&rsquo;은 파이썬 코드로 유닛 테스트처럼 작성할 수 있어서 개발자에게 더 친숙하더라고요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># deepeval 예시</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">deepeval</span> <span class="kn">import</span> <span class="n">assert_test</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">deepeval.metrics</span> <span class="kn">import</span> <span class="n">AnswerRelevancyMetric</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">deepeval.test_case</span> <span class="kn">import</span> <span class="n">LLMTestCase</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ... (모델 설정)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">prompt</span> <span class="o">=</span> <span class="s2">&#34;Why is the sky blue?&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">output</span> <span class="o">=</span> <span class="n">llm</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span> <span class="c1"># LLM으로부터 답변 받기</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">test_case</span> <span class="o">=</span> <span class="n">LLMTestCase</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">actual_output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">metric</span> <span class="o">=</span> <span class="n">AnswerRelevancyMetric</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span> <span class="c1"># 질문과 답변의 관련성이 80% 이상이어야 함</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">assert_test</span><span class="p">(</span><span class="n">test_case</span><span class="p">,</span> <span class="p">[</span><span class="n">metric</span><span class="p">])</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&ldquo;하늘은 왜 파래?&ldquo;라는 질문에 대한 답변이 질문의 의도와 얼마나 관련이 있는지를 측정하는 코드입니다.<br /><br />
+이렇게 하면 단순히 키워드가 일치하는지를 넘어, 의미적인 &lsquo;관련성&rsquo;을 평가할 수 있게 되죠.<br /><br /></p>
+<h2 id="rag-시스템은-어떻게-평가할까">RAG 시스템은 어떻게 평가할까?</h2>
+<p>요즘 LLM 애플리케이션의 대세는 &lsquo;RAG(Retrieval-Augmented Generation)&lsquo;인데요.<br /><br />
+이건 우리 회사의 내부 문서나 PDF 같은 데이터를 LLM에게 &lsquo;참고 자료&rsquo;로 줘서, 그 내용을 기반으로 답변하게 만드는 기술입니다.<br /><br />
+RAG 시스템은 크게 두 부분으로 나뉩니다.<br /><br />
+사용자 질문과 관련된 문서를 찾아오는 &lsquo;검색(Retrieval)&rsquo; 단계와, 찾아온 문서를 바탕으로 답변을 생성하는 &lsquo;생성(Generation)&rsquo; 단계죠.<br /><br />
+그래서 평가도 이 두 단계를 나눠서 해야 합니다.<br /><br />
+하지만 좀 더 실용적으로는 &lsquo;RAG 트라이어드(RAG Triad)&lsquo;라는 세 가지 지표를 통해 시스템 전체를 한 번에 평가하는 방법이 많이 쓰이더라고요.<br /><br /></p>
+<ol>
+<li><strong>Context Relevance (문맥 관련성)</strong>: 질문에 대해 찾아온 문서(context)가 얼마나 관련이 있는가?</li>
+<li><strong>Groundedness/Faithfulness (근거 충실성)</strong>: LLM의 답변이 주어진 문서 내용에 얼마나 충실하게 기반하고 있는가? (환각 방지)</li>
+<li><strong>Answer Relevance (답변 관련성)</strong>: 최종 답변이 사용자의 원래 질문과 얼마나 관련이 있는가?</li>
+</ol>
+<p>이 세 가지를 측정하면 우리 RAG 시스템이 얼마나 잘 작동하는지 꽤 정확하게 파악할 수 있습니다.<br /><br />
+물론 &lsquo;DeepEval&rsquo; 같은 프레임워크에서 이 지표들을 모두 제공하죠.<br /><br /></p>
+<h2 id="에이전트와-도구-평가는-더-복잡하죠">에이전트와 도구 평가는 더 복잡하죠</h2>
+<p>최근에는 LLM이 단순히 텍스트만 생성하는 것을 넘어, 외부 API를 호출하는 &lsquo;도구(Tool)&lsquo;를 사용하거나 여러 도구를 조합해 복잡한 작업을 수행하는 &lsquo;에이전트(Agent)&lsquo;로 발전하고 있습니다.<br /><br />
+이런 시스템은 평가하기가 한층 더 까다로운데요.<br /><br />
+예를 들어, &ldquo;런던 날씨 알려줘&quot;라는 요청을 처리하는 에이전트는 다음과 같은 단계를 거칠 거예요.<br /><br /></p>
+<ol>
+<li>&lsquo;런던&rsquo;이라는 위치를 위도/경도로 변환하는 <code>location_to_latlon</code> 도구를 호출한다.<br /><br /></li>
+<li>받아온 위도/경도 값으로 날씨 정보를 조회하는 <code>latlon_to_weather</code> 도구를 호출한다.<br /><br />
+이때 우리는 &ldquo;정확한 순서로, 올바른 인자 값을 가지고 도구들이 호출되었는가?&ldquo;를 검증해야 합니다.<br /><br />
+이런 도구 호출의 순서와 흐름을 &lsquo;궤적(Trajectory)&lsquo;이라고 부르는데요.<br /><br />
+이 궤적이 우리가 의도한 대로 흘러갔는지를 측정하는 지표들이 필요하게 되는 거죠.<br /><br /></li>
+</ol>
+<h2 id="보안은-아무리-강조해도-지나치지-않습니다">보안은 아무리 강조해도 지나치지 않습니다</h2>
+<p>마지막으로, 성능만큼이나 중요한 것이 바로 &lsquo;보안&rsquo;입니다.<br /><br />
+사용자가 악의적인 프롬프트를 입력해서 시스템을 속이거나, LLM이 개인정보 같은 민감한 내용을 유출하면 큰일 나니까요.<br /><br />
+발표자는 &lsquo;Promptfoo&rsquo;와 &lsquo;LLM Guard&rsquo;라는 두 가지 보안 프레임워크를 소개했습니다.<br /><br />
+&lsquo;Promptfoo&rsquo;는 &lsquo;레드팀 테스트&rsquo; 기능을 제공하는데요.<br /><br />
+마치 해커처럼 시스템의 취약점을 공격하는 테스트 케이스를 자동으로 생성해서 실행해 줍니다.<br /><br />
+예를 들어 개인정보 유출을 유도하는 프롬프트, 시스템 설정을 탈취하려는 프롬프트 등을 자동으로 만들어 우리 시스템이 잘 방어하는지 테스트해 주는 거죠.<br /><br />
+&lsquo;LLM Guard&rsquo;는 우리 애플리케이션과 LLM 사이에 위치하는 일종의 방화벽입니다.<br /><br />
+사용자 입력(Input)과 LLM의 출력(Output)을 중간에서 가로채서 검사하는 역할을 하는데요.<br /><br />
+예를 들어 사용자가 프롬프트에 코드를 삽입하면 차단하거나, &lsquo;정치&rsquo; 같은 특정 주제의 대화를 금지할 수 있습니다.<br /><br />
+특히 유용한 기능은 &lsquo;익명화(Anonymize)&rsquo; 기능이더라고요.<br /><br />
+사용자가 &ldquo;내 이름은 홍길동, 이메일은 gildong@example.com이야. 이 정보로 SQL insert 문을 만들어줘&quot;라고 요청했다고 해보죠.<br /><br />
+이 개인정보를 그대로 LLM에게 보내는 건 위험합니다.<br /><br />
+이때 &lsquo;LLM Guard&rsquo;가 중간에서 이름과 이메일을 <code>[PERSON]</code>, <code>[EMAIL_ADDRESS]</code> 같은 토큰으로 바꾼 뒤 LLM에게 전달하는 거죠.<br /><br />
+LLM은 이 토큰을 이용해 SQL 문을 생성해서 돌려주고, &lsquo;LLM Guard&rsquo;는 다시 이 토큰을 원래의 개인정보로 복원해서 최종 사용자에게 보여줍니다.<br /><br />
+이렇게 하면 민감한 정보가 LLM 서버로 넘어가지 않으니 훨씬 안전해지겠죠.<br /><br /></p>
+<h2 id="마무리하며">마무리하며</h2>
+<p>LLM을 사용하는 것은 쉽지만, &lsquo;잘&rsquo; 사용하는 것은 전혀 다른 차원의 문제입니다.<br /><br />
+프로덕션 환경에서 안정적으로 LLM 애플리케이션을 운영하려면, 오늘 살펴본 것처럼 출력물의 품질을 정량적으로 &lsquo;측정&rsquo;하고, 잠재적인 보안 위협을 체계적으로 &lsquo;방어&rsquo;하는 과정이 반드시 필요하거든요.<br /><br />
+이 분야는 아직도 빠르게 발전하고 있지만, 오늘 소개된 프레임워크와 개념들이 훌륭한 출발점이 되어줄 거라고 생각합니다.<br /><br />
+이 글이 여러분의 LLM 애플리케이션을 한 단계 더 발전시키는 데 도움이 되었으면 좋겠습니다.<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/llm-%ED%8F%89%EA%B0%80/" role="button">LLM 평가</a>
+        <a class="btn btn-light" href="/tags/rag/" role="button">RAG</a>
+        <a class="btn btn-light" href="/tags/llm-%EB%B3%B4%EC%95%88/" role="button">LLM 보안</a>
+        <a class="btn btn-light" href="/tags/%EB%94%A5%EC%9D%B4%EB%B2%8C/" role="button">딥이벌</a>
+        <a class="btn btn-light" href="/tags/%ED%94%84%EB%A1%AC%ED%94%84%ED%8A%B8%ED%93%A8/" role="button">프롬프트퓨</a>
+        <a class="btn btn-light" href="/tags/llm-%EA%B0%80%EB%93%9C/" role="button">LLM 가드</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

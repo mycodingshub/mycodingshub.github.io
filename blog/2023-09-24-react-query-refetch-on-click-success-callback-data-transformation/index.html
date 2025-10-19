@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기</title>
+<meta name="description" content="유저 클릭시 useQury 작동, 커스텀 콜백함수 추가, 데이터 변환, 커스텀 훅 만들기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-09-24-react-query-refetch-on-click-success-callback-data-transformation/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기" />
+<meta property="og:description" content="유저 클릭시 useQury 작동, 커스텀 콜백함수 추가, 데이터 변환, 커스텀 훅 만들기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-09-24-react-query-refetch-on-click-success-callback-data-transformation/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-09-24T01:32:52Z" />
+<meta property="article:modified_time" content="2023-09-24T01:32:52Z" />
+<meta property="article:tag" content="react-query" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="refetch" />
+<meta property="article:tag" content="custom callbak" />
+<meta property="article:tag" content="data transformation" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기" />
+<meta name="twitter:description" content="유저 클릭시 useQury 작동, 커스텀 콜백함수 추가, 데이터 변환, 커스텀 훅 만들기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기\"",
+  "description": "\"유저 클릭시 useQury 작동, 커스텀 콜백함수 추가, 데이터 변환, 커스텀 훅 만들기\"",
+  "datePublished": "\"2023-09-24T01:32:52Z\"",
+  "dateModified": "\"2023-09-24T01:32:52Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-09-24-react-query-refetch-on-click-success-callback-data-transformation/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기</h1>
+        <p>
+  <small>September 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>세 번째 React Query 강좌 시리즈입니다</p>
+<p>전체 시리즈 링크는 아래와 같습니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-17-how-to-use-react-query-and-usequery">React Query 강좌 1편. useQuery 사용법 기초</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-17-react-query-cachetime-staletime-refetch-poll">React Query 강좌 2편. 캐시로 움직이는 useQuery 작동 원리(cachetime,staletime,refetch,poll)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-refetch-on-click-success-callback-data-transformation">React Query 강좌 3편. 클릭시 fetch하는 방법과 커스텀 콜백함수 작성, useQuery에서 데이터 변환, 커스텀 훅 만들기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-tutorial-query-by-id-and-parallel-queries">React Query 강좌 4편. id로 특정 항목만 가져오는 쿼리 방법(query by id)과 병렬 쿼리(parallel queries) 방법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-dynamic-parallel-queries-and-dependent-query">React Query 강좌 5편. 동적 병렬 쿼리(dynamic parallel queries)와 필요충분 쿼리 만들기(dependent query)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-usequeryclient-initialdata-using-cache">React Query 강좌 6편. useQueryClient와 initialData를 이용해서 캐시된 데이터 활용하여 상세 페이지에서 보여주기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-09-24-react-query-paginated-query-and-infinite-query">React Query 강좌 7편. 페이지네이션 구현하기와 useInfiniteQuery로 무한스크롤 구현하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-02-react-query-howto-usemutation-in-depth">React Query 강좌 8편. useMutation 사용법과 Optimistic Updates</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ol>
+<li><a href="#1-%ec%9c%a0%ec%a0%80-%ed%81%b4%eb%a6%ad%ec%8b%9c-usequery-%ec%9e%91%eb%8f%99%ec%8b%9c%ed%82%a4%ea%b8%b0">유저 클릭시 useQuery 작동시키기</a></li>
+<li><a href="#2-%ec%bb%a4%ec%8a%a4%ed%85%80-%ec%bd%9c%eb%b0%b1-%ed%95%a8%ec%88%98-%eb%a7%8c%eb%93%a4%ea%b8%b0-onsuccess-onerror">커스텀 콜백 함수 만들기 (onSuccess, onError)</a></li>
+<li><a href="#3-%eb%8d%b0%ec%9d%b4%ed%84%b0-%eb%b3%80%ed%99%98%ed%95%b4%ec%84%9c-%eb%b0%9b%ea%b8%b0">데이터 변환해서 받기</a></li>
+<li><a href="#4-usequery%eb%a5%bc-%ec%bb%a4%ec%8a%a4%ed%85%80-%ed%9b%85%ec%9c%bc%eb%a1%9c-%eb%a7%8c%eb%93%a4%ec%96%b4%ec%84%9c-%ec%9e%ac%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">useQuery를 커스텀 훅으로 만들어서 재사용하기</a></li>
+</ol>
+<hr>
+<h2 id="1-유저-클릭시-usequery-작동시키기">1. 유저 클릭시 useQuery 작동시키기</h2>
+<p>React Query의 useQuery는 기본적으로 Reat 컴포넌트가 마운트 되면 자동으로 시작되는데요.</p>
+<p>useQuery의 세 번째 인자는 옵션 부분에서 &rsquo;enabled&rsquo; 항목이 기본 세팅이 &rsquo;true&rsquo;로 되어 있어 그런 겁니다.</p>
+<p>간혹 UI를 작성하다 보면 유저의 요청에 의해 데이터를 가져와야 할 때가 있죠.</p>
+<p>이럴 경우 사용하라고 React Query가 제공해 주는 콜백함수가 있습니다.</p>
+<p>먼저, &rsquo;enabled&rsquo; 기본 세팅을 false로 바꿔서 진행해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">isFetching</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">isError</span><span class="p">,</span> <span class="nx">error</span><span class="p">,</span> <span class="nx">refetch</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;get-product&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fetchProducts</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">enabled</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isLoading</span> <span class="o">||</span> <span class="nx">isFetching</span><span class="p">)</span> <span class="k">return</span> <span class="o">&lt;&gt;</span><span class="nx">Loading</span><span class="p">...</span><span class="o">&lt;</span><span class="err">/&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isError</span><span class="p">)</span> <span class="k">return</span> <span class="o">&lt;&gt;</span><span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-4xl&#34;</span><span class="o">&gt;</span><span class="nx">ReactQuery</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">refetch</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;py-2 px-4 border bg-slate-100 rounded-md&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span> <span class="nx">data</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ul</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;p-4 list-disc&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 UI 부분에 button을 추가했습니다.</p>
+<p>실행해 보면 아래 그림처럼 데이터 fetching이 일어나지 않는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiu1IDEUqMvNaXWDN3nqpANpQK6Zyu-Vsjh46b1afEQ9SlvRb0WiHoCAX5GRlZsNNPAjbWqrKULA6UcEC4lKasocHZAD0qXQPRA2IzJ0Pjj64qsOz0JP3UIGuNpVKDk-DEpOex4cncyhRpTxufVcmWWl5UkX4kMz53VLehhmaQySENMwUKvakBie_5SNu4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 button을 눌렀을 경우 실행하는 refetch 함수를 useQuery에서 가져와야 합니다.</p>
+<p>위 코드에서 볼 수 있듯이 &lsquo;refetch&rsquo; 콜백 함수가 그것입니다.</p>
+<p>그리고 유저 클릭 시 fetching 작업이 일어나기 때문에 isLoading과 함께 isFetching으로 &lsquo;Loadin&hellip;&rsquo; 문구를 나타내 줘야 합니다.</p>
+<p>이제 네트워크를 느린 3G로 바꾼다면 테스트해 보면</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhUUkGy50nYscsRJGPQ4KJikpNOdsDcqkWbpidpnl9dbAHQl0H-c-oet5Kql7ODwTnBi35l4ODCalSYaogUwjg3gyb0AQGoUbQ4-pxi_HMoNdK8ZXGsVdPCHyQGRfb5p8PRYTYSzeFfCZGmDCAI-kxWCUKFfsGv8pf-XRNkkuorin3_Kk-DY4qReqK26Zc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi3lT7nV6EA1o-Jlqwv5p8Uj05_-sJaUQoyFDMPzo92ZnEk5JD6aTnxCgLSEnUkAdrkW_ofiWspiJnaP0bRh_o2dqcfwWaCsUmxr-CksknM4T0c2vm6HMphfQTbcmBHSTNadd_ywIpC3dpq5v2NCyjAORCQYXpZlo6QxLw5-D11m6yhvmabfiKSFTmmuFY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 Loading&hellip; 문구와 함께 정상적으로 데이터가 fetching 되는 걸 보실 수 있을 겁니다.</p>
+<hr>
+<h2 id="2-커스텀-콜백-함수-만들기-onsuccess-onerror">2. 커스텀 콜백 함수 만들기 (onSuccess, onError)</h2>
+<p>useQuery와 함께 커스텀 콜백(callbacks) 함수를 사용하는 방법을 배워보겠습니다.</p>
+<p>데이터 가져오기를 할 때, 때로는 쿼리가 완료될 때 사이드 이펙트를 수행하고 싶을 수 있습니다.</p>
+<p>예를 들어 모달 대화창(modal dialog) 열기, 다른 경로로 이동 또는 토스트 알림(toast alarm) 표시 같은 것이 그건데요.</p>
+<p>이걸 처리하기 위해 React Query는 useQuery 훅에서 성공(success), 실패(error) 했을 경우 커스텀 콜백을 지정할 수 있게 해 줍니다.</p>
+<p>먼저, 쿼리가 데이터를 성공적으로 가져올 때 호출될 onSuccess라는 함수를 만들어 보겠습니다.</p>
+<p>함수 이름은 다르게 해도 됩니다. 여기서는 React Query를 쉽게 배우는 Tutorial이기 때문에 표준 이름을 사용했습니다.</p>
+<p>아래와 같이 콘솔에 간단한 메시지를 로깅하는 코드를 넣었습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">onSuccess</span> <span class="o">=</span> <span class="nx">data</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;데이터 가져오기 후 사이드 이펙트 수행&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>두 번째로 쿼리가 데이터를 가져오는 도중 오류가 발생하면 호출될 onError라는 함수를 정의합니다.</p>
+<p>오류 처리에 대한 콘솔 로그 메시지를 정의하는 코드입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">onError</span> <span class="o">=</span> <span class="nx">error</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;오류 발생 후 사이드 이펙트 수행&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 이 커스텀 콜백함수를 useQuery에 연결하기 위해 옵션으로 onSuccess와 onError 항목에 지정하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchProducts</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;https://mypocketbase.fly.dev/api/collections/products/records&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactQuery</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onSuccess</span> <span class="o">=</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;데이터 가져오기 후 사이드 이펙트 수행&#34;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onError</span> <span class="o">=</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;오류 발생 후 사이드 이펙트 수행&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">isFetching</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">isError</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;get-product&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fetchProducts</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">onSuccess</span><span class="o">:</span> <span class="nx">onSuccess</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">onError</span><span class="o">:</span> <span class="nx">onError</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">({</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">isFetching</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 onSuccess: onSuccess라고 했는데요.</p>
+<p>ES6 문법에 따르면 다음과 같이 손쉽게 줄일 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSuccess</span><span class="p">,</span> <span class="c1">// 성공 콜백
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">onError</span><span class="p">,</span>   <span class="c1">// 실패 콜백
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그래서 커스텀 콜백함수를 onSuccess, onError라고 이름 지은 겁니다.</p>
+<p>실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg23tg8rV9Hoc5lm582DdnB-VQQXO8rTSs_whvNJxjXPxmVy-ydSowXgqgVGrw1gJgBRbd_bEPJpZiXehk0xXu7PUqwS3ODtVR7boJbD2w2kFHQVfdGWgxyjzvjp9Pf6E_KOZnBCX-brgbeGu4XQD7WMrKjbqdrdZH251-znGd4_sCHX9dduAgOtmtExKo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 콘솔 창에 잘 로깅(loggin)되고 있습니다.</p>
+<p>onError를 위해 fetchProducts 함수의 URL을 수정해 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjMeUv5_gr3YGSrZy4MKN_DET3DmMIAKDJ5F5fk5TZyyADfzEKMbIjXY9WDNak3_LJYRwq6GWiBQeOZ_JD2WDMD-TG8-DwaZa-TXfHUihd4ziqUPUjlUV0w0dyXIipsEW-c_kZzV9wLJZaMDjMjiNxuFmGUix2uouB2W8u505tIEVcR7m6lBtXH2zy-5-Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 useQuery 훅이 몇 번의 재 시도 후에 onError 콜백함수를 실행하고 있네요.</p>
+<p>이제 useQuery를 이용해서 데이터를 가져올 때 성공과 실패했을 때 사이드 이펙트를 수행할 수 있게 되었는데요.</p>
+<p>보통 onSuccess 콜백에서는 데이터를 활용하는 코드를 작성하고, onError 콜백에서는 오류를 처리하는 작업을 합니다.</p>
+<p>또, React Query는 커스텀 콜백 함수에 직접 feching한 데이터나 발생한 오류를 자동으로 주입하므로, 콜백 함수 내에서 데이터에 직접 접근할 수 있고, 또 오류에 직접 접근할 수 있습니다.</p>
+<p>아래 그림을 보시면 실제 fetching 된 데이터가 보입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiKxWkfOxP8qDkiWjTFXkGu_j3hcfV0uI-EdLtjKWD29Bkp2Y7Ayzw3yfzk31YU2DY3H9TWeKZtKMW0SedT5gPqdC1XMWUKnS1qor8R7upNgM7C58VnDvoBSN23xyCWTaHs1BRTud6f5qxRDF68mVnTb1WksVy6D4SM89Q8wSlPqixZirZJEVvytg_jlQQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="3-데이터-변환해서-받기">3. 데이터 변환해서 받기</h2>
+<p>API에서 데이터를 가져온 적이 있다면, 백 엔드와 프론트 엔드 컴포넌트가 데이터 형식을 다르게 필요로 할 때 변환 작업이 필요한 상황에 직면한 적이 있을 것입니다.</p>
+<p>백엔드 개발자와 프론트 엔드 개발자 간에 데이터 형식의 차이가 있을 수 있습니다.</p>
+<p>이러한 상황을 다루기 위해 React Query는 useQuery에 select 항목이라는 옵션을 제공합니다.</p>
+<p>실제 기존 코드에서는 아래와 같이 UI 부분에서 배열의 map을 이용해서 보여줬는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ul</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;list-disc p-4&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nx">data</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">items</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">product</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">product</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">product</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span> <span class="o">/</span> <span class="p">{</span><span class="nx">product</span><span class="p">.</span><span class="nx">price</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">))}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/ul&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 UI에서 map을 통해 원하는 데이터를 얻었는데요.</p>
+<p>useQuery의 select 항목을 이용해서 백 엔드에서 직접 필요한 항목을 선택할 수 있습니다.</p>
+<p>위 코드에서는 product.name 항목만 선택 후 UI로 보내 보겠습니다.</p>
+<p>먼저, UI 부분 코드를 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;text-4xl&#39;</span><span class="o">&gt;</span><span class="nx">ReactQuery</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">ul</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;list-disc p-4&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="cm">/* {data &amp;&amp;
+</span></span></span><span class="line"><span class="cl"><span class="cm">          data.data?.items?.map((product) =&gt; (
+</span></span></span><span class="line"><span class="cl"><span class="cm">            &lt;li key={product.id}&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">              {product.name} / {product.price}
+</span></span></span><span class="line"><span class="cl"><span class="cm">            &lt;/li&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">          ))} */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nx">data</span> <span class="o">&amp;&amp;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">productName</span> <span class="p">=&gt;</span> <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">productName</span><span class="p">}</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">productName</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/li&gt;)}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 볼 수 있듯이 우리가 가져올 거는 백 엔드에서 작업한 productName 항목입니다.</p>
+<p>이렇게 간단하게 처리하면 프론트 엔드 개발자가 좀 더 직관적으로 코드를 짤 수 있겠죠.</p>
+<p>그럼, select 항목을 작성해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">isFetching</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">isError</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s1">&#39;get-product&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">fetchProducts</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSuccess</span><span class="o">:</span> <span class="nx">onSuccess</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onError</span><span class="o">:</span> <span class="nx">onError</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">select</span><span class="o">:</span> <span class="nx">data</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">productName</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">items</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">p</span> <span class="p">=&gt;</span> <span class="nx">p</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">productName</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 select 항목에 작성한 배열을 그냥 return 하면 최종적으로 data라는 항목으로 사용할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhHNj5qMU7s-zMYpNcuT-LlSjMajPP5iml57-XeB8ckOvn4kZS1TMjfu6IIUeUVRmbImB5dSe85ie9jL2aGUr9yjle6YBvAFNXZtj3oF4pb3l8VFCaeYGLp45BuUZ72M_Gr3vU-GHEUzjEGA6BTJBvl0pw3bbXQqYFVRSIOL-HQKkOsRYkTclkt9UOdaqA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 작성한 코드가 정상 작동하는 걸 볼 수 있습니다.</p>
+<p>우리가 select 항목에서 map 메서드를 사용했는데요.</p>
+<p>filter 메서드도 사용할 수 있습니다.</p>
+<p>price가 9 이하인 항목만 가져와 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">select</span><span class="o">:</span> <span class="nx">data</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">productName</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">items</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">p</span> <span class="p">=&gt;</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">price</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">p</span> <span class="p">=&gt;</span> <span class="nx">p</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">productName</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjGBgEM42Bm45lk2nOmqVdYWyviD25_rhuwnwg_7C4L0hNqLDfFzXnXdNK0dPYA6oytJt_iqnvh0bklU7dmdyNJGwNNBLl4B3LkjRopL89kKTuDdKl-_eA4eNr_YRb80nkD-Xh9e5AEqrWS_PZYtR2EmMqEO0MsAlb_ElbxNCD-VccPh8NNFXT8njkSPRc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 정상적으로 작동하네요.</p>
+<hr>
+<h2 id="4-usequery를-커스텀-훅으로-만들어서-재사용하기">4. useQuery를 커스텀 훅으로 만들어서 재사용하기</h2>
+<p>앱이 커지면 동일한 데이터를 여러 컴포넌트에서 재사용해야 할 때가 있는데요.</p>
+<p>예를 들어, 동일한 쿼리가 다른 컴포넌트에서도 필요한 경우입니다.</p>
+<p>이런 경우를 대비하여 커스텀 쿼리 훅을 만드는 게 좋습니다.</p>
+<p>먼저, 커스텀 훅을 &lsquo;hooks&rsquo; 폴더에 넣는 것으로 가정하고, &lsquo;src&rsquo; 폴더 안에 &lsquo;hooks&rsquo;라는 새로운 폴더를 만들고, 그 안에 &lsquo;useProductName.js&rsquo;라는 파일을 만들겠습니다.</p>
+<p>파일 이름은 개인적인 취향이고, 리액트 훅이기 때문에 &lsquo;use&rsquo;로 시작하면 됩니다.</p>
+<p>리액트에서 Hook은 결국 함수인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">axios</span> <span class="nx">from</span> <span class="s2">&#34;axios&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fetchProducts</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;https://mypocketbase.fly.dev/api/collections/products/records&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">useProductName</span> <span class="o">=</span> <span class="p">(</span><span class="nx">onSuccess</span><span class="p">,</span> <span class="nx">onError</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">useQuery</span><span class="p">(</span><span class="s2">&#34;get-product&#34;</span><span class="p">,</span> <span class="nx">fetchProducts</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSuccess</span><span class="o">:</span> <span class="nx">onSuccess</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onError</span><span class="o">:</span> <span class="nx">onError</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">select</span><span class="o">:</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">productName</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">items</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">p</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">price</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">p</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">p</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">productName</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 useProductName 훅을 만들었습니다.</p>
+<p>onSuccess, onError 함수는 호출하는 컴포넌트에서 작성해서 넘겨주는 게 나중에 UI 부분을 다룰 때 좋습니다.</p>
+<p>이제 리액트 컴포넌트로 가서 코드를 작성해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useProductName</span>  <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./hooks/useProductName&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactQuery</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onSuccess</span> <span class="o">=</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;데이터 가져오기 후 사이드 이펙트 수행&#34;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onError</span> <span class="o">=</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;오류 발생 후 사이드 이펙트 수행&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">isFetching</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">isError</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useProductName</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onSuccess</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onError</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 useProductName 훅을 import 하고 사용해 주시면 됩니다.</p>
+<p>어떤까요?</p>
+<p>코드가 좀 더 깔끔해졌고, useQuery를 이용해서 실제 여러 가지 훅을 작성하면 이 컴포넌트 말고 다른 컴포넌트에서도 쉽게 useProductName 훅을 이용해서 데이터 fetching을 할 수 있을 겁니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react-query/" role="button">react-query</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/refetch/" role="button">refetch</a>
+        <a class="btn btn-light" href="/tags/custom-callbak/" role="button">custom callbak</a>
+        <a class="btn btn-light" href="/tags/data-transformation/" role="button">data transformation</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-07-17-react-query-cachetime-staletime-refetch-poll/">React Query 강좌 2편. 캐시로 움직이는 useQuery 작동 원리 - cacheTime, staleTime, refetchOnMount, polling(refetchInterval)</a></h2>
+                  <p>cacheTime vs staleTime, 그리고 refetch와 polling</p>
+                  <p>
+  <small>September 17, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-17-how-to-use-react-query-and-usequery/">React Query 강좌 1편. useQuery 사용법 기초</a></h2>
+                  <p>React Query에서 기초적인 useQuery 사용법</p>
+                  <p>
+  <small>September 17, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-31-howto-configure-react-with-webpack-parcel-esbuild-from-scratch/">Create-react-app이나 Vite를 이용하지 않고 Webpack, Parcel, Esbuild를 이용해서 React 개발 환경 구축하기</a></h2>
+                  <p>맨 땅에 헤딩하기 - react 앱 환경 구축</p>
+                  <p>
+  <small>December 31, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>17&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

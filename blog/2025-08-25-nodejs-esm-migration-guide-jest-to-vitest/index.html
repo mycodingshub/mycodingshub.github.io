@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Node.js ESM 마이그레이션 완벽 가이드 Jest에서 Vitest까지</title>
+<meta name="description" content="기존 CommonJS 프로젝트를 최신 ESM으로 전환하고, 테스트 러너를 Jest에서 Vitest로 마이그레이션하는 실전 가이드입니다. 복잡한 설정부터 에러 해결 팁까지 모든 과정을 상세하게 다룹니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-25-nodejs-esm-migration-guide-jest-to-vitest/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Node.js ESM 마이그레이션 완벽 가이드 Jest에서 Vitest까지" />
+<meta property="og:description" content="기존 CommonJS 프로젝트를 최신 ESM으로 전환하고, 테스트 러너를 Jest에서 Vitest로 마이그레이션하는 실전 가이드입니다. 복잡한 설정부터 에러 해결 팁까지 모든 과정을 상세하게 다룹니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-25-nodejs-esm-migration-guide-jest-to-vitest/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-26T13:27:31Z" />
+<meta property="article:modified_time" content="2025-08-26T13:27:31Z" />
+<meta property="article:tag" content="Node.js" />
+<meta property="article:tag" content="ESM" />
+<meta property="article:tag" content="CommonJS" />
+<meta property="article:tag" content="Vitest" />
+<meta property="article:tag" content="Jest" />
+<meta property="article:tag" content="마이그레이션" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Node.js ESM 마이그레이션 완벽 가이드 Jest에서 Vitest까지" />
+<meta name="twitter:description" content="기존 CommonJS 프로젝트를 최신 ESM으로 전환하고, 테스트 러너를 Jest에서 Vitest로 마이그레이션하는 실전 가이드입니다. 복잡한 설정부터 에러 해결 팁까지 모든 과정을 상세하게 다룹니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Node.js ESM 마이그레이션 완벽 가이드 Jest에서 Vitest까지\"",
+  "description": "\"기존 CommonJS 프로젝트를 최신 ESM으로 전환하고, 테스트 러너를 Jest에서 Vitest로 마이그레이션하는 실전 가이드입니다. 복잡한 설정부터 에러 해결 팁까지 모든 과정을 상세하게 다룹니다.\"",
+  "datePublished": "\"2025-08-26T13:27:31Z\"",
+  "dateModified": "\"2025-08-26T13:27:31Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-25-nodejs-esm-migration-guide-jest-to-vitest/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Node.js ESM 마이그레이션 완벽 가이드 Jest에서 Vitest까지</h1>
+        <p>
+  <small>August 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>요즘 Node.js 생태계가 ES Modules, 즉 ESM 중심으로 빠르게 재편되고 있거든요.<br /></p>
+<p>그래서 많은 개발자분들이 기존 CommonJS(CJS) 기반의 프로젝트를 ESM으로 전환해야 할지 고민이 많으실 겁니다.<br /></p>
+<p>사실 저도 최근에 번들러 없이 순수 TypeScript로 작성된 Node.js 프로젝트를 ESM으로 전환하는 작업을 진행했는데요.<br /></p>
+<p>이 과정에서 겪었던 경험과 해결책들을 총정리해서 공유해 드리려고 합니다.<br /></p>
+<p>단순히 코드만 바꾸는 게 아니라, 왜 이렇게 해야 하는지 그 배경까지 시원하게 알려드릴 테니 차근차근 따라와 보세요.<br /></p>
+<p>더불어 테스트 프레임워크도 Jest에서 Vitest로 함께 갈아타는 여정까지 모두 담았으니, 아마 후회하지 않으실 겁니다.<br /></p>
+<h2 id="왜-굳이-esm으로-가야-할까">왜 굳이 ESM으로 가야 할까</h2>
+<p>마이그레이션을 시작하기 전에, 도대체 왜 다들 ESM, ESM 하는지 그 이유부터 짚고 넘어갈 필요가 있거든요.<br /></p>
+<p>가장 큰 이유는 역시 &lsquo;생태계의 흐름&rsquo;입니다.<br /></p>
+<p><code>chalk</code>나 <code>node-fetch</code> 같은 유명 라이브러리들이 최신 버전부터 ESM 전용으로만 패키지를 배포하기 시작했습니다.<br /></p>
+<p>이런 라이브러리들을 최신 버전으로 사용하려면, 우리 프로젝트도 ESM 환경이어야 충돌 없이 깔끔하게 쓸 수 있는 거죠.<br /></p>
+<p>그리고 또 하나, 바로 &lsquo;Top-Level Await(TLA)&lsquo;을 쓸 수 있다는 점인데요.<br /></p>
+<p>예전에는 <code>async</code> 함수 안에서만 <code>await</code>를 쓸 수 있어서 초기화 로직 같은 걸 작성할 때 조금 번거로웠습니다.<br /></p>
+<p>하지만 ESM 환경에서는 모듈의 최상위 레벨에서 바로 <code>await</code>를 사용할 수 있어서, 비동기 초기화 코드를 훨씬 직관적으로 작성할 수 있습니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 데이터베이스 연결 같은 비동기 작업을 최상위에서 바로 처리!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">connectToDB</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./db.js&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">connection</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">connectToDB</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;데이터베이스 연결 성공!&#39;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이런 장점들 때문에 더 이상 CJS에 머무르는 건, 마치 구형 스마트폰을 고집하는 것과 비슷한 상황이 되어가고 있습니다.<br /></p>
+<h2 id="1단계-사전-준비-path-alias-제거하기">1단계 사전 준비 Path Alias 제거하기</h2>
+<p>본격적인 전환에 앞서, 저는 <code>tsconfig.json</code>에 설정해 둔 &lsquo;path alias&rsquo;부터 제거하는 작업을 먼저 진행했는데요.<br /></p>
+<p>이게 ESM 전환과 직접적인 관련은 없지만, 장기적으로는 관리 포인트를 줄여주는 아주 중요한 과정입니다.<br /></p>
+<p><code>#*</code> 같은 걸 써서 <code>import { foo } from '#some/module/path';</code> 처럼 절대 경로처럼 가져오는 방식, 많이들 쓰시잖아요.<br /></p>
+<p>이게 당장은 경로가 깔끔해 보여서 좋을 수 있거든요.<br /></p>
+<p>하지만 번들러가 없는 순수 Node.js 환경에서는 이게 오히려 독이 될 수 있습니다.<br /></p>
+<p>TypeScript는 이 경로를 이해하지만, 컴파일된 JavaScript를 실행하는 Node.js는 이 경로를 전혀 모르기 때문입니다.<br /></p>
+<p>결국 <code>tsconfig.json</code>, <code>package.json</code>, 심지어 Jest 설정까지 곳곳에 이 경로 해석 규칙을 중복으로 알려줘야 하는 번거로움이 생기는 거죠.<br /></p>
+<p>실제로 저도 <code>.tsx</code> 파일을 처음 도입했을 때, 타입 에러는 없는데 런타임에서 모듈을 못 찾는 문제로 한참을 헤맸던 경험이 있습니다.<br /></p>
+<p>알고 보니 <code>tsconfig.json</code>에 <code>.ts</code> 경로만 설정해 둔 게 원인이었죠.<br /> 이런 &lsquo;설정 지옥&rsquo;을 피하기 위해 과감히 상대 경로로 통일하기로 했습니다.<br /></p>
+<p>다행히 이걸 자동으로 처리해 주는 훌륭한 ESLint 플러그인이 있는데요.<br /></p>
+<p><code>eslint-plugin-no-relative-import-paths</code> 같은 도구를 사용하면, 명령어 한 줄로 프로젝트 전체의 절대 경로 <code>import</code>를 상대 경로로 순식간에 바꿀 수 있습니다.<br /></p>
+<h2 id="2단계-본격적인-esm-전환">2단계 본격적인 ESM 전환</h2>
+<p>자, 이제 진짜 주인공인 ESM 전환을 시작해 볼 시간입니다.<br /></p>
+<p>가장 핵심적인 변화는 컴파일된 JavaScript 파일에 <code>require</code>나 <code>module.exports</code>가 아닌, <code>import</code>와 <code>export</code> 구문이 그대로 남게 된다는 점입니다.<br /></p>
+<p>그리고 Node.js가 이 파일들을 ESM으로 인식하고 해석하도록 만들어야 합니다.<br /></p>
+<h3 id="packagejson에-type-module-추가">package.json에 <code>type: module</code> 추가</h3>
+<p>가장 먼저 해야 할 일은 우리 프로젝트의 기본 모듈 시스템이 ESM이라는 것을 Node.js에게 알려주는 건데요.<br /></p>
+<p>바로 <code>package.json</code> 파일에 <code>&quot;type&quot;: &quot;module&quot;</code> 한 줄을 추가해 주면 됩니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;my-awesome-app&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;module&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;dependencies&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="err">...</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 설정하면 <code>.js</code> 확장자를 가진 모든 파일은 기본적으로 ESM으로 취급됩니다.<br /></p>
+<p>만약 특정 파일만 CJS로 실행해야 하는 예외적인 상황이 있다면, 그 파일의 확장자를 <code>.cjs</code>로 바꿔주면 되니 아주 간단합니다.<br /></p>
+<h3 id="tsconfigjson-설정-변경">tsconfig.json 설정 변경</h3>
+<p>다음은 TypeScript 컴파일러가 ESM 문법에 맞춰 코드를 변환하도록 설정을 바꿔줘야 하는데요.<br /></p>
+<p><code>tsconfig.json</code> 파일의 <code>compilerOptions</code>에서 <code>module</code>과 <code>moduleResolution</code> 값을 변경해야 합니다.<br /></p>
+<p>기존 CJS 프로젝트는 보통 이렇게 되어 있었을 겁니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="c1">// 변경 전 (CJS)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;compilerOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;commonjs&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;moduleResolution&#34;</span><span class="p">:</span> <span class="s2">&#34;node&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이걸 ESM에 맞게 <code>'NodeNext'</code>로 바꿔주면 되거든요.<br /></p>
+<p><code>'NodeNext'</code>는 최신 Node.js의 ESM 모듈 해석 방식을 그대로 따르겠다는 의미입니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="c1">// 변경 후 (ESM)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;compilerOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;NodeNext&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;moduleResolution&#34;</span><span class="p">:</span> <span class="s2">&#34;NodeNext&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 설정을 적용하는 순간, TypeScript는 두 가지 중요한 규칙을 강제하기 시작합니다.<br /></p>
+<p>첫째는 컴파일 후에도 <code>import/export</code> 구문을 그대로 유지한다는 것이고, 둘째는 <code>import</code> 구문에서 파일 &lsquo;확장자&rsquo;를 반드시 명시하도록 요구한다는 점입니다.<br /></p>
+<h3 id="모든-import-구문에-js-확장자-붙이기">모든 import 구문에 <code>.js</code> 확장자 붙이기</h3>
+<p>아마 <code>tsconfig.json</code>을 바꾸자마자 수많은 타입 에러가 반겨줄 텐데요.<br /></p>
+<p>대부분 <code>import</code> 경로에 확장자가 없다는 오류일 겁니다.<br /></p>
+<p>CJS에서는 <code>./user/service</code>처럼 확장자 없이 디렉터리만 지정해도 알아서 <code>index.js</code>를 찾아줬지만, ESM에서는 그런 특별 취급이 사라졌거든요.<br /></p>
+<p>Node.js가 파일을 명확하게 찾을 수 있도록, 모든 <code>import</code> 경로 끝에 <code>.js</code>를 붙여줘야 합니다.<br /></p>
+<p>소스 코드가 <code>.ts</code> 파일이라도 말이죠.<br /> 왜냐하면 최종적으로 실행되는 건 컴파일된 <code>.js</code> 파일이기 때문입니다.<br /></p>
+<p>이걸 하나하나 손으로 바꾸는 건 거의 불가능에 가까운데요.<br /></p>
+<p>다행히 이 작업 역시 자동화할 수 있는 <code>eslint-plugin-import-extension</code> 같은 도구들이 있습니다.<br /></p>
+<p>이런 ESLint 플러그인을 설정하고 <code>--fix</code> 옵션으로 실행하면, 프로젝트 전체의 <code>import</code> 구문에 마법처럼 <code>.js</code> 확장자가 추가될 겁니다.<br /></p>
+<h3 id="__dirname-__filename-대체하기"><code>__dirname</code>, <code>__filename</code> 대체하기</h3>
+<p>CJS 환경에서는 현재 파일의 디렉터리 경로(<code>__dirname</code>)나 파일 전체 경로(<code>__filename</code>)를 전역 변수처럼 편하게 사용했는데요.<br /></p>
+<p>ESM에서는 이 변수들이 더 이상 존재하지 않습니다.<br /> 대신 <code>import.meta.url</code>이라는 새로운 표준을 사용해야 합니다.<br /></p>
+<p><code>import.meta.url</code>은 현재 모듈의 URL을 문자열로 제공하거든요.<br /> 이걸 <code>url</code>과 <code>path</code> 모듈을 조합하면 예전 <code>__dirname</code>과 똑같은 값을 얻을 수 있습니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">path</span> <span class="kr">from</span> <span class="s1">&#39;path&#39;</span><span class="p">;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">fileURLToPath</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;node:url&#39;</span><span class="p">;&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">__filename</span> <span class="o">=</span> <span class="nx">fileURLToPath</span><span class="p">(</span><span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">url</span><span class="p">);&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">__dirname</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">dirname</span><span class="p">(</span><span class="nx">__filename</span><span class="p">);&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>조금 번거로워졌지만, 필요할 때마다 이렇게 변수를 선언해서 사용하면 됩니다.<br /></p>
+<h2 id="3단계-jest에서-vitest로-테스트-환경-이전">3단계 Jest에서 Vitest로 테스트 환경 이전</h2>
+<p>ESM으로의 전환은 성공적으로 마쳤는데, 이제는 테스트 코드가 말썽을 부리기 시작할 텐데요.<br /></p>
+<p>저도 Jest 환경에서 ESM 코드를 테스트하려고 온갖 방법을 시도해 봤지만, 모듈 모킹(mocking) 부분에서 계속 발목을 잡혔습니다.<br /></p>
+<p>결국 저는 과감하게 Jest를 포기하고, ESM을 네이티브로 완벽하게 지원하는 &lsquo;Vitest&rsquo;로 넘어가기로 결정했습니다.<br /></p>
+<p>결과적으로 이건 정말 최고의 선택이었습니다.<br /></p>
+<p>Vitest는 Jest와 API 호환성이 매우 높아서, 마이그레이션 비용이 생각보다 훨씬 적게 들거든요.<br /></p>
+<h3 id="테스트-함수-직접-import-하기">테스트 함수 직접 <code>import</code> 하기</h3>
+<p>Jest와 Vitest의 가장 큰 차이점 중 하나는 <code>describe</code>, <code>it</code>, <code>test</code>, <code>expect</code> 같은 테스트 함수들을 다루는 방식인데요.<br /></p>
+<p>Jest에서는 이 함수들이 아무런 <code>import</code> 없이도 사용할 수 있는 전역 변수처럼 동작했습니다.<br /></p>
+<p>하지만 Vitest에서는 이 모든 것을 <code>vitest</code> 패키지에서 직접 <code>import</code>해서 사용해야 합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// Jest에서는 그냥 썼지만...
+</span></span></span><span class="line"><span class="cl"><span class="c1">// describe(&#39;My Test&#39;, () =&gt; { ... });
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Vitest에서는 import가 필수!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">describe</span><span class="p">,</span> <span class="nx">it</span><span class="p">,</span> <span class="nx">expect</span><span class="p">,</span> <span class="nx">vi</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;vitest&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;My Test&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should work&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">expect</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>기존의 <code>@types/jest</code> 패키지를 제거하면, 전역 함수를 사용하던 부분에서 모두 타입 에러가 발생할 거거든요.<br /></p>
+<p>그 에러를 따라가면서 필요한 함수들을 <code>vitest</code>에서 가져오도록 수정해주면 됩니다.<br /></p>
+<h3 id="globalteardown-작성-방식의-변화"><code>globalTeardown</code> 작성 방식의 변화</h3>
+<p>모든 테스트가 실행되기 전과 후에 각각 딱 한 번씩만 실행되는 <code>globalSetup</code>과 <code>globalTeardown</code> 기능은 테스트 데이터베이스를 띄우고 내릴 때 정말 유용한데요.<br /></p>
+<p>Jest와 Vitest는 이 <code>globalTeardown</code>을 정의하는 방식이 조금 다릅니다.<br /></p>
+<p>Jest에서는 <code>globalSetup</code>과 <code>globalTeardown</code>을 별도의 파일로 만들고 설정 파일에 각각 지정해 줘야 했거든요.<br /></p>
+<p>그래서 <code>setup</code> 파일에서 생성한 자원(예: 테스트 컨테이너)의 참조를 <code>teardown</code> 파일로 넘기기 위해 전역 변수를 사용하는 꼼수가 필요했습니다.<br /></p>
+<p>반면에 Vitest는 훨씬 세련된 방식을 제공하는데요.<br /></p>
+<p><code>globalSetup</code> 파일에서 <code>teardown</code> 로직을 담은 함수를 &lsquo;반환&rsquo;하면 됩니다.<br /></p>
+<p>마치 React의 <code>useEffect</code>가 클린업 함수를 반환하는 것과 아주 비슷하죠.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// vitest.config.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;vitest/config&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">test</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">globalSetup</span><span class="o">:</span> <span class="s1">&#39;./tests/global-setup.ts&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// tests/global-setup.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">PostgreSqlContainer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;@testcontainers/postgresql&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">postgresContainer</span> <span class="o">=</span> <span class="k">await</span> <span class="k">new</span> <span class="nx">PostgreSqlContainer</span><span class="p">().</span><span class="nx">start</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DATABASE_URL</span> <span class="o">=</span> <span class="nx">postgresContainer</span><span class="p">.</span><span class="nx">getConnectionUri</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// teardown 함수를 여기서 반환!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="nx">postgresContainer</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>더 이상 불필요한 전역 변수를 만들 필요 없이, 클로저를 통해 상태를 안전하게 유지할 수 있어서 훨씬 깔끔한 코드가 됩니다.<br /></p>
+<h3 id="jest-네임스페이스를-vi로"><code>jest</code> 네임스페이스를 <code>vi</code>로</h3>
+<p><code>jest.mock(...)</code>이나 <code>jest.spyOn(...)</code>처럼 <code>jest</code> 객체를 사용하던 코드는 모두 <code>vi</code>로 바꿔주면 되는데요.<br /></p>
+<p><code>vi.mock(...)</code>, <code>vi.spyOn(...)</code>처럼 기계적으로 치환하면 거의 대부분 해결됩니다.<br /></p>
+<p>물론 <code>vi</code> 객체 역시 <code>vitest</code> 패키지에서 <code>import</code> 해오는 것을 잊으면 안 됩니다.<br /></p>
+<h2 id="마무리하며">마무리하며</h2>
+<p>지금까지 CommonJS 기반의 Node.js 프로젝트를 ESM으로, 그리고 테스트 러너를 Jest에서 Vitest로 전환하는 전 과정을 함께 살펴봤는데요.<br /></p>
+<p>경로 별칭을 제거하는 것부터 시작해서, <code>package.json</code>과 <code>tsconfig.json</code> 설정 변경, 그리고 자잘한 코드 수정과 라이브러리 호환성 문제 해결까지, 결코 간단한 작업은 아니었습니다.<br /></p>
+<p>하지만 이 과정을 거치고 나니, 프로젝트는 최신 자바스크립트 표준을 온전히 따르는 건강한 구조를 갖추게 되었습니다.<br /></p>
+<p>특히 Vitest로의 전환은 예상치 못한 즐거움이었는데, 더 빠르고 안정적인 테스트 환경을 구축할 수 있었습니다.<br /></p>
+<p>만약 여러분도 구형 CJS 프로젝트의 한계를 느끼고 있다면, 이 가이드가 성공적인 마이그레이션의 든든한 동반자가 되어주길 바랍니다.<br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/node.js/" role="button">Node.js</a>
+        <a class="btn btn-light" href="/tags/esm/" role="button">ESM</a>
+        <a class="btn btn-light" href="/tags/commonjs/" role="button">CommonJS</a>
+        <a class="btn btn-light" href="/tags/vitest/" role="button">Vitest</a>
+        <a class="btn btn-light" href="/tags/jest/" role="button">Jest</a>
+        <a class="btn btn-light" href="/tags/%EB%A7%88%EC%9D%B4%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%85%98/" role="button">마이그레이션</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-16-why-you-should-avoid-nesting-in-tests/">그 테스트 코드, 왜 읽기 힘든지 알려드릴까요</a></h2>
+                  <p>테스트 코드만 보면 머리가 아픈가요? describe와 beforeEach의 무분별한 중첩이 어떻게 테스트의 가독성을 해치는지, 그리고 명확성을 되찾는 AHA 테스트 원칙과 함수형 접근법을 Kent C. Dodds의 아티클을 통해 깊이 있게 파헤쳐 봅니다.</p>
+                  <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-16-fix-malformed-json-with-jsonrepair/">깨진 JSON 데이터, 더 이상 두렵지 않다 - JSONRepair 완벽 가이드</a></h2>
+                  <p>깨진 JSON, 누락된 콤마, 잘못된 따옴표 때문에 더 이상 데이터 파이프라인을 멈추지 마세요. JSONRepair 라이브러리를 사용하여 불안정한 데이터를 자동으로 복구하고 파싱하는 방법을 단계별로 배워보세요.</p>
+                  <p>
+  <small>July 16, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-13-nesting-multiple-async-local-storage/">다중 Async Local Storage - React Context처럼 중첩하기</a></h2>
+                  <p>단일 컨텍스트를 넘어, 여러 개의 Async Local Storage를 중첩하여 사용하는 방법을 알아봅니다. 재귀 함수를 이용한 영리한 트릭으로, 서버 사이드 코드의 모듈성을 극대화하고 prop drilling을 완벽하게 해결해 보세요.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

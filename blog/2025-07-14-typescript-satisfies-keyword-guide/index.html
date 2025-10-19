@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>TypeScript &#39;satisfies&#39; 완벽 가이드 - &#39;as&#39; 대신 써야 하는 이유</title>
+<meta name="description" content="TypeScript의 숨겨진 보석, &lsquo;satisfies&rsquo; 키워드를 아시나요? 타입 추론은 유지하면서 타입 검사는 강화하는 satisfies의 마법을 통해, 왜 &lsquo;as&rsquo;보다 더 안전하고 현명한 선택인지 알아봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-07-14-typescript-satisfies-keyword-guide/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TypeScript &#39;satisfies&#39; 완벽 가이드 - &#39;as&#39; 대신 써야 하는 이유" />
+<meta property="og:description" content="TypeScript의 숨겨진 보석, &lsquo;satisfies&rsquo; 키워드를 아시나요? 타입 추론은 유지하면서 타입 검사는 강화하는 satisfies의 마법을 통해, 왜 &lsquo;as&rsquo;보다 더 안전하고 현명한 선택인지 알아봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-07-14-typescript-satisfies-keyword-guide/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-07-12T10:41:51Z" />
+<meta property="article:modified_time" content="2025-07-12T10:41:51Z" />
+<meta property="article:tag" content="TypeScript" />
+<meta property="article:tag" content="satisfies" />
+<meta property="article:tag" content="타입스크립트" />
+<meta property="article:tag" content="as" />
+<meta property="article:tag" content="타입 단언" />
+<meta property="article:tag" content="구조적 타이핑" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TypeScript &#39;satisfies&#39; 완벽 가이드 - &#39;as&#39; 대신 써야 하는 이유" />
+<meta name="twitter:description" content="TypeScript의 숨겨진 보석, &lsquo;satisfies&rsquo; 키워드를 아시나요? 타입 추론은 유지하면서 타입 검사는 강화하는 satisfies의 마법을 통해, 왜 &lsquo;as&rsquo;보다 더 안전하고 현명한 선택인지 알아봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"TypeScript 'satisfies' 완벽 가이드 - 'as' 대신 써야 하는 이유\"",
+  "description": "\"TypeScript의 숨겨진 보석, \\u0026lsquo;satisfies\\u0026rsquo; 키워드를 아시나요? 타입 추론은 유지하면서 타입 검사는 강화하는 satisfies의 마법을 통해, 왜 \\u0026lsquo;as\\u0026rsquo;보다 더 안전하고 현명한 선택인지 알아봅니다.\"",
+  "datePublished": "\"2025-07-12T10:41:51Z\"",
+  "dateModified": "\"2025-07-12T10:41:51Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-07-14-typescript-satisfies-keyword-guide/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>TypeScript &#39;satisfies&#39; 완벽 가이드 - &#39;as&#39; 대신 써야 하는 이유</h1>
+        <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>TypeScript의 수많은 기능 중, 오늘은 조금은 덜 알려졌지만 때로는 믿을 수 없을 만큼 유용한 &lsquo;satisfies&rsquo; 키워드에 대해 이야기해 보려고 합니다.<br /><br />
+이 기능을 제대로 다룰 줄 아는 것은 여러분의 소매 속에 숨겨둘 만한 가치 있는 비장의 무기가 될 것입니다.<br /><br />
+함께 살펴볼까요.<br /><br /></p>
+<h2 id="먼저-알아야-할-것-구조적-타이핑">먼저 알아야 할 것: &lsquo;구조적 타이핑&rsquo;<br /></h2>
+<p>&lsquo;satisfies&rsquo;를 이해하려면, 먼저 TypeScript가 타입을 어떻게 다루는지 알아야 합니다.<br /><br />
+TypeScript는 &lsquo;구조적 타이핑(structural typing)&rsquo; 시스템을 따릅니다.<br /><br />
+아주 간단히 말해, <strong>TypeScript는 어떤 타입으로 선언되었는지가 아니라, 값의 &lsquo;구조&rsquo;나 &lsquo;형태&rsquo;에만 관심을 가집니다.</strong><br /><br />
+따라서 아래 코드는 아무런 에러 없이 정상적으로 동작합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">Thing1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">Thing2</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">thing1</span>: <span class="kt">Thing1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Thing1</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Thing2의 &#39;구조&#39;가 Thing1의 구조와 동일하기 때문에 할당 가능합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">thing2</span>: <span class="kt">Thing1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Thing2</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 객체 리터럴 역시 Thing1의 구조를 만족시키므로 할당 가능합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">thing3</span>: <span class="kt">Thing1</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;&#34;</span> <span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>타입은 본질적으로 &lsquo;계약&rsquo;과 같고, TypeScript는 단지 당신이 그 계약을 원본 타입이 명시한 것을 가진 무언가로 만족시키기만 하면 신경 쓰지 않습니다.<br /><br />
+흥미롭게도, 이는 타입을 만족시킬 때 관련 없는 &lsquo;추가적인 속성&rsquo;을 제공할 수 있다는 의미이기도 합니다.<br /><br />
+아래 코드 역시 에러가 없습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">val</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">xyz</span>: <span class="kt">12</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// val 객체는 Thing1이 요구하는 name: string을 가지고 있으므로 통과됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">thing4</span>: <span class="kt">Thing1</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>Thing1</code> 타입은 문자열인 <code>name</code> 속성만을 요구합니다.<br /><br />
+만약 다른 속성을 추가로 지정하더라도, TypeScript는 (보통은) 괜찮다고 넘어갑니다.<br /><br />
+이것이 다른 언어에서 온 개발자들에게는 놀랍게 보일 수 있지만, 완전히 타입이 없는 프로그래밍 언어인 JavaScript에 어떤 형태의 타입 안정성을 제공하는 것이 TypeScript의 주된 목적인 점을 감안하면 실용적인 절충안입니다.<br /><br /></p>
+<h3 id="예외-잉여-속성-검사excess-property-checking">예외: &lsquo;잉여 속성 검사(Excess Property Checking)&rsquo;<br /></h3>
+<p>제가 위에서 &lsquo;보통은&rsquo;이라고 말한 이유는, TypeScript가 때때로 위에서 본 것과 같은 &lsquo;추가적인&rsquo; 값을 허용하지 않고 조금 더 엄격하게 굴기 때문입니다.<br /><br />
+특히, <strong>객체 리터럴을 타입이 선언된 변수에 할당할 때</strong>, TypeScript는 엄격한 일치를 요구합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// val은 변수에 먼저 할당되었으므로 OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">thing4</span>: <span class="kt">Thing1</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">val2</span>: <span class="kt">Thing1</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">xyz</span>: <span class="kt">12</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 에러: Object literal may only specify known properties, and &#39;xyz&#39; does not exist in type &#39;Thing1&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이것을 &lsquo;잉여 속성 검사&rsquo;라고 합니다.<br /><br />
+방금 본 것처럼 타입이 선언된 변수에 객체 리터럴을 할당할 때, 그리고 타입이 선언된 함수 매개변수에 객체 리터럴을 전달할 때 발생합니다.<br /><br /></p>
+<h2 id="satisfies의-등장-그래서-이게-왜-필요한가">&lsquo;satisfies&rsquo;의 등장: 그래서 이게 왜 필요한가?<br /></h2>
+<p><code>satisfies</code>의 가장 단순한 사용 예시를 보기 위해, 이 코드로 돌아가 봅시다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">val3</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">xyz</span>: <span class="kt">12</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>현재 <code>val3</code>는 <code>{ name: string; xyz: number; }</code> 라는 타입을 &lsquo;추론(inferred)&rsquo; 받습니다.<br /><br />
+만약 우리가 원한다면, 이 코드를 이렇게 작성할 수도 있습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">val3</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">xyz</span>: <span class="kt">12</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 에러: Object literal may only specify known properties, and &#39;xyz&#39; does not exist in type &#39;Thing1&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="nx">satisfies</span> <span class="nx">Thing1</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드는 우리가 이전에 본 것과 동일한 에러, 즉 <code>val3</code>를 <code>Thing1</code>으로 선언했을 때와 같은 에러를 발생시켰습니다.<br /><br /></p>
+<p><code>satisfies</code> 키워드는 <strong>더 넓은 타입이 추론되는 것을 방지하면서,</strong> 특정 값이 주어진 타입을 &lsquo;만족시킨다&rsquo;고 단언할 수 있게 해줍니다.<br /><br />
+잠깐만 기다려 주세요.<br /><br />
+아마 &lsquo;그냥 <code>Thing1</code> 타입을 위로 올려서 제대로 된 타입 선언으로 쓰면 되는데, 이건 완전히 쓸모없잖아!&rsquo; 라고 생각하실 겁니다.<br /><br />
+심지어 그렇게 하면 몇 글자 더 절약할 수도 있죠!<br /><br />
+하지만 모든 상황이 이 해결책에 적합한 것은 아닙니다.<br /><br />
+조금 더 복잡하고 현실적인 예시를 살펴보겠습니다.<br /><br /></p>
+<h2 id="실제-문제-상황-오타를-잡지-못하는-typescript">실제 문제 상황: 오타를 잡지 못하는 TypeScript<br /></h2>
+<p>이것은 제가 실제로 겪었던 상황입니다.<br /><br />
+현실적인 부분은 유지하면서 최대한 단순화해 보겠습니다.<br /><br />
+우리가 재고 관리 시스템을 작성하고 있다고 상상해 봅시다.<br /><br />
+<code>InventoryItem</code>이라는 타입이 있습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">InventoryItem</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">sku</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">description</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">originCode?</span>: <span class="kt">string</span><span class="p">;</span> <span class="c1">// &#39;?&#39;는 선택적(optional) 속성을 의미합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리는 외부 백엔드 시스템에서 데이터를 가져와야 합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">BackendResponse</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">item_sku</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">item_description</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">item_origin_code</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">getBackendResponse</span><span class="p">()</span><span class="o">:</span> <span class="nx">BackendResponse</span><span class="p">[]</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[];</span> <span class="c1">// 실제로는 데이터를 가져온다고 가정합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 모든 것을 합쳐 봅시다.<br /><br />
+외부 시스템에서 아이템을 가져와, 우리 시스템의 <code>InventoryItem</code> 타입에 맞는 구조로 조작한 다음, <code>insertInventoryItems</code> 함수를 호출합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">main() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">backendItems</span> <span class="o">=</span> <span class="nx">getBackendResponse</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">insertInventoryItems</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backendItems</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sku</span>: <span class="kt">item.item_sku</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">description</span>: <span class="kt">item.item_description</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">originCodeXXXXX</span>: <span class="kt">item.item_origin_code</span><span class="p">,</span> <span class="c1">// 어이쿠, 오타!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>안타깝게도, 이 코드에는 에러가 없습니다.<br /><br />
+우리가 <code>originCode</code> 속성 이름을 완전히 잘못 입력했음에도 불구하고 말이죠.<br /><br />
+잉여 속성 검사가 없는 곳에서는 TypeScript가 &lsquo;추가적인&rsquo; 속성을 허용한다는 것을 이미 알고 계실 겁니다.<br /><br />
+하지만 실제 <code>originCode</code> 속성을 완전히 빠뜨렸는데 왜 에러가 아닌지 궁금하실 수 있습니다.<br /><br />
+그 이유는 이 속성이 &lsquo;선택적(optional)&lsquo;이기 때문입니다!<br /><br />
+이것이 바로 우리가 불필요한 잉여 속성을 허용하지 않도록 하는 것이 더욱 중요한 이유입니다.<br /><br />
+아마 &ldquo;잉여 속성 검사가 작동하도록 코드를 재구성하면 되지 않나?&ldquo;라고 생각하실 수 있고, 물론 그렇게 할 수도 있습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">main() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">backendItems</span> <span class="o">=</span> <span class="nx">getBackendResponse</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">insertInventoryItems</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backendItems</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">result</span>: <span class="kt">InventoryItem</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sku</span>: <span class="kt">item.item_sku</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">description</span>: <span class="kt">item.item_description</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">originCodeXXXXX</span>: <span class="kt">item.item_origin_code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 에러: ... &#39;originCodeXXXXX&#39;는 &#39;InventoryItem&#39; 타입에 존재하지 않습니다. &#39;originCode&#39;를 쓰려고 했나요?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 방법은 동작하고 우리가 원하는 에러를 보여줍니다.<br /><br />
+하지만 이것은 우리가 코드를 (솔직히 말해 이상하게) 작성하기로 선택한 것의 부산물일 뿐이며, 만약 누군가 와서 이 이상하고 무의미한 중간 변수 선언을 보고 &ldquo;도와준답시고&rdquo; 코드를 원래처럼 즉시 객체 리터럴을 반환하도록 리팩토링한다면 이 보호 장치는 사라질 것입니다.<br /><br />
+더 나은 해결책은 바로 원치 않는 타입 확장을 막기 위해 <code>satisfies</code>를 사용하는 것입니다.<br /><br />
+이것이 바로 <code>satisfies</code>가 존재하는 이유입니다!<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">main() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">backendItems</span> <span class="o">=</span> <span class="nx">getBackendResponse</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">insertInventoryItems</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backendItems</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sku</span>: <span class="kt">item.item_sku</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">description</span>: <span class="kt">item.item_description</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">originCodeXXXXX</span>: <span class="kt">item.item_origin_code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 에러: ... &#39;originCodeXXXXX&#39;는 &#39;InventoryItem&#39; 타입에 존재하지 않습니다. &#39;originCode&#39;를 쓰려고 했나요?
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="p">}</span> <span class="nx">satisfies</span> <span class="nx">InventoryItem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 우리는 원하는 엄격한 검사를 유지하면서도, 우리가 시작했던 더 관용적인 코드로 돌아왔습니다.<br /><br /></p>
+<h2 id="satisfies-vs-as-왜-as는-위험할까">&lsquo;satisfies&rsquo; vs &lsquo;as&rsquo;: 왜 &lsquo;as&rsquo;는 위험할까?<br /></h2>
+<p>잠깐, <code>as</code> 키워드를 사용하는 이 대안에 대해 궁금해하실 수도 있습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">sku</span>: <span class="kt">item.item_sku</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">description</span>: <span class="kt">item.item_description</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">originCodeXXXXX</span>: <span class="kt">item.item_origin_code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kr">as</span> <span class="nx">InventoryItem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ...
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드는 아무런 에러도 발생시키지 않습니다.<br /><br />
+<code>as</code> 키워드는 &lsquo;타입 캐스팅(typecast)&rsquo; 혹은 &lsquo;타입 단언(type assertion)&lsquo;입니다.<br /><br />
+이것은 피해야 할 대상입니다.<br /><br />
+<strong><code>as</code>는 본질적으로 타입 검사기에게 &ldquo;거짓말&quot;을 할 수 있게 해주고, 특정 표현식이 주어진 타입과 일치한다고 단언하는 것입니다.</strong><br /><br />
+이 경우, 이 객체는 <code>sku</code>와 <code>description</code>을 가지고 있으므로 이미 <code>InventoryItem</code> 타입과 일치합니다.<br /><br />
+추가적인 &ldquo;쓰레기&quot;가 있지만 TypeScript는 별로 신경 쓰지 않습니다.<br /><br />
+<strong>바로 &lsquo;satisfies&rsquo; 키워드가 추가적으로 TypeScript에게 더 넓은 타입을 허용하지 않도록 강제하고, 그 결과 추가 속성에 대해 신경 쓰게 만드는 것입니다.</strong><br /><br />
+완전성을 위해, 이 버전의 캐스팅 코드는 실제로 실패합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">sku</span>: <span class="kt">item.item_sku</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">descriptionXXX</span>: <span class="kt">item.item_description</span><span class="p">,</span> <span class="c1">// 필수 속성 이름에 오타
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">originCodeXXXXX</span>: <span class="kt">item.item_origin_code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kr">as</span> <span class="nx">InventoryItem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 에러: &#39;description&#39; 속성이 &#39;{...}&#39; 타입에 없지만 &#39;InventoryItem&#39; 타입에는 필요합니다.
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>TypeScript는 당신이 거짓말하는 것을 허용하지만, 어느 정도까지만입니다.<br /><br />
+만약 캐스팅이 전혀 말이 되지 않는다면, TypeScript는 그것을 허용하지 않을 것입니다.<br /><br />
+에러가 나타내듯이, 만약 어떤 이유로든 정말로 이 코드를 진행하고 싶다면, <code>as unknown as InventoryItem</code>을 사용할 수 있습니다.<br /><br />
+<code>unknown</code>은 &ldquo;최상위(top)&rdquo; 타입이므로, 어떤 것이든 그것으로, 그리고 그것으로부터 캐스팅될 수 있기 때문입니다.<br /><br /></p>
+<h2 id="결론">결론<br /></h2>
+<p>최상위 변수 선언이 잘 맞지 않는 상황에서, 타입이 더 넓게 추론되는 것을 방지하고 싶을 때 <code>satisfies</code>를 사용하세요.<br /><br />
+이는 타입스크립트의 안정성을 최대한 활용하면서도 코드의 유연성은 잃지 않는, 아주 영리하고 실용적인 방법입니다.<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/typescript/" role="button">TypeScript</a>
+        <a class="btn btn-light" href="/tags/satisfies/" role="button">satisfies</a>
+        <a class="btn btn-light" href="/tags/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8/" role="button">타입스크립트</a>
+        <a class="btn btn-light" href="/tags/as/" role="button">as</a>
+        <a class="btn btn-light" href="/tags/%ED%83%80%EC%9E%85-%EB%8B%A8%EC%96%B8/" role="button">타입 단언</a>
+        <a class="btn btn-light" href="/tags/%EA%B5%AC%EC%A1%B0%EC%A0%81-%ED%83%80%EC%9D%B4%ED%95%91/" role="button">구조적 타이핑</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-16-typescript-readonly-array-for-safer-code/">TypeScript 배열, `T[]` 대신 `ReadonlyArray&lt;T&gt;`를 써야 하는 이유</a></h2>
+                  <p>함수 하나 호출했을 뿐인데 원본 배열이 망가진 경험, 있으신가요? 이런 사이드 이펙트 버그를 원천 차단하는 TypeScript의 강력한 무기, `ReadonlyArray<T>`의 모든 것을 알려드립니다. 이제 불변성은 선택이 아닌 필수입니다.</p>
+                  <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-16-typescript-enum-alternatives-deep-dive/">TypeScript enum, 아직도 쓰고 계신가요?</a></h2>
+                  <p>TypeScript 개발자라면 누구나 한번쯤 써봤을 enum. 하지만 왜 많은 전문가들이 enum 사용을 망설이는 걸까요? enum의 숨겨진 문제점부터 가장 확실한 대안인 Object as const 패턴까지, 이제는 알아야 할 모든 것을 알려드립니다.</p>
+                  <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-04-27-typescript-exhaustiveness-check-with-satisfies-operator/">이제 never 대신 satisfies - 더 간결한 TypeScript 완전성 검사 방법</a></h2>
+                  <p>TypeScript에서 완전성 검사를 수행하는 전통적인 방법과, TypeScript 4.9 버전부터 도입된 `satisfies` 연산자를 활용하여 이를 더욱 간결하고 효과적으로 개선하는 방법을 알아보겠습니다.</p>
+                  <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

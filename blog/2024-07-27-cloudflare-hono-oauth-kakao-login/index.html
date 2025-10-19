@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)</title>
+<meta name="description" content="Cloudflare에서 Hono와 OAuth를 이용해서 카카오 아이디를 이용한 Login 구현을 해보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)" />
+<meta property="og:description" content="Cloudflare에서 Hono와 OAuth를 이용해서 카카오 아이디를 이용한 Login 구현을 해보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-07-27T12:45:38Z" />
+<meta property="article:modified_time" content="2024-07-27T12:45:38Z" />
+<meta property="article:tag" content="Kakao ID Login" />
+<meta property="article:tag" content="Cloudflare" />
+<meta property="article:tag" content="Hono" />
+<meta property="article:tag" content="OAuth" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)" />
+<meta name="twitter:description" content="Cloudflare에서 Hono와 OAuth를 이용해서 카카오 아이디를 이용한 Login 구현을 해보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)\"",
+  "description": "\"Cloudflare에서 Hono와 OAuth를 이용해서 카카오 아이디를 이용한 Login 구현을 해보겠습니다.\"",
+  "datePublished": "\"2024-07-27T12:45:38Z\"",
+  "dateModified": "\"2024-07-27T12:45:38Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)</h1>
+        <p>
+  <small>July 27, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난번에 각각 Hono 웹 프레임워크를 이용해서 구글, 네이버 아이디로 로그인하기를 구현했었습니다.</p>
+<p>구글, 네이버 모두 Oauth 2.0을 따르기 때문에 한번 배워두면 쉬운데요.</p>
+<p>오늘은 카카오 로그인도 시도해 보겠습니다.</p>
+<p>지난 시간 링크입니다.</p>
+<ul>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login">Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login">Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기</a></p>
+</li>
+</ul>
+<p>먼저, 카카오 디벨로퍼에서 애플리케이션을 만들어야 합니다.</p>
+<p>아래 링크는 카카도 디벨로퍼 링크입니다.</p>
+<p><a href="https://developers.kakao.com/console/app">카카오 디벨로퍼 애플리케이션 등록하기</a></p>
+<p>링크를 클릭하시면 아래와 같이 애플리케이션 추가하기 버튼이 보입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg9wduyc8hQd8fqWd2FR1boyXGdEUPh7I4kicxzvIlgNG0WBQ47Yso1_n5Hjh1OcjE8VV6xp9kCzVK7C4rEImsPCL-CvUXDdE2W-mxBHAqwQKpsLOMwy8ZHWFbFAOjRrjMNgvEcOLfuhV5_s8ra4pAOPQFJ3Gt0v9lDZVPfrK9V5GLq5126DRxE-XIYTHc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>추가하기 버튼을 누르면 아래와 같이 나오는데요.</p>
+<p>적당히 이름을 정하고 저장하기 버튼을 누르면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjweruGH5xnOAKwToFgInuOIQHByZ8Zn-Y697zrq-h3g5kDDgPJrpXkz0LHVlehXtfkle7i1Syx9prtBz8p-E-coHWzBMf78nAgecfOifkA7zSlk9OXy1NAwWW-vIKw1_9D2R1G9arYNwN6UYANwxE6HIlt8fQJwUYv1aSR6-KBc3bf--UGANxb5Z7nrdk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 방금 만들었던 애플리케이션(이하 앱이라 칭할게요)을 클릭하면 통계와 함께 설정부분이 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhsfQ9o6YXMi4NeCMvmxOjuG8Wv_r3y2aEKO7xepT8clMsbSFSTWIIxSnZ_-M4uqQ4Q-tt-IZpprQm1JHkl7XzvNwstTW07OGyKqItAwivtN6EWRolHbIotElD5Dzm8XcUIXT0dDc8jnbJSRQijWonnE-zF230c-Q435bQSUYd0uRZYtYQDVTJy7rDb-LQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기서 중요한게 바로 &ldquo;카카오 로그인&rdquo;, &ldquo;동의항목&rdquo; 부분인데요.</p>
+<p>각각 설정하기 버튼을 눌러 설정해줘야 합니다.</p>
+<p>먼저, &ldquo;카카오 로그인&rdquo; 설정하기 부분입니다.</p>
+<p>아래 그림과 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgiLCh9pk0RD248jyjC8lEqaqXLkbc2ovG0n3YvGlEGByn1us0aHcnkhXNhW6ADw4IzbP7OA8pmudMJ6wqHp8ipIa53fAQiNwcGidJTX8iJio6VPoHUlITpz-aetmFCoAh1nfQDqOBB2LXEqqAgpnSxEPhRa1Gbpoym-JvfciPBJRhFnCIksxX1W4d7pBI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 카카오 로그인을 활성화하면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj8Hn-1lxZN8vk8lHrLv6Sg32WCcQHAtnjpskim7Zz9yiOSzeCGNPIwiOFVlzm3K1ynAqUMoiAusnLw5yHdg_O5Rj0zMF4KcJd85bgcNgL1pHK4zj_gkKqwDGaOXLYM694jk9pQwkZEO781TIjMXEbj-Joa-_aUFE-E0NY1dti9TsBM3CVNwDOMzRAqttI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기서 중요한게 OAuth 핵심 라우팅인 Redirect URI를 등록해야 합니다.</p>
+<p>우리는 예전처럼 Vite의 개발서버를 이용해서 테스트 용도로 콜백 라우팅을 지정할 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEilqwHOO8EsHSkw7ocu8xvy4o8h14mN80QDQSFxHhRlN33MHVNf0buFAn5HZ07HkQcUyThBuWAk8FNW4D8dppcOQBLgwMgbyAgVjvgAS5J9lIjdTPG-MyzW1TEjVwL9F6lhCCinvBuGfeBecakjQN4tWLGOV5yCaK0i1XR3dWyZULro_N7bs7F0fwkpIzU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<p>이제 다시 대시보드로 돌아가서 &ldquo;동의항목&rdquo; 설정을 누르면 아래와 같은 화면이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEitSUc1roaV5lT_kp5Vpt96GNTk0kvSMb7IfjtdMJF5Raoj7jJSV5yJ2NimbasJQXzK9zvHywozq1vEloDsv6SLS_yemGcfFKfLr7dEjs_K-ofSAPUBlY6ZzRSHBDXLuBxHywph2TA_vLPp2WwndUR4BCLwIhIilnMqbC33fpWzaisc-a0k0oXFgkUA3gQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>동의항목은 적을 수록 유저가 느끼는 위화감이 적습니다.</p>
+<p>그래서 닉네임이나 프로파일 이미지만 선택해도 충분합니다.</p>
+<p>각각 설정버튼을 눌러 아래 그림과 같이 필수동의로 설정하면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEibcrdoF8KqSoRUQAw1RDVOI_uqH6z9MeRArCDkRbknXI7smlhyTH_2G73PYsPeUWPsND4Srnba09zoBvzm29bXApTn-MBr2iMIyK3S3uOIFUM4EnOU43NmuUoiY9DGDoOjQDaB29ykaZukcLMgoG40McDBV8DlPVl2rcp7FH3GfsZGRLLwXVuoHTm79Z8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiOWtwm2QW2Xk5s9J17baKzToNq62hqIucSxY3SV_DSH2wdm0_P5kJf99BnDuvGtrHRPIn0QJQYcor-G3aLenP4i6umvmu3zubGgtIncMnHWlqHTIC9vjQLPo0NZffKedqeg1wvurGCxs_bjrgdj1wI65MGyPllpjKCcOLP2ogH84ZIInCRyTtmINrKGqE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<p>이제 CLIENT_ID와 CLIENT_SECRET를 얻어야 합니다.</p>
+<p>대시보드에서 왼쪽 상단에 햄버거 메뉴를 누르면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjk6re-0dLGon_-l3zOWB4AKiXyIGnAHsax02SuHYaejwBzhm3ymCCmZ8e_wNt7o2PzC5uqyQKndnI47XO4w4kMCyIge82mYEXYN3I_8tmHjeJXp1E00PcBN6xXFwkUPn4IJNWA1VRsTXNZ6i8qmBjtONVntHQE4Wrz34PAiLpX43kCuBuhutGtTA1GBY4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 우리가 얻을 건 &ldquo;앱키&rdquo; 입니다.</p>
+<p>눌러보면 아래와 같이 여러 가지가 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEha57UCBaUpaEQIPyYig3bIYh8SfYlS8i_quGBwe7xM6FRUFDTDYTBJFLTKC06OXhx4BmRaVQhmGzsTPw6D_wZhhaphKb05gpqm_ksW3h5WoatKNEx8RiyIs1e6YvhmJLym22DiLltHbGw6fk-03hExSzlVpvAsEjzGR3ZFbRtGyMIDRVAFzK1Zk96wlF4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이상하게도 카카오의 앱키는 꼭 암호처럼 생겼는데, 그래서 CLIENT_SECRET라고 착각할 수 있겠지만 이 &ldquo;앱키&quot;가 사실 CLIENT_ID 입니다.</p>
+<p>여기서 주의할게 있는데요.</p>
+<p>우리가 만드려는게 사실 REST API라서 &ldquo;REST API키&quot;를 쓰면 될 거 같은데,</p>
+<p>카카오는 약간 헷갈리게 만들어 놨습니다.</p>
+<p>위 그림에서 &ldquo;Javascript키&rdquo; 부분이 우리가 원하는 CLIENT_ID가 됩니다.</p>
+<p>그 다음으로 CLIENT_SECRET를 구해봅시다.</p>
+<p>CLIENT_SECRET는 햄버거 메뉴를 누른다음 &ldquo;카카오 로그인&rdquo; 부분에 있는 &ldquo;보안&quot;을 클릭하면 설정하는 화면이 나옵니다.</p>
+<p>CLIENT_SECRET 없이 카카오 로그인이 가능하지만 이 걸 설정하는게 권유되니 꼭 하시길 바랍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgmUG-QReFoGAZBlzoigRe81ItPJ-6mc4cu3wB_oH3w3U_iqqUWtIiEMoDFdwY3UjEkkRBJd7TBByOwAVA8Zk5eBiXYAlBHAm3_Qa0bz_hmiTGCEd1KXhznEmJMDMoAQFpJsBETbrBKdIi6f2IwA846UHUPRU9llUpiBCnIToc7Mf5JoN86MG_HxkFcPbM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>상기 화면에서 &ldquo;코드생성&rdquo; 버튼을 눌러 CLIENT_SECRET을 얻으면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj_4-XUjjGLeDrZtMXfGonsh9G9u0eMWBErV0W8V8qTMkX5F4YMF40XX27amst-8Mz8ntEq19FwHyat28-O3pqTnHtv428aiPZsqZHfFoWQXMHqBwQh9G6uOkuDQH2tJ3VK7Z_erRA4I8wuPw5abPaulv1yHzSeYO7S4VlYF2HgoNubQGV9JWM023bAs88"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjkhh4I4eXWRgzLa5OUJ-1aZsYECQSCuzLLdzKKnzDusC8t1WaP27Savps_PxzKucVWc6zT5tIsVqCzHADgRDK8f4DdenlheBSTJEpRSfaRFBV7y7Tgf8-VdEqXxUbPSTDyG51vNayg_G-NMRQY3W5nLOS8A5e90G3qUni8OOhDRrYcsjA6EvxU_svNjWo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 OAuth를 사용하기 위한 필요 항목인 CLIENT_ID와 CLIENT_SECRET를 얻었습니다.</p>
+<hr>
+<p>이제 Hono 앱을 만들어야 합니다.</p>
+<p>아래처럼 터미널에서 빈 Hono 앱을 만듭니다.</p>
+<p>참고로 cloudflare pages를 선택합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">bunx create-hono bun-oauth-kakao-login-test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제, src 폴더의 index.tsx 파일을 수정해서 카카오 로그인 라우팅을 작성해야 합니다.</p>
+<p>예전처럼 먼저, &ldquo;login&rdquo; 라우팅을 작성합시다.</p>
+<p>카카오 로그인의 OAuth authorize 서버는 아래 그림에 나와있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj95OQBbmR0nuL-gN389wj4kWf_qQMJlQxOLb1dSHmopUihdzpsrIZKl2X5mhu1Dj1_l2OYVy3kefl9fw1SZXi3RSCbzUjKvlOTVJN3Hg9aMXFBYdknmioxgR9nezutlDlFJITUwCUA6lcERtLr-qa6zpWu7wfEU0AduQue7y6C5fvE19KJy45QPIWKaro"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">generateState</span><span class="p">(</span><span class="nx">length</span>: <span class="kt">number</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">charset</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">state</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">randomIndex</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">charset</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">state</span> <span class="o">+=</span> <span class="nx">charset</span><span class="p">[</span><span class="nx">randomIndex</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// &#34;클라이언트 등록&#34;에서 취득한 값을 변수에 설정합니다
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">CLIENT_ID</span> <span class="o">=</span> <span class="s2">&#34;8a5b~~~~~~~~~~~~~~~~~~f7e969&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">CLIENT_SECRET</span> <span class="o">=</span> <span class="s2">&#34;q~~~~~~~~~~~~~~~~~~rtIw94qF9&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">REDIRECT_URI</span> <span class="o">=</span> <span class="s2">&#34;http://localhost:5173/callback&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">STATE</span> <span class="o">=</span> <span class="nx">generateState</span><span class="p">(</span><span class="mi">16</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">AUTH_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://kauth.kakao.com/oauth/authorize&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_secret</span>: <span class="kt">CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">response_type</span><span class="o">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirect_uri</span>: <span class="kt">REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">state</span>: <span class="kt">STATE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">AUTH_ENDPOINT</span><span class="si">}</span><span class="sb">?</span><span class="si">${</span><span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보면 state에 들어갈 값을 얻기 위해 지난 시간에 작성했던 코드를 그대로 가져왔습니다.</p>
+<p>그리고 카카오 로그인 authorize 주소에 우리가 얻은 ClIENT_ID, CLIENT_SECRET를 넣어 redirect 시킵니다.</p>
+<p>이러면 카카오 로그인하라는 화면이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjXXL8NJPZD10heZ39KN53Sj2gSiIVKXAO0GY7v6ugGZTGDhBkpLxTIFEdVuMLUcS8U9JviE7M3ROCATA9gvm9EBqEJ8Kg7LHqjqTXx5rKigPxSFa0A8LHVPh0WFNCQarRjQL4_6YyLv5QRTHH8GdXATR6wkl9k6kPmpsEWQigUBYbzK72ga_BGUGNsN04"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 동의항목에서 설정했던 &ldquo;프로필 사진, 닉네임&rdquo; 부분을 동의하라고 나옵니다.</p>
+<p>동의하고 계속하기 버튼을 누르면 브라우저는 다음과 같이 나올겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjUV2iUYj_zJHrKdPLVt7DGqMEvpcXwQC796kRPAJTOyGK3mBE0gWzZfNWWRV8Lfnt_VjmlybyjFajQEzcmkPCDrIZC3tef0T3HvxKk_yesj0SXZBcUW4kVMdE46VgOlW03VH-i82A5LWhbHg6ombUxxr6h7cr8-p1cvR4NyG9NnLt2rMQSjDtwYlXOSLY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 에러는 구글, 네이버 아이디 로그인할 때와 같은 방식이기 때문에 나오는 겁니다.</p>
+<p>바로 &ldquo;callback&rdquo; 라우팅을 만들어줘야 합니다.</p>
+<p>다시 한번 상기시키지만 우리가 카카오에서 설정한 Redirec URI가 &lsquo;http://localhost:5173/callback&rsquo; 주소이기 때문입니다.</p>
+<p>왜 이 콜백 라우팅이 필요하냐면, 카카오 아이디로 로그인한 결과 그 결과값을 &lsquo;code&rsquo;라는 쿼리 파라미터에 저장해서 콜백 URI로 넘겨주기 때문입니다.</p>
+<p>우리는 이 콜백 라우팅 주소에서 해줘야할게 바로 &lsquo;code&rsquo; 값을 이용해서 액세스 토큰을 얻어야 합니다.</p>
+<p>카카오 로그인을 성공했으니 카카오 서비스에 접근가능한 액세스 토큰을 얻어 카카오 프로필도 얻고 다른 서비스도 사용하고 그러는 겁니다.</p>
+<hr>
+<p>이제 다시 Hono 웹 프레임워크로 &ldquo;callback&rdquo; 라우팅을 처리해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">TokenResponse</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">access_token</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expires_in</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">token_type</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">scope</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refresh_token?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">UserInfo</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">nickname</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">profile_image</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">thumbnail_image</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/callback&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">TOKEN_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://kauth.kakao.com/oauth/token&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;code&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;state&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;Authorization code not found&#34;</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">grant_type</span><span class="o">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">code</span>: <span class="kt">code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirect_uri</span>: <span class="kt">REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">state</span>: <span class="kt">state</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">response</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">TOKEN_ENDPOINT</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/x-www-form-urlencoded&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">body</span>: <span class="kt">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">errorResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">data</span>: <span class="kt">TokenResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">access_token</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">access_token</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`ACCESS_TOKEN is : </span><span class="si">${</span><span class="nx">access_token</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">userInfoResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;https://kapi.kakao.com/v2/user/me&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">access_token</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">errorResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">userInfoResponseJSON</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">userInfo</span>: <span class="kt">UserInfo</span> <span class="o">=</span> <span class="nx">userInfoResponseJSON</span><span class="p">.</span><span class="nx">properties</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userInfo</span><span class="p">);</span> <span class="c1">// 사용자 정보 출력
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 세션 쿠키 설정
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">sessionCookie</span> <span class="o">=</span> <span class="nx">Buffer</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">userInfo</span><span class="p">)).</span><span class="nx">toString</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;base64&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;session&#34;</span><span class="p">,</span> <span class="nx">sessionCookie</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span><span class="p">,</span> <span class="c1">// 1 day
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&#34;An error occurred during token exchange&#34;</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;callback&rsquo; 라우팅의 전체 코드입니다.</p>
+<p>구글 아이디와 네이버 아이디로 로그인하기 강좌에서 했던 내용 그대로입니다.</p>
+<p>TOKEN_ENDPOINT 에서 액세스 토큰을 얻고, 이렇게 얻은 액세스 토큰을 이용해서 <code>v2/user/me</code>란 카카오 서비스를 이용해서 유저 정보를 얻어오는 겁니다.</p>
+<p>실제로 userInfoResponseJSON을 콘솔 로그해보면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiFW_MKVSmbLJP8FXMqNnEzaXBqNpoweRIKO3brYdhCmYfA-oO2qVu0rJx1KsZ0hDE-xxW0eN7Orf2TDFqeP9I9wDprOSFLFEWmXC1QjiPfGAKgalby50f0f9vwMrd7CzwzFH7CG4MF_8gfPldRXa2n09lIQt1wtqvXUgph1N1r49cBjArYM5UCZIXFc8A"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기서 우리가 필요한건 properties 항목만 있으면 될거 같네요.</p>
+<p>이렇게 얻은 유저정보를 쿠키로 저장했습니다.</p>
+<p>그리고 다시 &ldquo;/&rdquo; 루트 라우팅으로 이동시킵니다.</p>
+<hr>
+<p>카카오 로그아웃을 구현해 보겠습니다.</p>
+<p>카카오 로그아웃도 API로 제공해 줍니다.</p>
+<p>이 서비스를 이용하기 위해서는 &ldquo;Logout Redirect URI&quot;를 등록해야 합니다.</p>
+<p>먼저, 카카오 디벨로퍼 대시보드에서 햄버거 버튼을 누른다음 &ldquo;고급&quot;을 클릭하면 아래 그림과 같이 &ldquo;Logout Redirect URI&quot;를 설정하는 화면이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj02AFLXV7QYGlgEBtSi6WW_5u9Wdro6eMPoxsDMWYekym1oqp84dj-IM-euV-5XUhd_7bClJwjdxYyrCKdOnRXW2JL3O1Hdguj96DlIm5oJQ4hcHccMF9TgIBZbmm-XOUzCyJIV6N4vIWtIyoxlafz9a6jr4PbjLAh5XzZKlprsirjJ6xoGZdlm5SLtIA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>아래 그림과 같이 설정하면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEirRY9xpoArB7owLFND0Zi9AciI3OKdbTEbSXLnyc260NsCnGXG7bn7_VrVZEm5kmBHDrIoQSY6FbnWkLS7ElZV1kEjUpAZeAO_1Lsr9pvT1qixcymO5kyuWgu_65yqWoa2hLs__fa131O_tw7let_m40syXWp1j-iEw1Pv-6-PJ6TLpi7iCL7BKcXwFjo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제, 로그아웃도 구현해야 하는데요.</p>
+<p>먼저, 루트 라우팅 &ldquo;/&ldquo;에 로그아웃 버튼을 추가하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">logout_redirect_uri</span><span class="o">:</span> <span class="s2">&#34;http://localhost:5173/logout&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">logout_url</span> <span class="o">=</span> <span class="sb">`https://kauth.kakao.com/oauth/logout?</span><span class="si">${</span><span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">params</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;session&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">userInfo</span>: <span class="kt">UserInfo</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Buffer</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="s2">&#34;base64&#34;</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// return c.json({ message: &#34;Logged in&#34;, user: userInfo });
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">welcome</span> <span class="o">:</span> <span class="p">{</span><span class="nx">userInfo</span><span class="p">.</span><span class="nx">nickname</span><span class="p">}&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">img</span> <span class="na">height</span><span class="o">=</span><span class="s">&#34;80&#34;</span> <span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">userInfo</span><span class="p">.</span><span class="nx">profile_image</span><span class="p">}</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="p">{</span><span class="nx">logout_url</span><span class="p">}&gt;</span><span class="nx">logout</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Hono</span> <span class="nx">Kakao</span> <span class="nx">Login</span> <span class="nx">Test</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">margin</span><span class="o">:</span> <span class="s2">&#34;30px&#34;</span> <span class="p">}}</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">login</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="p">{</span><span class="nx">logout_url</span><span class="p">}&gt;</span><span class="nx">logout</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 아래 그림과 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhPBIFprmqGWQjnLs7jUw1XVHyZc6X1875O6nW6NygJLcZLygTuCl4eqJrH1w5nPDnFOvyYupEIB_8_X_WRz_RCQjqOH73WIeS3_nHFOKoosFn_NiKw7JzN2PzgcgBYiuWs33Y-simN1blK0gmdjVO-JttHmlVqxAqHZliGj78C1fc_g0Ft2_xGryzxey8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 로그인 링크, 로그아웃 링크가 보입니다.</p>
+<p>로그인했다면 아래와 같이 보이는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiveonsPAPN6FR3na1sTJqMEx3T-ONgwLBHwmGqHvFzJaj7sm-RjBZmCeUUdnczi2MuZsMHVWAmfjoAqN281zoecnvFCJOFVcJkGets0XjUjQ3js62BKhlqDRVAji2aQOiO1M3zA61ouV7qf5m7xHHMp3JkWYNzKD-kBy1rrgwSXqADwsy887k37WpRrXw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>제 닉네임과 프로필 사진이 보입니다.</p>
+<p>이제 로그아웃 링크를 눌러 로그아웃 해볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhWCfjOljhQocros619I7O-uIHl6DXuVXm5lFpI9jPcKjJK7O7CPqo-nGl5EFJorkCxsqPfFdez-Q1H7PkdDMnA4lQXn_tuHBtSUMDuIj-NNJnutMc9uyS4k565pdQdeWgfRC5j3f3Sm9kbAqjdwGE74MS5cU-A7XpvPKyGtm1PgtTV7zCvMW_v9eUB2IM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 두가지 로그아웃 방식을 제공해 줍니다.</p>
+<p>하나는 &ldquo;이 서비스만 로그아웃&rdquo;, 다른 하나는 &ldquo;카카오계정과 함께 로그아웃&quot;입니다.</p>
+<p>글로만 봐도 쉽게 이해할 수 있는 버튼입니다.</p>
+<p>&ldquo;카카오계정과 함께 로그아웃&quot;이면 카카오로그인 상태가 없어집니다.</p>
+<p>&ldquo;이 서비스만 로그아웃&quot;을 누르면 카카오로그인은 그대로 유지가 됩니다.</p>
+<p>먼저, &ldquo;이 서비스만 로그아웃&quot;을 눌러 로그아웃을 하게되면 에러가 뜨는데요.</p>
+<p>카카오 로그아웃 콜백 URI 부분이 없기 때문입니다.</p>
+<p>Hono에서 이 부분도 라우팅을 제공해 줘야 합니다.</p>
+<p>테스트를 위해 아래와 같이 간단하게 작성했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/logout&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">deleteCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;session&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">logout</span> <span class="nx">completed</span> <span class="nx">and</span> <span class="nx">cookie</span> <span class="nx">deleted</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/&#34;</span><span class="p">&gt;</span><span class="nx">go</span> <span class="nx">to</span> <span class="nx">home</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 우리가 login 했을 때 만든 쿠키를 삭제해서 로그인 상태를 없애주면 됩니다.</p>
+<p>&ldquo;카카오계정과 함께 로그아웃&quot;도 눌러보시면 그 차이를 이해할 수 있을 겁니다.</p>
+<p>이렇게 카카오 아이디로 로그인하기도 구현이 끝났네요.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/kakao-id-login/" role="button">Kakao ID Login</a>
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">Cloudflare</a>
+        <a class="btn btn-light" href="/tags/hono/" role="button">Hono</a>
+        <a class="btn btn-light" href="/tags/oauth/" role="button">OAuth</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login/">Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</a></h2>
+                  <p>Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-24-cloudflare-hono-oauth-naver-login/">Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</a></h2>
+                  <p>Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</p>
+                  <p>
+  <small>July 24, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login/">네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth</a></h2>
+                  <p>Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 4, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기</title>
+<meta name="description" content="Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-12-29-ssr-login-with-react-router-and-supabase/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기" />
+<meta property="og:description" content="Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-12-29-ssr-login-with-react-router-and-supabase/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-12-29T08:11:39Z" />
+<meta property="article:modified_time" content="2024-12-29T08:11:39Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="react router" />
+<meta property="article:tag" content="react router v7" />
+<meta property="article:tag" content="auth" />
+<meta property="article:tag" content="login" />
+<meta property="article:tag" content="ssr" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기" />
+<meta name="twitter:description" content="Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기\"",
+  "description": "\"Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다.\"",
+  "datePublished": "\"2024-12-29T08:11:39Z\"",
+  "dateModified": "\"2024-12-29T08:11:39Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-12-29-ssr-login-with-react-router-and-supabase/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기</h1>
+        <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>** 목 차 **</p>
+<ul>
+<li><a href="#react-router-v7%ec%97%90%ec%84%9c-%ec%84%9c%eb%b2%84%ec%82%ac%ec%9d%b4%eb%93%9c-%eb%a0%8c%eb%8d%94%eb%a7%81ssr-%eb%b0%a9%ec%8b%9d%ec%9c%bc%eb%a1%9c-%ec%99%84%eb%b2%bd%ed%95%98%ea%b2%8c-supabase-%eb%a1%9c%ea%b7%b8%ec%9d%b8-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기</a>
+<ul>
+<li><a href="#react-router-v7%ea%b3%bc-supabase%ec%9d%98-%eb%a1%9c%ea%b7%b8%ec%9d%b8%ec%9d%84-ssr%eb%a1%9c-%ea%b5%ac%ed%98%84%ed%95%98%eb%8a%94-%ed%95%b5%ec%8b%ac-%eb%a1%9c%ec%a7%81%ec%9d%80">React Router V7과 Supabase의 로그인을 SSR로 구현하는 핵심 로직은?</a></li>
+<li><a href="#%ec%bf%a0%ed%82%a4-%ec%84%b8%ec%85%98-%eb%a7%8c%eb%93%a4%ea%b8%b0">쿠키 세션 만들기</a></li>
+<li><a href="#login-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">Login 구현하기</a></li>
+<li><a href="#%ec%bf%a0%ed%82%a4%ec%9d%98-%ed%86%a0%ed%81%b0%ec%9d%84-%ec%9d%b4%ec%9a%a9%ed%95%b4%ec%84%9c-%ec%9c%a0%ec%a0%80-%ec%a0%95%eb%b3%b4-%ec%95%8c%ec%95%84%eb%b3%b4%ea%b8%b0">쿠키의 토큰을 이용해서 유저 정보 알아보기</a></li>
+<li><a href="#%eb%a1%9c%ea%b7%b8%ec%95%84%ec%9b%83-%eb%a1%9c%ec%a7%81-%ec%88%98%ec%a0%95%ed%95%98%ea%b8%b0">로그아웃 로직 수정하기</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>안녕하세요?</p>
+<p>React Router V7 관련 강좌 네 번째 글입니다.</p>
+<p>지난 시간에 Supabase로 SSR 방식 즉, 서버 사이드 렌더링 방식의 Auth 구현을 했었는데요.</p>
+<p>가입하기는 서버 사이드 렌더링 방식인데, 로그인 부분은 클라이언트 사이드 방식으로 진행했었는데요.</p>
+<p>오늘은 로그인 부분도 서버 사이드 렌더링 방식으로 구현해 보겠습니다.</p>
+<p>참고로, 이 글을 읽기 전에 지난 시간의 글들도 한 번 읽어 보시는 걸 추천 드립니다.</p>
+<ul>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-12-25-tutorial-react-router-v-7-user-auth">React Router V7 유저 Auth(로그인) 구현하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db">React Router V7과 Cloudflare Pages 그리고 D1 Database 사용</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-12-28-react-router-v-7-supabase-user-auth-login-signup-logout">React Router V7과 Supabase로 유저 가입, 로그인, 로그아웃(Auth) 구현하기</a></p>
+</li>
+</ul>
+<hr>
+<h2 id="react-router-v7과-supabase의-로그인을-ssr로-구현하는-핵심-로직은">React Router V7과 Supabase의 로그인을 SSR로 구현하는 핵심 로직은?</h2>
+<p>React Router V7과 Supabase의 로그인을 SSR로 구현하는 핵심 로직은 바로 토큰인데요.</p>
+<p>sbServerClient.auth.signInWithPassword 함수로 로그인을 시도하고 완료되면, data와 error를 디스트럭처링해서 얻을 수 있습니다.</p>
+<p>data에는 세션정보와 user 정보를 함께 포함하고 있는데요.</p>
+<p>아래와 같은 형식입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  access_token: <span class="s1">&#39;eyJhbGciOiJIUzI1NiIsImtpZCI6Ik5XR2VKYmJueEdLZGhpYWkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xyaWNndHF0Y2hhaXprdXdibXp3LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIzY2VlNzRlMC1hZjk1LTRmMmMtYTlhYi02ZjVjMzgyOGQ4NTQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzM1NDYxMzM1LCJpYXQiOjE3MzU0NTc3MzUsImVtYWlsIjoiYWRtaW5AbXljb2RpbmdzLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWwiOiJhZG1pbkBteWNvZGluZ3MuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiM2NlZTc0ZTAtYWY5NS00ZjJjLWE5YWItNmY1YzM4MjhkODU0In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3MzU0NTc3MzV9XSwic2Vzc2lvbl9pZCI6IjY1NmY4MTVlLTBlZGItNGVhNC1iOTVhLWJhOTk1NDVkZTkwNyIsImlzX2Fub255bW91cyI6ZmFsc2V9.YxOfLe88GdBHR0EPitgbtT5p0Wzc_gXSkrDGw-xUkNc&#39;</span>,
+</span></span><span class="line"><span class="cl">  token_type: <span class="s1">&#39;bearer&#39;</span>,
+</span></span><span class="line"><span class="cl">  expires_in: 3600,
+</span></span><span class="line"><span class="cl">  expires_at: 1735461335,
+</span></span><span class="line"><span class="cl">  refresh_token: <span class="s1">&#39;h_e55i2s1BNfo4bohwPUPQ&#39;</span>,
+</span></span><span class="line"><span class="cl">  user: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    id: <span class="s1">&#39;3cee74e0-af95-4f2c-a9ab-6f5c3828d854&#39;</span>,
+</span></span><span class="line"><span class="cl">    aud: <span class="s1">&#39;authenticated&#39;</span>,
+</span></span><span class="line"><span class="cl">    role: <span class="s1">&#39;authenticated&#39;</span>,
+</span></span><span class="line"><span class="cl">    email: <span class="s1">&#39;admin@mycodings.com&#39;</span>,
+</span></span><span class="line"><span class="cl">    email_confirmed_at: <span class="s1">&#39;2024-12-28T06:37:00.3031Z&#39;</span>,
+</span></span><span class="line"><span class="cl">    phone: <span class="s1">&#39;&#39;</span>,
+</span></span><span class="line"><span class="cl">    confirmed_at: <span class="s1">&#39;2024-12-28T06:37:00.3031Z&#39;</span>,
+</span></span><span class="line"><span class="cl">    last_sign_in_at: <span class="s1">&#39;2024-12-29T07:35:35.248673738Z&#39;</span>,
+</span></span><span class="line"><span class="cl">    app_metadata: <span class="o">{</span> provider: <span class="s1">&#39;email&#39;</span>, providers: <span class="o">[</span>Array<span class="o">]</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    user_metadata: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      email: <span class="s1">&#39;admin@mycodings.com&#39;</span>,
+</span></span><span class="line"><span class="cl">      email_verified: true,
+</span></span><span class="line"><span class="cl">      phone_verified: false,
+</span></span><span class="line"><span class="cl">      sub: <span class="s1">&#39;3cee74e0-af95-4f2c-a9ab-6f5c3828d854&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    identities: <span class="o">[</span> <span class="o">[</span>Object<span class="o">]</span> <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">    created_at: <span class="s1">&#39;2024-12-28T06:37:00.287774Z&#39;</span>,
+</span></span><span class="line"><span class="cl">    updated_at: <span class="s1">&#39;2024-12-29T07:35:35.251357Z&#39;</span>,
+</span></span><span class="line"><span class="cl">    is_anonymous: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>HTTP의 리퀘스트는 Stateless 상태이기 때문에 우리가 매번 로그인 여부를 체크하기 위해서는 위에서처럼 access_token과 refresh_token이 필요합니다.</p>
+<p>이 access_token을 이용해서 현재 로그인된 유저 정보를 가져올 수 있거든요.</p>
+<p>아래 함수는 Supabase에서 제공해 주는 getUser 함수인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="k">await</span> <span class="nx">sbServerClient</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">getUser</span><span class="p">(</span><span class="nx">access_token</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 getUser 함수는 access_token 이라는 인자를 옵셔널로 받습니다.</p>
+<p>현재 로그인한 상태에서 다른 곳으로 HTTP 리퀘스트가 안 갔다는 전제하에서는 access_token이 필요 없지만, 보통은 로그인하면 홈 라우팅으로 이동하게 됩니다.</p>
+<p>이때 홈 라우팅으로 이동하게 되면 이 access_token이 사라져 버리게 되는 문제가 발생하죠.</p>
+<p>그래서 Supabase로 SSR 방식으로 로그인을 유지하기 위해서는 토큰(Token) 정보를 로컬의 쿠키에 저장해 놓고, 매번 HTTP 리퀘스트(Request)가 일어났을 때, 즉 새로운 라우팅으로 이동했을 경우 쿠키에서 토큰(Token) 정보를 얻어서 해당 access_token으로 getUser(access_token) 함수를 실행시키면 로그인 여부를 쉽게 알 수 있는 거죠.</p>
+<p>지금까지가 제가 구현한 Supabase의 서버 사이드 로그인 구현 로직이었습니다.</p>
+<p>이제 실제로 구현해 보겠습니다.</p>
+<hr>
+<h2 id="쿠키-세션-만들기">쿠키 세션 만들기</h2>
+<p>React Router V7 강좌 첫 번째에는 쿠키 세션을 만드는 강좌가 있는데요.</p>
+<p>이걸 그대로 이용하겠습니다.</p>
+<p>session.server.ts 파일이 있었는데요.</p>
+<p>아래와 같이 일부 수정하겠습니다.</p>
+<p>참고로, 지난 시간에는 환경 변수를 <code>process.env</code> 방식으로 접근했었는데 제가 잘못했던 거였습니다.</p>
+<p>Vite Dev 서버이기 때문에 아래처럼 <code>import.meta.env</code> 방식으로 접근해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createCookieSessionStorage</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">mySupabaseSessionStorage</span> <span class="o">=</span> <span class="nx">createCookieSessionStorage</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookie</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;__my__supabase__session__&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secrets</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;my_secret_with_supabase_session_storage&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">import.meta.env.MODE</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="p">{</span> <span class="nx">commitSession</span><span class="p">,</span> <span class="nx">destroySession</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">mySupabaseSessionStorage</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">SESSION_KEY</span> <span class="o">=</span> <span class="s2">&#34;tokens&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">createUserSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">session_key</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">remember</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">redirectUrl</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span>: <span class="kt">Request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">session_key</span>: <span class="kt">any</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">remember</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">redirectUrl?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserSession</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">session</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="nx">SESSION_KEY</span><span class="p">,</span> <span class="nx">session_key</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="nx">redirectUrl</span> <span class="o">||</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;Set-Cookie&#34;</span><span class="o">:</span> <span class="k">await</span> <span class="nx">mySupabaseSessionStorage</span><span class="p">.</span><span class="nx">commitSession</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">secure</span>: <span class="kt">import.meta.env.MODE</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">maxAge</span>: <span class="kt">remember</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">7</span> <span class="c1">// 7 days
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">getUserSession</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">request</span>: <span class="kt">Request</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">await</span> <span class="nx">mySupabaseSessionStorage</span><span class="p">.</span><span class="nx">getSession</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;Cookie&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">getTokens</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserSession</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="nx">session</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="nx">SESSION_KEY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">tokens</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">logout</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserSession</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;Set-Cookie&#34;</span><span class="o">:</span> <span class="k">await</span> <span class="nx">mySupabaseSessionStorage</span><span class="p">.</span><span class="nx">destroySession</span><span class="p">(</span><span class="nx">session</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드가 길어 읽기 힘든데요.</p>
+<p>mySupabaseSessionStorage라는 걸 React Router가 제공해 주는 createCookieSessionStorage 헬퍼 함수를 이용해서 만듭니다.</p>
+<p>그리고 실제로 세션을 만드는 createUserSession 함수를 잘 보시면, SESSION_KEY를 저장하는 게 보이는데요.</p>
+<p>여기에 토큰(Token) 정보를 저장할 겁니다.</p>
+<p>그리고 이왕 만든 김에 getTokens 이라는 헬퍼 함수도 만들었습니다.</p>
+<p>getTokens 함수는 getUserSession 에서 session 값을 가지고 오고 그 session 에 저장되어있는 SESSION_KEY를 읽어오는 겁니다.</p>
+<p>그게 바로 토큰(Token) 정보인 겁니다.</p>
+<p>logout 함수도 예전에 만들어 놨던 함수 그대로입니다.</p>
+<hr>
+<h2 id="login-구현하기">Login 구현하기</h2>
+<p>지난 강좌의 Login에서는 doLogin 이라는 클라이언트 사이드에서의 함수로 로그인을 구현했는데요.</p>
+<p>이번 시간에는 SSR 방식으로 구현할 겁니다.</p>
+<p>그래서 UI 쪽에서 onSubmit 핸들러를 삭제시킵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">Form</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;mt-6&#34;</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 Form이 submit 되면 Reqeust(리퀘스트)가 다시 해당 &ldquo;/login&rdquo; 라우팅으로 가고 React Router에서는 Post 메서드로 왔기 때문에 action 함수가 처리할 겁니다.</p>
+<p>그래서 action 함수를 아래와 같이 복잡하게 만들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">action</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">ActionArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">response</span>: <span class="kt">Response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">dataFields</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">fromEntries</span><span class="p">(</span><span class="nx">formData</span><span class="p">.</span><span class="nx">entries</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">sbServerClient</span> <span class="o">=</span> <span class="nx">getServerClient</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">sbServerClient</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signInWithPassword</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span>: <span class="kt">dataFields.email</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span>: <span class="kt">dataFields.password</span> <span class="kr">as</span> <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span>: <span class="kt">error.message</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">access_token</span>: <span class="kt">data?.session.access_token</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">token_type</span>: <span class="kt">data?.session.token_type</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">expires_in</span>: <span class="kt">data?.session.expires_in</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">expires_at</span>: <span class="kt">data?.session.expires_at</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refresh_token</span>: <span class="kt">data?.session.refresh_token</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 세션 만들기
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createUserSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">session_key</span>: <span class="kt">tokens</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">remember</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;An error occurred while creating the session!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nb">Error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span>: <span class="kt">error.message</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;An unknown error occured!&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">throw</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드는 예전에 createUserSession 함수로 세션 정보를 저장할 때 사용했던 코드에서 토큰(Token) 정보를 저장하게끔 수정한 코드입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createUserSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">session_key</span>: <span class="kt">tokens</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">remember</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서처럼 session_key를 tokens로 저장하면 로컬의 쿠키에는 토큰 정보가 저장되게 됩니다.</p>
+<p>자, 이제 로그인이 됐으니까 홈(&quot;/&quot;) 라우팅으로 가서 로그인 여부를 체크하는 로직을 만들어 봅시다.</p>
+<hr>
+<h2 id="쿠키의-토큰을-이용해서-유저-정보-알아보기">쿠키의 토큰을 이용해서 유저 정보 알아보기</h2>
+<p>로컬 상의 쿠키에 토큰 정보를 저장했기 때문에 이 토큰 정보를 이용해서 아까 설명했듯이 Supabase의 getUser(access_token) 함수를 이용해서 access_token만 있으면 유저 정보를 쉽게 얻을 수 있습니다.</p>
+<p>그러면 여기서 의문점이 생기는데요.</p>
+<p>로그인했을 경우 처음부터 로컬상의 쿠키에 토큰 정보하고 유저 정보를 같이 저장하지 왜 토큰 정보만 저장하는지 궁금하실 거 같은데요.</p>
+<p>맞습니다. 두 개 다 저장해도 됩니다.</p>
+<p>그런데 저는 토큰 정보만 저장했는데요.</p>
+<p>왜냐하면, 토큰과 유저정보의 데이터 크기가 너무 컸고,
+두 번째, 로컬상의 쿠키에 있던 세션 정보와 Supabase 서버상에 있는 세션 정보를 나중에 middleware 형식으로 체크하는 코드를 만들고 싶어서 일단은 토큰 정보만 저장했습니다.</p>
+<p>실제로 로컬상의 쿠키에 토큰 정보와 함께 유저이메일 같은 몇 가지 정보만 같이 저장하고 사용해도 크게 문제가 없습니다.</p>
+<p>그렇게 하려면 login 컴포넌트의 action 함수에서 session_key 부분에 원하는 정보를 저장하고 나중에 불러서 사용하면 충분합니다.</p>
+<p>일단 저는 테스트를 위해 토큰 정보만 쿠키에 저장했습니다.</p>
+<p>index.tsx 파일에서는 유저의 로그인 정보에 따라 login 라우팅으로 갈지 유저 정보를 보여줄지 정해야 하는데요.</p>
+<p>그래서 loader 함수를 아래와 같이 재작성합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getUser</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;~/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span> <span class="nx">user</span>: <span class="kt">user</span> <span class="o">||</span> <span class="kc">null</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>뭔가 간단한 코드로 작성했는데요.</p>
+<p>핵심은 getUser라는 직접 만든 함수를 실제로 구현해야 한다는 겁니다.</p>
+<p>예전에 만들었던 server.ts 파일에서 아래와 같이 getUser 함수를 구현합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getTokens</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">tokens</span><span class="p">)</span> <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">sbServerClient</span> <span class="o">=</span> <span class="nx">getServerClient</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">currentTime</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">currentTime</span> <span class="o">&gt;=</span> <span class="nx">tokens</span><span class="p">.</span><span class="nx">expires_at</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">sbServerClient</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">refreshSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">refresh_token</span>: <span class="kt">tokens.refresh_token</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">sbServerClient</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">getUser</span><span class="p">(</span><span class="nx">tokens</span><span class="p">.</span><span class="nx">access_token</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">user</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기 getUser 함수는 해당 리퀘스트(Request) 정보만 있으면 유저 정보를 얻을 수 있는데요.</p>
+<p>해당 request로 getTokens 함수로 토큰 정보를 얻어오고, 만약 토큰 정보가 없다면 유저가 로그인하지 않았다는 걸 의미하기 때문에 null을 리턴하고 끝냅니다.</p>
+<p>만약 토큰 정보가 있다면 다음 코드를 수행하는데요.</p>
+<p>토큰이 만료가 되었다면 Supabase의 refreshSession 함수를 이용해서 세션을 리프레시해주고 있습니다.</p>
+<p>refreshSession을 하면 다시 data 값에 토큰값과 user 값을 얻어 올 수 있습니다.</p>
+<p>그리고 만약 토큰이 만료되지 않았다면 마지막에 있는 else 문에 의해 단순하게 getUser 함수를 access_token 정보를 이용해서 접근하고 있습니다.</p>
+<p>이렇게 얻어온 user 정보를 return 하면 됩니다.</p>
+<p>이 방식은 모든 라우팅에서 유저 로그인 여부를 아주 쉽게 확인할 수 있게 하는 아주 짧은 코드입니다.</p>
+<p>signup.tsx 파일에서도 아래와 같이 loader 함수를 수정해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/home&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>가입하기 라우팅에서 유저가 로그인 상태로는 더 이상 가입할 필요가 없으니 home 라우팅으로 이동하는 게 당연하기 때문입니다.</p>
+<p>또한 login.tsx 파일에서도 loader 함수를 아래와 같이 바꿔 주면됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUser</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/home&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>로그인을 중복으로 할 필요가 없기 때문입니다.</p>
+<hr>
+<h2 id="로그아웃-로직-수정하기">로그아웃 로직 수정하기</h2>
+<p>이제 logout.tsx 파일을 조금 수정해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/login&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">logout</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;~/session.server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getServerClient</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;~/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">meta</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">MetaArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[{</span> <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;Login&#34;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;description&#34;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s2">&#34;Login Page!&#34;</span> <span class="p">}];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">action</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">ActionArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">sbServerClient</span> <span class="o">=</span> <span class="nx">getServerClient</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="nx">sbServerClient</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signOut</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">logout</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;Failed to logout!&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리가 session.server.ts 파일에서 만든 logout 함수는 destroySession 함수를 이용해서 쿠키를 지우는 함수입니다.</p>
+<p>이 함수전에 Supabase의 로그아웃 함수는 signOut() 함수를 한번 실행해 주면 끝입니다.</p>
+<hr>
+<p>지금까지 Supabase와 React Router V7의 유저 로그인 부분을 완벽하게 SSR 방식으로 구현해 봤는데요.</p>
+<p>유저정보를 맨 처음에 쿠키상에 저장하는 로직이 트래픽 관리에는 훨씬 더 좋을 거 같네요.</p>
+<p>여러분께서 그렇게 한번 만들어 보시기 바랍니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/react-router/" role="button">react router</a>
+        <a class="btn btn-light" href="/tags/react-router-v7/" role="button">react router v7</a>
+        <a class="btn btn-light" href="/tags/auth/" role="button">auth</a>
+        <a class="btn btn-light" href="/tags/login/" role="button">login</a>
+        <a class="btn btn-light" href="/tags/ssr/" role="button">ssr</a>
+        <a class="btn btn-light" href="/tags/supabase/" role="button">supabase</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-28-react-router-v-7-supabase-user-auth-login-signup-logout/">React Router V7과 Supabase로 유저 가입, 로그인, 로그아웃(Auth) 구현하기</a></h2>
+                  <p>React Router V7와 함께 Supabase의 User Auth 부분 즉, 로그인(로그아웃)을 구현해 보겠습니다.</p>
+                  <p>
+  <small>December 28, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-25-tutorial-react-router-v-7-user-auth/">React Router V7 유저 Auth(로그인) 구현하기</a></h2>
+                  <p>Remix V3인 React Router V7을 이용해서 가장 기본적인 유저 Auth 즉, 로그인(로그아웃)을 구현해 보겠습니다.</p>
+                  <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

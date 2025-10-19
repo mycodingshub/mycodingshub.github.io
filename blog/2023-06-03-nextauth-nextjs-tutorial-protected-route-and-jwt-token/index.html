@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>NextAuth 사용법 4편 - 토큰을 이용한 세션 보호</title>
+<meta name="description" content="NextAuth 사용법 4편 - 토큰을 이용한 세션 보호" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-06-03-nextauth-nextjs-tutorial-protected-route-and-jwt-token/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="NextAuth 사용법 4편 - 토큰을 이용한 세션 보호" />
+<meta property="og:description" content="NextAuth 사용법 4편 - 토큰을 이용한 세션 보호" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-06-03-nextauth-nextjs-tutorial-protected-route-and-jwt-token/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-06-03T05:59:34Z" />
+<meta property="article:modified_time" content="2023-06-03T05:59:34Z" />
+<meta property="article:tag" content="jwt" />
+<meta property="article:tag" content="token" />
+<meta property="article:tag" content="nextauth" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="session" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="NextAuth 사용법 4편 - 토큰을 이용한 세션 보호" />
+<meta name="twitter:description" content="NextAuth 사용법 4편 - 토큰을 이용한 세션 보호" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"NextAuth 사용법 4편 - 토큰을 이용한 세션 보호\"",
+  "description": "\"NextAuth 사용법 4편 - 토큰을 이용한 세션 보호\"",
+  "datePublished": "\"2023-06-03T05:59:34Z\"",
+  "dateModified": "\"2023-06-03T05:59:34Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-06-03-nextauth-nextjs-tutorial-protected-route-and-jwt-token/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>NextAuth 사용법 4편 - 토큰을 이용한 세션 보호</h1>
+        <p>
+  <small>June 3, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>NextAuth 사용법 4편까지 왔습니다.</p>
+<p>이번 시간에는 세션 보안에 대해 알아보겠습니다.</p>
+<p>일단 아래와 같이 유저가 만든 Post를 읽을 수 있는 API를 만들어 보도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/user/[id]/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">GET</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">params</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">params</span><span class="o">:</span> <span class="p">{</span> <span class="nx">id</span><span class="o">:</span> <span class="nx">string</span> <span class="p">}</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">posts</span><span class="o">:</span> <span class="nx">id</span> <span class="p">}))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>app/api 폴더 밑에 user 폴더가 있었죠! 그 밑에 &lsquo;[id]&lsquo;라고 스퀘어 브라켓을 이용한 폴더를 만듭니다.</p>
+<p>그리고 그 밑에는 route.ts 파일을 만들고요.</p>
+<p>이게 바로 Next.js 버전 13에서의 다이내믹 API Route가 되는 겁니다.</p>
+<p>이제 &lsquo;id&rsquo;라는 다이내믹한 변수로 API를 제어할 수 있는 거죠.</p>
+<p>API 호출한 실행 결과를 한번 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhe_I4vVMLW9jPJyLQMfHoQ5fJDz4C2C3xQunEol_hzP065peXLpJ8izj-gZ6GHxfdGfQ869a58VibBhWqYhIPvVrew-mxVsBvocYS1CVFd0VtFSeTRfqmnxiI3cWWzNw9icQBDsfksuywlqerCnG2kpkqwidAWY0HgwmiKT0heUEMCtqBlFPneN8IB"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEif8exoA1LpSW6cpynLRXW1IbC4xRm8TyuqjY-aE-hy7-wmNLgOgJUPkEOtO2JZl-MPLkJ3NElUfFa4CDgdoVLi6yuvdJ1dpg_bKMFtlj6YNz2k9yRWcx56yg8QBvwgtYxru1RZLPbOejTLPbZM6OP0L1fWA2eN5g1bajCNE3mjxZAi9sN84ghT_SfC"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>브라우저난 Insomnia에서나 똑같이 작동합니다.</p>
+<p>여기서 params.id를 Number 타입으로 바꿨는데요.</p>
+<p>왜냐하면 Prisma Model에서 id는 Int 타입이기 때문입니다.</p>
+<p>기본적으로 params.id는 string 타입이라서 꼭 Number 타입으로 변환해 줘야 합니다.</p>
+<p>그럼, 본격적으로 유저가 작성한 Post를 읽어오기 위한 API를 완성해 볼까요?</p>
+<p>일단 Post의 예제가 있어야 하니까, Prisma Studio에서 Post에 몇 가지 글을 수동으로 입력합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjNxSW_K4X_lZWdNnYTuGdZb7DDieFaqBba1Qf7Mkjnm7rT9S2X9NIKVZP84ifHz0yA9ve4ypM7HhwUCdBLmY_WTC5t_zwj70_e8kZjYh2IrfgZuIBmtqkF6AP5Vh3a63xeLs8_CtzCG0awlPDkxZ70Oj4WB_kAvy1LcfPmoam2UP9vYoIaSYczD5Vx"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgz-00VO72SbMHz1hKlpTdFi4ZZOT8Y5tRIFsrkVj-Pl9KLr8ucigBKCCU4Es05HAOwhhKYycI0D585M5VxjUkOXMFXlxZLkn9B4M0rTVkeRmW1C3TQN7IMkPjEU6urEI4KchRPRx7lTPsxEPgg0Sv6UlV2sc3GrEotAvXYAwMXBUH8Fj64SOvc3kcP"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 2개의 데이터를 만들었는데요.</p>
+<p>꼭 User 부분에서 우리가 가입했던 아이디를 꼭 지정하기 바랍니다.</p>
+<p>이제 API 코드를 prisma를 이용해서 다시 작성해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/user/[id]/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">prisma</span> <span class="nx">from</span> <span class="s1">&#39;@/app/lib/prisma&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">GET</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">params</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">params</span><span class="o">:</span> <span class="p">{</span> <span class="nx">id</span><span class="o">:</span> <span class="nx">string</span> <span class="p">}</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">userPosts</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">post</span><span class="p">.</span><span class="nx">findMany</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">where</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">authorId</span><span class="o">:</span> <span class="nx">id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">include</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">author</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">select</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">email</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">name</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">userPosts</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>prisma의 findMany를 이용해서 authorId가 id와 같은 모든 Post를 가져오는 로직입니다.</p>
+<p>결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjW3aQFM2u60kjPnwDd6MhOG5mgiXko4pGdMUfyPJzbgHvSxpzLZF-8fzUz73jaOgIFQMyEuXmZ1ybFiN_5WQszy63YypUqvyUTYke_9AW_s_lDita9L9VRkExybuVS5vhCL6VdBFZXNUDX495ZqTbCjbU_zQPKlYXFQVnEEwVZmkyVGIbhRGGTytdg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>잘 작동되네요.</p>
+<hr>
+<h2 id="api-보안">API 보안</h2>
+<p>그런데 이 API 콜의 주소는 &lsquo;http://localhost:3000/api/user/2&rsquo;인데요.</p>
+<p>NextAuth로 로그인 안 한 상태에서도 이 API를 호출할 수 있습니다.</p>
+<p>로그인도 안 된 사용자가 글 내용을 볼 수 있어 매우 위험한데요.</p>
+<p>NextAuth에서는 이럼 위험한 일을 방지하기 위해 JWT 토큰을 다루는 걸 제공합니다.</p>
+<p>전체적으로 지금까지 만들었던 NextAuth login 로직을 많이 손봐야 하는데요.</p>
+<p>먼저, Login시 리턴되는 user 객체에 JWT Access Token을 함께 리턴 할 겁니다.</p>
+<p>그래서 &lsquo;http://localhost:3000/api/user/2&rsquo; 같은 API도 이 accessToken이 있어야만 호출될 수 있도록 코드를 바꿀 예정입니다.</p>
+<p>그리고, login시 리턴된 accessToken을 NextAuth의 Session에도 함께 저장할 겁니다.</p>
+<p>그래서 로그인된 상태에는 이 accessToken을 계속 이용할 수 있게 만들 겁니다.</p>
+<p>만약 accessToken을 Session에 저장하지 않으면 한 번 로그인한 후에 이 accessToken에 접근할 수 없게 되기 때문이죠.</p>
+<hr>
+<h2 id="accesstoken도-login시-리턴하기">accessToken도 login시 리턴하기</h2>
+<p>먼저, jsonwebtoken 패키지를 설치합니다.</p>
+<p>물론 jsonwebtoken의 types도 설치하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install jsonwebtoken
+</span></span><span class="line"><span class="cl">npm install -D @types/jsonwebtoken</span></span></code></pre></div>
+  </figure>
+</div>
+<p>먼저, 가장 많이 스이는 jwt 관련 함수를 만들어야겠죠.</p>
+<p>lib 폴더에 jwt.ts 파일을 만듭니다.</p>
+<p>JWT 관련해서는 SECRET_KEY를 제공해야 하는데요.</p>
+<p>.env 파일에 SECRET_KEY를 어려운 긴 글자로 채워 넣읍시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">NEXTAUTH_SECRET</span><span class="o">=</span>qerkasjhfkauiqeywrhkasjhfksajfh
+</span></span><span class="line"><span class="cl"><span class="nv">NEXTAUTH_URL</span><span class="o">=</span>http://localhost:3000
+</span></span><span class="line"><span class="cl"><span class="nv">SECRET_KEY</span><span class="o">=</span>dkasdhfjahsdfjhskdfhaksdhfakjs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># This was inserted by `prisma init`:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Environment variables declared in this file are automatically made available to Prisma.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># See the documentation for all the connection string options: https://pris.ly/d/connection-strings</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">DATABASE_URL</span><span class="o">=</span><span class="s2">&#34;file:./dev.db&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 JWT 관련 함수를 만들건대요.</p>
+<p>먼저, jswonwebtoken 패키지로 token을 만드는 함수를 만들 겁니다.</p>
+<p>바로 signJwtAccessToken 함수인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/lib/jwt.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">jwt</span><span class="p">,</span> <span class="p">{</span> <span class="nx">JwtPayload</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;jsonwebtoken&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">SignOption</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expiresIn</span><span class="o">?:</span> <span class="nx">string</span> <span class="o">|</span> <span class="nx">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DEFAULT_SIGN_OPTION</span><span class="o">:</span> <span class="nx">SignOption</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expiresIn</span><span class="o">:</span> <span class="s2">&#34;1h&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">signJwtAccessToken</span><span class="p">(</span><span class="nx">payload</span><span class="o">:</span> <span class="nx">JwtPayload</span><span class="p">,</span> <span class="nx">options</span><span class="o">:</span> <span class="nx">SignOption</span> <span class="o">=</span> <span class="nx">DEFAULT_SIGN_OPTION</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">secret_key</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SECRET_KEY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">token</span> <span class="o">=</span> <span class="nx">jwt</span><span class="p">.</span><span class="nx">sign</span><span class="p">(</span><span class="nx">payload</span><span class="p">,</span> <span class="nx">secret_key</span><span class="o">!</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">token</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>jwt 패키지의 sign 함수를 이용해서 token을 얻어내고 그걸 리턴 하는 함수입니다.</p>
+<p>그리고 두 번째로 나중에 API 콜이 올 때 전달받은 token이 정확한 건지 체크하는 함수가 있어야 하는데요.</p>
+<p>verifyJwt 함수도 만들겠습니다.</p>
+<p>위 코드 밑에 이어서 작성해서 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">verifyJwt</span><span class="p">(</span><span class="nx">token</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">secret_key</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SECRET_KEY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">decoded</span> <span class="o">=</span> <span class="nx">jwt</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="nx">token</span><span class="p">,</span> <span class="nx">secret_key</span><span class="o">!</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">decoded</span> <span class="nx">as</span> <span class="nx">JwtPayload</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>jwt 패키지의 verify 함수를 이용해서 token을 검증하는 함수입니다.</p>
+<p>자, 이제 jwt 헬퍼 함수도 만들었으니 이걸 이용해야겠지요.</p>
+<hr>
+<h2 id="login시-accesstoken-만들기">login시 accessToken 만들기</h2>
+<p>이제 로그인 로직을 다시 열어서 수정해야 하는데요.</p>
+<p>바로 api/login에 있는 로그인 로직에 accessToken을 추가해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/login
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">POST</span><span class="p">(</span><span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="kr">await</span> <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span> <span class="nx">user</span><span class="p">.</span><span class="nx">password</span><span class="p">)))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">password</span><span class="p">,</span> <span class="p">...</span><span class="nx">userWithoutPass</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">user</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">accessToken</span> <span class="o">=</span> <span class="nx">signJwtAccessToken</span><span class="p">(</span><span class="nx">userWithoutPass</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span><span class="nx">userWithoutPass</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">accessToken</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="kc">null</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아까 만들었던 jwt.ts 파일의 signJwtAccessToken 함수를 이용해서 accessToken을 만듭니다.</p>
+<p>그리고 그 accessToken을 포함하는 새로운 result를 만듭니다.</p>
+<p>그리고 최종적으로 그걸 Response로 리턴 합니다.</p>
+<p>Insomnia를 통해 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjrmJNGXg7BXsR4y9eA8hkIMOJlYxvbotYBPmPjqnbOBZQPSca6tPvVPbfRwni7hSrkqr5TNk5mn4uSalr6fp7UR-zbUwufjQCdLSi37w7pglTX8QURNCXryHhbdPJIes8kWSwIJ_jdIFdw-FhpYhkgIzcRua9t5w0F986ObY96Th6O0pNw8FAVspqA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 로그인 후 리턴 되는 user 정보에 accessToken까지 리턴 되게 됩니다.</p>
+<hr>
+<h2 id="nextauthroutets-파일의-authorize-수정하기">[&hellip;nextauth]/route.ts 파일의 authorize 수정하기</h2>
+<p>여기서 더 추가해야 될게 바로 accessToken을 NextAuth의 Session에도 추가해서 관리해야하는데요.</p>
+<p>이렇게 하려면 NextAuth에서는 초기화하는 옵션에서 callbacks 항목을 추가해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/auth/[...nextauth]/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="nx">NextAuth</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">CredentialsProvider</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}],</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">callbacks</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">async</span> <span class="nx">jwt</span><span class="p">({</span> <span class="nx">token</span><span class="p">,</span> <span class="nx">user</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="p">...</span><span class="nx">token</span><span class="p">,</span> <span class="p">...</span><span class="nx">user</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">async</span> <span class="nx">session</span><span class="p">({</span> <span class="nx">session</span><span class="p">,</span> <span class="nx">token</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">session</span><span class="p">.</span><span class="nx">user</span> <span class="o">=</span> <span class="nx">token</span> <span class="nx">as</span> <span class="nx">any</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">session</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>NextAuth에서 callback을 담당하는데요.</p>
+<p>callback은 로그인 폼에서 유저네임과 패스워드를 넣고 제출하기(submit) 버튼을 눌렀을 때, NextAuth의 authorize 함수에서 로그인 로직을 수행하고 나서 마지막으로 실행되는 부분인데요.</p>
+<p>일단 위에서 보시듯이 jwt 함수와 session 함수를 추가했습니다.</p>
+<p>jwt 함수에서 token과 user를 같은 항목으로 만들고 리턴 합니다.</p>
+<p>그러면 jwt가 다시 token을 리턴 하게 되는데 밑에 있는 session 콜백 함수에서 session.user에 그 값을 지정하고 다시 session을 리턴 합니다.</p>
+<p>이렇게 하면 NextAuth에서 사용하는 session에 accessToken이 포함되게 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhMetE-2iNCop5gymLfxxOIKPOKh0cSzBBY_fJw6_AMJUVrjpGuIipciaD5zo8fp3K-PZywqw_MlwATZbBtg723mqei5Uz9ve66ZsgUPFnL6HBkBsoQ4hknWV_MUQ5VhDPI6_UR3mrhnG2g4EHvMF67GiR8ZdHApkl32pj2HXWQg1Z80nVkhdlpefqu"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 authorize 함수에 있는 console.log(user)에 의해 콘솔에 표시된 user값입니다.</p>
+<p>예상했듯이 accessToken이 같이 리턴되고 있습니다.</p>
+<hr>
+<h2 id="sessionuser-의-type-정보-업데이트하기">session.user 의 type 정보 업데이트하기</h2>
+<p>이제 NextAuth의 session.user에는 accessToken이 기본적으로 들어가게 됩니다.</p>
+<p>그런데 VS Code에서 보시면 session.user의 타입에는 accessToken이 없습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiGkRRaFjcBsAlJM1jK-7QIB3HvXmQhB-g90qSDcmsZnEKCImhU6ABFdqTBq4RK5Riwhc2XhRoRt4nMPfCoRiInpRPn1e5nEj8c2nPWWO9rPVqvTMhQqkWPLsY21cnX5RpC0ATdqPN2aQlRgyo7g7p3Op5IXQ9ZRzTpU7B5EOeJtFGAXpCiH1TyVaNx"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 보듯이 정말 없네요.</p>
+<p>이 부분은 NextAuth의 type 형식을 커스터마이징 할 수 있는데요.</p>
+<p>이건 TypeScript의 기능입니다.</p>
+<p>먼저, app폴더와 같은 레벨에 types 폴더를 만들고 그 아래 next-auth.d.ts라는 type 정의 파일을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//types/next-auth.d.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">NextAuth</span> <span class="nx">from</span> <span class="s2">&#34;next-auth&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">declare</span> <span class="nx">module</span> <span class="s2">&#34;next-auth&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">interface</span> <span class="nx">Session</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">user</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">id</span><span class="o">:</span> <span class="nx">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">accessToken</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하면 아래 그림처럼 session.user에 id, accessToken이 추가되게 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgK0r_TKfnvwHbUFpbG3dKqpozbReuHq2eJfUBqTpS5uq31m-3cEnkBAGJ_FkG8l0CmM5U2IsKKVV3hLQTqdZmJU1ucP38lln5-LV4zUZZrJjeBgyn_O5wAWOuITZbQvQZnkb7-Mh3TxvxObRt85FxrkdKofsrE7h5uX6Sh4ch1S1gpfdr74Quae_SP"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>NextAuth의 기본 session 타입을 커스터마이징한 겁니다.</p>
+<hr>
+<h2 id="nextjs-api-호출을-accesstoken을-이용해서-보호하기">Next.js API 호출을 accessToken을 이용해서 보호하기</h2>
+<p>이제 우리가 이 글을 쓰는 이유인 토큰을 이용한 세션 보호하기 단계로 왔습니다.</p>
+<p>우리가 맨 처음 만들었던 api/user/[id]/route.ts 파일의 API GET 호출을 이제 토큰을 검사하는 로직을 추가해서 로그인되지 않은 상태에서는 API가 작동하지 않게 만들 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">verifyJwt</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@/app/lib/jwt&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">prisma</span> <span class="nx">from</span> <span class="s1">&#39;@/app/lib/prisma&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">GET</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">params</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">params</span><span class="o">:</span> <span class="p">{</span> <span class="nx">id</span><span class="o">:</span> <span class="nx">string</span> <span class="p">}</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">accessToken</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;authorization&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">accessToken</span> <span class="o">||</span> <span class="o">!</span><span class="nx">verifyJwt</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s1">&#39;No Authorization&#39;</span> <span class="p">}),</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">status</span><span class="o">:</span> <span class="mi">401</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">userPosts</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">post</span><span class="p">.</span><span class="nx">findMany</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">where</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">authorId</span><span class="o">:</span> <span class="nx">id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">include</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">author</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">select</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">email</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">name</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">userPosts</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>추가된 부분을 보시면 request.headers에서 authorization 부분에서 accessToken을 가져오고,</p>
+<p>그 액세스 토근이 없고 또는 verifyJwt 함수를 통과하지 못하면 401 에러를 보냅니다.</p>
+<p>이제 Insomnia를 통해 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgGatTkAR8V1jQkU-a_ccuzn43E-LJ-bPIzaJX0Yu3IHoOKmKC_TX7cPh5enaMUnY4E_Vg7iWErQlM8utwrTIreLxI8AXvS3ZlnHmiYzfA_IuNAFnqCxtZKRyhqKpPj3OOiVe92dmY8pup8WiYHL_4MIg6wVdCR8zjzA7rZea9p8NqsiWpKsHz5dMke"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>일단 API 테스트에서 headers부분에 &ldquo;authorization&rdquo; 부분을 넣지 않고 API 호출을 해봤습니다.</p>
+<p>역시나 위 그림처럼 error가 뜹니다.</p>
+<p>그럼 authorization을 넣고 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEil1USI2xNTswbkZi1TN9CxIk66Dy_ddkIT3ePhlakJSHvZ2-A1qU1q3YJZOLD5m8-fTBqlFOpC5mwwE4QhaBjqvOpBK5QjvQRwgidXceFaf_0GsNe1blLSLpVBP3u65uTrwGNoRqZZM4Rchn3_FqGmMK8ZVVwrHVdgNwj_dDb1RiECbaqxpxmCHNHS"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 authorization 부분에 일부러 잘못된 토큰을 넣고 해도 위 그림처럼 error가 뜹니다.</p>
+<p>이제 제대로 된 토큰을 넣어 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgNrUpyMdIAcre127fPmpKPo8HOSXE07fuUdBhm1N6nYxHxBmoKosRB9LzWLOPVTTe6gAXRysHEFhBNyje6uvc6YH6aMpsauhCqPZ_hlgGPjEk5k9DYpGbQifn2X6ORkpZ5uxELJJ_AC2cut9TI_jgB6hc821E8hBcLvVSftrEiNjIknGt2MWfhafH4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 토큰을 넣고 API 호출을 하니까 제대로 API가 작동되고 있습니다.</p>
+<p>이제 API 보안에 토큰을 이용한 로직이 완성되었네요</p>
+<hr>
+<h2 id="nextauth와-nextjs-미들웨어middleware를-이용한-페이지-보호하기">NextAuth와 Next.js 미들웨어(middleware)를 이용한 페이지 보호하기</h2>
+<p>지금까지는 Next.js API를 액세스 토큰이란 형식으로 로그인 상태에서는 작동하지 못하게 보호했었는데요.</p>
+<p>이번에는 일반적인 페이지를 미들웨어를 이용해서 아예 로그인하지 않으면 접근하지 못하게 만들어 보겠습니다.</p>
+<p>Next.js에서는 middleware.js(ts) 파일을 제공하는데요.</p>
+<p>app 폴더와 같은 레벨에 middleware.js(ts) 파일을 만들면 됩니다.</p>
+<p>먼저, 제가 작성하고 있는 Next.js의 버전이 13.4.4 버전인데요.</p>
+<p>이 버전이랑 NextAuth에서 middleware 부분이 충돌이 생깁니다.</p>
+<p>그래서 Next.js 버전을 13.4.5 canary 버전으로 업데이트해야 합니다.</p>
+<p>Next.js에서도 이 부분이 충돌된다는 걸 알고 13.4.5 버전에서 버그 수정 중인 거 같습니다.</p>
+<p>일단 npm으로 아래처럼 canary 버전을 설치합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install next@canary</span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi7oI6OY2iLn-GwQMIICBhudP_jQ9DSGhu15fzLNIhr73dTZcoNrMP7xg5xlGJ4tONfrbvssTQd5LZXGHXj-a-lkGYIaeFYF3kbvPmv0Q_K6WP7kQ9oXZ1EDCo-EPk85Vp8vS9R_SyVa963oUqeoVz-VIEdM7NqzPB7vGwSdRrUcuL4aUXls38xUfY5"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 13.4.5 버전이 설치되었네요.</p>
+<p>이제 middleware.ts 파일을 만들어 보겠습니다.</p>
+<p>꼭 app 폴더와 같은 레벨에 만들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span> <span class="k">default</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;next-auth/middleware&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">matcher</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;/userposts/:path*&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>NextAuth에서는 Next.js에 맞는 미들웨어를 제공해 주는데요.</p>
+<p>바로 첫 번째 줄만 적어도 미들웨어가 작동됩니다.</p>
+<p>그리고 두 번째 줄에 있는 config 부분에 matcher 부분을 추가해서 로그인한 상태만 볼 수 있는 페이지를 계속 추가할 수 있습니다.</p>
+<p>위에서 보듯이 userposts 경로 밑으로는 보호된다는 얘기입니다.</p>
+<p>이제 app 폴더 밑에 userposts/page.tsx 파일을 만들고 테스트해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/userposts/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">UserPosts</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex min-h-screen flex-col items-center justify-between p-24&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">UserPosts</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">UserPosts</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 그 경로로 브라우저의 주소를 바꿔 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhYqdkYwGuKoM05ONTBJaXybLgtnvOEF-eZNSoxFOkN9do1rByxSDhalr4AltaAvpKuNYdcwDWXe8Jnm0z6Mcq3x-0dEGh2yEliFGZMJqgIlb3RkdrAGead6SZSPb_03TD03ADpGtk-WkwxNouU6TamVKTZTlWlrSVFzk13aAe_XVdlDeILMIB5cKxv"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 로그인된 상태에서는 userposts 경로가 브라우저에 보입니다.</p>
+<p>그럼 로그아웃하고 접근해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgAppcXwUSf9G_JAEoD7c77DjwcpHsPTqyNKH9U--JZn0beEsx6Kt49ZswobpSnZ8O_rMuahB52jCurlSTtq6NjUgcqPbGyUfz1ehBZWIPMgg_XLpEj6LoTrvJHNgvZJQ4Z8y3F2J96aEOuR4k1s6KyGCtcLiLFELHtXIBtP9VIW2nfIzjrjvkbyDvY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>역시나 로그인 화면으로 이동됩니다.</p>
+<p>이제 middleware.ts 파일에 보호를 원하는 경로를 추가하면 NextAuth가 자동으로 보호해 주게 됩니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/jwt/" role="button">jwt</a>
+        <a class="btn btn-light" href="/tags/token/" role="button">token</a>
+        <a class="btn btn-light" href="/tags/nextauth/" role="button">nextauth</a>
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/session/" role="button">session</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-08-how-to-nextjs-nextauth-naver-login/">NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</a></h2>
+                  <p>NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</p>
+                  <p>
+  <small>June 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>2&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-07-how-to-nextjs-nextauth-with-kakao-login/">NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</a></h2>
+                  <p>NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</p>
+                  <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-07-how-to-nextjs-nextauth-custom-login-page/">NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</a></h2>
+                  <p>NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</p>
+                  <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>TypeScript enum, 아직도 쓰고 계신가요?</title>
+<meta name="description" content="TypeScript 개발자라면 누구나 한번쯤 써봤을 enum. 하지만 왜 많은 전문가들이 enum 사용을 망설이는 걸까요? enum의 숨겨진 문제점부터 가장 확실한 대안인 Object as const 패턴까지, 이제는 알아야 할 모든 것을 알려드립니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-16-typescript-enum-alternatives-deep-dive/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TypeScript enum, 아직도 쓰고 계신가요?" />
+<meta property="og:description" content="TypeScript 개발자라면 누구나 한번쯤 써봤을 enum. 하지만 왜 많은 전문가들이 enum 사용을 망설이는 걸까요? enum의 숨겨진 문제점부터 가장 확실한 대안인 Object as const 패턴까지, 이제는 알아야 할 모든 것을 알려드립니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-16-typescript-enum-alternatives-deep-dive/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-17T05:32:23Z" />
+<meta property="article:modified_time" content="2025-08-17T05:32:23Z" />
+<meta property="article:tag" content="TypeScript" />
+<meta property="article:tag" content="enum" />
+<meta property="article:tag" content="as const" />
+<meta property="article:tag" content="Union Types" />
+<meta property="article:tag" content="타입스크립트" />
+<meta property="article:tag" content="코딩 컨벤션" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TypeScript enum, 아직도 쓰고 계신가요?" />
+<meta name="twitter:description" content="TypeScript 개발자라면 누구나 한번쯤 써봤을 enum. 하지만 왜 많은 전문가들이 enum 사용을 망설이는 걸까요? enum의 숨겨진 문제점부터 가장 확실한 대안인 Object as const 패턴까지, 이제는 알아야 할 모든 것을 알려드립니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"TypeScript enum, 아직도 쓰고 계신가요?\"",
+  "description": "\"TypeScript 개발자라면 누구나 한번쯤 써봤을 enum. 하지만 왜 많은 전문가들이 enum 사용을 망설이는 걸까요? enum의 숨겨진 문제점부터 가장 확실한 대안인 Object as const 패턴까지, 이제는 알아야 할 모든 것을 알려드립니다.\"",
+  "datePublished": "\"2025-08-17T05:32:23Z\"",
+  "dateModified": "\"2025-08-17T05:32:23Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-16-typescript-enum-alternatives-deep-dive/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>TypeScript enum, 아직도 쓰고 계신가요?</h1>
+        <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>TypeScript로 개발하다 보면 &lsquo;상수&rsquo;를 관리해야 할 때가 정말 많은데요.<br /><br />
+그럴 때 우리에게 가장 익숙한 선택지는 바로 &rsquo;enum&rsquo;이죠.<br /><br />
+그런데 커뮤니티를 둘러보면 은근히 <code>enum</code> 사용을 권장하지 않는다는 의견이 꽤 많거든요.<br /><br />
+분명 편해서 잘 쓰고 있었는데, 도대체 왜 다들 <code>enum</code>을 피하라고 하는 걸까요?<br /><br />
+오늘은 <code>enum</code>의 장점부터 시작해서 그 이면에 숨어있는 함정들, 그리고 요즘 개발자들이 <code>enum</code> 대신 무엇을 사용하는지 그 대안까지 속 시원하게 파헤쳐 보겠습니다.<br /><br /></p>
+<h2 id="우리가-enum을-사랑했던-이유">우리가 enum을 사랑했던 이유</h2>
+<p>먼저 <code>enum</code>이 왜 그렇게 매력적이었는지부터 짚고 넘어가야 하는데요.<br /><br />
+<code>enum</code>은 서로 관련된 상수들을 하나의 이름 아래 깔끔하게 묶어주는 아주 훌륭한 방법이죠.<br /><br />
+예를 들어, 함수의 동작 모드를 숫자로 제어해야 하는 상황을 한번 생각해 볼까요?<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 어떤 모드인지 숫자만 봐서는 알기 어렵다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">connect</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드에서 숫자 &lsquo;1&rsquo;이 도대체 뭘 의미하는지 바로 알기 어렵거든요.<br /><br />
+이런 걸 바로 &lsquo;매직 넘버&rsquo;라고 부릅니다.<br /><br />
+이럴 때 <code>enum</code>을 사용하면 코드의 가독성이 마법처럼 좋아지는데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">enum</span> <span class="nx">Mode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Auto</span><span class="p">,</span> <span class="c1">// 0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">UDP</span><span class="p">,</span>  <span class="c1">// 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">TCP</span><span class="p">,</span>  <span class="c1">// 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">connect</span><span class="p">(</span><span class="nx">Mode</span><span class="p">.</span><span class="nx">UDP</span><span class="p">);</span> <span class="c1">// 아, UDP 모드로 연결하는구나!
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 누가 봐도 &lsquo;UDP&rsquo; 모드로 연결한다는 것을 명확히 알 수 있게 됐죠.<br /><br />
+문자열 상수를 다룰 때도 마찬가지인데요.<br /><br />
+오타 하나 때문에 프로그램 전체가 오작동하는 끔찍한 상황을 막아줍니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">enum</span> <span class="nx">Mode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Auto</span> <span class="o">=</span> <span class="s1">&#39;Auto&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">UDP</span> <span class="o">=</span> <span class="s1">&#39;UDP&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">TCP</span> <span class="o">=</span> <span class="s1">&#39;TCP&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 자동완성도 지원되고, 오타가 나면 컴파일러가 바로 알려준다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">connect</span><span class="p">(</span><span class="nx">Mode</span><span class="p">.</span><span class="nx">Auto</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>게다가 <code>enum</code>은 타입으로도 사용할 수 있어서, 정해진 값 이외의 다른 값이 들어오는 걸 원천적으로 차단해주거든요.<br /><br />
+이건 정말 강력한 장점입니다.<br /><br /></p>
+<h2 id="그런데-왜-enum을-쓰지-말라고-할까">그런데 왜 enum을 쓰지 말라고 할까?</h2>
+<p>이렇게나 유용한 <code>enum</code>인데, 어째서 논란의 중심에 서게 된 걸까요?<br /><br />
+여기에는 몇 가지 아주 중요한 이유들이 있습니다.<br /><br /></p>
+<h3 id="1-typescript만의-외로운-표준">1. TypeScript만의 외로운 표준</h3>
+<p>가장 근본적인 비판은 <code>enum</code>이 JavaScript 표준이 아닌, TypeScript에만 있는 독자적인 문법이라는 점인데요.<br /><br />
+TypeScript는 기본적으로 JavaScript의 상위 집합(Superset)이라서, 타입 관련 코드를 제외하면 대부분이 일반 JavaScript로 변환되거든요.<br /><br />
+하지만 <code>enum</code>은 컴파일하고 나면 아주 기묘한 형태의 JavaScript 코드로 바뀌게 됩니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// TypeScript 코드
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">enum</span> <span class="nx">Mode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Auto</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">UDP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">TCP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Mode</span><span class="p">.</span><span class="nx">Auto</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 간단한 <code>enum</code> 코드가 컴파일되면 아래처럼 복잡한 즉시실행함수(IIFE)로 변하는데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 컴파일된 JavaScript 코드
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">Mode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">Mode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Mode</span><span class="p">[</span><span class="nx">Mode</span><span class="p">[</span><span class="s2">&#34;Auto&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;Auto&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Mode</span><span class="p">[</span><span class="nx">Mode</span><span class="p">[</span><span class="s2">&#34;UDP&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;UDP&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Mode</span><span class="p">[</span><span class="nx">Mode</span><span class="p">[</span><span class="s2">&#34;TCP&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;TCP&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})(</span><span class="nx">Mode</span> <span class="o">||</span> <span class="p">(</span><span class="nx">Mode</span> <span class="o">=</span> <span class="p">{}));</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Mode</span><span class="p">.</span><span class="nx">Auto</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이런 코드는 우리 눈에만 이상한 게 아니라, 코드를 최적화하는 &lsquo;번들러&rsquo;에게도 혼란을 주죠.<br /><br /></p>
+<h3 id="2-tree-shaking의-함정">2. Tree-Shaking의 함정</h3>
+<p>바로 위에서 본 복잡한 코드 때문에 발생하는 심각한 문제가 바로 &lsquo;Tree-Shaking&rsquo;이 제대로 동작하지 않는다는 건데요.<br /><br />
+Tree-Shaking은 우리가 실제로 사용하지 않는 코드를 빌드 결과물에서 제거해 파일 크기를 줄여주는 아주 중요한 최적화 기술이거든요.<br /><br />
+하지만 번들러는 <code>enum</code>이 변환된 저 즉시실행함수 코드에 어떤 &lsquo;사이드 이펙트&rsquo;가 있을지 예측할 수 없기 때문에, 설령 <code>enum</code>의 어떤 멤버도 사용하지 않더라도 저 코드를 감히 지우지 못합니다.<br /><br />
+결국 쓰지도 않는 코드가 최종 번들에 포함되어 애플리케이션의 용량을 불필요하게 차지하게 되는 거죠.<br /><br /></p>
+<h3 id="3-구원투수라-믿었던-const-enum의-배신">3. 구원투수라 믿었던 const enum의 배신</h3>
+<br />
+<p>TypeScript 팀도 이 문제를 모르는 건 아니어서, &lsquo;const enum&rsquo;이라는 해결책을 내놓았는데요.<br /><br />
+<code>const enum</code>은 컴파일 시점에 <code>enum</code>을 사용한 부분을 실제 값으로 완전히 대체해버립니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="kr">enum</span> <span class="nx">Mode</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Auto</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">UDP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">TCP</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">Mode</span><span class="p">.</span><span class="nx">Auto</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 컴파일 후
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">0</span> <span class="cm">/* Mode.Auto */</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하면 런타임에 <code>enum</code> 객체 자체가 남지 않으니 Tree-Shaking 문제는 완벽하게 해결되죠.<br /><br />
+하지만 이건 더 위험한 &lsquo;시한폭탄&rsquo;을 품고 있었는데요.<br /><br />
+<code>const enum</code>의 값은 빌드 시점에 사용되는 파일에 &lsquo;박제&rsquo;되어 버립니다.<br /><br />
+만약 <code>enum</code>이 정의된 파일(<code>constants.ts</code>)과 그걸 가져다 쓰는 파일(<code>main.ts</code>)이 따로 있을 때, <code>constants.ts</code>의 <code>enum</code> 값만 바꾸고 전체 재빌드를 하지 않으면 어떻게 될까요?<br /><br />
+<code>main.ts</code> 파일은 변경 사항을 감지하지 못해 재컴파일되지 않고, 결국 예전 값을 그대로 품은 채로 남아있게 됩니다.<br /><br />
+이건 정말 잡기 힘든 버그로 이어질 수 있어서, 라이브러리나 모노레포 환경에서는 절대 사용하면 안 되는 옵션이죠.<br /><br /></p>
+<h2 id="enum-없는-세상-더-나은-대안들">enum 없는 세상, 더 나은 대안들</h2>
+<p>그럼 <code>enum</code>을 쓰지 않는다면, 우리는 무엇을 사용해야 할까요?<br /><br />
+다행히도 우리에겐 훨씬 더 안전하고 현대적인 대안들이 있습니다.<br /><br /></p>
+<h3 id="1-단순하고-확실한-union-types">1. 단순하고 확실한 Union Types</h3>
+<p>가장 간단한 방법은 그냥 <code>const</code>로 상수를 선언하고, 이들의 타입을 묶어 &lsquo;Union Type&rsquo;으로 만드는 건데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MODE_AUTO</span> <span class="o">=</span> <span class="s1">&#39;Auto&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MODE_UDP</span> <span class="o">=</span> <span class="s1">&#39;UDP&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MODE_TCP</span> <span class="o">=</span> <span class="s1">&#39;TCP&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Mode</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">MODE_AUTO</span> <span class="o">|</span> <span class="k">typeof</span> <span class="nx">MODE_UDP</span> <span class="o">|</span> <span class="k">typeof</span> <span class="nx">MODE_TCP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 결과: type Mode = &#34;Auto&#34; | &#34;UDP&#34; | &#34;TCP&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">connect</span><span class="p">(</span><span class="nx">mode</span>: <span class="kt">Mode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 방식은 추가적인 JavaScript 코드를 전혀 생성하지 않고, 순수하게 타입 검사만으로 동작하죠.<br /><br />
+Tree-Shaking에도 아무런 문제가 없습니다.<br /><br />
+다만 상수들이 여기저기 흩어질 수 있고, <code>enum</code>처럼 하나의 객체로 묶어서 관리하기는 어렵다는 소소한 단점이 있긴 하죠.<br /><br /></p>
+<h3 id="2-현존-최강의-대안-object-as-const">2. 현존 최강의 대안, Object as const</h3>
+<p>바로 위 유니언 타입의 단점까지 보완하는, 현재 가장 많은 개발자들이 추천하는 방법이 바로 &lsquo;<code>as const</code>&lsquo;를 활용한 객체 리터럴인데요.<br /><br />
+이건 정말 <code>enum</code>의 장점과 유니언 타입의 장점을 모두 합친 것과 같습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">Mode</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Auto</span><span class="o">:</span> <span class="s1">&#39;Auto&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">UDP</span><span class="o">:</span> <span class="s1">&#39;UDP&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">TCP</span><span class="o">:</span> <span class="s1">&#39;TCP&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kr">as</span> <span class="kr">const</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+객체 뒤에 `as const`를 붙여주면, 이 객체의 모든 속성이 `readonly`가 되고, 값들이 리터럴 타입으로 추론되거든요.<br /><br />
+이제 이 객체를 이용해서 `enum`처럼 값에 접근할 수도 있고, 유니언 타입도 손쉽게 만들어낼 수 있습니다.<br /><br />
+```typescript
+// 값들의 유니언 타입 만들기
+type Mode = typeof Mode[keyof typeof Mode];
+// 결과: type Mode = "Auto" | "UDP" | "TCP"
+<p>function connect(mode: Mode) {
+console.log(<code>Connecting with mode: ${mode}</code>);
+}</p>
+<p>// enum처럼 점(.)으로 접근하여 사용
+connect(Mode.TCP); // &ldquo;Connecting with mode: TCP&rdquo;</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>
+이 방식은 `enum`처럼 상수를 깔끔하게 그룹화해주면서도, 컴파일 시점에 아무런 추가 코드도 만들지 않죠.&lt;br /&gt;&lt;br /&gt;
+그야말로 완벽한 대안이라고 할 수 있습니다.&lt;br /&gt;&lt;br /&gt;
+
+## 최종 가이드 그래서 뭘 써야 할까?
+
+
+지금까지 `enum`의 명과 암, 그리고 대안까지 모두 살펴봤는데요.&lt;br /&gt;&lt;br /&gt;
+그럼 우리 프로젝트에서는 어떤 전략을 취해야 할까요?&lt;br /&gt;&lt;br /&gt;
+명확한 가이드라인을 제시해 드릴게요.&lt;br /&gt;&lt;br /&gt;
+1.  **새로운 프로젝트를 시작한다면?**&lt;br /&gt;
+    망설일 필요 없이 &#39;Object `as const`&#39; 패턴을 기본으로 사용하세요.&lt;br /&gt;&lt;br /&gt;
+    가장 안전하고, 유연하며, 성능적으로도 유리한 현대적인 방식입니다.&lt;br /&gt;&lt;br /&gt;
+2.  **`enum`이 이미 많이 사용된 레거시 프로젝트를 유지보수한다면?**&lt;br /&gt;
+    굳이 모든 `enum`을 지금 당장 바꿀 필요는 없습니다.&lt;br /&gt;&lt;br /&gt;
+    다만, 새로 작성하는 코드에서는 `as const` 패턴을 적용하고, `enum`과 관련된 버그가 발생하거나 리팩토링 기회가 생길 때마다 점진적으로 전환하는 것을 추천합니다.&lt;br /&gt;&lt;br /&gt;
+3.  **`const enum`은?**&lt;br /&gt;
+    그냥 잊어버리세요.&lt;br /&gt;&lt;br /&gt;
+    어떤 상황에서도 사용을 권장하지 않습니다.&lt;br /&gt;&lt;br /&gt;
+
+결국 기술의 발전은 더 나은 패턴을 만들어내기 마련인데요.&lt;br /&gt;&lt;br /&gt;
+`enum`은 TypeScript 초창기에 아주 훌륭한 역할을 했지만, 이제는 &#39;Object `as const`&#39;라는 더 안전하고 세련된 후배에게 자리를 물려줄 때가 온 것 같습니다.&lt;br /&gt;&lt;br /&gt;
+여러분의 코드베이스를 한 단계 더 업그레이드할 준비, 되셨나요?&lt;br /&gt;&lt;br /&gt;</code></pre>
+  </figure>
+</div>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/typescript/" role="button">TypeScript</a>
+        <a class="btn btn-light" href="/tags/enum/" role="button">enum</a>
+        <a class="btn btn-light" href="/tags/as-const/" role="button">as const</a>
+        <a class="btn btn-light" href="/tags/union-types/" role="button">Union Types</a>
+        <a class="btn btn-light" href="/tags/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8/" role="button">타입스크립트</a>
+        <a class="btn btn-light" href="/tags/%EC%BD%94%EB%94%A9-%EC%BB%A8%EB%B2%A4%EC%85%98/" role="button">코딩 컨벤션</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-10-21-typescript-type-master-third/">TypeScript 타입 기초 완전 정복! 3편 - as const, unknown, Mapped, Conditional 타입 완벽 분석</a></h2>
+                  <p>TypeScript 타입 시스템의 최고봉을 향해! `as const`, `unknown`, `keyof`, Lookup, Mapped, Conditional 타입 등 고급 타입 개념을 파헤쳐 봅니다.</p>
+                  <p>
+  <small>October 21, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>19&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-16-typescript-readonly-array-for-safer-code/">TypeScript 배열, `T[]` 대신 `ReadonlyArray&lt;T&gt;`를 써야 하는 이유</a></h2>
+                  <p>함수 하나 호출했을 뿐인데 원본 배열이 망가진 경험, 있으신가요? 이런 사이드 이펙트 버그를 원천 차단하는 TypeScript의 강력한 무기, `ReadonlyArray<T>`의 모든 것을 알려드립니다. 이제 불변성은 선택이 아닌 필수입니다.</p>
+                  <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-14-typescript-satisfies-keyword-guide/">TypeScript &#39;satisfies&#39; 완벽 가이드 - &#39;as&#39; 대신 써야 하는 이유</a></h2>
+                  <p>TypeScript의 숨겨진 보석, 'satisfies' 키워드를 아시나요? 타입 추론은 유지하면서 타입 검사는 강화하는 satisfies의 마법을 통해, 왜 'as'보다 더 안전하고 현명한 선택인지 알아봅니다.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

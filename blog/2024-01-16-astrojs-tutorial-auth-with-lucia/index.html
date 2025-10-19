@@ -1,0 +1,1405 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</title>
+<meta name="description" content="Lucia auth를 이용해서 Astrojs에서 유저 가입하기, 로그인, 로그아웃 구현하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현" />
+<meta property="og:description" content="Lucia auth를 이용해서 Astrojs에서 유저 가입하기, 로그인, 로그아웃 구현하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-01-16T12:02:52Z" />
+<meta property="article:modified_time" content="2024-01-16T12:02:52Z" />
+<meta property="article:tag" content="astrojs" />
+<meta property="article:tag" content="auth" />
+<meta property="article:tag" content="lucia" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현" />
+<meta name="twitter:description" content="Lucia auth를 이용해서 Astrojs에서 유저 가입하기, 로그인, 로그아웃 구현하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현\"",
+  "description": "\"Lucia auth를 이용해서 Astrojs에서 유저 가입하기, 로그인, 로그아웃 구현하기\"",
+  "datePublished": "\"2024-01-16T12:02:52Z\"",
+  "dateModified": "\"2024-01-16T12:02:52Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</h1>
+        <p>
+  <small>January 16, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘은 AstroJS 강좌 11편을 진행해 볼까 합니다.</p>
+<p>지난 시간에 쿠키와 토큰을 이용한 유저 로그인을 구현했었는데요.</p>
+<p>오늘은 똑같은 걸 Lucia를 이용해서 구현해 볼까 합니다.</p>
+<p>전체 astrojs 강좌 목록입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs">astrojs 강좌 1편. astrojs에서 데이터 가져오기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme">astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component">astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture">astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing">astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing">astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering">astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token">astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia">astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li>
+<ol>
+<li><a href="#Lucia">Lucia 소개</a></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><a href="#Lucia-1">Lucia 인증 방식</a></li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li><a href="#AstroJS">AstroJS 프로젝트 만들기</a></li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li><a href="#Prisma">Prisma 설정</a></li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li><a href="#Model">Model 설정</a></li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li><a href="#Lucia-1">Lucia 설치 및 코드 작성</a></li>
+</ol>
+<ul>
+<li>
+<p>6.1. <a href="#lucia.ts">lucia.ts 파일 만들기</a></p>
+</li>
+<li>
+<p>6.2. <a href="#luciaenv.d.ts">lucia 관련 타입 env.d.ts 설정</a></p>
+</li>
+<li>
+<p>6.3. <a href="#middlewareauth">middleware를 이용해서 auth 객체 전역화 시키기</a></p>
+</li>
+</ul>
+</li>
+<li>
+<ol start="7">
+<li><a href="#AstroJSLayout">AstroJS의 Layout 페이지 만들기</a></li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li><a href="#Signup">Signup 페이지 만들기</a></li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li><a href="#login">login 페이지 만들기</a></li>
+</ol>
+</li>
+<li>
+<ol start="10">
+<li><a href="#Dashboard">Dashboard 페이지 설정</a></li>
+</ol>
+</li>
+<li>
+<ol start="11">
+<li><a href="#logout">logout 구현</a></li>
+</ol>
+</li>
+</ul>
+<hr>
+<h2 id="1-lucia-소개">1. <a name='Lucia'></a>Lucia 소개</h2>
+<p>풀스택 개발에 있어 가장 중요한 게 Auth 부분인데요.</p>
+<p>Next.js는 그 유명한 NextAuth가 있습니다.</p>
+<p>Remix 진영에도 RemixAuth가 있는데요.</p>
+<p>AstroJS를 지원하는 Auth 라이브러리가 별로 없는데요.</p>
+<p>Lucia는 AstroJS, Next.js, Nuxtjs, SvelteKit 등 여러 가지의 프레임워크를 지원합니다.</p>
+<p>기본적으로 유저네임 + 패스워드 방식뿐 아니라 OAuth도 지원합니다.</p>
+<p>당연히 Typescript를 지원하고 있어 타입안정성을 쉽게 구현할 수 있습니다.</p>
+<p>데이터베이스는 Adapter 방식을 이용하고 있어 여러 종류의 DB에 대한 코드는 공식 홈페이지에 있으니 참고 바랍니다.</p>
+<p>Lucia는 세션 기반 라이브러리로 데이터베이스에는 세션정보를 저장하고, 해당 세션의 ID는 쿠키에 저장하여 관리합니다.</p>
+<p>그래서 데이터베이스는 Prisma를 이용할 거고, 타입 정합성 검사는 Zod에 맡길 예정입니다.</p>
+<hr>
+<h2 id="2-lucia-인증-방식">2. <a name='Lucia-1'></a>Lucia 인증 방식</h2>
+<p>먼저, 사용자 가입을 완료했다고 전제했을 때, Lucia의 전체적인 흐름은 아래와 같습니다.</p>
+<ol>
+<li>
+<p>로그인 화면에서 유저네임과 패스워드로 로그인 Post 리퀘스트 전송.</p>
+</li>
+<li>
+<p>Post 리퀘스트와 같이 넘어온 유저네임과 패스워드에 맞는 유저가 존재하는지 서버 측에서 확인</p>
+</li>
+<li>
+<p>만약 유저가 존재한다면, 세션 데이터를 만들어서 데이터베이스에 저장하고, 만들어진 세션 데이터에 있는 세션 ID를 쿠키를 통해 클라이언트 사이드 쪽에서 저장합니다. (이게 로그인이 완료됐다는 뜻입니다.)</p>
+</li>
+<li>
+<p>각 페이지에서 세션을 검증하는 미들웨어 함수를 구축하여 유저의 세션 정보에 따라 접근 가능한 페이지와 접근 불가능한 페이지를 구분하여 대응.</p>
+</li>
+<li>
+<p>세션 검증 방식은 쿠키에 저장된 세션 ID를 꺼내 데이터베이스에 있는 세션을 획득하고,</p>
+</li>
+<li>
+<p>이렇게 획득한 세션의 유효기간을 체크함. 유효기간에는 activePeriod와 idlePeriod 2개의 유효기간으로 관리되는데, activePeriod의 기한이 만료되어도 idlePeriod 기한내이면 세션의 유효기간을 리셋하는 방식으로 접근. 보통 activePeriod는 1일이고, idlePeriod는 2주간의 유효기간을 가집니다.</p>
+</li>
+</ol>
+<p>7.최종적으로 idlePeriod가 만료되면 해당 인증은 종료됩니다. 또한 쿠키가 만료되어도 인증이 종료되는데요. 쿠키 만료는 기본적으로 idlePeriod 유효기관과 동일합니다.</p>
+<ol start="8">
+<li>의도적으로 인증을 종료하고 싶은 경우 API 엔드포인트 같은 걸 만들어서 Post 리퀘스트로 세션을 무효화하거나 쿠키를 삭제하는 코드를 만들면 되는데, 그게 logout이 됩니다.</li>
+</ol>
+<hr>
+<h2 id="3-astrojs-프로젝트-만들기">3. <a name='AstroJS'></a>AstroJS 프로젝트 만들기</h2>
+<p>Astro는 &rsquo;npm create&rsquo;를 지원하고 있어 아주 쉽게 프로젝트 템플릿을 구현할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm create astro@latest astro-lucia
+</span></span><span class="line"><span class="cl">Need to install the following packages:
+</span></span><span class="line"><span class="cl">  create-astro@4.7.1
+</span></span><span class="line"><span class="cl">Ok to proceed? <span class="o">(</span>y<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> astro   Launch sequence initiated.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ◼  dir Using astro-lucia as project directory
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  tmpl   How would you like to start your new project?
+</span></span><span class="line"><span class="cl">         Empty
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  deps   Install dependencies?
+</span></span><span class="line"><span class="cl">         Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    ts   Do you plan to write TypeScript?
+</span></span><span class="line"><span class="cl">         Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   use   How strict should TypeScript be?
+</span></span><span class="line"><span class="cl">         Strict
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   git   Initialize a new git repository?
+</span></span><span class="line"><span class="cl">         Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ✔  Project initialized!
+</span></span><span class="line"><span class="cl">         ■ Template copied
+</span></span><span class="line"><span class="cl">         ■ Dependencies installed
+</span></span><span class="line"><span class="cl">         ■ TypeScript customized
+</span></span><span class="line"><span class="cl">         ■ Git initialized
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  next   Liftoff confirmed. Explore your project!
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Enter your project directory using <span class="nb">cd</span> ./astro-lucia
+</span></span><span class="line"><span class="cl">         Run npm run dev to start the dev server. CTRL+C to stop.
+</span></span><span class="line"><span class="cl">         Add frameworks like react or tailwind using astro add.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Stuck? Join us at https://astro.build/chat
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">╭─────╮  Houston:
+</span></span><span class="line"><span class="cl">│ ◠ ◡ ◠  Good luck out there, astronaut! 🚀
+</span></span><span class="line"><span class="cl">╰─────╯
+</span></span><span class="line"><span class="cl">➜  <span class="nb">cd</span> astro-lucia</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="4-prisma-설정">4. <a name='Prisma'></a>Prisma 설정</h2>
+<p>Prisma를 설치하고,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install prisma --save-dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>Prisma 초기화는 아래 명령어로 실행하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx prisma init --datasource-provider sqlite
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Your Prisma schema was created at prisma/schema.prisma
+</span></span><span class="line"><span class="cl">  You can now open it in your favorite editor.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">warn You already have a .gitignore file. Don<span class="err">&#39;</span>t forget to add <span class="sb">`</span>.env<span class="sb">`</span> in it to not commit any private information.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Next steps:
+</span></span><span class="line"><span class="cl">1. Set the DATABASE_URL in the .env file to point to your existing database. If your database has no tables yet, <span class="nb">read</span> https://pris.ly/d/getting-started
+</span></span><span class="line"><span class="cl">2. Run prisma db pull to turn your database schema into a Prisma schema.
+</span></span><span class="line"><span class="cl">3. Run prisma generate to generate the Prisma Client. You can <span class="k">then</span> start querying your database.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">More information in our documentation:
+</span></span><span class="line"><span class="cl">https://pris.ly/d/getting-started</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 초기화하면 prisma 디렉토리와 &lsquo;.env&rsquo; 파일이 생성됩니다.</p>
+<p>prisma 디렉토리에는 schema.prisma 파일이 자동적으로 생길 겁니다.</p>
+<p>테스트를 위한 개발 서버를 꾸릴 예정이라 Sqlite3를 이용했습니다.</p>
+<hr>
+<h2 id="5-model-설정">5. <a name='Model'></a>Model 설정</h2>
+<p>Lucia를 이용한 세션 관리를 위해 아래와 같이 최소한의 모델로 설정하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">// This is your Prisma schema file,
+</span></span><span class="line"><span class="cl">// learn more about it in the docs: https://pris.ly/d/prisma-schema
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">generator client <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">provider</span> <span class="o">=</span> <span class="s2">&#34;prisma-client-js&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">datasource db <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">provider</span> <span class="o">=</span> <span class="s2">&#34;sqlite&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">url</span>      <span class="o">=</span> env<span class="o">(</span><span class="s2">&#34;DATABASE_URL&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">model User <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  id           String    @id @unique
+</span></span><span class="line"><span class="cl">  auth_session Session<span class="o">[]</span>
+</span></span><span class="line"><span class="cl">  key          Key<span class="o">[]</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">model Session <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  id             String @id @unique
+</span></span><span class="line"><span class="cl">  user_id        String
+</span></span><span class="line"><span class="cl">  active_expires BigInt
+</span></span><span class="line"><span class="cl">  idle_expires   BigInt
+</span></span><span class="line"><span class="cl">  user           User   @relation<span class="o">(</span>references: <span class="o">[</span>id<span class="o">]</span>, fields: <span class="o">[</span>user_id<span class="o">]</span>, onDelete: Cascade<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  @@index<span class="o">([</span>user_id<span class="o">])</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">model Key <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  id              String  @id @unique
+</span></span><span class="line"><span class="cl">  hashed_password String?
+</span></span><span class="line"><span class="cl">  user_id         String
+</span></span><span class="line"><span class="cl">  user            User    @relation<span class="o">(</span>references: <span class="o">[</span>id<span class="o">]</span>, fields: <span class="o">[</span>user_id<span class="o">]</span>, onDelete: Cascade<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  @@index<span class="o">([</span>user_id<span class="o">])</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Lucia에서 사용할 모델은 User, Session, Key로 되어 있고, 최신 트렌드에 따라 User와 Key 부분을 따로 분리했습니다.</p>
+<p>이제 스키마를 push 해서 Sqlite 테이블을 만들도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx prisma db push
+</span></span><span class="line"><span class="cl">Environment variables loaded from .env
+</span></span><span class="line"><span class="cl">Prisma schema loaded from prisma/schema.prisma
+</span></span><span class="line"><span class="cl">Datasource <span class="s2">&#34;db&#34;</span>: SQLite database <span class="s2">&#34;dev.db&#34;</span> at <span class="s2">&#34;file:./dev.db&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SQLite database dev.db created at file:./dev.db
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">🚀  Your database is now in sync with your Prisma schema. Done in 15ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Running generate... <span class="o">(</span>Use --skip-generate to skip the generators<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">added <span class="m">1</span> package, and audited <span class="m">503</span> packages in 5s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">183</span> packages are looking <span class="k">for</span> funding
+</span></span><span class="line"><span class="cl">  run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">found <span class="m">0</span> vulnerabilities
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Generated Prisma Client <span class="o">(</span>v5.8.0<span class="o">)</span> to ./node_modules/@prisma/client in 47ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>Prisma Client까지 만들어졌네요.</p>
+<p>Prisma는 Studio라는 아주 편한 UI를 제공해 주고 있어, Prisma DB의 작성에 아주 큰 도움이 되는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx prisma studio</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="6-lucia-설치-및-코드-작성">6. <a name='Lucia-1'></a>Lucia 설치 및 코드 작성</h2>
+<p>Lucia와 Prisma 어댑터를 같이 설치하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i lucia @lucia-auth/adapter-prisma</span></span></code></pre></div>
+  </figure>
+</div>
+<p>당연히 세션 관련이니까 Astro를 서버사이드 렌더링으로 바꿔야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">// astro.config.mjs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">import <span class="o">{</span> defineConfig <span class="o">}</span> from <span class="s1">&#39;astro/config&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// https://astro.build/config
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> default defineConfig<span class="o">({</span>
+</span></span><span class="line"><span class="cl">  output: <span class="s1">&#39;server&#39;</span>,
+</span></span><span class="line"><span class="cl"><span class="o">})</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>만약 다음과 같은 에러나 경고가 나온다면 그건 바로 SSR 모드로 설정하지 않아서 일겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">11:30:34 <span class="o">[</span>WARN<span class="o">]</span> <span class="sb">`</span>Astro.request.headers<span class="sb">`</span> is not available in <span class="s2">&#34;static&#34;</span> output mode. To <span class="nb">enable</span> header access: <span class="nb">set</span> <span class="sb">`</span>output: <span class="s2">&#34;server&#34;</span><span class="sb">`</span> or <span class="sb">`</span>output: <span class="s2">&#34;hybrid&#34;</span><span class="sb">`</span> in your config file.</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h3 id="61-luciats-파일-만들기">6.1. <a name='lucia.ts'></a>lucia.ts 파일 만들기</h3>
+<p>이제 Asto 코드에서 Lucia에 접근할 수 있는 lucia.ts 파일을 만들 건데요.</p>
+<p>src 폴더 밑에 lib 폴더를 만들고 그 밑에 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/lib/lucia.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">lucia</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;lucia&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">astro</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;lucia/middleware&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">prisma</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@lucia-auth/adapter-prisma&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">PrismaClient</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@prisma/client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PrismaClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">auth</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">adapter</span><span class="o">:</span> <span class="nx">prisma</span><span class="p">(</span><span class="nx">client</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">env</span><span class="o">:</span> <span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DEV</span> <span class="o">?</span> <span class="s1">&#39;DEV&#39;</span> <span class="o">:</span> <span class="s1">&#39;PROD&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">middleware</span><span class="o">:</span> <span class="nx">astro</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="nx">type</span> <span class="nx">Auth</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">auth</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>타입정보까지 export하는 거는 Drizzle ORM과 많이 비슷합니다.</p>
+<p>이제 lucia를 이용해서 auth 객체를 만들었으니까 앞으로 이 auth 객체를 이용해서 세션 관련 작업을 진행하면 됩니다.</p>
+<hr>
+<h3 id="62-lucia-관련-타입-envdts-설정">6.2. <a name='luciaenv.d.ts'></a>lucia 관련 타입 env.d.ts 설정</h3>
+<p>우리가 schema.prisma 파일에서 정의한 User, Session 모델의 타입을 정확하게 검색할 수 있도록 env.d.ts 파일에 lucia 관련 정보를 정의해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/env.d.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">/// &lt;reference types=&#34;astro/client&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1">/// &lt;reference types=&#34;lucia&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">declare</span> <span class="nx">namespace</span> <span class="nx">Lucia</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">type</span> <span class="nx">Auth</span> <span class="o">=</span> <span class="kr">import</span><span class="p">(</span><span class="s1">&#39;./lib/lucia&#39;</span><span class="p">).</span><span class="nx">Auth</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">type</span> <span class="nx">DatabaseUserAttributes</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">type</span> <span class="nx">DatabaseSessionAttributes</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h3 id="63-middleware를-이용해서-auth-객체-전역화-시키기">6.3. <a name='middlewareauth'></a>middleware를 이용해서 auth 객체 전역화 시키기</h3>
+<p>Astro에서 객체를 전역화 시키는 건 context.locals를 이용하면 아주 쉬운데요.</p>
+<p>그래서 매 번 Request가 발생할 때마다 변경된 auth 객체를 context.locals에 저장해야 하는데요.</p>
+<p>이때 필요한 게 미들웨어입니다.</p>
+<p>Astro에서는 미들웨어는 src 폴더 밑에 middleware.ts 파일을 만들어 구성할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./lib/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineMiddleware</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro:middleware&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">onRequest</span> <span class="o">=</span> <span class="nx">defineMiddleware</span><span class="p">((</span><span class="nx">context</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">context</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span> <span class="o">=</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">handleRequest</span><span class="p">(</span><span class="nx">context</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하면 context.locals.auth의 타입이 부정확하다고 나오는데요.</p>
+<p>다시 &rsquo;env.d.ts&rsquo; 파일에 아래 부분을 추가해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/env.d.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">/// &lt;reference types=&#34;astro/client&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1">/// &lt;reference types=&#34;lucia&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">declare</span> <span class="nx">namespace</span> <span class="nx">Lucia</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">type</span> <span class="nx">Auth</span> <span class="o">=</span> <span class="kr">import</span><span class="p">(</span><span class="s2">&#34;./lib/lucia&#34;</span><span class="p">).</span><span class="nx">Auth</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">type</span> <span class="nx">DatabaseUserAttributes</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">type</span> <span class="nx">DatabaseSessionAttributes</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">///
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">declare</span> <span class="nx">namespace</span> <span class="nx">App</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">interface</span> <span class="nx">Locals</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">auth</span><span class="o">:</span> <span class="kr">import</span><span class="p">(</span><span class="s2">&#34;lucia&#34;</span><span class="p">).</span><span class="nx">AuthRequest</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 middleware.ts에서 auth 부분의 타입 에러가 없어질 겁니다.</p>
+<hr>
+<h2 id="7-astrojs의-layout-페이지-만들기">7. <a name='AstroJSLayout'></a>AstroJS의 Layout 페이지 만들기</h2>
+<p>본격적인 웹페이지 구성에 들어가 보겠습니다.</p>
+<p>AstroJS에서는 무조건 Layout 페이지를 만드는 게 아주 편한데요.</p>
+<p>그리고, 우리가 만들 페이지의 링크 부분을 넣도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ViewTransitions</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro:transitions&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ko&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">&#34;utf-8&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;viewport&#34;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&#34;width=device-width, initial-scale=1&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">Astro</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">ViewTransitions</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/head&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">nav</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/&#34;</span><span class="o">&gt;</span><span class="nx">Home</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/li&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/login&#34;</span><span class="o">&gt;</span><span class="nx">Login</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/li&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/signup&#34;</span><span class="o">&gt;</span><span class="nx">Signup</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/li&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/dashboard&#34;</span><span class="o">&gt;</span><span class="nx">Dashboard</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/li&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/nav&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">slot</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/html&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 src/pages 폴더의 index.astro 파일을 손봐야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// // src/pages/index.astro
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Home</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이왕 만드는 거 src/pages/dashboard 폴더를 만들고 그리고 index.astro 파일을 아래와 같이 똑같이 만들어 줍시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/pages/dashboard/index.astro
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Dashboard</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발 서버를 돌려 전체적인 틀이 작동하는지 보면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiHgMjK2m7HebdQhocxfH5zYraXVJDsce0SgQsMZdihpsH0TX-Dg3nJeEtLw3oB8qxCq0k6RxrrZN6cJpuCE_CQTkYoGNOUMxcAoV5Ed0IjtKkec0zeK7jB8mX2rTvYEsLcZr3wVBrYoS6yGesF9sz0lszlRC2wS9PB6gHRoi1r-tw-92ZQic0CdgunJi8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjhpqjTxEIc-xrMRjZi64vrndWsv1C0wkn2_9P3fLAYvYMnalIvOGHrLw8N-MXKbWXPaNKDCGIPb3mTUx3kkR1EPswPRVXm4QPyZmJVOL3_OVRyIt19ZDwnVAA2QmK6S0MY_eM8l7nNSAqgEOV5mGJMnuE_2ujyBIDxEaKWOM-T1rW7MBWD1TWbcdbJUec"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 home, dashboard 링크는 정상작동합니다.</p>
+<p>그러나 아직 login과 signup 링크는 작동하지 않는데요.</p>
+<p>이제 만들어 보겠습니다.</p>
+<hr>
+<h2 id="8-signup-페이지-만들기">8. <a name='Signup'></a>Signup 페이지 만들기</h2>
+<p>먼저, Signup 페이지를 만들기 위해 &lsquo;src/pages&rsquo; 폴더 밑에 &lsquo;signup.astro&rsquo; 파일을 만들겠습니다.</p>
+<p>먼저, 타입 정합성 검사를 위해 &lsquo;zod&rsquo; 라이브러리를 설치하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i zod</span></span></code></pre></div>
+  </figure>
+</div>
+<p>본격적인 signup.astro 파일의 코드입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">LuciaError</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../lib/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">z</span> <span class="nx">from</span> <span class="s2">&#34;zod&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">usernameInput</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">errorMessages</span><span class="o">:</span> <span class="nx">z</span><span class="p">.</span><span class="nx">ZodIssue</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">errorMessage</span><span class="o">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">Astro</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">method</span> <span class="o">===</span> <span class="s2">&#34;POST&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;username&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">username</span> <span class="o">===</span> <span class="s2">&#34;string&#34;</span><span class="p">)</span> <span class="nx">usernameInput</span> <span class="o">=</span> <span class="nx">username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">z</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">username</span><span class="o">:</span> <span class="nx">z</span><span class="p">.</span><span class="nx">string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">31</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span><span class="o">:</span> <span class="nx">z</span><span class="p">.</span><span class="nx">string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">safeParse</span><span class="p">({</span> <span class="nx">username</span><span class="p">,</span> <span class="nx">password</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">errorMessages</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">error</span><span class="p">.</span><span class="nx">errors</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">createUser</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">key</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">providerId</span><span class="o">:</span> <span class="s2">&#34;username&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">providerUserId</span><span class="o">:</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">username</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">password</span><span class="o">:</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">attributes</span><span class="o">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">createSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">userId</span><span class="o">:</span> <span class="nx">user</span><span class="p">.</span><span class="nx">userId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">attributes</span><span class="o">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Astro</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">setSession</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/dashboard&#34;</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">LuciaError</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s2">&#34;AUTH_DUPLICATE_KEY_ID&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">errorMessage</span> <span class="o">=</span> <span class="s2">&#34;Username already taken&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">errorMessage</span> <span class="o">=</span> <span class="s2">&#34;Internal Server Error&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="nx">up</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;username&#34;</span><span class="o">&gt;</span><span class="nx">Username</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;username&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;username&#34;</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">usernameInput</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;password&#34;</span><span class="o">&gt;</span><span class="nx">Password</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">errorMessages</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">errorMessages</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span><span class="o">:</span> <span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">errorMessage</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span><span class="nx">가입하기</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/login&#34;</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="k">in</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 테스트를 위해 username과 password에 넣고 테스트해 봅시다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhY9Oozpec1biF9mNjBHxb1zN-S6f7Tyuunyy-7MK7HslA2-wu5c2bCCjKy8NL9aFM4IDAt_QE1i4cjvKwTSM8pNvOoJpsndqhCXAq6YHIAZmYKW3reTaAek5342DSMmZXyG9pDejRLZEygJajpo8cNnkPB8XC9oQlhtg8SWVJSfVliJy7Qpn_WXDl0ge4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 zod 부분이 정확하게 작동하고 있네요.</p>
+<p>Lucia가 createUser하는 방식은 key를 이용한 방식인데요.</p>
+<p>Lucia가 말하는 key는 유저와 유저를 가리키는 레퍼런스 사이의 관계를 얘기합니다.</p>
+<p>조금은 어려울 수 있는데요.</p>
+<p>우리가 사용한 Key 방식은 전통적인 유저네임과 패스워드 방식입니다.</p>
+<p>그래서 아래와 같이 작성한 거죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">createUser</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">key</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">providerId</span><span class="o">:</span> <span class="s2">&#34;username&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">providerUserId</span><span class="o">:</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">username</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">password</span><span class="o">:</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">attributes</span><span class="o">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>전통적인 username/password 방식을 Lucia에서는 Key의 &lsquo;providerId&rsquo;라고 합니다.</p>
+<p>만약 email/password 방식이라면 Key의 &lsquo;providerId&rsquo;는 &rsquo;email&rsquo;이 되는 거죠.</p>
+<p>OAuth의 경우 만약 Github을 이용한다면 Github user id가 해당되는 거죠.</p>
+<p>NextAuth와는 조금 다른 개념이라 처음에는 어렵지만 공식 문서를 자세히 살펴보면 많은 예가 있으니까 참고 바랍니다.</p>
+<p>key 부분의 providerUserId와 password 부분은 실제 유저가 입력한 username과 password를 입력하면 됩니다.</p>
+<p>zod의 safeParse 함수를 이용했기 때문에 관련 값은 result 객체에 모두 다 있으니까 거기서 username과 password를 가져오면 됩니다.</p>
+<p>지금하고 있는 게 &lsquo;signup&rsquo; 가입하기입니다.</p>
+<p>그래서 createUser 함수를 사용했고, 그다음 가입한 유저정보로 세션을 만들어 로그인한 상태로 바꿔야 하는데요.</p>
+<p>그래서 사용한 함수가 auth.createSession 함수입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">createSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">userId</span><span class="o">:</span> <span class="nx">user</span><span class="p">.</span><span class="nx">userId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">attributes</span><span class="o">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>세션 정보에는 당연히 userId만 들어가면 됩니다.</p>
+<p>Session을 작성한 후, middleware로부터 받은 Astro.locals.auth.setSession(AuthRequest.setSession)을 이용하여 쿠키를 작성합니다.</p>
+<p>쿠키에는 Session에서 만든 SessionId가 포함됩니다.</p>
+<p>쿠키를 만든 후 /dashboard로 리디렉션 합니다.</p>
+<p>그 외 에러핸들링은 쉽게 이해할 수 있을 거라 판단되어 넘어가도록 하겠습니다.</p>
+<p>테스트해 볼까요?</p>
+<p>터미널을 하나 더 열고 &rsquo;npx prisma studio&rsquo;를 실행해서 prisma db 내용을 점검하도록 하겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiV9thHVXjUkod4mR2Cpyj-GJEqsPontlzg9M9aTC5tCqX0I5wlmHmUM9_1bLxuvixJFsDPK38DVZ_yjJHxInsuDK2lqlDN2iujfdfMbaXW4AKTkgVAjXKrYLa5TuW6Y6u-Lmv1ryAIQag2t28EaF1q2BH402Mjy3RK4n6Pu4m2vnSwvgsUWVpyVD031Uo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiF5uWIw_HauzRCVYxMSlVFpolOXg_Rv6eJpgl16yFe99CE4FuHfkw8FqEB2SS2CcFlzjmWlAScA3cq7l8pijK4kobM0NhgCJ1oyhH43mAZscr8enJ8-UwcuqB0tqJ2We7A1AUkFnWGfprAXMplrbS0gPB5OJhytoorU6_V1auVeqsmi3QBYud1XeoPLA8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 두 그림처럼 Key와 User 부분이 제대로 작동하네요.</p>
+<p>Session 부분을 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgqo6xO9VqcGI9WAJ675vh6s-LhkNqgBdue339yEu-FezVaWvtqDtdMGMivdDJ88fis2RWrrVbtg9hnmlDir281MAFFOmQ93B2M-ddyIhGevh74iphHy9BU7r6KewOXOYL33IwrLRN8XAebjZ5LA_YmAF8T6_Oj_bklchhE5r9JaIMW9EyWNmY5jtFxGx0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위에서 보시면 Session의 id가 &rsquo;t3cf5&hellip;.&lsquo;로 시작하는 문자열인데요.</p>
+<p>크롬 개발 창의 Application에 들어가서 쿠키를 검색해 볼까요?</p>
+<p>개발 서버니까 &lsquo;http://localhost:4321&rsquo; 쪽에 아래와 같이 &lsquo;auth_session&rsquo; 이름으로 쿠키가 저장되어 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg0-RRXfcyIb9tCS6n8MoPxaFkbHLHX0U1IPmIS3R2m_nEfWh9myeSMhqZS7Z31sCHzBlzfDgPXeigNgUhVoTPx56lzzjLT7AwcuWW2pLuuPSkzHN1UOJMgXUkbyRptLJ92qi_XIXvG5Sx2uIuJpQEoaB7yHBXvlitRuYV7Ad1EmULQy7YnqxWmwixNeWM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>쿠키의 Value를 보시면 Prisma Studio에서 본 Session Id 값이 그대로 들어가 있네요.</p>
+<p>지금까지 설명했던 Lucia의 세션 관리 방식이 제대로 들어맞고 있습니다.</p>
+<p>가입하기는 성공적으로 작성했네요.</p>
+<p>단, 여기서 추가할 게 있다면 그건 현재 로그인 상태를 체크해서 로그인되어 있다면 dashboard로 이동하는 겁니다.</p>
+<p>로그인된 사람이 다시 가입할 리가 없기 때문이죠.</p>
+<p>로그인 상태 검사는 아래와 같이 하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// 코드의 마지막에
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">validate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/dashboard&#34;</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 이제 로그인한 상태에서 &lsquo;/signup&rsquo; 페이지로 가면 자동으로 &lsquo;/dashboard&rsquo; 페이지로 이동하게 됩니다.</p>
+<hr>
+<h2 id="9-login-페이지-만들기">9. <a name='login'></a>login 페이지 만들기</h2>
+<p>로그인은 signup과 거의 똑같은데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">LuciaError</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;lucia&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s1">&#39;../layouts/Layout.astro&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../lib/lucia&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">z</span> <span class="nx">from</span> <span class="s1">&#39;zod&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">usernameInput</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">errorMessages</span><span class="o">:</span> <span class="nx">z</span><span class="p">.</span><span class="nx">ZodIssue</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">errorMessage</span><span class="o">:</span> <span class="nx">string</span> <span class="o">|</span> <span class="kc">null</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">Astro</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">method</span> <span class="o">===</span> <span class="s1">&#39;POST&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">username</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="nx">usernameInput</span> <span class="o">=</span> <span class="nx">username</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">z</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">username</span><span class="o">:</span> <span class="nx">z</span><span class="p">.</span><span class="nx">string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mi">31</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span><span class="o">:</span> <span class="nx">z</span><span class="p">.</span><span class="nx">string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">safeParse</span><span class="p">({</span> <span class="nx">username</span><span class="p">,</span> <span class="nx">password</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">errorMessages</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">error</span><span class="p">.</span><span class="nx">errors</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">key</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">useKey</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;username&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">username</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">password</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">createSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">userId</span><span class="o">:</span> <span class="nx">key</span><span class="p">.</span><span class="nx">userId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">attributes</span><span class="o">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Astro</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">setSession</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s1">&#39;/dashboard&#39;</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">LuciaError</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s1">&#39;AUTH_INVALID_KEY_ID&#39;</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s1">&#39;AUTH_INVALID_PASSWORD&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">errorMessage</span> <span class="o">=</span> <span class="s1">&#39;Incorrect username or password&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">errorMessage</span> <span class="o">=</span> <span class="s1">&#39;Internal Server Error&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Astro</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">validate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s1">&#39;/dashboard&#39;</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Login</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;username&#34;</span><span class="o">&gt;</span><span class="nx">Username</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;username&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;username&#34;</span> <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">usernameInput</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;password&#34;</span><span class="o">&gt;</span><span class="nx">Password</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span><span class="nx">errorMessages</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">errorMessages</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span><span class="o">:</span><span class="p">{</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">errorMessage</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span><span class="nx">로그인하기</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">br</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/signup&#34;</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="nx">UP</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 눈 여겨봐야할 부분은 useKey 부분입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">key</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">useKey</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;username&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">username</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">password</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>login 방식은 먼저, auth.useKey 함수를 이용해서 유저가 form에서 입력한 username과 password을 &lsquo;providerId&rsquo;를 &lsquo;username&rsquo; 방식으로 검증하게 됩니다.</p>
+<p>데이터베이스내의 정보와 일치하면 일치하는 key 정보를 리턴하게 됩니다.</p>
+<p>key 데이터는 userId가 포함되어 있어 createSession 함수에 사용할 수 있습니다.</p>
+<p>그리고 마찬가지로 Astro.locals.auth.setSession() 함수를 이용해서 쿠키를 작성하게 되는겁니다.</p>
+<hr>
+<h2 id="10-dashboard-페이지-설정">10. <a name='Dashboard'></a>Dashboard 페이지 설정</h2>
+<p>로그인한 상태를 Dashboard에 반영해 볼까요?</p>
+<p>session이 없으면 login 페이지로 이동하고 session이 있다면 session에서 user와 userId를 가져와서 화면에 출력하는 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">validate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">)</span> <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Dashboard</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">userId</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아래 그림처럼 userId가 제대로 나타나고 있네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEieqd29GDZvOcbedNytyeX2dzw7vH8NMdoTkKnRpq8KkwOIDlZ6xTWiNOqMBTWOy_hoqeVMpBHLCv4kSVvTN0pBjUOJFMEWkynJ8ltldi3e31IHAhr6yO5itCnp2iJ67Qs_zbF5dGn9ZJAHFPzWEBdq9X2rYu0RgVNmBSwfe2hfT--BmoDXAwEhIqmedc0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="11-logout-구현">11. <a name='logout'></a>logout 구현</h2>
+<p>로그인하면 대시보드 페이지로 이동한다고 했으니까, 대시보드 페이지 안에 로그아웃 기능을 추가하겠습니다.</p>
+<p>기타 서버사이드 렌더링에서 그렇듯 로그아웃은 HTTP POST 리퀘스트를 보내는 겁니다.</p>
+<p>대시보드 폴더의 index.astro 파일을 아래와 같이 바꿔줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">validate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">)</span> <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Dashboard</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">userId</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;/logout&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span><span class="nx">로그아웃</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>HTTP POST 리퀘스트의 목적지가 바로 &ldquo;/logout&rdquo; 경로인데요.</p>
+<p>pages 폴더 밑에 logout.ts 파일을 만들고 POST 리퀘스트를 처리하는 로직을 만들면 됩니다.</p>
+<p>이 파일의 확장자가 왜 &lsquo;.ts&rsquo;일까요?</p>
+<p>바로 UI 부분이 없고 로직만 있기 때문입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/pages/logout.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../lib/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">POST</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">context</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">validate</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="s2">&#34;Unauthorized&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">status</span><span class="o">:</span> <span class="mi">401</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">auth</span><span class="p">.</span><span class="nx">invalidateSession</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">sessionId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">context</span><span class="p">.</span><span class="nx">locals</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">setSession</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">context</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="mi">302</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>로그아웃의 로직은 먼저, Astro의 POST API 엔도포인트로의 작성인데요.</p>
+<p>POST 리퀘스트를 처리하기 때문에 이름이 POST입니다.</p>
+<p>먼저, session 정보를 얻고 나서 만약 session이 없다면 &lsquo;Unauthorized&rsquo; 메시지와 함께 401 Response를 보내면 됩니다.</p>
+<p>session이 있다면 invalidateSesion 함수로 세션을 무력화하고, 그다음 context.locals.auth.setSession(null) 명령어로 클라이언트의 쿠키를 무력화시킵니다.</p>
+<p>마지막으로 &lsquo;/login&rsquo; 페이지로 이동하면 끝인 거죠.</p>
+<p>테스트해보십시오.</p>
+<p>잘 될 겁니다.</p>
+<hr>
+<p>지금까지 AstroJS와 Lucia를 이용한 유저 가입, 로그인을 구현해 봤습니다.</p>
+<p>Lucia가 조금은 생소할지 모르지만 Astro를 사용한다면 꼭 배워야 할 인증 라이브러리임에는 틀림없네요.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/astrojs/" role="button">astrojs</a>
+        <a class="btn btn-light" href="/tags/auth/" role="button">auth</a>
+        <a class="btn btn-light" href="/tags/lucia/" role="button">lucia</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token/">astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현</a></h2>
+                  <p>유저 정보를 jsonwebtoken으로 만들어서 쿠키에 저장해서 유저 로그인 구현</p>
+                  <p>
+  <small>January 2, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>26&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></h2>
+                  <p>Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

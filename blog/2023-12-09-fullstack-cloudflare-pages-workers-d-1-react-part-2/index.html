@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기</title>
+<meta name="description" content="Workers로 D1 DB 불러오는 API 만들기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-12-09-fullstack-cloudflare-pages-workers-d-1-react-part-2/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기" />
+<meta property="og:description" content="Workers로 D1 DB 불러오는 API 만들기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-12-09-fullstack-cloudflare-pages-workers-d-1-react-part-2/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-12-09T02:26:26Z" />
+<meta property="article:modified_time" content="2023-12-09T02:26:26Z" />
+<meta property="article:tag" content="cloudflare" />
+<meta property="article:tag" content="pages" />
+<meta property="article:tag" content="d1" />
+<meta property="article:tag" content="workers" />
+<meta property="article:tag" content="react" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기" />
+<meta name="twitter:description" content="Workers로 D1 DB 불러오는 API 만들기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기\"",
+  "description": "\"Workers로 D1 DB 불러오는 API 만들기\"",
+  "datePublished": "\"2023-12-09T02:26:26Z\"",
+  "dateModified": "\"2023-12-09T02:26:26Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-12-09-fullstack-cloudflare-pages-workers-d-1-react-part-2/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기</h1>
+        <p>
+  <small>December 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간에 이어 Cloudflare 서비스를 이용한 풀스택 강의 계속하겠습니다.</p>
+<p>전체 강의 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-06-introduction-cloudflare-pages-workers-d-1-react-full-stack">풀스택 강의 1편. Cloudflare Pages + Workers + D1 + React로 풀스택 개발하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-09-fullstack-cloudflare-pages-workers-d-1-react-part-2">풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-10-fullstack-remix-cloudflare-pages-d-1-db-drizzle-orm">풀스택 강의 4편. Remix + Cloudflare Pages + D1 DB + Drizzle ORM</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-30-fullstack-tutorial-nextjs-cloudflare-with-d-1-db">풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-02-25-fullstack-tutorial-remix-cloudflare-with-kv-and-github-server">풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-03-03-fullstack-tutorial-transform-vite-react-app-with-hono-framework">풀스택 강의 7편. Vite React 템플릿을 Hono를 이용하여 풀스택 앱으로 개조하기</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ol>
+<li>
+<p><a href="#1-dummy-data-%eb%a7%8c%eb%93%a4%ea%b8%b0">Dummy Data 만들기</a></p>
+</li>
+<li>
+<p><a href="#2-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ea%b0%80%ec%a0%b8%ec%98%a4%eb%8a%94-api-%eb%a7%8c%eb%93%a4%ea%b8%b0">데이터 가져오는 API 만들기</a></p>
+</li>
+<li>
+<p><a href="#3-%eb%a1%9c%ec%bb%ac-%ea%b0%9c%eb%b0%9c-%ed%99%98%ea%b2%bd-%ea%b5%ac%ec%b6%95%ed%95%98%ea%b8%b0">로컬 개발 환경 구축하기</a></p>
+</li>
+<li>
+<p><a href="#4-react%eb%a1%9c-get-tods-api-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">React로 get-tods API 사용하기</a></p>
+</li>
+<li>
+<p><a href="#5-post-todos-api-%ea%b0%9c%eb%b0%9c%ed%95%98%ea%b8%b0">post-todos API 개발하기</a></p>
+</li>
+<li>
+<p><a href="#6-delete-todos-api-%eb%a7%8c%eb%93%a4%ea%b8%b0">delete-todos API 만들기</a></p>
+</li>
+<li>
+<p><a href="#7-%ec%b5%9c%ec%a2%85-%eb%b0%b0%ed%8f%ac%ed%95%98%ea%b8%b0">최종 배포하기</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-dummy-data-만들기">1. Dummy Data 만들기</h2>
+<p>지난 시간의 마지막은 D1 서버 구축이었는데요.</p>
+<p>DB 테스트를 위해서는 많은 양의 더미 데이터가 필요합니다.</p>
+<p>물론, sql 파일을 직접 만들어 wrangler 명령어를 이용해서 100개 정도의 더미 데이터를 만드는 것도 좋습니다.</p>
+<p>하지만 그렇게까지 많이 필요 없기 때문에 Cloudflare의 대시보드에서 추가하는 게 훨씬 쉬운데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEggZL-Uhj_eJ_pcqyIflxtyu3mLg7UPlSU_3rArDUUUlW1AL23AOB5lNftMdHC2HKLvFjpQW5vq6JGdbD2u0Xu0Ca-A81EFUvvS-BrYx4o11TnC6ZSSznasmIA7WSzhE01LKepamUSvse-Qw2kye5HRHe4UYzafcyqEzLi3wcIpDodT4CaGlIJUfl40Gso"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 &ldquo;Add data&rdquo; 버튼을 누르면 아래와 같이 수작업으로 SQL DB에 데이터를 추가할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhscGCwtAZXVoitlMBJmaLHdMS4N5BYVxGfGgFNy1VFIZu_xQXFY4FPPRzVPksyXVJ_eq_xqqB8XiJc6GfNquDirp0MV9nV1FVxu2E69PSsco2sHE9EUBbQXqWy9FuRo8BJh7xMhcVNtmyo660o5K1COSQFhdIxPinKMxfnlEPnIrOALBuiurAL75rM-t4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 아래 그림처럼 해당 데이터를 Update, Delete까지 할 수 있는 기능도 제공해 줍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiBiKxhE2Ta6-Yxfda2l5iden7x7lyvCQs7_UAHJN--qb4zKMlAQft9PdXmfEndXhd3Jdhe5OiFtr2KYdEPKeJDKjFCzZ8m3qy49rvGRadycr_zRh-igxwbENdUb3H6uhQ0lU25SxS6SgBrDOXSTmwzpI91MbKgWCwEl6vj6A4KhRxYT2xdT6kcVkOHRPI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>저는 총 4개의 데이터를 넣었는데요.</p>
+<p>테스트를 위해서는 충분한 거 같네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiQuxa-7klTZ9TZ1xK2yDTX3_TGVw5n2FfrNGqVGYvEq-cGG8BmSuAKD2IrLhQ5RfI7PKMcs6kQG67I3rYekROLDbOIO0Ods1pz9ZYZNMwDC7d0QE6LO3jFgvByuFG7NG9Lo0U7XyX1v7hvprtdDz7f1jOSepEUjAtA8quIcsytmFBtm_3th9JwORonEh4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="2-데이터-가져오는-api-만들기">2. 데이터 가져오는 API 만들기</h2>
+<p>HTTP 메서드의 가장 기본인 GET 메서드를 이용해서 D1 DB에 있는 데이터를 가져오는 로직을 구현해 보겠습니다.</p>
+<p>functions 폴더 밑에 api 폴더를 만들었었는데요.</p>
+<p>거기에 get-todos.js 이름으로 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">onRequestGet</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span><span class="sb">`select * from todos`</span><span class="p">).</span><span class="nx">all</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 실행해 보면 에러가 나는데요.</p>
+<p>여기서 먼저 설명할 게 있습니다.</p>
+<p>c는 context이고,</p>
+<p>onRequest 함수를 안 쓰고 onRequestGet 함수를 썼는데요.</p>
+<p>Get 메서드만 처리하는 함수여서 onRequestGet 함수를 썼습니다.</p>
+<p>그리고 가장 중요한 c.env.DB 부분인데요.</p>
+<p>이 부분이 우리의 코드와 Cloudflare의 서비스 부분을 연결하는 environment 부분입니다.</p>
+<p>먼저, 지난 시간에 만들었던 npx wrangler 명령어로 D1 DB를 만들었던 아래 명령어를 보시면</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  cloudflare-pages-d1-stack-example&gt; npx wrangler d1 create pages-d1-stack
+</span></span><span class="line"><span class="cl">✅ Successfully created DB <span class="s1">&#39;pages-d1-stack&#39;</span> in region APAC
+</span></span><span class="line"><span class="cl">Created your database using D1<span class="err">&#39;</span>s new storage backend. The new storage backend is not yet recommended
+</span></span><span class="line"><span class="cl"><span class="k">for</span> production workloads, but backs up your data via point-in-time restore.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span> <span class="c1"># i.e. available in your Worker on env.DB</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;pages-d1-stack&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;2ddfdc8f4-9601-4ae2-aeaa-12adfasdf6d8820f&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리가 필요한 자료가 다 나와 있습니다.</p>
+<p>먼저 프로젝트 최상단 폴더에 wrangler.toml 파일을 만들고 아랫부분만 넣으시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># wrangler.toml</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span> <span class="c1"># i.e. available in your Worker on env.DB</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;pages-d1-stack&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;2ddfdc8f4-9601-4ae2-aeaa-12adfasdf6d8820f&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 binding이란 항목은 코드와 D1 DB를 실제 이어주는 바인딩인데요.</p>
+<p>바인딩 이름으로 &lsquo;DB&rsquo;라는 이름을 쓴 겁니다.</p>
+<p>그리고 database_name은 실제 Cloudflare에 저장된 DB 이름입니다.</p>
+<p>그리고 database_id는 다른 곳에 유출되면 안 되는 코드로 이게 정확해야지 D1 DB에 연결이 되는 겁니다.</p>
+<p>database_id는 아래 그림처럼 대시보드에서도 볼 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhf4jC4FJhtajxkpHH-Pyx2Cr0bdYFaAWlF3SvfFL4lQEa_jjBy0HpDmeQi7LoG_xMF0qj_cZG90Ao_0PsiZkwV9Ao_wuVEDgsrwI0oYgt9TdSFqWat-cvM6ARIqvkvDgOm8fPMs0hWtOcpIfp2vn16ELqipPfVNJNax_qgpunw_3LIDRePfMOLJ2zNADk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 개발 서버를 다시 돌리면 됩니다.</p>
+<p>잠깐, 여기서 개발 서버를 돌리지 말고 일단은 workers를 새로 만들었으니 실제 엣지 서버에 배포해 보겠습니다.</p>
+<p>프런트엔드 쪽인 React앱은 수정한 게 없으니까 다시 빌드할 필요 없으니까 단순히 아래와 같이 명령어를 입력하시면 새로 만든 workers가 엣지 서버에 올라가게 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx wrangler pages deploy ./dist</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 터미널 창에 나온 개발 서버로 직접 연결해서 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhCt-jpXF5MztTHH0KN-DqA25wLl0b-YjfXdXGxTFrmmGz8oW1CRZTZyAyBDQmXye6bcPKvGUcXvLNuXeaSg27SsDwr-lDyyKKgEpYMYS6dej-IsYsqUBds0dHkaUb_4KAk2CYijqS0QKrb69Tw7DOUT5fj8NEWMbdKXBmclhmvqvRmxlNmflSMYyNh9og"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 &lsquo;api/get-todos&rsquo; 경로로 갔을 때 에러가 나옵니다.</p>
+<p>왜 그런 걸까요?</p>
+<p>바로 우리가 이용한 Cloudflare Pages 서비스의 세팅 부분에 D1 바인딩 부분을 직접 해줘야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi9kmriPJRMsie9W1litiOVykstyfeWtAJ4X_uGZcMEm0VBxa2CwoEMBglZMtcdwuzalkKiSvAvys50dWTOUMvOZxmZlTq7kwm0YyaucOe9vewAm0xI9o_vVMoBtZSLW3ASl1LoEFKes0RfLKEqYvSdSRIGrOVuOB3u4OHjjHDdWinePr7BP6SpgIxKJX0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림이 정적 사이트 호스팅 서비스인 Pages의 대시보드 중에 있는 실제 작업 중인 앱입니다.</p>
+<p>여기서 Settings를 클릭하고 Functions 부분도 클릭한 다음 밑으로 스크롤 한 다음 D1 부분에서 바인딩을 아래와 같이 하면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgw4d6ERn_ZGjgbiLghuFY4N4lNObGGzsN4gQN7aMQVTjclUiVNehQbf42ofD6f4OjmZwxkXSz75MEh5OPQ16PGwWeHTYKvoEZXNnQ_wTu2qyOQ16X1kRVOfZaB18Zvk8gOacuEt7oITYjjbJ7HQcNHWpK_mV2kh5aIhoKD6Q2DJO24lvLzjR8Uu8MuIXA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 &lsquo;Variable Name&rsquo;이 &lsquo;DB&rsquo;입니다.</p>
+<p>우리가 wrangler.toml 파일에서 bindings라는 부분에 명기했던 그 이름입니다.</p>
+<p>이제 저장하고 다시 &lsquo;api/get-todos&rsquo; 주소로 이동해 볼까요?</p>
+<p>안될 겁니다.</p>
+<p>조건이 바뀌면 다시 또 wrangler deploy 해줘야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx wrangler pages deploy ./dist</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 우리의 Pages 정적 사이트 주소로 가서 &lsquo;api/get-todos&rsquo; 주소로 가볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhwqbtOzwzaKo89exK_PqDdFteOv5UAGb1FeTfdD6-Q51oHyn8Hehnk5zVfQjmJC8smL2kM9BaWIeYlaoplqGqzodepoaVhVVWEOGs3AOEjKGOU-MW3semck237WXbaL_Q7z6nBRoiGtw3LmCS_HxIPNlbedshdQ7ElI8eJpUN5Z7mroqI0HKbzLdB-wzk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 성공적으로 나옵니다.</p>
+<p>여기까지가 공식적인 Deploy에 해당되는 DB 관련 세팅 방법이었습니다.</p>
+<p>그런데, 우리는 지금 개발 서버를 돌려야 하잖아요.</p>
+<p>wranlger는 그 부분에 대해서도 신경 써 줍니다.</p>
+<p>바로 &lsquo;&ndash;local&rsquo;이란 문구를 넣으면 프로젝트 폴더에 &lsquo;.wrangler&rsquo;이란 폴더 밑에 실제로 로컬 서버에서 작업할 DB를 만들어 줍니다.</p>
+<hr>
+<h2 id="3-로컬-개발-환경-구축하기">3. 로컬 개발 환경 구축하기</h2>
+<p>wrangler가 현재 버전이 &lsquo;3.19.0&rsquo; 인데요.</p>
+<p>제가 이 부분에서 몇 시간 고생해서 얻은 결론은 바로 wrangler를 3.8 버전으로 낮추는 것과 NodeJS 버전도 16 버전으로 낮추는 겁니다.</p>
+<p>왜냐하면 wrangler가 로컬 서버에서 돌리는 DB 관련 패키지가 better-sqlite3 패키지인데요.</p>
+<p>이 패키지가 NodeJS 버전 16에서 C 언어 파일을 컴파일해서 연결한 겁니다.</p>
+<p>그래서 현재 사용 중인 NodeJS 버전 18에서는 작동하지 않는데요.</p>
+<p>그러면 왜 정식으로 배포했을 때는 아무런 에러 없이 작동한 건지 모르겠네요.</p>
+<p>아마도 정식 배포된 엣제 서버는 NodeJS 16으로 동작하는 게 아닐까 싶습니다.</p>
+<p>그리고, 아직 D1 서비스가 베타 상태라서 그런 거니까요, 나중에 정식 서비스를 시작하면 이 같은 문제가 생기지는 않을 거 같습니다.</p>
+<p>nodejs 버전은 &rsquo;nvm&rsquo;을 이용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  cloudflare-pages-d1-stack-example&gt; nvm use v16
+</span></span><span class="line"><span class="cl">Now using node v16.17.0 <span class="o">(</span>npm v8.15.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">➜  cloudflare-pages-d1-stack-example&gt; node -v
+</span></span><span class="line"><span class="cl">v16.17.0</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 package.json 파일에서 wrangler 부분을 3.8.0으로 바꾸고 다시 npm install 하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;wrangler&#34;</span><span class="o">:</span> <span class="s2">&#34;3.8.0&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 &lsquo;.wrangler&rsquo; 폴더도 깔끔하게 지우고 다시 시작해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">rm -rf .wrangler
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npx wrangler pages dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 입력하고 개발 서버가 돌려지면 &lsquo;api/get-todos&rsquo; 주소로 이동하면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhkYdmoQmlbAjVnPGYaZyWVwO1n94swxqdjnLGadqvTrCqX31Mht-1J_VfKnb0-tZRR5Vjeoqg6TI5xKqyxQC-rcmzAyBXgAWxic-snUdkNIC_iNbVm2jx-mkNyhW6Egb3mdHRdkkgZBOlBpZ9qFZdlkC5PUl4EpTSXvTChTeRrF6AEh6IDgPAipkkT1kg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>todos 테이블이 없다고 나오네요.</p>
+<p>왜 그런지 &lsquo;.wrangler&rsquo; 폴더 밑에 있는 db.sqlite 파일을 열어 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhmf1dudxTGb-IJNyxac1UBaHx6jQsWlat5qKpeCwbno8UvCblpbGnHj26ro9wrLFtuCVCTVMz7H01wzW226QgyOJW93SmOkAy_aDoJMTjmYnJm82tJhFuTjbiwQWK4oaigrnCS3-dNdytbbBus4OcCp9v-OJPmwlEP2JgPf2IdG0yscWsXMqoQ-CfycT4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 실제 로컬 상에 있는 db.sqlite에는 아무런 테이블도 없습니다.</p>
+<p>지금까지 만든 테이블은 전부 실제 엣지 서버에 전부 저장된 거죠.</p>
+<p>그래서 로컬 DB에도 테이블과 더미 데이터를 만들어야 합니다.</p>
+<p>D1 DB를 로컬상에서 돌리려면 wrangler.toml 파일에 다음과 같이 한 개의 문장을 추가해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># wrangler.toml</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span> <span class="c1"># i.e. available in your Worker on env.DB</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;pages-d1-stack&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;2ddfdc8f4-9601-4ae2-aeaa-12adfasdf6d8820f&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">preview_database_id</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span> <span class="c1"># Required for Pages local development</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>바로 마지막줄에 있는 &lsquo;preview_database_id&rsquo; 입니다.</p>
+<p>이 값으로는 바인딩된 &lsquo;DB&rsquo;라는 값을 넣으면 됩니다.</p>
+<p>이제 로컬 상 D1 DB에 테이블도 만들고 데이터도 집어넣을 수 있습니다.</p>
+<p>d1 명령어로 로컬에 데이터를 추가하려면 &lsquo;&ndash;local&rsquo; 옵션을 넣으면 됩니다.</p>
+<p>참고로 &lsquo;&ndash;local&rsquo; 과 반대되는 옵션은 &lsquo;&ndash;remote&rsquo;입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx wrangler d1 execute pages-d1-stack --local --file<span class="o">=</span>./todos.sql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">실행결과---
+</span></span><span class="line"><span class="cl">▲ <span class="o">[</span>WARNING<span class="o">]</span> Processing wrangler.toml configuration:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    - D1 Bindings are currently in alpha to allow the API to evolve before general availability.
+</span></span><span class="line"><span class="cl">      Please report any issues to https://github.com/cloudflare/workers-sdk/issues/new/choose
+</span></span><span class="line"><span class="cl">      Note: Run this <span class="nb">command</span> with the environment variable <span class="nv">NO_D1_WARNING</span><span class="o">=</span><span class="nb">true</span> to hide this message
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      For example: <span class="sb">`</span><span class="nb">export</span> <span class="nv">NO_D1_WARNING</span><span class="o">=</span><span class="nb">true</span> <span class="o">&amp;&amp;</span> wrangler &lt;YOUR COMMAND HERE&gt;<span class="sb">`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">--------------------
+</span></span><span class="line"><span class="cl">🚧 D1 is currently in open alpha and is not recommended <span class="k">for</span> production data and traffic
+</span></span><span class="line"><span class="cl">🚧 Please report any bugs to https://github.com/cloudflare/workers-sdk/issues/new/choose
+</span></span><span class="line"><span class="cl">🚧 To request features, visit https://community.cloudflare.com/c/developers/d1
+</span></span><span class="line"><span class="cl">🚧 To give feedback, visit https://discord.gg/cloudflaredev
+</span></span><span class="line"><span class="cl">--------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">🌀 Mapping SQL input into an array of statements
+</span></span><span class="line"><span class="cl">🌀 Loading DB at .wrangler/state/v3/d1/DB/db.sqlite</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 에러가 없이 잘 실행됐네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhiRWhOg85ksGy6NPS3M4LhEBRISmiBtL0f4N7DIihJki0gnNsb5LSFlBXo27-6ZEDQPHZJr7QLIZvkpOvDWnb-dmTeiJYBkE56iud-JWfuZvDlUvBaf_9kgVT-HkH2Otr1OpL_ArtHlapdStKsWD1ufcnuCJmVrM-O8jvI4TF4bZ3WWrMXiQIcJQaBOcw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 위와 같이 로컬 폴더에도 해당 데이터가 잘 나오고 있습니다.</p>
+<p>그러면 개발 서버를 다시 돌려 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx wrangler pages dev --local ./dist</span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리 앱은 pages 앱이기 때문에 위와 같이 pages dev 방식으로 개발 서버를 돌려야 합니다.</p>
+<p>그리고 pages dev 에서는 &lsquo;&ndash;local&rsquo;이란 부분이 자동으로 설정된다고 하고 앞으로 없어질 거라고 합니다.</p>
+<p>사실 dev 서버에서는 &lsquo;&ndash;local&rsquo; 옵션을 생략해도 똑같이 작동하게 됩니다.</p>
+<p>그리고 다시 &lsquo;api/get-todos&rsquo; 주소로 이동해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhNmQ1L4knpdnzKfxoRkvmyScRZcdZvH8LFRiGK39wHYVs-fFvT8hnL1gLYtr4p3gfSemBBxUr8qHrvJ7cw6kwnIm3X7s88yLoNeShVQcwJBoHvoC0b9S45ZSKuKqvlWrpCEBr9ucnrmYvgDA0pxKzVtzV1z6Nb78w0M7BR-JIKXHdFXqHP9tiuH5qWkE0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 잘 나옵니다.</p>
+<p>참고로 Cloudflare의 D1 DB의 SQL 관련 API는 항상 위 그림과 같은 JSON 파일을 리턴합니다.</p>
+<p>API 호출에 대한 성공여부와 meta 정보를 같이 포함하고 있습니다.</p>
+<p>실제 유저가 만든 결과는 results 항목에 있으니까 참조 바랍니다.</p>
+<p>여기서 눈여겨볼게 바로 정식 엣지 서버에는 4개의 데이터가 존재했었고 방금 위에서 본 로컬 서버는 한 개의 데이터만 있죠.</p>
+<p>이로써 우리는 정확하게 로컬 개발 서버를 구현한 겁니다.</p>
+<p>로컬 쪽에 이런 방식으로 DB 관련 API를 개발한 다음 최종적으로 엣지 서버로 배포하는 방식을 사용하시기 바랍니다.</p>
+<p>배포하는 시간보다 로컬에서 개발하는 시간이 훨씬 짧게 걸리거든요.</p>
+<p>로컬 DB의 todos 테이블에 데이터를 몇 개 추가해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx wrangler d1 execute pages-d1-stack --local --command<span class="o">=</span><span class="s2">&#34;insert into todos(title, desc) values(&#39;test 2&#39;,&#39;테스트2입니다.&#39;);&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npx wrangler d1 execute pages-d1-stack --local --command<span class="o">=</span><span class="s2">&#34;insert into todos(title, desc) values(&#39;test 3&#39;,&#39;테스트3입니다.&#39;);&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npx wrangler d1 execute pages-d1-stack --local --command<span class="o">=</span><span class="s2">&#34;insert into todos(title, desc) values(&#39;test 4&#39;,&#39;테스트4입니다.&#39;);&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실제 로컬에 있는 DB 파일에 제대로 입력되었네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhjEU1LAYInYTZTWCwy62nvUFYAZXv8Nm65rF3kSQcHy4Z_HM_dCtF7NvhYMdutG3nDVID1NZSHaBXn73DHVCkNJcF2TSMy4YuvPf68im2PzgYsr4LlzObaLVTY6uH9EC531_5nX_nq_aVySUbV0mK7Om-eBB2Uoa992RbFJ2olJPYPvb6PW2KxJJOD4GE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 로컬 개발 환경 구축이 완성되었습니다.</p>
+<p>개발 서버를 다시 돌려볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="4-react로-get-tods-api-사용하기">4. React로 get-tods API 사용하기</h2>
+<p>이 부분은 여러분들이 React 공부하실 때 매번 하던 일입니다.</p>
+<p>src 폴더의 App.tsx 파일을 아래와 같이 수정합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="s2">&#34;./App.css&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Todo</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span><span class="o">:</span> <span class="nx">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">desc</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">created_at</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Data</span> <span class="o">=</span> <span class="nx">Todo</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="nx">Data</span><span class="o">&gt;</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">fetchData</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;/api/get-todos&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">todos</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">result</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">todos</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">setData</span><span class="p">(</span><span class="nx">todos</span><span class="p">.</span><span class="nx">results</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fetchData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col justify-center items-center p-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-2xl font-bold pb-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">React</span> <span class="kd">with</span> <span class="nx">Pages</span> <span class="o">+</span> <span class="nx">Workers</span> <span class="o">+</span> <span class="nx">D1</span> <span class="nx">Example</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">data</span> <span class="o">?</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">d</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span> <span class="o">-</span> <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">desc</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">))</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span> <span class="o">:</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;&gt;&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>UI가 조금 거슬리는데 개발 테스트라서 그냥 무시해주세요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgAg3EVkqIzA4AA0USLbyE-K7Wf7KlXO707hGvPNWGq4OKvOSW4KOLekvLRZUN1JSP1Nw5lpVv_zBYbSqoflX--LH-TxrorC8T2WrNowBV1qWhldzTLRJiNXtgn1WrLP0j_afpMIIYIMjoApkpYoJVO4cvm2gHBMLonKFxvshd_VomgU34kgqAUTa7nshQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 우리가 만든 개발 서버의 get-todos API가 완벽히 작동하네요.</p>
+<hr>
+<h2 id="5-post-todos-api-개발하기">5. post-todos API 개발하기</h2>
+<p>이제 todo 항목을 웹상에서 직접 넣는 POST 메서드를 만들어야 하는데요.</p>
+<p>일단 UI 부분을 아래와 같이 작성합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-2xl font-bold pb-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">React</span> <span class="kd">with</span> <span class="nx">Pages</span> <span class="o">+</span> <span class="nx">Workers</span> <span class="o">+</span> <span class="nx">D1</span> <span class="nx">Example</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">form</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;/api/post-todos&#34;</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;space-x-2 mb-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border p-2&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;title&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border p-2&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;desc&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Add</span> <span class="nx">Todo</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/ul&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>h1 태그와 ul 태그 사이에 form을 넣었습니다.</p>
+<p>여기서 고민할 게 있는데요.</p>
+<p>React의 클라이언트 사이드에서 handleClick 함수를 이용해서 바로 &lsquo;fetch&rsquo;하는 방법과 위와 같이 아예 form을 이용한 방법이 있는데요.</p>
+<p>여기서는 form을 이용한 방법을 사용했습니다.</p>
+<p>클라이언트 사이드에서 바로 사용하는 부분은 DeleteTodo 부분에서 구현해 보도록 하겠습니다.</p>
+<p>form 태그의 action 부분이 바로 주소인데요.</p>
+<p>post-todos.js 파일을 만들면 됩니다.</p>
+<p>위 코드에서 보시면 input 태그의 name이 두 개인데 각각 &rsquo;title&rsquo;과 &lsquo;desc&rsquo;입니다.</p>
+<p>이 부분을 post-todos.js 부분에서 처리하면 되는 거죠.</p>
+<p>functions/api/post-todos.js 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">onRequestPost</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">c</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">title</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;title&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">desc</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;desc&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="sb">`
+</span></span></span><span class="line"><span class="cl"><span class="sb">    insert into todos(title, desc) values(?, ?)
+</span></span></span><span class="line"><span class="cl"><span class="sb">    `</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span> <span class="nx">desc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Created Todo!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">status</span><span class="o">:</span> <span class="mi">302</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Location</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>POST 메서드라 onRequestPost 함수로 작성했습니다.</p>
+<p>우리가 input 태그에서 넘긴 데이터는 formData로 접근할 수 있습니다.</p>
+<p>그리고 그걸 SQL의 insert 문법으로 작성한 거죠.</p>
+<p>insert 문법에 보시면 &lsquo;?&rsquo; 표시가 있는데요.</p>
+<p>bind(title, desc) 처럼 하시면 &lsquo;?&rsquo; 표시된 부분으로 데이터가 넘어갑니다.</p>
+<p>그리고 마지막으로 Response를 &ldquo;/&rdquo; 경로로 다시 redirect 해서 넘겨줍니다.</p>
+<p>테스트해볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEguvdXcM2ER8o2lmStMHuwaOrxhOvD5C4B4fu6ZVwvanjseZY760dDC1GqDBAT1XXe_8O2V-Nz8dNJsLMHSO3gK3NnK6-SyLHabC_CkEInHcxJ0ps3lp7TMuknAW2u4PTk88TxW7uVpY9WLPxxswJNYDz9TKplTzuANyBeWDm5YMlGgVey9WXlV0Ay-Vec"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 form에 해당 값을 넣고 &lsquo;Add Todo&rsquo; 버튼을 누르면 아래와 같이 화면이 리프레쉬되면서 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjFUBRJ7yCkLRLbI84SQofiNnJl7xKMglvj8KYSfTHhrpFFXay4imDpgdnJORpnHzVxbV698XqvMFSTaM8w1BywWrfu2iAbtJX4GyXcdmn74o7A6cmY-nP_pRcvc9hYn1mks8Fr2PV90q5_-af0GGGQ9tFxo1yG_KdnGH60le9uE5CRLlQzKxEVjoygF6w"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>POST 메서드를 이용한 post-todos API 가 완벽하게 작동하네요.</p>
+<hr>
+<h2 id="6-delete-todos-api-만들기">6. delete-todos API 만들기</h2>
+<p>이 부분은 DETELTE 메서드를 이용한 API입니다.</p>
+<p>id를 넘겨서 해당 id만 삭제하는 로직을 작성하면 됩니다.</p>
+<p>먼저, UI를 수정해야겠죠.</p>
+<p>여기서는 클라이언트 사이드에서 작동하는 로직으로 구현해 보겠습니다.</p>
+<p>당연히 form을 이용해서 구현할 수도 있죠.</p>
+<p>먼저, 서브 컴포넌트인 DeleteTodosButton 컴포넌트를 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// DeleteTodosButton.tsx 파일
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DeleteTodosButton</span> <span class="o">=</span> <span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">todoId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onDelete</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">todoId</span><span class="o">:</span> <span class="nx">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onDelete</span><span class="o">:</span> <span class="p">(</span><span class="nx">todoId</span><span class="o">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">handleDelete</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`/api/delete-todos`</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;DELETE&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/json&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">todoId</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// 성공적으로 응답받았을 때, onDelete 함수 호출하여 로컬 상태나 UI 업데이트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="nx">onDelete</span><span class="p">(</span><span class="nx">todoId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Failed to delete task&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Error during DELETE request:&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleDelete</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Delete</span> <span class="nx">Task</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="kr">export</span> <span class="k">default</span> <span class="nx">DeleteTodosButton</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 이 컴포넌트를 App.tsx 파일에 추가해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="s2">&#34;./App.css&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">DeleteTodosButton</span> <span class="nx">from</span> <span class="s2">&#34;./DeleteTodosButton&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Todo</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span><span class="o">:</span> <span class="nx">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">desc</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">created_at</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Data</span> <span class="o">=</span> <span class="nx">Todo</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">data</span><span class="p">,</span> <span class="nx">setData</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="nx">Data</span><span class="o">&gt;</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">fetchData</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;/api/get-todos&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">todos</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">result</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">todos</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">setData</span><span class="p">(</span><span class="nx">todos</span><span class="p">.</span><span class="nx">results</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fetchData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">handleDeleteTodo</span> <span class="o">=</span> <span class="p">(</span><span class="nx">todoId</span><span class="o">:</span> <span class="nx">number</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 성공적으로 삭제된 작업을 로컬 상태에서 제거
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">setData</span><span class="p">((</span><span class="nx">prevData</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">prevData</span><span class="o">?</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">todo</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">todo</span><span class="p">.</span><span class="nx">id</span> <span class="o">!==</span> <span class="nx">todoId</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col justify-center items-center p-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-2xl font-bold pb-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">React</span> <span class="kd">with</span> <span class="nx">Pages</span> <span class="o">+</span> <span class="nx">Workers</span> <span class="o">+</span> <span class="nx">D1</span> <span class="nx">Example</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;/api/post-todos&#34;</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;space-x-2 mb-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border p-2&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;title&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border p-2&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;desc&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Add</span> <span class="nx">Todo</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">data</span> <span class="o">?</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">d</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span> <span class="o">-</span> <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">desc</span><span class="p">}</span> <span class="o">-</span><span class="p">{</span><span class="s2">&#34; &#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="o">&lt;</span><span class="nx">DeleteTodosButton</span> <span class="nx">todoId</span><span class="o">=</span><span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span> <span class="nx">onDelete</span><span class="o">=</span><span class="p">{</span><span class="nx">handleDeleteTodo</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">))</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span> <span class="o">:</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;&gt;&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행 결과는 아래와 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEglX4M5L4eObg9e0VpEheJnlsCqHZRitpqSCLFeEnLa6mq3BARNCpuNcsiSK3SL8wGysRMJTws5hwfW0ibZZYa_OK_DKZeBLtV17Rm7KbB5luUIE_JJW5asz5I_8E1aIj4Q5rLS235esQehBJVCzVEu7RyJ6atMeMX-6QZ5O3K2x7IOV5aMBk2h7wbUKVY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나오는데요.</p>
+<p>UI는 정말 형편없네요.</p>
+<p>UI가 완성되었으니 API인 delete-todos.js 파일을 만들어야겠죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// functions/api/delete-todos.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">onRequestDelete</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">c</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">todoId</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">todoId</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;Todo ID is required&#34;</span> <span class="p">}),</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">status</span><span class="o">:</span> <span class="mi">400</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/json&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">.</span><span class="nx">prepare</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="sb">`
+</span></span></span><span class="line"><span class="cl"><span class="sb">      DELETE FROM todos WHERE id = ?
+</span></span></span><span class="line"><span class="cl"><span class="sb">      `</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">todoId</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Deleted Todo with ID: </span><span class="si">${</span><span class="nx">todoId</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="s2">&#34;Todo deleted successfully&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">200</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgy1x5cGOjkKMmV577sUsa9EuK17GqLO_0UDHWXu9N8dF6Jsutjl9StO4TKmmBw-b02m92ewe0uF9jnFge09ZRaIS05-lgGYigzlwPVaQ3k9glg_JjwiEs5o5X3Hg1imDB5xaBvEogI7xmTRIlDTeYJZixIaahIAw3beJ6b_gx7UocXpgexW0OJWf05XWg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림은 &rsquo;test 4&rsquo;를 지운 후의 모습입니다.</p>
+<p>그러면 실제 로컬 DB에는 어떤 변화가 있었는지 확인해 봐야겠죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  DB sqlite3 db.sqlite
+</span></span><span class="line"><span class="cl">SQLite version 3.37.0 2021-12-09 01:34:53
+</span></span><span class="line"><span class="cl">Enter <span class="s2">&#34;.help&#34;</span> <span class="k">for</span> usage hints.
+</span></span><span class="line"><span class="cl">sqlite&gt; .schema
+</span></span><span class="line"><span class="cl">CREATE TABLE todos <span class="o">(</span>
+</span></span><span class="line"><span class="cl">  id INTEGER PRIMARY KEY AUTOINCREMENT,
+</span></span><span class="line"><span class="cl">  title TEXT NOT NULL,
+</span></span><span class="line"><span class="cl">  desc TEXT NOT NULL,
+</span></span><span class="line"><span class="cl">  created_at TIMESTAMP DEFAULT <span class="o">(</span>datetime<span class="o">(</span>CURRENT_TIMESTAMP,<span class="s1">&#39;localtime&#39;</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl"><span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">CREATE TABLE sqlite_sequence<span class="o">(</span>name,seq<span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">sqlite&gt; <span class="k">select</span> * from todos<span class="p">;</span>
+</span></span><span class="line"><span class="cl">1<span class="p">|</span><span class="nb">test</span> title<span class="p">|</span><span class="nb">test</span> desc<span class="p">|</span>2023-12-09 13:03:44
+</span></span><span class="line"><span class="cl">2<span class="p">|</span><span class="nb">test</span> 2<span class="p">|</span>테스트2입니다.<span class="p">|</span>2023-12-09 13:12:22
+</span></span><span class="line"><span class="cl">3<span class="p">|</span><span class="nb">test</span> 3<span class="p">|</span>테스트3입니다.<span class="p">|</span>2023-12-09 13:13:11
+</span></span><span class="line"><span class="cl">5<span class="p">|</span>테스트 5<span class="p">|</span><span class="nb">test</span> 5<span class="p">|</span>2023-12-09 13:56:28
+</span></span><span class="line"><span class="cl">sqlite&gt; </span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 로컬 폴더에 있는 데이터도 완벽하게 Delete 액션이 작동되었네요.</p>
+<hr>
+<h2 id="7-최종-배포하기">7. 최종 배포하기</h2>
+<p>이제 완성되었으니 다시 최종 배포하면 됩니다.</p>
+<p>package.json 파일을 열어 scripts 부분에서 deploy 부분만 다음과 같이 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="s2">&#34;scripts&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;dev:ui&#34;</span><span class="o">:</span> <span class="s2">&#34;vite&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;dev&#34;</span><span class="o">:</span> <span class="s2">&#34;wrangler pages dev --compatibility-date=2023-12-06 -- npm run dev:ui&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;build&#34;</span><span class="o">:</span> <span class="s2">&#34;tsc &amp;&amp; vite build&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;lint&#34;</span><span class="o">:</span> <span class="s2">&#34;eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;preview&#34;</span><span class="o">:</span> <span class="s2">&#34;vite preview&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;deploy&#34;</span><span class="o">:</span> <span class="s2">&#34;npm run build &amp;&amp; wrangler pages deploy ./dist&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 npm run deploy 해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  cloudflare-pages-d1-stack-example npm run deploy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; cloudflare-pages-d1-stack-example@0.0.0 deploy
+</span></span><span class="line"><span class="cl">&gt; npm run build <span class="o">&amp;&amp;</span> wrangler pages deploy ./dist
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; cloudflare-pages-d1-stack-example@0.0.0 build
+</span></span><span class="line"><span class="cl">&gt; tsc <span class="o">&amp;&amp;</span> vite build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vite v5.0.6 building <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">33</span> modules transformed.
+</span></span><span class="line"><span class="cl">dist/index.html                   0.46 kB │ gzip:  0.30 kB
+</span></span><span class="line"><span class="cl">dist/assets/index-Fv-pgNiL.css    5.87 kB │ gzip:  1.80 kB
+</span></span><span class="line"><span class="cl">dist/assets/index-XMZ3fdCu.js   144.02 kB │ gzip: 46.42 kB
+</span></span><span class="line"><span class="cl">✓ built in 2.34s
+</span></span><span class="line"><span class="cl">✨ Compiled Worker successfully
+</span></span><span class="line"><span class="cl">🌍  Uploading... <span class="o">(</span>4/4<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✨ Success! Uploaded <span class="m">3</span> files <span class="o">(</span><span class="m">1</span> already uploaded<span class="o">)</span> <span class="o">(</span>1.85 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✨ Uploading Functions bundle
+</span></span><span class="line"><span class="cl">✨ Deployment complete! Take a peek over at https://4511194f.pages-d1-fullstack-example.pages.dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 엣지 서버로 이동해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhutM3SN25jCxvcdOWDcRVP9x-CHdK5ebNI2SQgAitC6DjDEg5SMKYwrQq2fOG9cOeBwuSbXlpvKgGtiQW3g0ZAuiXvsHeU2Hte5zqFwvegsnJQVAyrHDtl72S6ZGPtbfXhw-u6V5GpE6jGjn5MjxX89VnFbPweBEHs0QPpVum0wfqCe8dMs8WiXOHU494"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 우리가 처음 엣지 서버에 더미 데이터 넣었던 게 나오네요.</p>
+<p>Delete Todo 버튼도 눌러보세요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgoKzlkYVzen32k1Kx4U8CfoUMuTKPkfP5H2atEvnJfwWBYBno406llnKLijbsK2il3qBHWOq-dH2GkoFmN6rNYT5MUyjk12-pinB7ZIY6YV8hpRPzO8bTWT1sgLWkHUk0biD9SMkYwOxBAgTZreVK6SqpblJ5IJyeRD4m-wcfrZrFrX2DiuOcfapohw3Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 한 개가 줄어들었습니다.</p>
+<p>실제 엣지 DB에는 어떻게 되었을까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiun3VFjf5339KntSMZXKWB6wtOBRjPZBhIi-Pybfby_AIwNv-Wvig8TUqy5FpXWI6SdhWNwkodNNB3uWiCblgsJf88YsqkfTNPtm84EDN1B8eNQ1hf7pO6BctwWjHJxUzoF-MvLyb_fNHyIO9_0JOtxGnndNfFV5jH-TOoxagE22GjMczoA2pkP-me07s"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 엣지 서버의 DB도 반영이 잘 되었습니다.</p>
+<p>그리고 다시 새로운 Todo를 추가해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjmU962CmUNFBSfy-6crzQueYtxd60pQB3JtwI0XvlvB2orRK75H3AH71Z3SDygEQLfjDExGkFqB9m99fdtY2g8R7mBxF_64cd5uXG7HhC-wkEI1WvRtFDgoch00O6PTMMBmU8aP58BNmBv9wk_uzab6yzz8mp0-GmnPMyvDxVmwLZ22nuSOwtndqHO1ic"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 추가하면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhQEnI1kGWXpfQJl0C5RkYdEvwY0fi9eDFxd2oEwBYSX-B-ovaAGigOIpz79A4jHclfT9sgxVGIB5TNjdxn7gKVLGy2WpPhf7RcziFe4z0IDG8Ku4keMNm6HLakALS_z3hRd6w-dmwmwdgJyEWSkLm62gfloycTn0ykgepq0aTcmLJHhn78W8wc6vwSITQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>역시나 작동이 잘 되네요.</p>
+<p>DB 부분도 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi4ceyZtXbTZGvvKWwSNa0Yod8dRY4dCJ0DeyRaYJgAYgIrAuq3hF1baeHTtXluY4kXaJVWsEQX25lfSG3inAZ-NhRrQ3cNQaGV_ZeNgIkupQCayVK7ZV_DCFT5u5k8rsjtS85nhY74kjNm1FY-oQS-n_lAhUSPQS7WOj_6YNmSJZ4G6IJPkIUuiSyYGVw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 엣지에 있는 D1 DB에도 반영이 잘 되고 있습니다.</p>
+<hr>
+<p>이제 Cloudflare가 제공해주는 무료 서비스로 풀스택 앱 만드는 강의가 끝났습니다.</p>
+<p>제가 제공해 주는 강의를 기반으로 여러분 만의 멋진 앱을 한 번 만들어 보시는 건 어떨까요?</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">cloudflare</a>
+        <a class="btn btn-light" href="/tags/pages/" role="button">pages</a>
+        <a class="btn btn-light" href="/tags/d1/" role="button">d1</a>
+        <a class="btn btn-light" href="/tags/workers/" role="button">workers</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-06-introduction-cloudflare-pages-workers-d-1-react-full-stack/">풀스택 강의 1편. Cloudflare Pages &#43; Workers &#43; D1 &#43; React로 풀스택 개발하기</a></h2>
+                  <p>Cloudflare 무료 서비스로 풀스택 웹 앱 만들기</p>
+                  <p>
+  <small>December 6, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-10-fullstack-remix-cloudflare-pages-d-1-db-drizzle-orm/">풀스택 강의 4편. Remix &#43; Cloudflare Pages &#43; D1 DB &#43; Drizzle ORM</a></h2>
+                  <p>풀스택 강의, Remix와 Pages, D1, Drizzle ORM으로 개발하기</p>
+                  <p>
+  <small>December 10, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm/">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></h2>
+                  <p>풀스택 개발하기 AstroJS + Cloudflare pages + D1 + Drizzle ORM</p>
+                  <p>
+  <small>December 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

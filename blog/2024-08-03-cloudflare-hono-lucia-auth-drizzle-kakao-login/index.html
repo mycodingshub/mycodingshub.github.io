@@ -1,0 +1,1108 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</title>
+<meta name="description" content="Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기" />
+<meta property="og:description" content="Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-08-03T11:44:49Z" />
+<meta property="article:modified_time" content="2024-08-03T11:44:49Z" />
+<meta property="article:tag" content="Cloudflare" />
+<meta property="article:tag" content="Hono" />
+<meta property="article:tag" content="Lucia" />
+<meta property="article:tag" content="Drizzle orm" />
+<meta property="article:tag" content="D1 DB" />
+<meta property="article:tag" content="Kakao ID Login" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기" />
+<meta name="twitter:description" content="Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기\"",
+  "description": "\"Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다.\"",
+  "datePublished": "\"2024-08-03T11:44:49Z\"",
+  "dateModified": "\"2024-08-03T11:44:49Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</h1>
+        <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간에 Lucia Auth, arctic 패키지로 Hono에서 Github ID로 로그인후 세션 유지하는 방법에 대해 배웠는데요.</p>
+<p>먼저, 지난 시간 강의 링크입니다.</p>
+<ul>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login">Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login">Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login">Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login">Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db">Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기</a></p>
+</li>
+</ul>
+<hr>
+<p>오늘은 arctic에서 제공하는 카카오 로그인을 이용해서 카카오 아이디 로그인도 시도해 볼 예정입니다.</p>
+<p><a href="https://arctic.js.org/">arctic 홈페이지</a></p>
+<p>위 홈페이지로 가시면 왼쪽에 Kakao가 보입니다.</p>
+<p>Naver는 안보이고 Line은 보이네요.</p>
+<p>Kakao 로그인 코드는 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// Kakao
+</span></span></span><span class="line"><span class="cl"><span class="c1">// For usage, see OAuth 2.0 provider.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Kakao</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;arctic&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">kakao</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Kakao</span><span class="p">(</span><span class="nx">clientId</span><span class="p">,</span> <span class="nx">clientSecret</span><span class="p">,</span> <span class="nx">redirectURI</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">url</span>: <span class="kt">URL</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">createAuthorizationURL</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">scopes</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">tokens</span>: <span class="kt">KakaoTokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">validateAuthorizationCode</span><span class="p">(</span><span class="nx">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">tokens</span>: <span class="kt">KakaoTokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">refreshAccessToken</span><span class="p">(</span><span class="nx">refreshToken</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>토큰은 두개가 보이는데요.</p>
+<p>첫 번째가 액세스 토큰이고, 두 번째가 리플레시 토큰입니다.</p>
+<p>액세스 토큰만 있어도 유저 정보를 얻을 수 있습니다.</p>
+<p>그리고, 유저 정보를 얻는 코드는 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// Get user profile
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Use the /user/me endpoint.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">validateAuthorizationCode</span><span class="p">(</span><span class="nx">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;https://kapi.kakao.com/v2/user/me&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">tokens</span><span class="p">.</span><span class="nx">accessToken</span><span class="si">}</span><span class="sb">`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login">예전 강의</a>를 보시면 카카오가 리턴하는 유저 정보는 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiFW_MKVSmbLJP8FXMqNnEzaXBqNpoweRIKO3brYdhCmYfA-oO2qVu0rJx1KsZ0hDE-xxW0eN7Orf2TDFqeP9I9wDprOSFLFEWmXC1QjiPfGAKgalby50f0f9vwMrd7CzwzFH7CG4MF_8gfPldRXa2n09lIQt1wtqvXUgph1N1r49cBjArYM5UCZIXFc8A"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 우리가 얻을 수 있는거는 id와 properties.nickname, 그리고 여유가 되면 properties.profile_image가 되겠네요.</p>
+<p>이전 시간에 사용했던 코드를 재사용하도록 DB 스키마를 조정해야겠습니다.</p>
+<p>기존에 사용했던 DB의 스키마는 아래와 같은데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">InferSelectModel</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">integer</span><span class="p">,</span> <span class="nx">sqliteTable</span><span class="p">,</span> <span class="nx">text</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/sqlite-core&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">generateId</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">usersTable</span> <span class="o">=</span> <span class="nx">sqliteTable</span><span class="p">(</span><span class="s2">&#34;users&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">primaryKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">notNull</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">$defaultFn</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">generateId</span><span class="p">(</span><span class="mi">15</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">github_id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;github_id&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">().</span><span class="kt">unique</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">username</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;username&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">SelectUser</span> <span class="o">=</span> <span class="nx">InferSelectModel</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">usersTable</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">sessionsTable</span> <span class="o">=</span> <span class="nx">sqliteTable</span><span class="p">(</span><span class="s2">&#34;sessions&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">).</span><span class="nx">primaryKey</span><span class="p">().</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">user_id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;user_id&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">notNull</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">references</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">usersTable</span><span class="p">.</span><span class="nx">id</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expires_at</span>: <span class="kt">integer</span><span class="p">(</span><span class="s2">&#34;expires_at&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">MySessionsType</span> <span class="o">=</span> <span class="nx">InferSelectModel</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">sessionsTable</span><span class="p">&gt;;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>usersTable을 조금 바꿔야겠습니다.</p>
+<p>username에다는 nickname을 넣으면 되고, id를 넣는 github_id를 이름을 좀 더 범용 이름으로 바꿔야 겠습니다.</p>
+<p>그리고, profile_image도 넣어야 겠네요.</p>
+<p>참고로 구글 아이디로 로그인시 유저 정보는 아래와 같이 나옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  id: <span class="s1">&#39;1105846834656&#39;</span>,
+</span></span><span class="line"><span class="cl">  name: <span class="s1">&#39;M~~~~~m&#39;</span>,
+</span></span><span class="line"><span class="cl">  given_name: <span class="s1">&#39;M~~~~~~~~~~&#39;</span>,
+</span></span><span class="line"><span class="cl">  family_name: <span class="s1">&#39;~~~~&#39;</span>,
+</span></span><span class="line"><span class="cl">  picture: <span class="s1">&#39;https://lh3.googleusercontent.com/a/ACg8ocJchdcIu6QL8IWodm0_sYiMsU55E_a9O4g=s96-c&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>구글 유저 정보도 우리가 필요한 id, name, picture가 있네요.</p>
+<p>결론적으로 profile_image 항목을 추가하고, github_id란 이름을 범용 id 이름으로 바꿔야겠습니다.</p>
+<p>다시 스키마 파일을 아래와 같이 수정합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">InferSelectModel</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">integer</span><span class="p">,</span> <span class="nx">sqliteTable</span><span class="p">,</span> <span class="nx">text</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/sqlite-core&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">generateId</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">usersTable</span> <span class="o">=</span> <span class="nx">sqliteTable</span><span class="p">(</span><span class="s2">&#34;users&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">primaryKey</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">notNull</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">$defaultFn</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">generateId</span><span class="p">(</span><span class="mi">15</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">oauth_id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;oauth_id&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">().</span><span class="kt">unique</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">username</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;username&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">profile_image</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;profile_image&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">SelectUser</span> <span class="o">=</span> <span class="nx">InferSelectModel</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">usersTable</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">sessionsTable</span> <span class="o">=</span> <span class="nx">sqliteTable</span><span class="p">(</span><span class="s2">&#34;sessions&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">).</span><span class="nx">primaryKey</span><span class="p">().</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">user_id</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;user_id&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">notNull</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">references</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">usersTable</span><span class="p">.</span><span class="nx">id</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expires_at</span>: <span class="kt">integer</span><span class="p">(</span><span class="s2">&#34;expires_at&#34;</span><span class="p">).</span><span class="nx">notNull</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">MySessionsType</span> <span class="o">=</span> <span class="nx">InferSelectModel</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">sessionsTable</span><span class="p">&gt;;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 기존 github_id를 oauth_id로 바꿨습니다.</p>
+<p>그리고 profile_image항목도 추가했습니다.</p>
+<p>이제 lucia.ts 파일을 열어 아래와 같이 수정합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">D1Adapter</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@lucia-auth/adapter-sqlite&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Lucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">SelectUser</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">D1</span>: <span class="kt">D1Database</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">adapter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">D1Adapter</span><span class="p">(</span><span class="nx">D1</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">user</span><span class="o">:</span> <span class="s2">&#34;users&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">session</span><span class="o">:</span> <span class="s2">&#34;sessions&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Lucia</span><span class="p">(</span><span class="nx">adapter</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sessionCookie</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">attributes</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">getUserAttributes</span><span class="o">:</span> <span class="p">(</span><span class="nx">attributes</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">oauth_id</span>: <span class="kt">attributes.oauth_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">username</span>: <span class="kt">attributes.username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">profile_image</span>: <span class="kt">attributes.profile_image</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">declare</span> <span class="kr">module</span> <span class="nx">&#34;lucia&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">interface</span> <span class="nx">Register</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">Lucia</span>: <span class="kt">ReturnType</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">initializeLucia</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">DatabaseUserAttributes</span>: <span class="kt">Omit</span><span class="p">&lt;</span><span class="nt">SelectUser</span><span class="p">,</span> <span class="s2">&#34;id&#34;</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>getUserAttributes에 oauth_id, profile_image 항목을 추가했습니다.</p>
+<p>이제, Drizzle ORM을 이용해서 바뀐 스키마를 D1 DB에 반영시켜야 하는데요.</p>
+<p>drizzle-kit로 sql 파일을 만들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  npx drizzle-kit generate
+</span></span><span class="line"><span class="cl">No config path provided, using default <span class="s1">&#39;drizzle.config.ts&#39;</span>
+</span></span><span class="line"><span class="cl">Reading config file <span class="s1">&#39;/Users/cpro95/Codings/Javascript/hono/bun-hono-cloudflare-d1-drizzle-lucia-github-oauth-test/drizzle.config.ts&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">~ github_id › oauth_id column will be renamed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">+ profile_image column will be created
+</span></span><span class="line"><span class="cl">--- all columns conflicts in users table resolved ---
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">2</span> tables
+</span></span><span class="line"><span class="cl">sessions <span class="m">3</span> columns <span class="m">0</span> indexes <span class="m">1</span> fks
+</span></span><span class="line"><span class="cl">users <span class="m">4</span> columns <span class="m">1</span> indexes <span class="m">0</span> fks
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>✓<span class="o">]</span> Your SQL migration file ➜ drizzle/0001_fancy_leo.sql 🚀</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 실행하면 github_id를 oauth_id로 바꿀것인지, 아니면 새로운 항목을 추가할 것인지 고르라고 나옵니다.</p>
+<p>바꿔야하기 때문에 화살표 키로 해당 항목을 고르고 엔터키를 누르고, 그 다음 profile_image는 바꾸는게 없고 새로 만드는 거라서 그냥 엔터키만 누르면 됩니다.</p>
+<p>이제 새로운 sql 파일이 생겼네요.</p>
+<p>이걸 열어 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">users</span><span class="o">`</span><span class="w"> </span><span class="k">RENAME</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="o">`</span><span class="n">github_id</span><span class="o">`</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="o">`</span><span class="n">oauth_id</span><span class="o">`</span><span class="p">;</span><span class="c1">--&gt; statement-breakpoint
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="o">`</span><span class="n">users_github_id_unique</span><span class="o">`</span><span class="p">;</span><span class="c1">--&gt; statement-breakpoint
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">users</span><span class="o">`</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="o">`</span><span class="n">profile_image</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="p">;</span><span class="c1">--&gt; statement-breakpoint
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="o">`</span><span class="n">users_oauth_id_unique</span><span class="o">`</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="o">`</span><span class="n">users</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">oauth_id</span><span class="o">`</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>기존 sql을 ALTER 즉 변경하는 sql 코드입니다.</p>
+<p>이제 migrate 해야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npx wrangler d1 execute hono-lucia-test-db2 --local --file<span class="o">=</span>./drizzle/0001_fancy_leo.sql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npx wrangler d1 execute hono-lucia-test-db2 --remote --file<span class="o">=</span>./drizzle/0001_fancy_leo.sql</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 local과 remote 모두 DB 세팅을 업데이트하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">id	            oauth_id	username	profile_image
+</span></span><span class="line"><span class="cl">t94033dzu3569i0	 5~~~26	 ~~~	    NULL</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 DB에 잘 저장되었네요.</p>
+<p>리모트에도 업데이트 하면 Cloudflare 대시보드에 가도 잘 되었을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh7ZJhLvWtUzyz4vPMrSkBrRK38Qir1zA1PUMPV8Mu9133G-QKahP53SKpYnmHykw0q_DA-GJFmTkA3_djZd7tS83YfaIetO2u9Rbjge8eE7nwFmSe4TVaKyLpPsSk5IpIBZgcIJhguqhxLuOnDB-N61BGebW_ybi2fmZbcPeFEwKFYOylmlecZYD3fF8Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="카카오-디벨로퍼에서-redirect_uri-설정하기">카카오 디벨로퍼에서 REDIRECT_URI 설정하기</h2>
+<p>카카오 디벨로퍼로 들어가서 예전에 REDIRECT_URI를 <code>http://localhost:5173/callback</code>이라고 설정한 부분이 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEilqwHOO8EsHSkw7ocu8xvy4o8h14mN80QDQSFxHhRlN33MHVNf0buFAn5HZ07HkQcUyThBuWAk8FNW4D8dppcOQBLgwMgbyAgVjvgAS5J9lIjdTPG-MyzW1TEjVwL9F6lhCCinvBuGfeBecakjQN4tWLGOV5yCaK0i1XR3dWyZULro_N7bs7F0fwkpIzU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 콜백 주소를 아래와 같이 바꿉시다.</p>
+<p><code>http://localhost:5173/admin/login/kakao/callback</code></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhDhR1IPVxhpwzJXkzb-F0BYQsNqmuOGPr-gos1VErJelDpkk9nZftg7eeJA2PTwHSJCiHBBGU7a-a-h9CY6vRXXh1-WEgAv2VBY6ExmMUmfvqpQyeTkdRiXkKpuV_Q4RvB1iWNbrLP22GkgUlkUcbBqa19Ge7MBWSd-q0ZhyDqwHVtIrgo1-wS7nPjzZ4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>지난 시간에 썼던 github 콜백 주소와 비슷하게 만들었습니다.</p>
+<h2 id="admintsx-파일-고치기">admin.tsx 파일 고치기</h2>
+<p>이제 준비가 끝났기 때문에 admin.tsx 파일을 고쳐야합니다.</p>
+<p>고칠 곳은 &ldquo;/login&rdquo; 라우팅입니다.</p>
+<p>GitHub ID 로그인 기능도 살리고 추가로 카카오 아이디 로그인 기능을 추가하는 거라 login 라우팅에 아래와 같이 카카오 로그인하는 링크를 추가할 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/github&#34;</span><span class="p">&gt;</span><span class="nx">GitHub</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/kakao&#34;</span><span class="p">&gt;</span><span class="nx">Kakao</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>로그인 되어 있으면 &ldquo;/admin&quot;으로 이동하고 아니면 로그인 방법을 고르면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgJzGE4R0TIXQJ99BvtMUc-iW93hP8imXYCKlY6DgS-BYiz14txf1wFHbF6iw1mutPd8rnn7qVGhBF5tF5jqJemiJF1taJpNhbi4tvTt0PWgkafI6tJbjVDCRYtHQUOnxq_nbKk5rC1WPEIXbJv5gblRYlcKgPIJFgZLfjvhzeUH5izim7SItX6zypM9dE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>UI는 나중에 TailwindCSS로 다음으면 되니까 먼저, 로직에만 집중할 예정입니다.</p>
+<p>이제, &ldquo;/admin/login/kakao&rdquo; 라우팅을 만들어야 하는데요.</p>
+<p>&ldquo;/admin/login/github&rdquo; 라우팅을 복사해서 일부 바꾸면 됩니다.</p>
+<p>그전에 CLIENT_ID와 CLIENT_SECRET를 저장해야 합니다.</p>
+<p>앞에 KAKAO_를 붙혀서 저장하겠습니다.</p>
+<p>먼저, wrangler.toml 파일에 아래와 같이 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">vars</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">GITHUB_CLIENT_ID</span><span class="p">=</span><span class="s2">&#34;Iv~~~~~~~~~Vf9e8&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">KAKAO_CLIENT_ID</span><span class="p">=</span><span class="s2">&#34;8a5b579~~~~~~~~969&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">KAKAO_REDIRECT_URI</span><span class="p">=</span><span class="s2">&#34;http://localhost:5173/admin/login/kakao/callback&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 <code>.dev.vars</code> 파일에 SECRET를 넣어주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">GITHUB_CLIENT_SECRET</span><span class="o">=</span>92be6~~~~~~~~~~5af5e321
+</span></span><span class="line"><span class="cl"><span class="nv">KAKAO_CLIENT_SECRET</span><span class="o">=</span>q~~~~~~~~~~~~~~~~4qF9</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 &ldquo;/admin/login/kakao&rdquo; 라우팅을 추가하겠습니다.</p>
+<p>먼저, admin.tsx 파일 첫 부분에 있는 바인딩에 카카오 관련 문구를 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Bindings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">DB</span>: <span class="kt">D1Database</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">GITHUB_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">GITHUB_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_REDIRECT_URI</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">generateState</span><span class="p">,</span> <span class="nx">GitHub</span><span class="p">,</span> <span class="nx">Kakao</span><span class="p">,</span> <span class="nx">OAuth2RequestError</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;arctic&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login/kakao&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">kakao</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Kakao</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_REDIRECT_URI</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">generateState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">createAuthorizationURL</span><span class="p">(</span><span class="nx">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;kakao_oauth_state&#34;</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;Lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="nx">url</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>예전 github 코드와 비슷합니다.</p>
+<p>arctic 패키지에서 Kakao 함수를 import 하면 되는거죠.</p>
+<p>이제 카카오 로그인 링크를 타면 아래와 같이 카카오 로그인 화면이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi0uHY-rASFtAdAUAF_jniVDUX5ZuRfItjk_0T8xfFriNR1wwBOlENNIqpUPtQ3NDD5B4dyzHBHY1gjhObJDrMwxPs9zDbPa6zcxHtjx6uGyQNG55KOV40V0-j1Grt3a-wqszfIoocvoiZ-da2k1Z5OggzyPdpeUTdHxEBgv7duUneVX8OPPsYQ5fDXkJI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 콘솔차에는 url이 출력될겁니다.</p>
+<p>이제까지는 문제없이 잘 진행되고 있네요.</p>
+<p>console.log(url) 부분은 주석처리해도 되겠네요.</p>
+<p>카카오 로그인을 하면 카카오 로그인 화면은 사라지고 원래 브라우저로 돌아가면서 아래와 같이 404 Not Found가 나옵니다.</p>
+<p>이 화면이 나온거면 잘 진행되고 있다는 얘깁니다.</p>
+<p>왜냐하면 아래 그림에서 보시면 브라우저의 url 부분에 query 값으로 code 값과 state 값이 있기 때문이죠.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi6CPph6aIY83VeBMe0HbBu6U2r5pE2HnE9gzDWG0MDahRMTqCgQBcUcUgiomz95EVdD7fRpcalUazweQAsdexdru6lYh0s70voBGKDsGUisCEqNZiDEcP7qQn6vI8GgYFjALxztg2uuoXe_ReQ29Sj-nIq-OY7VCLmlTTPE078BA6IrxbBQCrzlQB3OMM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>다시한번 OAuth 복습한다는 의미로 code 값은 액세스 토큰을 얻기 위한 코드입니다.</p>
+<p>그리고 state 값은 쿠키 위조 방지를 위해 아까 우리가 만들었던 state 값입니다.</p>
+<p>state 값이 현재 브라우저 쿠키에 kakao_oauth_state 값으로 저장되어 있어 위조 방지에 사용될 예정입니다.</p>
+<p>이제 콜백 함수의 라우팅을 작성해야겠네요.</p>
+<hr>
+<h2 id="kakao-callback-라우팅-만들기">kakao callback 라우팅 만들기</h2>
+<p>Github callback 라우팅을 만들었을 때와 비슷하게 만들면 됩니다.</p>
+<p>참고로 이전에 만들었던 Github callback 라우팅 부분에서 github_id 부분을 전부 oauth_id로 바꾸면 됩니다.</p>
+<p>참고로 Github 의 유저 정보에서 profile_image는 avatar_url 값이네요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/login/kakao/callback&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;query&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">kakao</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Kakao</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_REDIRECT_URI</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">state</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;query&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">storedState</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">).</span><span class="nx">kakao_oauth_state</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span> <span class="o">||</span> <span class="o">!</span><span class="nx">state</span> <span class="o">||</span> <span class="o">!</span><span class="nx">storedState</span> <span class="o">||</span> <span class="nx">state</span> <span class="o">!==</span> <span class="nx">storedState</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">validateAuthorizationCode</span><span class="p">(</span><span class="nx">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(tokens);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">kakaoUserResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;https://kapi.kakao.com/v2/user/me&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">tokens</span><span class="p">.</span><span class="nx">accessToken</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">kakaoUser</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakaoUserResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">//kakaoUser.id가 number라서 toString()으로 string 타입으로 변경해야 함.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">returned_oauth_id</span> <span class="o">=</span> <span class="nx">kakaoUser</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_username</span> <span class="o">=</span> <span class="nx">kakaoUser</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_profile_image</span> <span class="o">=</span> <span class="nx">kakaoUser</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">profile_image</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(returned_oauth_id);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(returned_username);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(returned_profile_image);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">existingUser</span>: <span class="kt">SelectUser</span><span class="p">[]</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">oauth_id</span><span class="p">,</span> <span class="nx">returned_oauth_id</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;existingUser...&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(existingUser);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(&#34;print Session....&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">existingUser</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(session);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">values</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">oauth_id</span>: <span class="kt">returned_oauth_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">username</span>: <span class="kt">returned_username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">profile_image</span>: <span class="kt">returned_profile_image</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">returning</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">OAuth2RequestError</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s2">&#34;bad_verification_code&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// invalid code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>예전 코드와 로직은 비슷합니다.</p>
+<p>실행해 보면 아래 그림과 같이 아주 잘 실행될겁니다.</p>
+<p>콘솔창에도 유저 정보가 잘 나오네요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">3~~~~~~~~37
+</span></span><span class="line"><span class="cl">~~~
+</span></span><span class="line"><span class="cl">http://t1.kakaocdn.net/account_images/default_profile.jpeg.twg.thumb.R640x640</span></span></code></pre></div>
+  </figure>
+</div>
+<p>제 카카오 아이디 프로파일이 없어 디폴트 프로파일이 나오네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjoT1RjOrya1EBNqt_Yw9F3uDc5m52Zk56lOqj1ErBRjQxjHfxR3OJHDwByVX0XQFMjjIGLJJ4pqaEzK5r8-gXyvrsyUfdzBKFHizmbaZmC6OfJ1HDSHGNZ0qSHEYoG3A_yNF3NUMpuI-iB-1PA0Gppe2fJ-WgJZPIWAmUF0VYXsRI1fqGhqB_WyByxv_E"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>참고로, Github ID 로그인 콜백 함수는 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/login/github/callback&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;query&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">github</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GitHub</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GITHUB_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GITHUB_CLIENT_SECRET</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">state</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;query&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">storedState</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">).</span><span class="nx">github_oauth_state</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span> <span class="o">||</span> <span class="o">!</span><span class="nx">state</span> <span class="o">||</span> <span class="o">!</span><span class="nx">storedState</span> <span class="o">||</span> <span class="nx">state</span> <span class="o">!==</span> <span class="nx">storedState</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">github</span><span class="p">.</span><span class="nx">validateAuthorizationCode</span><span class="p">(</span><span class="nx">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(tokens);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">githubUserResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;https://api.github.com/user&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">tokens</span><span class="p">.</span><span class="nx">accessToken</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">githubUser</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">githubUserResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_oauth_id</span> <span class="o">=</span> <span class="nx">githubUser</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_username</span> <span class="o">=</span> <span class="nx">githubUser</span><span class="p">.</span><span class="nx">login</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_profile_image</span> <span class="o">=</span> <span class="nx">githubUser</span><span class="p">.</span><span class="nx">avatar_url</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">existingUser</span>: <span class="kt">SelectUser</span><span class="p">[]</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">oauth_id</span><span class="p">,</span> <span class="nx">returned_oauth_id</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;existingUser...&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(existingUser);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(&#34;print Session....&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">existingUser</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(session);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">values</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">oauth_id</span>: <span class="kt">returned_oauth_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">username</span>: <span class="kt">returned_username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">profile_image</span>: <span class="kt">returned_profile_image</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">returning</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;after insert&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(user);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">OAuth2RequestError</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s2">&#34;bad_verification_code&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// invalid code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 카카오 로그인도 완성되었네요.</p>
+<p>로그아웃 버튼을 눌러도 제대로 작동할 겁니다.</p>
+<p>다음 시간에는 네이버 아이디 로그인을 시도해 보겠습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">Cloudflare</a>
+        <a class="btn btn-light" href="/tags/hono/" role="button">Hono</a>
+        <a class="btn btn-light" href="/tags/lucia/" role="button">Lucia</a>
+        <a class="btn btn-light" href="/tags/drizzle-orm/" role="button">Drizzle orm</a>
+        <a class="btn btn-light" href="/tags/d1-db/" role="button">D1 DB</a>
+        <a class="btn btn-light" href="/tags/kakao-id-login/" role="button">Kakao ID Login</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login/">네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth</a></h2>
+                  <p>Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 4, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db/">Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기</a></h2>
+                  <p>Lucia Auth와 arctic 패키지를 이용해서 GitHub ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login/">Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현</a></h2>
+                  <p>Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현 및 Lucia를 이용한 세션 저장까지 시도해 봅니다.</p>
+                  <p>
+  <small>August 1, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

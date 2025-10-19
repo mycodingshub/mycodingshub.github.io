@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</title>
+<meta name="description" content="NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-06-07-how-to-nextjs-nextauth-with-kakao-login/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기" />
+<meta property="og:description" content="NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-06-07-how-to-nextjs-nextauth-with-kakao-login/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-06-07T13:48:48Z" />
+<meta property="article:modified_time" content="2023-06-07T13:48:48Z" />
+<meta property="article:tag" content="kakao" />
+<meta property="article:tag" content="login" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="nextauth" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기" />
+<meta name="twitter:description" content="NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기\"",
+  "description": "\"NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기\"",
+  "datePublished": "\"2023-06-07T13:48:48Z\"",
+  "dateModified": "\"2023-06-07T13:48:48Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-06-07-how-to-nextjs-nextauth-with-kakao-login/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</h1>
+        <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>NextAuth 강좌 6편인데요.</p>
+<p>오늘은 카카오 아이디로 로그인하는 코드를 실전 테스트해 볼 예정입니다.</p>
+<p>요즘 같은 SNS 시대에는 소셜 아이디로 로그인하는게 필수인데요.</p>
+<p>먼저, 카카오톡 로그인을 이용한 즉, 카카오 아이디를 이용한 로그인을 구현해 보겠습니다.</p>
+<p>예전에 티스토리에도 작성한 적이 있는데요.</p>
+<p>그때는 NextAuth 버전 3이었고, 지금은 버전 4입니다.</p>
+<p>버전 4 초창기 때만 해도 KakaoProviders가 제대로 작동되지 않아 티스토리 블로그에는 NextAuth 버전 3을 이용해서 작성했던 기억이 있네요.</p>
+<p>오늘 사용한 버전은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">    <span class="s2">&#34;next&#34;</span><span class="o">:</span> <span class="s2">&#34;^13.4.5-canary.4&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;next-auth&#34;</span><span class="o">:</span> <span class="s2">&#34;^4.22.1&#34;</span><span class="p">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>next.js 버전은 13.4.4 버전도 가능합니다.</p>
+<hr>
+<h2 id="카카오-아이디로-로그인하기-위한-카카오-디벨로퍼에-앱-등록하기">카카오 아이디로 로그인하기 위한 카카오 디벨로퍼에 앱 등록하기</h2>
+<p>카카오 서비스를 이용하려면 <a href="https://developers.kakao.com/">카카오 디벨로퍼</a>에 가입해야 하는데요.</p>
+<p>일단 여기서 애플리케이션 추가하기를 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjxJtaGnYQ5VCo0eyV1y6u1swmGpB7scfKN_fZxtDwzECyOPsrfmUOG4pky1TDMk4XdSObZ3Ut4aDBTB9oZnTNlthjziKASnLXj3gP8rDGchRAhyeESKo1nJgGex3yiMPny8CtO1iu25bIT66gykKb_rYoXfsKBUE43dqrJGnwjo_fynLKpiM4S902D=w640-h577"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 간단하게 작성하면 됩니다.</p>
+<p>그러면 아래와 같이 앱 키가 나오고 기본 정보가 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEimnjkd4Ty_-Mxc7V5QfH6vascSVSIJCAfBlph2o5faJISbWgl2f9rqJOyLSxizTcJy8D4t6WkUpDsSJaHsdLthhE-C6BlZgBrx7G7gX76dEuswNZQipwyaZZNvOxUM6PCTx4eW7V65PZiZ9Y6HU1tifiaT3As3eZTO4rnQueUU44JRJSOVxkiGXGYS=w429-h640"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 우리가 중요하게 볼게 앱 키입니다.</p>
+<p>제가 기본 정보에 있는 앱 ID에도 동그라미를 쳐놨네요.</p>
+<p>나중에 설명드리겠습니다.</p>
+<p>그리고 애플리케이션 설정에서 아래와 같이 Redirect URI 등록과 사이트 도메인 등록을 해야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjLfKTo4W6hugn6mZL84C18dWknFZ0oTLMlDhgNRA8vT0WgbVEHdY1s1WTHGe-ZYso5Fv4EUeK4gcjv_gDrsVAdDwRXhTTVy7LsqK87unld4mMhAJnnIiKCAxRbw7bF_5HFG7QVanN8vjj6OeGQfwmU4TT9CUn0dg1g5PDtilT2RTwi0DCNtmifsxqU=w640-h483"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 NextAuth의 기본 Redirect URI를 정확하게 입력해야 합니다.</p>
+<p>중용한 점은 꼭 위와 같이 입력해야 합니다.</p>
+<p>그리고 사이트 도메인은 아래와 같이 등록하면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh7DhpVt67ZcYV6VHeXdMn3HGPPxkXDD1rA-ytEpmwtdZuerI_vklMLMLRF-cUgMecnpf3IzuLwJj764SklwEsddVVlHFQDH4cTtCfjlaw0inoHzB6Ysac8L9Pm___6vrMT0ThJ7rP7rR9v2u9_LeTSwFBVfwJGo1-xfT6ZZoS_T9LHM-us2p028kZO=w600-h640"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjgwUQ2kxR4dHuuI_GaPk_56HL5igVQ3E74AW8a4XOU7W7NL4de7ownPBKMtBx1WX4n211M6eQz13i8oVUwIDiJGNVx_ZaCugJ-HwhqPqQjKPzfPOrlPSpQlaQab9lY74phfLky82efshVkSkFmFQLcYtKdMjXWzeycPe5-mdZq7qH0woLC1CdBrV_b=w640-h124"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>나중에 정식 서비스하실 때 사이트 도메인을 바꾸시면 됩니다.</p>
+<p>마지막으로, 카카오 로그인을 하면 카카오 사용자 계정에서 가져올게 많은데요.</p>
+<p>개발을 위해서 닉네임만 가져오도록 하겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj-77kkujv-KPyAFkvXUlntFKD8F_w_sfkg4CYuFa8bD5Naphy9ljM_MyhJBitPEuvsmK-irgfv4h31TxES8gvft-ZzqrYq2m0Xhfsjv4n7lfdpRGbQiGZnzkMeWw6W7_cB_Lgl3kng8QLvq7HKpEMyfMAuGHfibM3yHMS98TT_LnjcLSZ5_RJTP0QF=w640-h358"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 동의항목을 클릭한 다음 닉네임쪽에 설정을 누르면 아래와 같이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEifpnEse1AUpH-0PStTtUr1OAsBWIN-S53ilkOcWXp1PKz3ROCYzCrEO1qEz6xRMYqDegApjThPZdKEKj_FMjyXUfJOYzR9Y8jkxAcDzrRmJNuKYSazsLhfh91cXFHj7GFVAeB2spdTGdhDdq6DyEQvnU9oD5jSmJa8Ffvmv5Y7c06xAMpSJn_-4rLk=w504-h640"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>저는 프로필 사진도 선택했습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh2DDbMsB0fwEMrePQH-9tsqrDmUcHHk1k_F5I1mv6Ys8jwAexohvPW2bCvOULUGh5nYGrkjlkmTZuS7WY1PvNd1bAHnCSut2WYy_W932Qx4A4jNADrsDsnw66lf5H00h1lbPnmSqVZA4I-173dXf3HOcEFLtC8DLB3oSRpt8LeH7B3YHfjreqn8WAe=w640-h114"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이렇게 하면 최종적으로 카카오 로그인하면 사용자한테 동의화면을 띄워줍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgMhzrkFcDGIG7SLB57VNh-5XJmCPs9GW9aaej4Pg2GiMqF1fGi-XaeJW5vnmfpJotISKPII0Wz6ZpxfByi2qgjfAprNGNf9FO7urhDhXWE4_AQn6R1YHFs5QzfRri5L__9mTodcoCy38mLf6mokZMAAuy6iLZg5wvzQgUETyfBYrJxZBLR2LScpsdK=w456-h640"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 사진 보시면 프로필 사진과 닉네임을 동의한다는 내용이 나옵니다.</p>
+<p>이제 카카오 아이디로 로그인하기 위한 사전 준비가 끝난 거 같네요.</p>
+<hr>
+<p>NextAuth의 카카오 로그인 코드는 아래와 같이 진짜 간단합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">KakaoProvider</span> <span class="nx">from</span> <span class="s2">&#34;next-auth/providers/kakao&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="nx">providers</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KakaoProvider</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">clientId</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">clientSecret</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_SECRET</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리가 필요한 게 KAKAO_CLIENT_ID 와 KAKAO_CLIENT_SECRET 네요.</p>
+<p>클라이언트 아이다와 클라이언트 시크리트에서 제가 한참 고생한 적이 있는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEimnjkd4Ty_-Mxc7V5QfH6vascSVSIJCAfBlph2o5faJISbWgl2f9rqJOyLSxizTcJy8D4t6WkUpDsSJaHsdLthhE-C6BlZgBrx7G7gX76dEuswNZQipwyaZZNvOxUM6PCTx4eW7V65PZiZ9Y6HU1tifiaT3As3eZTO4rnQueUU44JRJSOVxkiGXGYS=w429-h640"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보시면 앱 키 부분의 Javascript 키 부분이 클라이언트 시크리트 같고, 기본 정보에 있는 앱 ID 가 클라이언트 ID 같아 보이시죠?</p>
+<p>저도 이렇게 생각해서 한참을 고생했습니다.</p>
+<p>그런데 아닙니다.</p>
+<p>위 그림의 Javascript 키가 바로 클라이언트 키입니다.</p>
+<p>그리고 클라이언트 시크리트는 본인만의 어려운 이상한 문자열을 적어 넣으면 됩니다.</p>
+<p>그래서 제 .env 파일을 보시면,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">NEXTAUTH_SECRET</span><span class="o">=</span>qerkasjhfkauiqeywrhkasjhfksajfh
+</span></span><span class="line"><span class="cl"><span class="nv">NEXTAUTH_URL</span><span class="o">=</span>http://localhost:3000
+</span></span><span class="line"><span class="cl"><span class="nv">SECRET_KEY</span><span class="o">=</span>dkasdhfjahsdfjhskdfhaksdhfakjs
+</span></span><span class="line"><span class="cl"><span class="nv">KAKAO_CLIENT_ID</span><span class="o">=</span>700~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span></span><span class="line"><span class="cl"><span class="nv">KAKAO_CLIENT_SECRET</span><span class="o">=</span>dkasdhfjahsdfjhskdfhaksdhfakjsdddddssaa
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># This was inserted by `prisma init`:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Environment variables declared in this file are automatically made available to Prisma.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># See the documentation for all the connection string options: https://pris.ly/d/connection-strings</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">DATABASE_URL</span><span class="o">=</span><span class="s2">&#34;file:./dev.db&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 준비가 끝났습니다.</p>
+<hr>
+<h2 id="nextauthroutets-파일에-카카오-provider-추가하기">&lsquo;[&hellip;nextauth]/route.ts&rsquo; 파일에 카카오 Provider 추가하기</h2>
+<p>소제목 그대로입니다.</p>
+<p>다음과 같이 코드를 변경하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/auth/[...nextauth]/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">NextAuth</span> <span class="nx">from</span> <span class="s2">&#34;next-auth/next&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">CredentialsProvider</span> <span class="nx">from</span> <span class="s2">&#34;next-auth/providers/credentials&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">KakaoProvider</span> <span class="nx">from</span> <span class="s2">&#34;next-auth/providers/kakao&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="nx">NextAuth</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">CredentialsProvider</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// The name to display on the sign in form (e.g. &#34;Sign in with...&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Credentials&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// `credentials` is used to generate a form on the sign in page.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// You can specify which fields should be submitted, by adding keys to the `credentials` object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// e.g. domain, username, password, 2FA token, etc.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// You can pass any HTML attribute to the &lt;input&gt; tag through the object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">credentials</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">username</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;이메일&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">:</span> <span class="s2">&#34;text&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">placeholder</span><span class="o">:</span> <span class="s2">&#34;이메일 주소 입력 요망&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">password</span><span class="o">:</span> <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;비밀번호&#34;</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="s2">&#34;password&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">async</span> <span class="nx">authorize</span><span class="p">(</span><span class="nx">credentials</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NEXTAUTH_URL</span><span class="si">}</span><span class="sb">/api/login`</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/json&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">username</span><span class="o">:</span> <span class="nx">credentials</span><span class="o">?</span><span class="p">.</span><span class="nx">username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">password</span><span class="o">:</span> <span class="nx">credentials</span><span class="o">?</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// Any object returned will be saved in `user` property of the JWT
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="k">return</span> <span class="nx">user</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// If you return null then an error will be displayed advising the user to check their details.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="c1">// You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">KakaoProvider</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">clientId</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_ID</span><span class="o">!</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">clientSecret</span><span class="o">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_SECRET</span><span class="o">!</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">callbacks</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">async</span> <span class="nx">jwt</span><span class="p">({</span> <span class="nx">token</span><span class="p">,</span> <span class="nx">user</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="p">...</span><span class="nx">token</span><span class="p">,</span> <span class="p">...</span><span class="nx">user</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">async</span> <span class="nx">session</span><span class="p">({</span> <span class="nx">session</span><span class="p">,</span> <span class="nx">token</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">session</span><span class="p">.</span><span class="nx">user</span> <span class="o">=</span> <span class="nx">token</span> <span class="nx">as</span> <span class="nx">any</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">session</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 이 부분은 잠시만 주석처리 하겠습니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 강의 마지막 부분에 다시 논의하겠습니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// pages: {
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">//   signIn: &#34;/signin&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// },
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">GET</span><span class="p">,</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">POST</span> <span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>NextAuth에 proviers에 넣는 배열에 KakaoProvider를 추가했을 뿐입니다.</p>
+<p>그럼 작동되는 걸 볼까요?</p>
+<p>로그인 버튼을 누르면 NextAuth에서 제공하는 로그인 폼이 나오는데 마지막에 &ldquo;Sign in with Kakao&rdquo; 버튼이 보입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjx_ItSrBtB_Wk1V0__QIfujGI8oSHUd1FaVK75QmKLewcYRqefR5Xjr1k1dw_SDbS1l-LfuzG10m3DnS2CG6ZKB_xR3wyh15ioiATU7NOB4ao1QJ2a-Y88yJtOD1qqowqMak7_jqHXxVX4SMXLuxKH8NAfP3wbGI_EAlSK-7X6gjr4_q8smrbqc62M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼요.</p>
+<p>이제 클릭해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEirDgQ0yW17G4DEehrNPt78cU1ctGVl0T5x_L9OBzlQHcn5mrZD8iaKAUVAtfAzgsWJHqKglzMhZna6W6RyuMzQCPWh9sKJ3tOj3s3ctj0Nf6d2QDqSMrMGAJBu8MXe5vYp7YYPiBkYDk6V39_t_NRLtNyMN4TGoVq2g9DAzP0vMyN-gt61OTxalCTt"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>익숙한 카카오 로그인 화면이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgMhzrkFcDGIG7SLB57VNh-5XJmCPs9GW9aaej4Pg2GiMqF1fGi-XaeJW5vnmfpJotISKPII0Wz6ZpxfByi2qgjfAprNGNf9FO7urhDhXWE4_AQn6R1YHFs5QzfRri5L__9mTodcoCy38mLf6mokZMAAuy6iLZg5wvzQgUETyfBYrJxZBLR2LScpsdK=w456-h640"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>처음 로그인하는 거면 위와 같이 프로필 사진과 닉네임을 제공할 거라는 동의화면이 나옵니다.</p>
+<p>정상적으로 로그인됐다면 callbackUrl이 &ldquo;/&ldquo;이기 때문에 다시 첫 페이지로 이동할 겁니다.</p>
+<p>그럼, 제가 콘솔에 log한 session 정보를 한번 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgitQ2XE59sXj2bAs7BRDTr475KByrgqQIzeFydNr5m_V3F3MCjgj_VO6vv6M7teifaVCnBuQQbFzQ368o-EQjCiK43vRyre4DwYRGPekuHWjZUQQPNFl-vsP3Jsr_q6cqmrf2U41al4lqQ6FXx2xEgh0deTEpoy6rVeftoOUqBj6rF5OY6PNPL5454=w640-h242"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 세션 정보에 name 부분과 image, picture 등 아까 동의한 항목만 보이고 있습니다.</p>
+<p>드디어 카카오 아이디로 로그인하기가 성공했네요.</p>
+<hr>
+<h2 id="커스텀-로그인-화면에서-카카오-아이디로-로그인하기-버튼-추가하기">커스텀 로그인 화면에서 카카오 아이디로 로그인하기 버튼 추가하기</h2>
+<p>역시나 NextAuth 기본 로그인 UI는 멋이 없습니다.</p>
+<p>그럼, 지난 시간에 만들었던 로그인 화면에서 카카오 아이디로 로그인하기 부분을 추가해 보도록 하겠습니다.</p>
+<p>그리고 &lsquo;[&hellip;nextauth]/route.ts&rsquo; 파일의 마지막에 pages 란 부분 있죠. 아까 위에서 pages란 부분을 주석처리했었는데요.</p>
+<p>커스텀 로그인 화면을 위해서는 주석처리를 없애야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/auth/[...nextauth]/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">pages</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">signIn</span><span class="o">:</span> <span class="s2">&#34;/signin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 UI 부분을 고쳐 볼까요?</p>
+<p>app 폴더 밑에 signin 폴더에 있는 page.tsx 파일을 불러서 마지막에 아래와 같이 button 하나를 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/signin/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useRef</span><span class="p">,</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getProviders</span><span class="p">,</span> <span class="nx">signIn</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next-auth/react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Login</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="p">[</span><span class="nx">providers</span><span class="p">,</span> <span class="nx">setProviders</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">res</span><span class="o">:</span> <span class="nx">any</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getProviders</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">setProviders</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">emailRef</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">passwordRef</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">handleSubmit</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// console.log(emailRef.current);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// console.log(passwordRef.current);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">signIn</span><span class="p">(</span><span class="s2">&#34;credentials&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">username</span><span class="o">:</span> <span class="nx">emailRef</span><span class="p">.</span><span class="nx">current</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span><span class="o">:</span> <span class="nx">passwordRef</span><span class="p">.</span><span class="nx">current</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">redirect</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">callbackUrl</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">handleKakao</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">signIn</span><span class="p">(</span><span class="s2">&#34;kakao&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">redirect</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">callbackUrl</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex min-h-screen flex-col items-center space-y-10 p-24&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-4xl font-semibold&#34;</span><span class="o">&gt;</span><span class="nx">Login</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">label</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">htmlFor</span><span class="o">=</span><span class="s2">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;block text-sm text-gray-800 dark:text-gray-200&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Email</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;mt-1&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">emailRef</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">emailRef</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">required</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">autoFocus</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;mt-2 block w-full rounded-md border bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:focus:border-blue-300&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;mt-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">label</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">htmlFor</span><span class="o">=</span><span class="s2">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;block text-sm text-gray-800 dark:text-gray-200&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Password</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;mt-1&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">passwordRef</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="nx">passwordRef</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;mt-2 block w-full rounded-md border bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:focus:border-blue-300&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;mt-6&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSubmit</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;w-full transform rounded-md bg-gray-700 px-4 py-2 tracking-wide text-white transition-colors duration-200 hover:bg-gray-600 focus:bg-gray-600 focus:outline-none&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Log</span> <span class="nx">In</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;w-full transform rounded-md bg-gray-700 px-4 py-2 tracking-wide text-white transition-colors duration-200 hover:bg-gray-600 focus:bg-gray-600 focus:outline-none&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">signIn</span><span class="p">(</span><span class="s2">&#34;kakao&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">redirect</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">callbackUrl</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span> <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">kakao</span> <span class="nx">login</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Login</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 추가된 부분이라고 주석으로 처리한 곳이 3군데인데요.</p>
+<p>먼저, 마지막에 UI부분을 보시죠.</p>
+<p>여기서 중요한 게 signIn 함수에 지난 시간에 &ldquo;credentials&quot;을 넣고 옵션을 줬던 게, 오늘은 &ldquo;kakao&quot;라고 Provider 이름을 지정했고,</p>
+<p>그리고 그다음으로 redirect 부분과 callbackUrl을 지정했습니다.</p>
+<p>참고로 redirect 부분과 callbackUrl을 지정하지 않으면 카카오 로그인이 작동되지 않으니 꼭 옵션을 넣어줘야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhSNFbyVUsleyI9ZV67pUh6Xxhp-O6VzoK3COufVRsKOm1V8YTUSbeSvHbWs2GTkpHh6O2roylM2vXMFWMwu66aWVrF8XsNS0BC70saG_yIyECoD2kHzpvnwKsBOUGZZ0KCfUS7gcLqAvjvanDGAU5ERSdNhDtsfbt-LxWcrrjW4Kcftay99nu-z_CY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>실행결과 아주 잘 실행되는데요.</p>
+<hr>
+<h2 id="코드-더-살펴보기">코드 더 살펴보기</h2>
+<p>조금 전에 추가된 부분이 3군데라고 했었는데요.</p>
+<p>2번째 추가된 부분인 handleKakao 함수를 살펴볼까요?</p>
+<p>마지막에 추가된 부분에서 직접 signIn 함수를 실행할 수도 있는데요.</p>
+<p>handleKakao라고 따로 함수를 만들어 실행하면 async 방식으로 signIn 함수를 호출할 수 있습니다.</p>
+<p>그리고 추가된 부분 첫 번째 부분은 getProviders() 함수를 사용하는 방법에 대해 적어 놓은 건데요.</p>
+<p>NextAuth의 헬퍼 유틸리티입니다.</p>
+<p>getProviders() 함수는 비동기식으로 작동해야 하기 때문에 useEffect함수에서 익명 async 방식으로 코드를 구현한겁니다.</p>
+<p>스택오버플로우에서 찾은 코드라서 잊지 않으려고 적어 놓은 겁니다.</p>
+<p>참고 바랍니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/kakao/" role="button">kakao</a>
+        <a class="btn btn-light" href="/tags/login/" role="button">login</a>
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/nextauth/" role="button">nextauth</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-08-how-to-nextjs-nextauth-naver-login/">NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</a></h2>
+                  <p>NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</p>
+                  <p>
+  <small>June 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>2&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-07-how-to-nextjs-nextauth-custom-login-page/">NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</a></h2>
+                  <p>NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</p>
+                  <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-03-nextauth-nextjs-signin-signout-howto/">NextAuth 사용법 3편 - Login, Logout 구현하기</a></h2>
+                  <p>NextAuth 사용법 3편 - Login, Logout 구현하기</p>
+                  <p>
+  <small>June 3, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

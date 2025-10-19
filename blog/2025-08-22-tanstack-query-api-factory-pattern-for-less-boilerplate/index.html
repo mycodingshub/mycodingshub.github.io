@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>TanStack Query, 아직도 이렇게 쓰세요? (API 팩토리 패턴으로 boilerplate 박살내기)</title>
+<meta name="description" content="TanStack Query의 반복적인 API 훅 작성에 지치셨나요? 팩토리 패턴을 활용해 CRUD 훅을 자동으로 생성하고, 보일러플레이트를 획기적으로 줄여 유지보수성을 높이는 실전 방법을 소개합니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-22-tanstack-query-api-factory-pattern-for-less-boilerplate/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TanStack Query, 아직도 이렇게 쓰세요? (API 팩토리 패턴으로 boilerplate 박살내기)" />
+<meta property="og:description" content="TanStack Query의 반복적인 API 훅 작성에 지치셨나요? 팩토리 패턴을 활용해 CRUD 훅을 자동으로 생성하고, 보일러플레이트를 획기적으로 줄여 유지보수성을 높이는 실전 방법을 소개합니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-22-tanstack-query-api-factory-pattern-for-less-boilerplate/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-23T09:46:42Z" />
+<meta property="article:modified_time" content="2025-08-23T09:46:42Z" />
+<meta property="article:tag" content="TanStack Query" />
+<meta property="article:tag" content="React Query" />
+<meta property="article:tag" content="API 팩토리" />
+<meta property="article:tag" content="팩토리 패턴" />
+<meta property="article:tag" content="리액트" />
+<meta property="article:tag" content="보일러플레이트" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TanStack Query, 아직도 이렇게 쓰세요? (API 팩토리 패턴으로 boilerplate 박살내기)" />
+<meta name="twitter:description" content="TanStack Query의 반복적인 API 훅 작성에 지치셨나요? 팩토리 패턴을 활용해 CRUD 훅을 자동으로 생성하고, 보일러플레이트를 획기적으로 줄여 유지보수성을 높이는 실전 방법을 소개합니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"TanStack Query, 아직도 이렇게 쓰세요? (API 팩토리 패턴으로 boilerplate 박살내기)\"",
+  "description": "\"TanStack Query의 반복적인 API 훅 작성에 지치셨나요? 팩토리 패턴을 활용해 CRUD 훅을 자동으로 생성하고, 보일러플레이트를 획기적으로 줄여 유지보수성을 높이는 실전 방법을 소개합니다.\"",
+  "datePublished": "\"2025-08-23T09:46:42Z\"",
+  "dateModified": "\"2025-08-23T09:46:42Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-22-tanstack-query-api-factory-pattern-for-less-boilerplate/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>TanStack Query, 아직도 이렇게 쓰세요? (API 팩토리 패턴으로 boilerplate 박살내기)</h1>
+        <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>최신 프론트엔드 개발에서 API 통신은 이제 일상이죠.<br /><br />특히 TanStack Query(구 React Query)는 캐싱, 백그라운드 리페칭, 상태 관리 등을 알아서 처리해줘서 정말 많은 개발자들의 사랑을 받고 있거든요.<br /><br />그런데 이 강력한 도구에도 한 가지 단점이 있는데요.<br /><br />바로 API 엔드포인트가 늘어날수록 반복적인 코드가 계속해서 늘어난다는 점입니다.<br /><br />오늘은 바로 이 문제를 해결해 줄 아주 영리한 패턴, &lsquo;API 팩토리&rsquo;에 대해 이야기해 보려고 합니다.<br /><br /></p>
+<h2 id="반복되는-api-훅-지겹지-않으신가요">반복되는 API 훅, 지겹지 않으신가요</h2>
+<p>TanStack Query를 사용하다 보면, 새로운 API 엔티티(예: 상품, 사용자, 게시글 등)가 추가될 때마다 비슷한 구조의 훅들을 계속해서 만들어야 하는데요.<br /><br />목록을 가져오는 <code>useGetProducts</code>, 특정 ID의 상품을 가져오는 <code>useGetProductById</code>, 상품을 생성하는 <code>useCreateProduct</code>&hellip; 이런 식으로 말이죠.<br /><br />각 훅마다 <code>queryKey</code>와 <code>queryFn</code>을 정의해야 하고, 로딩 및 에러 상태를 처리하며, 데이터 유효성 검사나 가공 로직을 넣어야 합니다.<br /><br />재시도, 캐시 시간, 데이터 무효화(invalidation) 같은 로직들도 계속해서 반복되죠.<br /><br />결국 복사-붙여넣기식 코드가 늘어나고, 나중에 API 명세가 바뀌었을 때 수많은 파일을 오가며 수정해야 하는 위험에 노출되는 겁니다.<br /><br /></p>
+<h2 id="해결책은-바로-api-팩토리">해결책은 바로 &lsquo;API 팩토리&rsquo;</h2>
+<p>이런 반복 작업을 없애고 코드를 훨씬 더 안전하게 관리할 수 있는 방법이 바로 &lsquo;API 팩토리&rsquo; 패턴인데요.<br /><br />이건 CRUD(Create, Read, Update, Delete) 작업에 필요한 훅들을 자동으로 생성해주는 &lsquo;공장&rsquo; 함수를 하나 만드는 겁니다.<br /><br />이 팩토리 함수에 엔티티의 기본 정보만 알려주면, 나머지 훅들은 알아서 뚝딱 만들어주는 거죠.<br /><br />백문이 불여일견, 바로 전체 코드를 보면서 어떻게 구현하는지 살펴보겠습니다.<br /><br /></p>
+<h3 id="1단계-기본-api-서비스-만들기">1단계 기본 API 서비스 만들기</h3>
+<p>먼저, 실제 <code>fetch</code>나 <code>axios</code> 요청을 처리할 기본 레이어를 하나 만들어야 하는데요.<br /><br />이건 여러분의 프로젝트에서 이미 사용하고 있는 모듈을 그대로 쓰시면 됩니다.<br /><br />여기서는 간단하게 <code>fetch</code>를 감싼 예제를 보여드릴게요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// api-service.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">apiService</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="kr">get</span><span class="p">(</span><span class="nx">url</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">params?</span>: <span class="kt">Record</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">,</span> <span class="na">any</span><span class="p">&gt;)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">qs</span> <span class="o">=</span> <span class="nx">params</span>
+</span></span><span class="line"><span class="cl">      <span class="o">?</span> <span class="s2">&#34;?&#34;</span> <span class="o">+</span> <span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span> <span class="kr">as</span> <span class="nx">Record</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">,</span> <span class="na">string</span><span class="p">&gt;).</span><span class="nx">toString</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="o">:</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="nx">qs</span><span class="p">,</span> <span class="p">{</span> <span class="nx">credentials</span><span class="o">:</span> <span class="s2">&#34;include&#34;</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="sb">`GET </span><span class="si">${</span><span class="nx">url</span><span class="si">}</span><span class="sb">: </span><span class="si">${</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">data</span>: <span class="kt">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="nx">post</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;(</span><span class="nx">url</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">body</span>: <span class="kt">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">credentials</span><span class="o">:</span> <span class="s2">&#34;include&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span> <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/json&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">body</span>: <span class="kt">JSON.stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="sb">`POST </span><span class="si">${</span><span class="nx">url</span><span class="si">}</span><span class="sb">: </span><span class="si">${</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">data</span>: <span class="kt">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="nx">put</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;(</span><span class="nx">url</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">body</span>: <span class="kt">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ... POST와 유사
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="k">delete</span><span class="p">(</span><span class="nx">url</span>: <span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+GET, POST, PUT, DELETE 요청을 처리하는 간단한 헬퍼 객체입니다.<br /><br />이 `apiService`가 우리 팩토리의 기반이 될 거예요.<br /><br />
+<h3 id="2단계-핵심-팩토리-함수-구현하기">2단계 핵심 팩토리 함수 구현하기</h3>
+<p>이제 오늘의 주인공인 API 팩토리 함수를 만들 차례인데요.<br /><br />이 함수는 엔드포인트 URL과 캐시 키로 사용할 문자열, 이 두 가지만 받아서 모든 TanStack Query 훅을 생성해 반환합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// api-factory.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span><span class="p">,</span> <span class="nx">useMutation</span><span class="p">,</span> <span class="nx">UseQueryOptions</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">apiService</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./api-service&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">QueryParams</span> <span class="o">=</span> <span class="nx">Record</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">,</span> <span class="na">any</span><span class="p">&gt;</span> <span class="o">|</span> <span class="kc">undefined</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">createApi</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;(</span><span class="nx">opts</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">baseEndpoint</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entityKey</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">baseEndpoint</span><span class="p">,</span> <span class="nx">entityKey</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">opts</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">useGetListQuery</span><span class="o">:</span> <span class="p">(</span><span class="nx">params?</span>: <span class="kt">QueryParams</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">UseQueryOptions</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">[]</span><span class="p">&gt;)</span> <span class="o">=&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">useQuery</span><span class="p">&lt;</span><span class="nt">T</span><span class="err">[]</span><span class="p">&gt;({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">entityKey</span><span class="p">,</span> <span class="s2">&#34;list&#34;</span><span class="p">,</span> <span class="nx">params</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">queryFn</span>: <span class="kt">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">apiService</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="nx">baseEndpoint</span><span class="p">,</span> <span class="nx">params</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span> <span class="kr">as</span> <span class="nx">T</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...(</span><span class="nx">options</span> <span class="kr">as</span> <span class="kt">any</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">useGetByIDQuery</span><span class="o">:</span> <span class="p">(</span><span class="nx">id</span>: <span class="kt">number</span> <span class="o">|</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">UseQueryOptions</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;)</span> <span class="o">=&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">useQuery</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="nx">entityKey</span><span class="p">,</span> <span class="s2">&#34;byId&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">queryFn</span>: <span class="kt">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">apiService</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">baseEndpoint</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span> <span class="kr">as</span> <span class="nx">T</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">enabled</span>: <span class="kt">id</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...(</span><span class="nx">options</span> <span class="kr">as</span> <span class="kt">any</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">useCreateMutation</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">useMutation</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">mutationFn</span>: <span class="kt">async</span> <span class="p">(</span><span class="nx">data</span>: <span class="kt">Partial</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">apiService</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">baseEndpoint</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span> <span class="kr">as</span> <span class="nx">T</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">useUpdateMutation</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">useMutation</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">mutationFn</span>: <span class="kt">async</span> <span class="p">(</span><span class="nx">input</span><span class="o">:</span> <span class="p">{</span> <span class="nx">id</span>: <span class="kt">number</span> <span class="o">|</span> <span class="kt">string</span> <span class="p">}</span> <span class="o">&amp;</span> <span class="nx">Partial</span><span class="p">&lt;</span><span class="nt">T</span><span class="p">&gt;)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">const</span> <span class="p">{</span> <span class="nx">id</span><span class="p">,</span> <span class="p">...</span><span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">apiService</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">baseEndpoint</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">data</span> <span class="kr">as</span> <span class="nx">T</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">useDeleteMutation</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">useMutation</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">mutationFn</span>: <span class="kt">async</span> <span class="p">(</span><span class="nx">id</span>: <span class="kt">number</span> <span class="o">|</span> <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="k">await</span> <span class="nx">apiService</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">baseEndpoint</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span> <span class="nx">id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드가 조금 길어 보이지만, 구조는 아주 간단한데요.<br /><br /><code>createApi</code> 함수는 <code>baseEndpoint</code> (&rsquo;/products&rsquo; 같은)와 <code>entityKey</code> (&lsquo;products&rsquo; 같은)를 인자로 받습니다.<br /><br />그리고 이 정보들을 사용해서 <code>useGetListQuery</code>, <code>useGetByIDQuery</code>, <code>useCreateMutation</code> 등 5개의 표준 CRUD 훅을 만들어 하나의 객체로 반환해주죠.<br /><br />각 훅의 <code>queryKey</code>는 <code>[entityKey, 'list', params]</code>처럼 일관된 규칙으로 생성되고, <code>queryFn</code>은 앞서 만든 <code>apiService</code>를 호출하도록 설정됩니다.<br /><br />이제 이 팩토리를 어떻게 사용하는지 보시죠.<br /><br /></p>
+<h3 id="3단계-엔티티-api-정의하기">3단계 엔티티 API 정의하기</h3>
+<p>팩토리를 만들었으니, 이제 이 팩토리를 사용해서 &lsquo;상품(Product)&rsquo; API를 위한 훅들을 만들어볼 건데요.<br /><br />정말 놀랄 만큼 간단합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// product-api.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">createApi</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./api-factory&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">Product</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">price</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">productApi</span> <span class="o">=</span> <span class="nx">createApi</span><span class="p">&lt;</span><span class="nt">Product</span><span class="p">&gt;({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">baseEndpoint</span><span class="o">:</span> <span class="s2">&#34;/products&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entityKey</span><span class="o">:</span> <span class="s2">&#34;products&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+네, 이게 전부입니다.<br /><br />`createApi` 팩토리 함수를 호출하면서 상품 API의 엔드포인트와 키만 알려주었을 뿐인데, 이제 `productApi` 객체 안에는 상품 목록 조회, 단일 조회, 생성, 수정, 삭제를 위한 5개의 TanStack Query 훅이 모두 만들어져 있습니다.<br /><br />
+<h3 id="4단계-컴포넌트에서-사용하기">4단계 컴포넌트에서 사용하기</h3>
+<p>이제 이렇게 만들어진 훅들을 실제 컴포넌트에서 사용하는 모습을 보시죠.<br /><br />먼저 상품 목록을 보여주는 컴포넌트입니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// ProductList.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">productApi</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./product-api&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">ProductList() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">isLoading</span><span class="p">,</span> <span class="nx">isError</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">productApi</span><span class="p">.</span><span class="nx">useGetListQuery</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isLoading</span><span class="p">)</span> <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Loading</span><span class="p">...&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isError</span><span class="p">)</span> <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">load</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">p</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">p</span><span class="p">.</span><span class="nx">id</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">p</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span> <span class="err">—</span> <span class="nx">$</span><span class="p">{</span><span class="nx">p</span><span class="p">.</span><span class="nx">price</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>정말 깔끔하죠?<br /><br />컴포넌트 안에서는 더 이상 <code>queryKey</code>나 <code>queryFn</code>을 신경 쓸 필요가 없습니다.<br /><br />그저 <code>productApi.useGetListQuery()</code>를 호출하기만 하면 되죠.<br /><br />생성, 수정, 삭제 기능도 마찬가지입니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// ProductEditor.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">productApi</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./product-api&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">ProductEditor() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">createProduct</span> <span class="o">=</span> <span class="nx">productApi</span><span class="p">.</span><span class="nx">useCreateMutation</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">updateProduct</span> <span class="o">=</span> <span class="nx">productApi</span><span class="p">.</span><span class="nx">useUpdateMutation</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">deleteProduct</span> <span class="o">=</span> <span class="nx">productApi</span><span class="p">.</span><span class="nx">useDeleteMutation</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">createProduct</span><span class="p">.</span><span class="nx">mutate</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;New&#34;</span><span class="p">,</span> <span class="nx">price</span>: <span class="kt">100</span> <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Create</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">updateProduct</span><span class="p">.</span><span class="nx">mutate</span><span class="p">({</span> <span class="nx">id</span>: <span class="kt">1</span><span class="p">,</span> <span class="nx">price</span>: <span class="kt">150</span> <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Update</span> <span class="err">#</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">deleteProduct</span><span class="p">.</span><span class="nx">mutate</span><span class="p">(</span><span class="mi">1</span><span class="p">)}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Delete</span> <span class="err">#</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>useCreateMutation</code>, <code>useUpdateMutation</code>, <code>useDeleteMutation</code> 훅을 가져와서 <code>mutate</code> 함수를 호출하기만 하면 됩니다.<br /><br />모든 복잡한 로직은 팩토리 안에 숨겨져 있죠.<br /><br /></p>
+<h2 id="이-접근-방식의-장점은-무엇일까요">이 접근 방식의 장점은 무엇일까요</h2>
+<p>이 API 팩토리 패턴이 가져다주는 이점은 정말 명확한데요.<br /><br />*   <strong>보일러플레이트 감소</strong>: 수십 개의 반복적인 훅을 만들 필요 없이, 팩토리 하나와 각 엔티티별 정의 한 줄이면 끝납니다.<br /><br /></p>
+<ul>
+<li><strong>일관성</strong>: 모든 쿼리가 동일한 재시도 로직, 캐싱 전략, 데이터 처리 방식을 공유하게 됩니다.<br /><br /></li>
+<li><strong>확장성</strong>: 새로운 API 엔드포인트를 추가하는 작업이 아주 빠르고 예측 가능해지죠.<br /><br /></li>
+<li><strong>중앙화된 유지보수</strong>: API 명세 변경이나 공통 로직 수정이 필요할 때, 오직 팩토리 파일 하나만 수정하면 됩니다.<br /><br /></li>
+</ul>
+<h2 id="언제-사용하는-것이-좋을까요">언제 사용하는 것이 좋을까요</h2>
+<p>이 팩토리 패턴은 API 엔드포인트가 많고 변경이 잦은 중대형 프로젝트에서 특히 빛을 발하는데요.<br /><br />반복적인 작업을 줄여주고 실수를 방지하며, 전체 API 레이어의 일관성을 유지하는 데 큰 도움이 될 겁니다.<br /><br />물론 API가 몇 개 없는 아주 작은 프로젝트에서는 약간 과하게 느껴질 수도 있겠죠.<br /><br />하지만 프로젝트가 조금이라도 성장할 가능성이 있다면, 처음부터 이 패턴을 도입하는 것을 강력하게 추천합니다.<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/tanstack-query/" role="button">TanStack Query</a>
+        <a class="btn btn-light" href="/tags/react-query/" role="button">React Query</a>
+        <a class="btn btn-light" href="/tags/api-%ED%8C%A9%ED%86%A0%EB%A6%AC/" role="button">API 팩토리</a>
+        <a class="btn btn-light" href="/tags/%ED%8C%A9%ED%86%A0%EB%A6%AC-%ED%8C%A8%ED%84%B4/" role="button">팩토리 패턴</a>
+        <a class="btn btn-light" href="/tags/%EB%A6%AC%EC%95%A1%ED%8A%B8/" role="button">리액트</a>
+        <a class="btn btn-light" href="/tags/%EB%B3%B4%EC%9D%BC%EB%9F%AC%ED%94%8C%EB%A0%88%EC%9D%B4%ED%8A%B8/" role="button">보일러플레이트</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-tanstack-query-advanced-patterns-typescript-and-prefetching/">TanStack Query, 아직도 로딩 스피너 쓰세요? (타입스크립트와 프리페칭으로 만드는 즉각적인 UX)</a></h2>
+                  <p>TanStack Query를 타입스크립트로 안전하게 만들고, 프리페칭으로 로딩 스피너를 없애는 고급 패턴을 알아봅니다. 제네릭 훅부터 on hover 프리페칭까지, 사용자 경험을 극적으로 향상시키는 실전 팁을 확인하세요.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-29-react-concurrent-features-deep-dive/">리액트 동시성 기능 완전 정복 useTransition부터 useOptimistic까지</a></h2>
+                  <p>리액트의 핵심 동시성 기능인 useTransition, useDeferredValue, Suspense, useOptimistic을 소개합니다. 단순히 성능 최적화를 넘어, 복잡한 비동기 로직과 UI 업데이트를 어떻게 우아하게 조율하는지 실용적인 예제와 함께 알아봅니다.</p>
+                  <p>
+  <small>September 2, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-zustand-vs-context-api-rerender-optimization/">Context API의 리렌더링 지옥, Zustand가 구원해드립니다</a></h2>
+                  <p>리액트의 Context API를 사용하다 불필요한 리렌더링 문제로 골머리를 앓고 계신가요? Zustand가 어떻게 셀렉터 하나만으로 이 문제를 우아하게 해결하고, 코드까지 간결하게 만들어주는지 그 비법을 공개합니다.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

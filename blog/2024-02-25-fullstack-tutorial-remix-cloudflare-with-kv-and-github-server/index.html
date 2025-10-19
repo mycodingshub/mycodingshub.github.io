@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기</title>
+<meta name="description" content="풀스택 강의입니다. Remix &#43; Cloudflare &#43; Github &#43; KV" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-02-25-fullstack-tutorial-remix-cloudflare-with-kv-and-github-server/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기" />
+<meta property="og:description" content="풀스택 강의입니다. Remix &#43; Cloudflare &#43; Github &#43; KV" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-02-25-fullstack-tutorial-remix-cloudflare-with-kv-and-github-server/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-02-25T08:38:15Z" />
+<meta property="article:modified_time" content="2024-02-25T08:38:15Z" />
+<meta property="article:tag" content="fullstack" />
+<meta property="article:tag" content="remix" />
+<meta property="article:tag" content="cloudflare" />
+<meta property="article:tag" content="kv" />
+<meta property="article:tag" content="github" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기" />
+<meta name="twitter:description" content="풀스택 강의입니다. Remix &#43; Cloudflare &#43; Github &#43; KV" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기\"",
+  "description": "\"풀스택 강의입니다. Remix + Cloudflare + Github + KV\"",
+  "datePublished": "\"2024-02-25T08:38:15Z\"",
+  "dateModified": "\"2024-02-25T08:38:15Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-02-25-fullstack-tutorial-remix-cloudflare-with-kv-and-github-server/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기</h1>
+        <p>
+  <small>February 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>풀스택 강좌를 오랜만에 하나 하게 됐네요.</p>
+<p>전체 강의 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-06-introduction-cloudflare-pages-workers-d-1-react-full-stack">풀스택 강의 1편. Cloudflare Pages + Workers + D1 + React로 풀스택 개발하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-09-fullstack-cloudflare-pages-workers-d-1-react-part-2">풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-10-fullstack-remix-cloudflare-pages-d-1-db-drizzle-orm">풀스택 강의 4편. Remix + Cloudflare Pages + D1 DB + Drizzle ORM</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-30-fullstack-tutorial-nextjs-cloudflare-with-d-1-db">풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-02-25-fullstack-tutorial-remix-cloudflare-with-kv-and-github-server">풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-03-03-fullstack-tutorial-transform-vite-react-app-with-hono-framework">풀스택 강의 7편. Vite React 템플릿을 Hono를 이용하여 풀스택 앱으로 개조하기</a></p>
+</li>
+</ol>
+<hr>
+<p>최근에 Remix 쪽에 괜찮은 템플릿이 하나 나왔는데요.</p>
+<p><code>edmundhung</code>이란 홍콩분이신데요.</p>
+<p>conform이란 validation 라이브러리를 만든 분인데요.</p>
+<p>Remix쪽에 관심이 많은 거 같습니다.</p>
+<p>사실 React로 풀스택을 아주 쉽게 구현해 주는게 Remix 밖에 없죠.</p>
+<p>이 Remix를 Cloudflare와 연결시키려는 시도가 아주 많은데요.</p>
+<p><code>Edmund Hung</code> 이 분도 새로운 걸 하나 만들었습니다.</p>
+<p><a href="https://github.com/edmundhung/remix-cloudflare-template">remix-cloudflare-template</a></p>
+<p>위 링크로 가시면 Github 리포에 갈 수 있는데요.</p>
+<p>All-in-one remix starter template for Cloudflare Pages라고 합니다.</p>
+<p>제가 이걸 대충 살펴보니까 기본적으로 Github API를 이용해서 원하는 마크다운 파일을 불러오고, 해당 마크다운 파일을 Markdoc이란 라이브러리로 파싱해서 파싱한 정보를 Cloudflare KV에 올립니다.</p>
+<p>KV에 put할 때 캐시 시간을 60분으로 둡니다.</p>
+<p>그래서 60분 이내 같은 라우팅으로 GET 리퀘스트가 오면 Cloudflare는 캐시된 값을 빨리 보여줄 수 있죠.</p>
+<p>그리고 Remix의 서버는 Cloudflare Pages에서 Functions 방식으로 돌아가게 됩니다.</p>
+<p>예전에 Remix와 Cloudflare 그리고 D1 강좌를 올렸을 때도 같은 건데요.</p>
+<p>제가 이 템플릿을 보고 기쁜 점은 바로 제 블로그가 사실 이 방식으로 작성됐다는 겁니다.</p>
+<p>제 블로그는 Fly.io에 파싱된 마크다운 정보가 Sqlite에 저장되고 Remix 서버는 fly.dev에서 운영되는 형식인데, Github에 마크다운 파일을 올리면 알아서 새로운 마크다운 파일만 파싱해서 Fly.io의 sqlite에 저장시켜주는 형식입니다.</p>
+<p>예전에 블로그에서 제 블로그 관련 글을 쓴적이 있습니다.</p>
+<p>Remix-Cloudflare-Template를 조금 더 발전 시키면 제 블로그 형식을 Cloudflare에 적용시킬 수 있을 거 같네요.</p>
+<p>그 때 가서는 KV 말고 D1 데이터베이스를 이용하면 되구요.</p>
+<p>자, 이제 한번 이 템플릿을 테스트해 보겠습니다.</p>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#%ec%84%a4%ec%b9%98">설치</a></li>
+<li><a href="#cloudflare%ec%97%90-%eb%b0%b0%ed%8f%ac%ed%95%98%ea%b8%b0">Cloudflare에 배포하기</a></li>
+<li><a href="#kv-%ec%84%b8%ed%8c%85">KV 세팅</a></li>
+<li><a href="#%eb%8b%a4%ec%8b%9c-%eb%b0%b0%ed%8f%ac">다시 배포</a></li>
+</ul>
+<hr>
+<h2 id="설치">설치</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  npx create-remix@latest --template edmundhung/remix-cloudflare-template
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> remix   v2.7.2 💿 Let<span class="s1">&#39;s build a better website...
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">   dir   Where should we create your new project?
+</span></span></span><span class="line"><span class="cl"><span class="s1">         ./remix-cloudflare-template
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">      ◼  Template: Using edmundhung/remix-cloudflare-template...
+</span></span></span><span class="line"><span class="cl"><span class="s1">      ✔  Template copied
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">   git   Initialize a new git repository?
+</span></span></span><span class="line"><span class="cl"><span class="s1">         Yes
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">  deps   Install dependencies with npm?
+</span></span></span><span class="line"><span class="cl"><span class="s1">         Yes
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">      ✔  Dependencies installed
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">      ✔  Git initialized
+</span></span></span><span class="line"><span class="cl"><span class="s1">
+</span></span></span><span class="line"><span class="cl"><span class="s1">  done   That&#39;</span>s it!
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Enter your project directory using <span class="nb">cd</span> ./remix-cloudflare-template
+</span></span><span class="line"><span class="cl">         Check out README.md <span class="k">for</span> development and deploy instructions.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Join the community at https://rmx.as/discord
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">➜  <span class="nb">cd</span> remix-cloudflare-template</span></span></code></pre></div>
+  </figure>
+</div>
+<p>정확히 <code>edmundhung</code> 이 분의 템플릿을 사용했습니다.</p>
+<p>README 파일을 보면 맨 먼저, wrangler.toml 파일을 설정하라고 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp wrangler.toml.example wrangler.toml</span></span></code></pre></div>
+  </figure>
+</div>
+<p>wrangler.toml 파일을 보시면 아래와 같이 나옵니다.</p>
+<p>우리가 사용할 kv_namespace와 vars가 있죠.</p>
+<p>vars는 <code>.env</code> 파일에 넣어두는 극비 자료와 같은 겁니다.</p>
+<p>wrangler.toml 파일은 <code>.gitignore</code>에 들어가 있어서 github에 유출 될 일이 없으니 걱정하지 마십시요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">name</span> <span class="o">=</span> <span class="s2">&#34;remix-cloudflare-template&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">compatibility_date</span> <span class="o">=</span> <span class="s2">&#34;2024-02-11&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">kv_namespaces</span> <span class="o">=</span> <span class="o">[</span>
+</span></span><span class="line"><span class="cl">  <span class="o">{</span> <span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;cache&#34;</span>, <span class="nv">id</span> <span class="o">=</span> <span class="s2">&#34;cache&#34;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>vars<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">GITHUB_TOKEN</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 kv_namespaces에 보시면 binding이란게 보이는데요.</p>
+<p>이 binding이 바로 우리가 코드에서 사용할 바인딩 값입니다.</p>
+<p>그리고 id는 실제 kv_namespaces를 만들면 cloudflare가 제공해 주는 유니크한 id입니다.</p>
+<p>이 템플릿은 바인딩 이름으로 <code>cache</code>라는 이름을 쓰고 있으니까 이 이름은 바꾸지 마십시요.</p>
+<p>그리고 <code>remix-cloudflare-template</code>라고 되어 있는 <code>name</code> 부분은 바꿔도 됩니다.</p>
+<p>README파일에서 얘기하는 두 번째로 실행할 명령어는 개발 서버를 돌리는 건데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행하면 아래와 같은 에러가 날 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">&gt; dev
+</span></span><span class="line"><span class="cl">&gt; remix vite:dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">failed to load config from /Users/cpro95/Codings/Javascript/remix-test/remix-cloudflare-template/vite.config.ts
+</span></span><span class="line"><span class="cl">file:///Users/cpro95/Codings/Javascript/remix-test/remix-cloudflare-template/vite.config.ts.timestamp-1708846182387-585dec7ad60ea.mjs:4
+</span></span><span class="line"><span class="cl">  unstable_cloudflarePreset as cloudflare
+</span></span><span class="line"><span class="cl">  ^^^^^^^^^^^^^^^^^^^^^^^^^
+</span></span><span class="line"><span class="cl">SyntaxError: Named <span class="nb">export</span> <span class="s1">&#39;unstable_cloudflarePreset&#39;</span> not found. The requested module <span class="s1">&#39;file:///Users/cpro95/Codings/Javascript/remix-test/remix-cloudflare-template/node_modules/@remix-run/dev/dist/index.js&#39;</span> is a CommonJS module, which may not support all module.exports as named exports.
+</span></span><span class="line"><span class="cl">CommonJS modules can always be imported via the default export, <span class="k">for</span> example using:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">import pkg from <span class="s1">&#39;file:///Users/cpro95/Codings/Javascript/remix-test/remix-cloudflare-template/node_modules/@remix-run/dev/dist/index.js&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    at ModuleJob._instantiate <span class="o">(</span>node:internal/modules/esm/module_job:124:21<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at async ModuleJob.run <span class="o">(</span>node:internal/modules/esm/module_job:190:5<span class="o">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 에러는 다름 아니라 Remix도 번들러를 Vite로 개편중인데요.</p>
+<p>아직 Vite를 이용한 정식 버전이 안 나와서 그런겁니다.</p>
+<p>이제 vite.config.ts 파일을 열어 아래와 같이 바꿔 주면 됩니다.</p>
+<p>공식 Remix 홈페이지에서 정보를 얻은 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">vitePlugin</span> <span class="kr">as</span> <span class="nx">remix</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">cloudflareDevProxyVitePlugin</span> <span class="kr">as</span> <span class="nx">remixCloudflareDevProxy</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;@remix-run/dev&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;vite&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">tsconfigPaths</span> <span class="kr">from</span> <span class="s1">&#39;vite-tsconfig-paths&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">remixCloudflareDevProxy</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">remix</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">tsconfigPaths</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">ssr</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">resolve</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="nx">externalConditions</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;workerd&#39;</span><span class="p">,</span> <span class="s1">&#39;worker&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 <code>npm run dev</code>로 개발서버를 돌려볼까요?</p>
+<p>포트 5173으로 들어가 보면 리믹스 서버는 잘 돌아가는데요.</p>
+<p>중간에 <code>cache</code> 부분이 에러라고 나옵니다.</p>
+<p>즉, Cloudflare의 KV Namespace 관련인거 같네요.</p>
+<p>README 파일을 계속 읽어가면 테스트 부분이 나오고 그 다음에 wrangler를 이용한 개발 서버를 돌리는 부분이 바로 다음에 나오는 부분입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run build <span class="o">&amp;&amp;</span> npm run start</span></span></code></pre></div>
+  </figure>
+</div>
+<p>즉, 빌드 한번하고 start 시키네요.</p>
+<p>start는 아래 부분입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;start&#34;</span><span class="err">:</span> <span class="s2">&#34;wrangler pages dev ./build/client&#34;</span><span class="err">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>wrangler pages dev</code> 명령어를 이용하네요.</p>
+<p>이 명령어를 이용하면 Cloudflare 관련 KV 라던가 D1 부분을 로컬에서 미믹할 수 있습니다.</p>
+<p>이제 실행해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">✨ Compiled Worker successfully
+</span></span><span class="line"><span class="cl"> ⛅️ wrangler 3.29.0
+</span></span><span class="line"><span class="cl">-------------------
+</span></span><span class="line"><span class="cl">Your worker has access to the following bindings:
+</span></span><span class="line"><span class="cl">- KV Namespaces:
+</span></span><span class="line"><span class="cl">  - cache: cache
+</span></span><span class="line"><span class="cl">- Vars:
+</span></span><span class="line"><span class="cl">  - GITHUB_TOKEN: <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>wrangler:inf<span class="o">]</span> Ready on http://localhost:8788
+</span></span><span class="line"><span class="cl">⎔ Starting <span class="nb">local</span> server...
+</span></span><span class="line"><span class="cl">Parsed <span class="m">1</span> valid header rule.
+</span></span><span class="line"><span class="cl"><span class="o">[</span>wrangler:inf<span class="o">]</span> GET / <span class="m">200</span> OK <span class="o">(</span>392ms<span class="o">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나오면서 브라우저를 &lsquo;b&rsquo; 버튼을 눌러 불러보면 브라우저에 뭔가 크게 나옵니다.</p>
+<p>README.md 파일을 마크다운 파싱해서 브라우저에 뿌려주고 있네요.</p>
+<p>KV 쪽을 한 번 살펴볼까요?</p>
+<p><code>.wrangler</code> 폴더로 들어가시면 <code>state/v3</code> 폴더 밑에 <code>kv</code> 폴더가 있습니다.</p>
+<p>거기 <code>cache</code>라는 이름이 있는데 이게 우리가 아까 바인딩 했던 그 이름입니다.</p>
+<p>그리고 <code>cache</code> 폴더 밑에 이상한 문자열의 파일이 있는데요.</p>
+<p>열어보시면 그게 바로 README.md 파일입니다.</p>
+<p>근데 이상하죠.</p>
+<p>README.md 파일을 로컬에서 불러온게 아닌거 같은데, 어디서 가져왔죠.</p>
+<p>이 템플릿이 GITHUB쪽과 관련된 서버사이드 코드는 모두 <code>app/services</code> 폴더에 있는 두개의 파일로 작동합니다.</p>
+<p>거기 <code>github.server.ts</code> 파일을 읽어 보시면,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">metadata</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">repo</span><span class="o">:</span> <span class="s1">&#39;remix-cloudflare-template&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">owner</span><span class="o">:</span> <span class="s1">&#39;edmundhung&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드 초창기 부분에 metadata가 위와 같이 상수로 적혀있습니다.</p>
+<p>이제야 의문이 풀리네요.</p>
+<p>원작자인 <code>edmundhung</code>님의 <code>remix-cloudflare-template</code> 리포에서 README.md 파일을 읽어오고 있네요.</p>
+<p>이걸 한번 바꿔보십시요.</p>
+<p>본인의 아무 리포에서 README.md를 가지고 올 수 있게 본인 아이디랑 리포이름만 바꾸십시요.</p>
+<p>개발 서버를 다시 끄고 build와 start를 다시 해 보십시요.</p>
+<p>그런데 아무 바뀐게 없을 겁니다.</p>
+<p>왜냐하면 KV가 캐시된 부분을 가져오기 때문이죠.</p>
+<p>아까 봤던 <code>.wrangler/state/v3</code> 폴더에서 cache 된 파일을 강제로 지우고 다시 시작하면 됩니다.</p>
+<p>이제 제가 임의로 지정한 제 리포의 README.md 파일이 보이게 되는데요.</p>
+<p>한글 부분이 깨집니다.</p>
+<p>분명히 root.tsx 파일에서 캐릭터 셋도 &lsquo;utf-8&rsquo;로 세팅했는데, 이상합니다.</p>
+<p>root.tsx 파일의 html 태그 부분의 lang 부분도 &lsquo;ko&rsquo;로 바꿔도 한글 문제가 해결되지는 않네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh6P5COAowEVRNm6G29ryLJMrrhiG-AtUDfsCX5PHsbMvI1VhDUr9VmNyNxUfKk-vyqcG6a_NqGJT9JhzuR748DMjWpIWBk4quZQ2KciN2Hwh7nVq92ZuJmdTCUL5TjEkKS6t7LZcuOL1qtuHR2HigKPx4tNs5UYlA28i5wYpd3TKcQ3OOOXJIIqkFCg24"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 한글이 깨져나옵니다.</p>
+<p>이 부분은 textDecoder 부분으로 바꿔야 하는데요.</p>
+<p><code>github.server.ts</code> 파일에서 읽어오는 함수인 <code>getFileContent</code> 함수의 마지막 부분인 return 부분을 주석처리하고 아래와 같이 바꿔서 코드를 작성합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">getFileContent</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// return atob(file.content);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Decode using custom UTF-8 decoding function
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">content</span> <span class="o">=</span> <span class="nx">decodeUTF8</span><span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">content</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 <code>github.server.ts</code> 파일의 마지막 부분에 아래 함수를 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">decodeUTF8</span><span class="p">(</span><span class="nx">base64</span>: <span class="kt">string</span><span class="p">)</span><span class="o">:</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">binaryString</span> <span class="o">=</span> <span class="nx">atob</span><span class="p">(</span><span class="nx">base64</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">bytes</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Uint8Array</span><span class="p">(</span><span class="nx">binaryString</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">binaryString</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">bytes</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">binaryString</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Use TextDecoder to handle UTF-8 decoding
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="k">new</span> <span class="nx">TextDecoder</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">).</span><span class="nx">decode</span><span class="p">(</span><span class="nx">bytes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>base64로 해싱한 데이터를 &lsquo;utf-8&rsquo; 디코딩하는 함수입니다.</p>
+<p>이제 다시 해볼까요?</p>
+<p>꼭 <code>.wrangler</code> 폴더 밑에 캐시된 파일을 지우고 테스트 합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run build <span class="p">&amp;</span> npm run start</span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiY0HBCGFL8OKyQzHd7bctslcxLHFUHXVyzVSG-x6iU4JIegMYkUpYOTuBIAsrFl_pSfm09M33Zr1-uC25s2KR3XmrTy2RiZYuUQ2ra8iGOta5oi-954LfblbSBLa8MHc105Fmzqs4gmpZNAXuHIhDD7H1jo30MVJVr91VqZhWDiC6zDSedj5xgzK25Uh4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나오네요.</p>
+<p>wxrenamer 프로젝트는 예전에 wxWidget로 만든 windows 애플리케이션입니다.</p>
+<p>감회가 새롭네요.</p>
+<p>요즘은 윈도우 로그인 할 일이 없으니까요.</p>
+<p>그리고 UI도 QT나 wxWidget 같은걸 많이 공부했었는데요.</p>
+<p>요즘은 일렉트론이나 Rust쪽의 Tauri나 Golang쪽의 wails 같은 패키지를 사용하면 웹 테크로 쉽게 UI를 꾸밀 수 있어 너무 편하네요.</p>
+<p>일단 로컬쪽에서는 KV와 그리고 github.server쪽에서 데이터 가져오는 것도 잘 됩니다.</p>
+<p>그럼, 이걸 실제 deploy 했을 때 즉, cloudflare 서버쪽에서 실행해야 하는데요.</p>
+<p>지금까지 작성했던걸 github에 신규 저장소로 올리겠습니다.</p>
+<p>왜냐하면 Cloudflare에 배포하기 쉽거든요.</p>
+<p>Wrangler로 로컬에서 Deploy할 수 있지만 어차피 github에 올릴거라 그게 나중을 위해 더 좋습니다.</p>
+<hr>
+<h2 id="cloudflare에-배포하기">Cloudflare에 배포하기</h2>
+<p>일단 github에 리포로 저장했으면 Cloudflare 대시보드에서 아래 그림과 같이 애플리케이션을 만듭니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj8RhlW9Rlrq2SV8wm2YL0HN0DnPe3B-7RoNLoT5kGg00SR9Q1bkFwLOkueVp6d4o1H0Uyh7s7zpfoOYqwqP2z4zKPQQQ8IGQVMoMD-uRfQwneAFMfmaM6DOUwYNuKoh6xCWDWkJnKyrsy2W0VADoI-LT_GhJfsYBL41QK0aEqdRu5oJ2Jlx5LStsn5d6Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 아래 그림과 같이 Pages부분에서 &ldquo;Connect to Git&quot;을 누릅니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhv5TTZsoBMjgTXQMcw18MeM5VnHmgSK0NlPIub1uGDIftjG_wPLdSG-1PKfhNP0cOwqrMsK7Wrz7yUwZ614SuykDi3MdEuKSHL_DD7Cv6ntB-eqsowC8CNQpSMHWSyNSOXnZ2JSurTH50TbgMgCdKTzHcDLK9VehCGCM_XK3opEpUNKx93V-61l3DVhT0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그러면 아래와 같이 제 github 계정에 있는 모든 리포가 나오는데요.</p>
+<p>방금 저장했던 리포는 맨 위에 있으니 고르기 쉽습니다.</p>
+<p>아래와 같이 해당 리포를 고르로 진행시키면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEinA-Bf9FIJjSqG7nwi6wUU2qAup_6NYOh4KFrLfyXhAx2wy7PH9aTVe_QmfvEElQa3Rg_L480_2BoKrrdfrURHpqgpqU_guwSG-twd9fNdjsS3cVjIoNjLGIQ3q7NkHoj4PQkmwZSO2oDn-YxnplCLhKS6sJMZIborltB9MECMKFn8yueZ_78qSZvQ0N4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 빌드 부분인데요. 여기가 가장 중요합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg2QOvhtcJreIkATl6JTODP0A13jLyLt1Gu4EdALaRWlT9II_74zZhnJlVT-GnethlutBW4tKKZOCN5O-q2f8XcbMbZGJbqgLdO3kx6NYddmuDZmI7A1fiBioc8BFd2rhDPu_S9z9l-MqKu-XxLOhTEzrEC-KJDjPeSXbjZjShoW1-VIPSFettlzdMZFrc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 프레임워크를 Remix라고 고르면 되는데요.</p>
+<p>Build output directory 부분만 위 그림과 같이 <code>build/client</code> 라고 적으셔야 합니다.</p>
+<p>Cloudflare에서만 그런거니까 이해해 주시기 바랍니다.</p>
+<p>이제 아래 그림과 같이 배포작업이 이루어지게 되면서,</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgT_x5w6FmCyU0B-UjPmi4ad6KHTQ2b84bO-hefMX_Odrhv4_uBBt5dhMxy1z73K19NFqgO7SkZGABuIsLcFwCy0DMlzfM9LWcSpb3LGz-3c_BwoazYqj5gF4FBhajHINwjcckxRjkF7B-262ikx0QhbfrhIK5HZENAErBLwzwnCrZzIfS7vjBqGtYry0E"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>최종적으로 pages.dev 도메인을 갖는 아래 홈페이지가 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEinw8WnFRSSoNQd82o62TSZ34PKTvob-V1SL2KtjSAiRxbum36XjgEgm15Y_rSqF1a9xZ5KDW4HhvZjTzVpHnTQ1X_l9RJ0Zh3mwZejRMLk-pK4wiKrgB2OLYCRvWo2KbeDwNbOs2CmJQowbcA-26NGxErc0l9btivILPJX63jddB52mNoDtqedZDY9BYE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>근데, 에러가 났네요.</p>
+<p>걱정마세요.</p>
+<p>KV 쪽을 안 건들어서 그런겁니다.</p>
+<hr>
+<h2 id="kv-세팅">KV 세팅</h2>
+<p>KV를 만드려면 Cloudflare 대시보드로 가서 아래와 같이 KV 쪽으로 가면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg8jyn437Az154PZ_UETZEmrgQb51SS7ejvdaWsug9GKM8N7CevWGVApBsVQzUXxi2Yi15y9GF0-yZxvvpizlDtaWMi6dA2WkxZz4fGJ1aMFOU1S4oaBSLnTvFx806Oc8z0MRA8k0sW3DWR8zp9S_YjD_bAst98owgg_-tBYp_tQvtPYMpbOwxvuhWV5Zc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위에서 Create a namespace를 눌러서 아래와 같이 특정이름으로 만들면됩니다.</p>
+<p>저는 <code>remix-cloudflare-template</code>라고 이름지었는데요.</p>
+<p>아무이름이나 상관없습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEitzuFf1fRsaN59OSwdNZcgKI__q67Kz8EoZ_zLBgcFKgZ_YR3nWvt5wD0YIfoDE8tShNkL-Eaaq5uiZvNu78krr200QYL6OvnYXFlOmlJ9SeZ6dVG9a5QDKSriEdb44u17LyHoNhF4fEUe_CkDtXhqPfgNXPvyzROUdiPTqCfnIWyJ9-fndjdAAOeK-zo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에 보시면 Namespace ID가 보이시는데요.</p>
+<p>이 ID 값을 wrangler.toml 파일에 붙이시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="nx">name</span> <span class="p">=</span> <span class="s2">&#34;remix-cloudflare-template&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">compatibility_date</span> <span class="p">=</span> <span class="s2">&#34;2024-02-11&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">kv_namespaces</span> <span class="p">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">binding</span> <span class="p">=</span> <span class="s2">&#34;cache&#34;</span><span class="p">,</span> <span class="nx">id</span> <span class="p">=</span> <span class="s2">&#34;9de9e6fbaa38419a91b9c6cbe8abb93f&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 KV쪽 바인딩을 Functions 쪽 세팅에 연결 시켜야 합니다.</p>
+<p>Cloudflare쪽 Pages에서 아까 만든 우리 사이트의 Settings으로 들어가서 아래와 같이</p>
+<p>Functions 부분을 선택하고 그 밑에 KV 쪽을 아래와 같이 세팅하면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhKMt-yEd-qyvODy38darptcMXlfQYGKkfWv7rNZe7Oiyzpy3VLL-OXVk2F0jjtDVHZ8RMLCOhunvD31Sjbo2yYEduFD4JVNuPuQPYjHHvW7T0bDBF9AGy2BSzf1nxaNHs30DRCqCUzXLL-nm3rwXMdK48QIHUZKlLIzBHg5Ic0uj60TYLQ9PTJ7IMddbY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>우리가 코드에서 사용하는 바인딩은 &lsquo;cache&rsquo;라는 이름입니다.</p>
+<p>위에 &lsquo;cache&rsquo;를 넣고 아까 만든 KV를 고릅니다.</p>
+<p>그리고 저장하면 아래와 같이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjCRaAmXwzekcsCbrABD3DjOn2ekZZSXjM0Q4vWHuiK7UOCohhneYqqIYvRY6ol2srhMn0xbpzukNNKVioZmKScfArNaf1uUQ0PZ_mRK9bhDWepNR-v2MDEzXsV3rZcOCMPZfeeq2gPcpx7_hV6UIXRuZ6RvTxPkR48K3sz9sllK3BtJjoIC33pR4xK-ec"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 KV 쪽은 마무리가 됐네요.</p>
+<hr>
+<h2 id="다시-배포">다시 배포</h2>
+<p>이제 준비가 다끝났는데요.</p>
+<p>GITHUB_TOKEN 세팅은 못했네요.</p>
+<p>이거 없이 진행시켜 보겠습니다.</p>
+<p>먼저, Cloudflare 쪽에서 Deployment 부분을 누르면 아래와 같이 나오는데요.</p>
+<p>여기서 <code>Manage Deployment</code> 부분을 누르면 <code>Retry Deployment</code>가 나옵니다.</p>
+<p>이걸 누르면 쉽게 재 배포할 수 있습니다.</p>
+<p>이걸 눌러 재 배포하고 배포된 페이지로 이동해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgZBZbYwm5hIzV94Yj5exJG3XouZLHWUCtFV4cjRsW87ZP9CQsvyqSs2iPFh6KgsFf-8oYGYbA-lqwI7kgahD5CrTxKdoJPUwmF6xJe0HbxkRsVnDPbjardtwXUjAdzzbKsmlhGl1W39kH21YYVKfkphO43b21TRZbtchLzpNV254Ym9i7opA8DoKZNlt0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 아까 로컬 개발 서버에서 테스트했던 그 부분이 나옵니다.</p>
+<p>대 성공인데요.</p>
+<p>그러면 왜 <code>edmundhung</code> 이 분은 GITHUB_TOKEN이 필요하다고 했을까요?</p>
+<p>이게 왜 그런거냐면, Github 리포가 public일 경우 <code>api.github.com</code> 서비스에 의해 외부로 모든 데이터가 공개되는데, Github 리포가 private일 경우 <code>api/github.com</code> 서비스에서 접근하지 못합니다.</p>
+<p>그래서 private한 리포를 사용하고 싶을 때는 GITHUB_TOKEN을 세팅하면 됩니다.</p>
+<p>GITHUB_TOKEN 세팅하는 방법은 아래와 같습니다.</p>
+<p>먼저, Pages의 세팅으로 가셔서 Environment variables 부분을 고르면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjDgslAjfZpa_l3iRtgQ0gizAldcQV06XHTN2rERCesZ4UP-_Na3YINIqybON6L-35NJeIoAN7qcrnaheiAMFoIgDqT7pcFSuF2QdxSg8aqX0fqtHGNAFoScWP4V_nAUiNi_zqAQ-Vmg4ftO1V-r1oAQk4uD2yGHtinYmiODqPkmbv7VivCp7NAJtD0uJ8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 <code>Add</code> 버튼을 누르고 아래와 같이 입력하시면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgRyQWs9JfXg0-76tQZcfvhQFu55FFLNex423oOkAMH5jm4n4rPPseR6fZ6AaF56qSwgUjjeyD70vOPnw_5eWEzsSjUpMJLj8zoLk8vTnVTGZs8EOPqtQJ9P-aKRwr2W7_PyfzwLmcVdzxXQcJjdOW-N8WyIL9KmPjwAPxPfAy2ohh7t4MvQPpa97QtIgU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 입력하시고 저장하면 됩니다.</p>
+<p>이렇게 새로운 Cloudflare 세팅부분을 건드리면 무조건 재배포해야합니다.</p>
+<hr>
+<p>지금까지 아주 흥미로운 Remix 템플릿을 살펴봤는데요.</p>
+<p>제가 이 템플릿을 확장해서 현재 사용하고 있는 블로그 같은 방식으로 확장해 볼까합니다.</p>
+<p>다음 시간까지 아주 오랜 시간이 걸리겠네요.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/fullstack/" role="button">fullstack</a>
+        <a class="btn btn-light" href="/tags/remix/" role="button">remix</a>
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">cloudflare</a>
+        <a class="btn btn-light" href="/tags/kv/" role="button">kv</a>
+        <a class="btn btn-light" href="/tags/github/" role="button">github</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-10-19-cloudflare-remix-hono-todo-app/">Fullstack 강좌 - Hono RPC &#43; Remix &#43; Cloudflare &#43; D1 DB 조합으로 Todo 앱 만들기</a></h2>
+                  <p>Hono RPC 기능을 활용하여 API Endpoint 구축하여 Remix Framework으로 Todo 앱 만들기</p>
+                  <p>
+  <small>October 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>24&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-10-14-cloudflare-remix-framework-hono-rpc-api-endpoint/">Cloudflare에서 Remix Framework과 Hono의 RPC 기능을 활용한 API Endpoint 구축하기</a></h2>
+                  <p>이 글에서는 Cloudflare 환경에서 Remix Framework과 Hono의 RPC 기능을 활용하여 API Endpoint를 구축하는 방법을 단계별로 설명합니다. 효율적인 API 통신을 위한 실용적인 팁과 함께 배포 과정을 안내합니다.</p>
+                  <p>
+  <small>October 14, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>16&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-10-fullstack-remix-cloudflare-pages-d-1-db-drizzle-orm/">풀스택 강의 4편. Remix &#43; Cloudflare Pages &#43; D1 DB &#43; Drizzle ORM</a></h2>
+                  <p>풀스택 강의, Remix와 Pages, D1, Drizzle ORM으로 개발하기</p>
+                  <p>
+  <small>December 10, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

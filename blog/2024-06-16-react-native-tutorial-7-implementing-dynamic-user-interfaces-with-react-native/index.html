@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>리액트 네이티브 강좌. 7편 - 동적인 사용자 인터페이스 구현하기 - Dimensions API와 플랫폼별 코드 작성법</title>
+<meta name="description" content="이 글에서는 React Native를 사용하여 동적인 사용자 인터페이스를 구현하는 방법을 다룹니다. Dimensions API의 장점과 단점을 살펴보고, useWindowDimensions 훅을 사용하는 방법을 단계별로 안내합니다. 또한 SafeAreaView와 플랫폼별 코드  …" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-06-16-react-native-tutorial-7-implementing-dynamic-user-interfaces-with-react-native/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="리액트 네이티브 강좌. 7편 - 동적인 사용자 인터페이스 구현하기 - Dimensions API와 플랫폼별 코드 작성법" />
+<meta property="og:description" content="이 글에서는 React Native를 사용하여 동적인 사용자 인터페이스를 구현하는 방법을 다룹니다. Dimensions API의 장점과 단점을 살펴보고, useWindowDimensions 훅을 사용하는 방법을 단계별로 안내합니다. 또한 SafeAreaView와 플랫폼별 코드  …" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-06-16-react-native-tutorial-7-implementing-dynamic-user-interfaces-with-react-native/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-06-16T07:32:41Z" />
+<meta property="article:modified_time" content="2024-06-16T07:32:41Z" />
+<meta property="article:tag" content="react native" />
+<meta property="article:tag" content="platform specific code" />
+<meta property="article:tag" content="SafeAreaView" />
+<meta property="article:tag" content="useWindowDimensions" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="리액트 네이티브 강좌. 7편 - 동적인 사용자 인터페이스 구현하기 - Dimensions API와 플랫폼별 코드 작성법" />
+<meta name="twitter:description" content="이 글에서는 React Native를 사용하여 동적인 사용자 인터페이스를 구현하는 방법을 다룹니다. Dimensions API의 장점과 단점을 살펴보고, useWindowDimensions 훅을 사용하는 방법을 단계별로 안내합니다. 또한 SafeAreaView와 플랫폼별 코드  …" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"리액트 네이티브 강좌. 7편 - 동적인 사용자 인터페이스 구현하기 - Dimensions API와 플랫폼별 코드 작성법\"",
+  "description": "\"이 글에서는 React Native를 사용하여 동적인 사용자 인터페이스를 구현하는 방법을 다룹니다. Dimensions API의 장점과 단점을 살펴보고, useWindowDimensions 훅을 사용하는 방법을 단계별로 안내합니다. 또한 SafeAreaView와 플랫폼별 코드  …\"",
+  "datePublished": "\"2024-06-16T07:32:41Z\"",
+  "dateModified": "\"2024-06-16T07:32:41Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-06-16-react-native-tutorial-7-implementing-dynamic-user-interfaces-with-react-native/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>리액트 네이티브 강좌. 7편 - 동적인 사용자 인터페이스 구현하기 - Dimensions API와 플랫폼별 코드 작성법</h1>
+        <p>
+  <small>June 16, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요!</p>
+<p>리액트 네이티브 강좌 7편입니다.</p>
+<p>편의를 위해 전체 강좌 링크도 넣었습니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-25-react-native-tutorial-1-introduction-and-expo-and-error">리액트 네이티브 강좌. 1편 - 소개 및 Expo 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-06-react-native-tutorial-2-core-components-complete-guide">리액트 네이티브 강좌. 2편 - 핵심 컴포넌트 가이드 - 뷰, 텍스트, 이미지부터 커스텀 컴포넌트까지</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-08-react-native-tutorial-3-styling-guide-stylesheets-box-model-shadows-inheritance">리액트 네이티브 강좌. 3편 - 스타일링 - 스타일시트, 박스 모델, 그림자, 그리고 상속</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-10-react-native-tutorial-4-flexbox-basics">리액트 네이티브 강좌. 4편 - Flexbox - 기본 개념과 flexDirection 설정</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-15-react-native-tutorial-5-flexbox-alignment-layout">리액트 네이티브 강좌. 5편 - Flexbox - 정렬 및 레이아웃 속성</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-15-react-native-tutorial-6-flexbox-basis-shrink-grow-and-absolute-relative-layout-strategies">리액트 네이티브 강좌. 6편 - Flexbox - basis, shrink, grow 및 레이아웃 전략</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-16-react-native-tutorial-7-implementing-dynamic-user-interfaces-with-react-native">리액트 네이티브 강좌. 7편 - 동적인 사용자 인터페이스 구현하기 - Dimensions API와 플랫폼별 코드 작성법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-29-react-native-tutorial-8-list-rendering-flatlist-sectionlist">리액트 네이티브 강좌. 8편 - 리스트 렌더링하기 그리고 FlatList, SectionList 사용하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-06-30-react-native-9-textinput-and-form-with-validation">리액트 네이티브 강좌. 9편 - Input and Forms with Switch, KeyboardAvoidingView, Form Validation</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-01-react-native-10-networking-data-fetching-load-state-error-handling-data-post">리액트 네이티브 강좌. 10편 - Networking 다루기, 데이터 fetching, loading state, error handling</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-13-react-native-11-stack-navigation">리액트 네이티브 강좌. 11편 - 스택 네비게이션과 화면 간 데이터 관리</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-13-react-native-12-react-navigation-guide-drawer-tab-navigation">리액트 네이티브 강좌. 12편 - 드로어, 탭 네비게이션 그리고 중첩 네비게이션 마스터하기</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#%eb%a6%ac%ec%95%a1%ed%8a%b8-%eb%84%a4%ec%9d%b4%ed%8b%b0%eb%b8%8c-%ea%b0%95%ec%a2%8c-7%ed%8e%b8---%eb%8f%99%ec%a0%81%ec%9d%b8-%ec%82%ac%ec%9a%a9%ec%9e%90-%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0---dimensions-api%ec%99%80-%ed%94%8c%eb%9e%ab%ed%8f%bc%eb%b3%84-%ec%bd%94%eb%93%9c-%ec%9e%91%ec%84%b1%eb%b2%95">리액트 네이티브 강좌. 7편 - 동적인 사용자 인터페이스 구현하기 - Dimensions API와 플랫폼별 코드 작성법</a>
+<ul>
+<li><a href="#%eb%8f%99%ec%a0%81%ec%9d%b8-%ec%82%ac%ec%9a%a9%ec%9e%90-%ec%9d%b8%ed%84%b0%ed%8e%98%ec%9d%b4%ec%8a%a4dynamic-user-interfaces">동적인 사용자 인터페이스(Dynamic user interfaces)</a></li>
+<li><a href="#dimensions-api">Dimensions API</a></li>
+<li><a href="#dimensions-api%ec%9d%98-%eb%8b%a8%ec%a0%90">Dimensions API의 단점</a></li>
+<li><a href="#usewindowdimensions">useWindowDimensions</a>
+<ul>
+<li><a href="#step-1-%eb%b6%88%ed%95%84%ec%9a%94%ed%95%9c-%ec%bd%94%eb%93%9c-%ec%a0%9c%ea%b1%b0">Step 1: 불필요한 코드 제거</a></li>
+<li><a href="#step-2-usewindowdimensions-import">Step 2: useWindowDimensions import</a></li>
+<li><a href="#step-3-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%eb%82%b4%ec%97%90%ec%84%9c-usewindowdimensions-%ec%82%ac%ec%9a%a9">Step 3: 컴포넌트 내에서 useWindowDimensions 사용</a></li>
+<li><a href="#%ec%a0%84%ec%b2%b4-%ec%bd%94%eb%93%9c">전체 코드</a></li>
+</ul>
+</li>
+<li><a href="#safeareaview">SafeAreaView</a></li>
+<li><a href="#%ed%94%8c%eb%9e%ab%ed%8f%bc%eb%b3%84-%ec%bd%94%eb%93%9c-%ec%9e%91%ec%84%b1platform-specific-code">플랫폼별 코드 작성(Platform Specific Code)</a>
+<ul>
+<li><a href="#%ec%b2%ab-%eb%b2%88%ec%a7%b8-%ec%a0%91%ea%b7%bc-%eb%b0%a9%ec%8b%9d-platform-%eb%aa%a8%eb%93%88">첫 번째 접근 방식: Platform 모듈</a></li>
+<li><a href="#%eb%91%90-%eb%b2%88%ec%a7%b8-%ec%a0%91%ea%b7%bc-%eb%b0%a9%ec%8b%9d-%ed%94%8c%eb%9e%ab%ed%8f%bc%eb%b3%84-%ed%8c%8c%ec%9d%bc-%ed%99%95%ec%9e%a5%ec%9e%90">두 번째 접근 방식: 플랫폼별 파일 확장자</a>
+<ul>
+<li><a href="#ios-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ec%bd%94%eb%93%9c-custombuttoniosjs">iOS 컴포넌트 코드 (customButton.ios.js)</a></li>
+<li><a href="#android-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ec%bd%94%eb%93%9c-custombuttonandroidjs">Android 컴포넌트 코드 (customButton.android.js)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="동적인-사용자-인터페이스dynamic-user-interfaces">동적인 사용자 인터페이스(Dynamic user interfaces)</h2>
+<p>이번에는는 React Native에서 동적인 사용자 인터페이스에 대해 배워보겠습니다.</p>
+<p>지금까지 우리는 React Native 컴포넌트를 스타일링하고 Flexbox를 사용해 레이아웃을 구성하는 방법을 배웠습니다.</p>
+<p>이것들은 매우 중요하지만, 한 가지 중요한 부분이 빠져있습니다.</p>
+<p>현재까지 우리의 학습은 아이폰 15와 픽셀 4 기기들에 집중되어 있었습니다.</p>
+<p>그러나 우리의 앱 사용자들이 모두 동일한 기기를 사용하지 않는다는 점을 유념해야 합니다.</p>
+<p>기기 크기는 더 작은 휴대폰부터 아이패드나 안드로이드 태블릿 같은 더 큰 기기까지 다양할 수 있습니다.</p>
+<p>우리는 앱의 사용자 인터페이스가 이러한 다양한 기기 크기에 반응하면서 최적의 사용자 경험을 유지하도록 해야 합니다.</p>
+<p>하지만 그것이 전부는 아닙니다.</p>
+<p>동일한 기기에서도 어떤 사용자는 세로 모드를 선택하고, 다른 사용자는 가로 모드를 선호할 수 있습니다.</p>
+<p>우리의 UI는 이러한 다양한 선호도를 수용할 수 있어야 합니다.</p>
+<p>이번 섹션에서는 React Native가 제공하는 몇 가지 API를 배워서 이러한 변화를 우아하게 수용하는 방법을 알아보겠습니다.</p>
+<p>이번 Dynamic user interfaces 섹션을 위해 기본 코드를 아래와 같이 준비했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">StyleSheet</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;plum&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyCotent</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="dimensions-api">Dimensions API</h2>
+<p>이번에는 React Native의 Dimensions API에 대해 알아보겠습니다.</p>
+<p>예제를 통해 바로 코드를 살펴보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">StyleSheet</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-native&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">box</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">Welcome</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">box</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">width</span><span class="o">:</span> <span class="mi">300</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">height</span><span class="o">:</span> <span class="mi">300</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;lightblue&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하면 파란 박스와 &ldquo;Welcome&rdquo; 텍스트가 표시됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjY-p0I4dBBaubbjxxruXtckjd-YCmtvLoUYjJ_D--51On3FNOT8Ad8m4A8RUMSNXMkY3k5tHN_y8kMwzjsuRv5Yi5ABTmTmZhRAp7qUtwaEHMWo2vcLotA9F2RdQ8ycsWIijSm1ws7QQqBidjzufwe-qS8gBQ2KlehhoW93RlDym3Zd_nFJKUxMl7EYDE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>현재까지는 모든 것이 잘 작동합니다.</p>
+<p>하지만 이제 iPad와 같은 더 큰 기기에서 애플리케이션을 테스트해보겠습니다.</p>
+<p>이를 위해 VSCode 터미널에서 Shift + I를 눌러 iOS 기기 목록을 불러옵니다
+.
+iPad Pro 또는 iPad Air 최신 세대를 선택합니다.</p>
+<p>설치 승인 요청이 있을 경우 Expo Go를 통해 앱 설치를 승인합니다.</p>
+<p>이제 앱이 iPhone과 iPad에서 실행 중이며, 물론 Android에서도 같은 방식으로 작동할 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg5BmgC_7x84FohgqiHVzd1XT7ryUK0udcQD4RPOGP9U9dTEXdGlC5VhhZHYNxZC4ev9DvCuf0bPfV5_MpEKMewmAyRvHaf7Pme_55_xr57SEo3JVEC2NeS5pTMTWZVZ_sZaOs-bGXbKbPZ5d0v7bdVPVSd3hMCLE2i5FBZ_fWpBw7t7vZaYSoMOL2IN0Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그러나 iPad에서는 앱이 최적의 상태로 보이지 않습니다.</p>
+<p>박스가 너무 작고 폰트가 읽기 어렵습니다.</p>
+<p>박스 크기 문제에 대한 잠재적 해결책은 너비와 높이에 퍼센트를 사용하는 것입니다.</p>
+<p>너비를 70%, 높이를 40%로 설정해봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">box</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">width</span><span class="o">:</span> <span class="s2">&#34;70%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">height</span><span class="o">:</span> <span class="s2">&#34;40%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;lightblue&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjyUES2fxobz0zVANPDsGc1CS4cPq8EXH7w-w64uOI86pboTebRf_Rlez-YtX247E0fssf_2eGlppJAS8B6eFBZcvq3d4opuen3Cng4o16KjdktdLQHKWers5_qvC0jPz3dr-F859JoVzrCyOFsAHh_qmRiRKCWpMzLv-fPLGW-kIWWjuqMBghikzX08dg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이렇게 하면 개선되지만 여전히 완벽하지 않습니다.</p>
+<p>문제는 두 기기가 유사한 높이를 가지고 있지만 너비가 크게 다르다는 것입니다.</p>
+<p>퍼센트 기반 너비와 높이만으로는 충분하지 않습니다.</p>
+<p>게다가 폰트 크기는 어떻게 처리할까요?</p>
+<p>우리는 더 큰 폰트를 원할 수 있지만 퍼센트를 지정하는 것은 효과적이지 않습니다.</p>
+<p>기기 크기에 따라 반응형 스타일을 적용할 방법이 필요합니다.</p>
+<p>여기서 Dimensions API가 등장합니다.</p>
+<p>사용 방법을 알아봅시다.</p>
+<p>1단계: React Native에서 Dimensions API를 import합니다.</p>
+<p>2단계: API를 사용해 기기의 너비와 높이를 얻습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">Dimensions</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-native&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">box</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">Welcome</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nb">window</span> <span class="o">=</span> <span class="nx">Dimensions</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;window&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">windowWidth</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">windowHeight</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">height</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">box</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">width</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="s2">&#34;70%&#34;</span> <span class="o">:</span> <span class="s2">&#34;90%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">height</span><span class="o">:</span> <span class="nx">windowHeight</span> <span class="o">&gt;</span> <span class="mi">600</span> <span class="o">?</span> <span class="s2">&#34;60%&#34;</span> <span class="o">:</span> <span class="s2">&#34;90%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;lightblue&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontSize</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="mi">50</span> <span class="o">:</span> <span class="mi">24</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하면 훨씬 더 나아진 것을 볼 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhxo8liAQ1Xew2AsqBPtqCARRtq7uiTpQsBRFOfr8b0MNOz4_vbm8LFXnl-ZOeJEHPdakTMdd-o7q6_zyfQbVtoo0tLDA3WfpS1dQq2RI5RKIUWMEYxUZexDMysBS8Qbl1NV4SN31EMpn3zAHg5yiRrA_BKIjTI3lhe3CjME3HWAOBWcTKcrkNRxtN_KPM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 Dimensions가 기기 크기를 잘 반영하며 폰트가 iPad에서도 훨씬 읽기 쉽게 되었습니다.</p>
+<p>요약하자면, Dimensions API는 기기 크기에 접근할 수 있게 해주며, 기기의 너비나 높이를 사용해 UI 요소의 반응형 스타일을 만들 수 있습니다.</p>
+<p>하지만 우리의 스타일이 완벽하게 작동하는 것처럼 보이더라도, Dimensions API에는 동적인 사용자 인터페이스를 만드는 데 권장되지 않는 단점이 있습니다.</p>
+<h2 id="dimensions-api의-단점">Dimensions API의 단점</h2>
+<p>우리는 Dimensions API를 사용하여 UI 요소에 반응형 스타일을 정의하는 방법을 배웠습니다.</p>
+<p>기기 크기에 따라 높이, 너비, 폰트 크기를 성공적으로 설정했습니다.</p>
+<p>하지만 이 방법에는 문제가 있습니다.</p>
+<p>화면의 방향이 바뀌면 기기 크기도 변할 수 있는데, Dimensions API는 이러한 변경 사항을 동적으로 업데이트하지 않습니다.</p>
+<p>예시를 통해 이 문제를 이해해 봅시다.</p>
+<p>기기 높이와 너비를 콘솔에 로그로 출력해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Dimensions</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nb">window</span> <span class="o">=</span> <span class="nx">Dimensions</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;window&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Window dimensions: </span><span class="si">${</span><span class="nb">window</span><span class="p">.</span><span class="nx">height</span><span class="si">}</span><span class="sb">x</span><span class="si">${</span><span class="nb">window</span><span class="p">.</span><span class="nx">width</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">windowWidth</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">windowHeight</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">height</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하면 콘솔에 다른 기기 차원이 기록되는 것을 볼 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"> LOG  Window dimensions: 852x393
+</span></span><span class="line"><span class="cl"> LOG  Window dimensions: 1366x1024</span></span></code></pre></div>
+  </figure>
+</div>
+<p>예를 들어, iPhone의 차원은 높이 852, 너비 393으로 기록됩니다.</p>
+<p>이제 iPhone 기기를 90도 회전시켜 보겠습니다.</p>
+<p>회전 버튼을 사용하여 기기를 가로 모드로 전환합니다.</p>
+<p>기기가 세로 모드에서 가로 모드로 전환되었지만, 우리의 앱은 화면 방향 변경에 맞게 적응하지 않는 것처럼 보입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjHutstUQAxhrmYA1eQ1jeV3santOYmitTFmuV0T0uZ1N1t_hJGQiELq65zMt9gmczTP4CM7IyyXgnRY37S0btvtVMXc-veHUej7WN_p4CKsG_rlQFIappRRHMSqn-H2p7EXAiIHcuEKnriM-oqlSBtSgdnL7DdiAklhKuoszSryn1oUWXBR7RNFAdCYfM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이상적으로는 &ldquo;Welcome&rdquo; 텍스트도 회전하여 세로 모드에서 읽는 것과 비슷한 방식으로 읽혀야 합니다</p>
+<p>우리가 설정한 Expo 애플리케이션은 app.json에 정의된 Expo 설정 때문에 가로 모드에 적응하지 않습니다.</p>
+<p>기본적으로 방향 설정은 세로 모드로 고정되어 있어 우리의 UI는 세로 방향에만 맞춰져 있습니다.</p>
+<p>이를 &lsquo;default&rsquo; 값으로 조정해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;expo&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;orientation&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하고 서버를 다시 시작하기 위해 <code>R</code>을 누릅니다.</p>
+<p>이제 기기 방향이 기본값으로 재설정되었습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj3NSP4ROm1ajNvDI8YhV6duQEWqj4UnFJr7Ilc4xOoqpXwinR0-wcHHA-jg5Xf1uKfB7J98fplO0U7OpcHS5E6GrKkCw6dBZPFIQQYkOBptrAfPjWifSltMbZwBnisef88gFbshiXcCNPX6J10NSevyvxT-u1I5NYcvIE6gdp0-DAuD9fBW76792TrxsY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"> LOG  Window dimensions: 1024x1366
+</span></span><span class="line"><span class="cl"> LOG  Window dimensions: 393x852</span></span></code></pre></div>
+  </figure>
+</div>
+<p>iPhone의 창 높이는 852, 너비는 393으로 설정되어 있습니다.</p>
+<p>하지만 방향이 기본값으로 설정된 상태에서 iPhone을 회전하면 앱이 적응하고 텍스트가 다시 읽기 쉬워집니다.</p>
+<p>그러나 반응형 스타일은 회전 후에도 작동하지 않는 것처럼 보입니다.</p>
+<p>iPhone 기기의 너비가 852, 높이가 393으로 변해야 합니다.</p>
+<p>이 너비와 높이의 변경은 View 컴포넌트의 너비를 70%로 변경하고 텍스트 폰트 크기를 50으로 증가시켜야 합니다.</p>
+<p>그러나 이러한 변경 사항이 반영되지 않습니다.</p>
+<p>너비는 여전히 90%로 남아 있으며, 텍스트 폰트 크기는 24픽셀로 유지됩니다.</p>
+<p>애플리케이션을 다시 시작해야만 크기를 다시 계산할 수 있습니다.</p>
+<p>기기를 포커스로 가져와 <code>R</code>을 눌러 애플리케이션을 다시 시작하면 너비가 70%로 조정되고 폰트 크기가 50픽셀로 설정됩니다.</p>
+<p>업데이트된 차원도 콘솔에 기록됩니다.</p>
+<p>높이는 393, 너비는 852입니다.</p>
+<p>그러나 이것이 Dimensions API의 단점입니다.</p>
+<p>값이 창 차원의 변경에 동적으로 업데이트되지 않습니다.</p>
+<p>화면 방향 변경이나 접이식 전화기와 같은 더 복잡한 시나리오에서도 마찬가지입니다.</p>
+<p>물론 이 문제를 해결할 방법이 있습니다.</p>
+<p>그 해결 방법을 단계별로 설명해 드리겠습니다.</p>
+<p>1단계: React에서 useState와 useEffect 훅을 가져옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Dimensions</span><span class="p">,</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>2단계: 화면 로드 시 기기 차원을 저장할 상태 변수를 생성합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">[</span><span class="nx">dimensions</span><span class="p">,</span> <span class="nx">setDimensions</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">window</span><span class="o">:</span> <span class="nx">Dimensions</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;window&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>3단계: 기기 차원 변경을 감지하고 차원 상태 값을 업데이트하는 효과를 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">subscription</span> <span class="o">=</span> <span class="nx">Dimensions</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="p">({</span> <span class="nb">window</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">setDimensions</span><span class="p">({</span> <span class="nb">window</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">subscription</span><span class="o">?</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="p">[]);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>4단계: dimensions 상태 변수에서 기기 너비와 높이를 추출합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">windowWidth</span> <span class="o">=</span> <span class="nx">dimensions</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">windowHeight</span> <span class="o">=</span> <span class="nx">dimensions</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">height</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>5단계: 기기 차원에 따라 동적으로 변경되는 인라인 스타일을 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">Dimensions</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-native&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">dimensions</span><span class="p">,</span> <span class="nx">setDimensions</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">window</span><span class="o">:</span> <span class="nx">Dimensions</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;window&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">subscription</span> <span class="o">=</span> <span class="nx">Dimensions</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">&#34;change&#34;</span><span class="p">,</span> <span class="p">({</span> <span class="nb">window</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">setDimensions</span><span class="p">({</span> <span class="nb">window</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">subscription</span><span class="o">?</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">windowWidth</span> <span class="o">=</span> <span class="nx">dimensions</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">windowHeight</span> <span class="o">=</span> <span class="nx">dimensions</span><span class="p">.</span><span class="nb">window</span><span class="p">.</span><span class="nx">height</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">View</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">style</span><span class="o">=</span><span class="p">{[</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">styles</span><span class="p">.</span><span class="nx">box</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">width</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="s2">&#34;70%&#34;</span> <span class="o">:</span> <span class="s2">&#34;90%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">height</span><span class="o">:</span> <span class="nx">windowHeight</span> <span class="o">&gt;</span> <span class="mi">600</span> <span class="o">?</span> <span class="s2">&#34;60%&#34;</span> <span class="o">:</span> <span class="s2">&#34;90%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">fontSize</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="mi">50</span> <span class="o">:</span> <span class="mi">24</span> <span class="p">}}</span><span class="o">&gt;</span><span class="nx">Welcome</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">box</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;lightblue&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 파일을 저장하고 iPhone 기기로 돌아가면 기본 세로 방향이 여전히 작동하는 것을 볼 수 있습니다.</p>
+<p>하지만 가로 모드로 변경하면 너비와 폰트 크기가 70%와 50픽셀로 조정됩니다.</p>
+<p>우리는 기기 차원에 따라 동적으로 변경되는 스타일을 UI 요소에 추가할 수 있었습니다.</p>
+<p>코드를 다시 보면, 조금 복잡해 보이지 않나요?</p>
+<p>더 쉬운 방법이 있다면 어떨까요?</p>
+<p>실제로 있습니다.</p>
+<hr>
+<h2 id="usewindowdimensions">useWindowDimensions</h2>
+<p>전에 Dimensions API가 기기 차원이 변경될 때 업데이트되지 않는다는 것을 발견했습니다.</p>
+<p>기기 방향이 변경될 때 동적 스타일이 올바르게 적용되도록 하기 위해 상당한 양의 코드를 구현해야 했습니다.</p>
+<p>이번에는 이 과정을 단순화하고 useWindowDimensions 훅(Hook)을 사용하여 동일한 결과를 얻는 방법을 보여드리겠습니다.</p>
+<h3 id="step-1-불필요한-코드-제거">Step 1: 불필요한 코드 제거</h3>
+<p>먼저, 불필요한 코드를 제거합니다.</p>
+<p>여기에는 useState와 useEffect의 import, Dimensions API의 import, 그리고 useState와 useEffect와 관련된 전체 코드 블록이 포함됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="step-2-usewindowdimensions-import">Step 2: useWindowDimensions import</h3>
+<p>그 다음, useWindowDimensions를 react-native에서 import합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useWindowDimensions</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="step-3-컴포넌트-내에서-usewindowdimensions-사용">Step 3: 컴포넌트 내에서 useWindowDimensions 사용</h3>
+<p>컴포넌트 내에서 useWindowDimensions 훅을 사용하여 windowWidth와 windowHeight를 가져옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">width</span><span class="o">:</span> <span class="nx">windowWidth</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="nx">windowHeight</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useWindowDimensions</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">View</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">style</span><span class="o">=</span><span class="p">{[</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">styles</span><span class="p">.</span><span class="nx">box</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">width</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="s1">&#39;70%&#39;</span> <span class="o">:</span> <span class="s1">&#39;90%&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">height</span><span class="o">:</span> <span class="nx">windowHeight</span> <span class="o">&gt;</span> <span class="mi">600</span> <span class="o">?</span> <span class="s1">&#39;60%&#39;</span> <span class="o">:</span> <span class="s1">&#39;90%&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">]}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">fontSize</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="mi">50</span> <span class="o">:</span> <span class="mi">24</span> <span class="p">}}</span><span class="o">&gt;</span><span class="nx">Welcome</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="전체-코드">전체 코드</h3>
+<p>최종적으로, 전체 코드는 다음과 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">useWindowDimensions</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-native&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">width</span><span class="o">:</span> <span class="nx">windowWidth</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="nx">windowHeight</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useWindowDimensions</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">View</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">style</span><span class="o">=</span><span class="p">{[</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">styles</span><span class="p">.</span><span class="nx">box</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">width</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="s2">&#34;70%&#34;</span> <span class="o">:</span> <span class="s2">&#34;90%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">height</span><span class="o">:</span> <span class="nx">windowHeight</span> <span class="o">&gt;</span> <span class="mi">600</span> <span class="o">?</span> <span class="s2">&#34;60%&#34;</span> <span class="o">:</span> <span class="s2">&#34;90%&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">fontSize</span><span class="o">:</span> <span class="nx">windowWidth</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="o">?</span> <span class="mi">50</span> <span class="o">:</span> <span class="mi">24</span> <span class="p">}}</span><span class="o">&gt;</span><span class="nx">Welcome</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">box</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;lightblue&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하고 기기를 회전시키면 동적 스타일이 예상대로 계속 작동하는 것을 확인할 수 있습니다.</p>
+<p>useWindowDimensions는 권장되는 접근 방식이며, Dimensions API의 문제점을 이해시키기 위해 먼저 설명했습니다.</p>
+<p>useWindowDimensions는 반응형 스타일을 적용할 때 기본 접근 방식으로 사용해야 합니다.</p>
+<hr>
+<h2 id="safeareaview">SafeAreaView</h2>
+<p>React Native 공부하기 위해서 Expo에서 제공해주는 웹 환경의 개발 환경이 있습니다.</p>
+<p><a href="https://snack.expo.dev/">https://snack.expo.dev/</a>입니다.</p>
+<p>여기서 코드를 입력하면 오른쪽에 바로 여러가지 기기에서 렌더링된 화면을 바로 볼 수 있습니다.</p>
+<p>이제 무겁게 iOS 시뮬레이터를 오픈할 필요가 없습니다.</p>
+<p>그럼 본론으로 들어가서,</p>
+<p>이번에는 React Native의 SafeAreaView 컴포넌트에 대해 알아보겠습니다.</p>
+<p>시간을 절약하기 위해 App 컴포넌트의 코드를 복사하여 설명드리겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">SafeAreaView</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-native&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">box</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">Welcome</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">box</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">padding</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontWeight</span><span class="o">:</span> <span class="s2">&#34;bold&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">textAlign</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>컨테이너에는 Flex가 1로 설정되어 전체 사용 가능한 공간을 사용하며, 배경색은 Plum으로 설정되어 있습니다.</p>
+<p>내부 박스에는 모든 방향으로 20픽셀의 패딩이 있습니다.</p>
+<p>마지막으로 텍스트에는 폰트 크기 24, 폰트 굵기 Bold, 텍스트 정렬이 Center로 설정되어 &ldquo;Welcome&rdquo; 텍스트를 가운데로 정렬합니다.</p>
+<p>이 시리즈를 따라오셨다면, 이 코드는 익숙할 것입니다. 결국 &ldquo;Welcome&quot;을 화면에 렌더링하는 컴포넌트가 됩니다.</p>
+<p>파일을 저장하고 기기에서 확인하면 문제가 발생합니다.</p>
+<p>Android에서는 &ldquo;Welcome&rdquo; 텍스트가 보이지만, iOS에서는 텍스트가 보이지 않습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhuf2DcuJrb-TB-uFE9ESGRZCs1ChYCsjTSnXUaMxM0AUhIp7_gPmPZWVlrj9tVSFyq3Tdq1Z-M8hW_ZO9VjZdlixuFDdt1e6Xp0yacq-rSNzhx9N6KLuuqd1jO7gvjCITqZAV9UT_QQvK6jbLG9A7BOp67HAE4p7LsgQ-PYzhqjp2LA_FR-OtRoMt5Vzo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh7vpSxp49HCdwBAnJDFQwcwYZOxZD5i5QgwEWLtgucgvOW9gSc87JvN7NKMzYCDAP1kKkJp_7odDZ2C1BInuIC6b5_fj1UqOZeoX1dkIhKAxcKrQSePw4cZjrQs7PSmiT_IUdqs3L1OcJXOmM1DTI1UoHgyhRKk7tJ82el-tu7UY8dfY5ZEiW4-1fziXw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>텍스트 컴포넌트를 iPhone에서 렌더링하는 데 문제가 있다고 생각할 수 있지만, 그렇지 않습니다.</p>
+<p>문제는 텍스트가 노치 뒤에 숨겨져 있다는 것입니다.</p>
+<p>Android는 전혀 문제가 없지만, iOS 기기에서는 문제가 발생합니다.</p>
+<p>컨테이너에 상단 패딩을 추가하고 파일을 저장하면, 이제 두 기기에서 텍스트를 볼 수 있습니다.</p>
+<p>하지만 이것이 올바른 해결책처럼 보이지는 않습니다.</p>
+<p>이제 Android에서는 상단에 불필요한 공간이 생기고, 노치가 다른 위치에 있는 새로운 기기가 출시될 수도 있습니다.</p>
+<p>필요한 것은 주어진 기기의 안전 영역을 파악하고, 애플리케이션을 해당 영역 내에서만 렌더링하는 방법입니다.</p>
+<p>바로 SafeAreaView 컴포넌트가 이러한 역할을 합니다.</p>
+<p>React Native에서 SafeAreaView를 import하고, 전체 JSX를 SafeAreaView로 감쌉니다.</p>
+<p>SafeAreaView가 전체 사용 가능한 공간을 차지하도록 설정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">SafeAreaView</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react-native&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">SafeAreaView</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">safeContainer</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">box</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="o">&gt;</span><span class="nx">Welcome</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/SafeAreaView&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">safeContainer</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">box</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">padding</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontWeight</span><span class="o">:</span> <span class="s2">&#34;bold&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">textAlign</span><span class="o">:</span> <span class="s2">&#34;center&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>SafeAreaView의 목적은 기기의 안전 영역 경계 내에서 콘텐츠를 렌더링하는 것입니다.</p>
+<p>이는 화면의 물리적 제한, 예를 들어 둥근 모서리나 카메라 노치 등을 반영하여 패딩을 적용합니다.</p>
+<p>파일을 저장하면 애플리케이션이 이제 상단 노치와 하단 곡선을 피해 SafeAreaView 내에서 렌더링되는 것을 확인할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiO1-mMm-wSZ_Y7c2zFFBhhiAHima7tDoyYAZO3610Z82VyVmo5gm-z1-hjvptlW1w0W2GXk2016tEE53c9WnKwqgcGEPDUaf6_313cGNSC7mJkpWm-K7JbfzaPcbe-8CvSdtVPj9yNUCBWVBodt3xal2yD1ikVDTrOSFdX4n_5Z_eOXjLgSz1y61YkTjw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>물론, 현재 상단과 하단에 흰색 간격이 생겼습니다.</p>
+<p>이를 해결하려면 SafeAreaView에 컨테이너와 동일한 배경색을 적용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">safeContainer</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s2">&#34;plum&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">....</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 UI를 확인하면 훨씬 더 나아진 것을 볼 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgwC_3n_L-fxUdoihxXIUN3cgM7FJGCQGG-ST6C3TIqXbgbMBwsGKLl6FVAhl-BnAW5uTPINWO_BZnq-OSC5t60LFL6nJvO2RnDSMW3inSS6mcR_7LDQW1sH3YxgsbY3FqF_tiquX0_YTVXI7l-myMTUTWFGhALdRJ1Hk1vFCe5RAkvC_MF_o70jPgOcMI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 여러분은 SafeAreaView의 필요성과 사용 방법을 쉽게 이해할 수 있을 것입니다.</p>
+<hr>
+<h2 id="플랫폼별-코드-작성platform-specific-code">플랫폼별 코드 작성(Platform Specific Code)</h2>
+<p>크로스 플랫폼 앱을 개발할 때 코드 재사용을 최대화하는 것이 중요합니다.</p>
+<p>하지만 특정 플랫폼에 맞게 코드를 조정해야 하는 상황이 발생할 수 있습니다.</p>
+<p>React Native는 플랫폼별 코드를 구성하고 분리하는 두 가지 접근 방식을 제공합니다.</p>
+<p>첫 번째는 Platform 모듈이고, 두 번째는 플랫폼별 파일 확장자입니다.</p>
+<p>이번에는 두 가지 접근 방식을 모두 배워보겠습니다.</p>
+<h3 id="첫-번째-접근-방식-platform-모듈">첫 번째 접근 방식: Platform 모듈</h3>
+<p>Platform 모듈은 React Native에서 import되며, 앱이 실행 중인 플랫폼을 감지합니다.</p>
+<p>이 감지 로직을 사용하여 플랫폼별 코드를 구현할 수 있습니다.</p>
+<p>예를 들어, iPhone에서는 SafeAreaView 내에 위치한 &ldquo;Welcome&rdquo; 텍스트가 적절하게 위치되어 있지만 Pixel에서는 상태 표시줄과 너무 가깝습니다.</p>
+<p>컨테이너에 <code>paddingTop: 25</code>를 설정하면 두 기기 모두에 적용됩니다.</p>
+<p>하지만 Platform 모듈을 사용하면 Android에서만 상단 패딩을 설정할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Platform</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;plum&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">paddingTop</span><span class="o">:</span> <span class="nx">Platform</span><span class="p">.</span><span class="nx">OS</span> <span class="o">===</span> <span class="s1">&#39;android&#39;</span> <span class="o">?</span> <span class="mi">25</span> <span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// other styles...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하면 추가적인 패딩이 Android 기기에만 적용된 것을 볼 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh7vpSxp49HCdwBAnJDFQwcwYZOxZD5i5QgwEWLtgucgvOW9gSc87JvN7NKMzYCDAP1kKkJp_7odDZ2C1BInuIC6b5_fj1UqOZeoX1dkIhKAxcKrQSePw4cZjrQs7PSmiT_IUdqs3L1OcJXOmM1DTI1UoHgyhRKk7tJ82el-tu7UY8dfY5ZEiW4-1fziXw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림은 적용 전 그림입니다.</p>
+<p>아래 그림은 적용 후 그림입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjvVH_5cndZ0UYMbWFBsjjXx4UZEbmUGxjB8Sq4cEegHZS23o9_IAdkAcYJTXvyCSJl0lmWOuA-HUBZDavYXB2Ze4rh5ZBE984pGciUpAPV7c5Z49aVqsEWE-rakUQr59j3xY85b9J8e2-nMK7ICVWTjdCBE9bGvrunogEEgDFZ6o2mcrcYMrWtvAiYVCY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이와 같이 Platform.OS를 사용하여 iOS에도 특정 스타일을 적용할 수 있습니다.</p>
+<p>Platform.OS는 작은 변경 사항에 적합하지만, 더 포괄적인 플랫폼별 스타일을 적용할 때는 Platform.select를 사용하는 것이 좋습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontWeight</span><span class="o">:</span> <span class="s1">&#39;bold&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">textAlign</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span><span class="nx">Platform</span><span class="p">.</span><span class="nx">select</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">ios</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;purple&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fontStyle</span><span class="o">:</span> <span class="s1">&#39;italic&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">android</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">30</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// other styles...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하면 &ldquo;Welcome&rdquo; 텍스트에 각 플랫폼에 맞는 스타일이 적용된 것을 볼 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi7cZIFXTuDy5aVaWAF-pQjswKQX_1fJcdHrmGDgsa7pbvDbxZ3mwyISMnUzpoxL_UJkFJ9bNUyP38lQqp7sADreYXQ0n7jxSLqmS2dPuyF7LZ6s7gnKLytgkltswc4EzokG_17DJzxl-yvE_C82_PS8XaSEpgRfd-N9ytaM2gIgc2c3CxWjHdEIdyRLM4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhol46JRks8rYxW8cKM9KDJqqFQQ47m-E_eIKxOrIJvO5WxhF8o3q_VB-HXLHwm1O38YTVitYdgY96jj55klvxWspqEN-Fkc8wRZmGw2n2DygGH1kOWUtLnT69bmOIxLFBA9Auk4Uk3lrRGX9ahgsKUoCzzEtOq3bE3VBA0ahUtGTuhlCGcxRN1F-x0Mmg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 접근 방식은 특정 컴포넌트의 일부만 플랫폼별로 다를 때 적합합니다.</p>
+<h3 id="두-번째-접근-방식-플랫폼별-파일-확장자">두 번째 접근 방식: 플랫폼별 파일 확장자</h3>
+<p>더 복잡한 플랫폼별 시나리오에서는 플랫폼별 파일 확장자를 사용하는 것이 좋습니다.</p>
+<p>이 접근 방식에서는 코드를 .ios.js와 .android.js 확장자로 나누어 작성합니다.</p>
+<p>React Native는 확장자를 감지하고 필요한 플랫폼 파일을 로드합니다.</p>
+<p>예를 들어, 두 플랫폼에서 다르게 동작하는 간단한 버튼 컴포넌트를 만들어 보겠습니다.</p>
+<ol>
+<li>프로젝트 폴더 내에 <code>components</code> 폴더를 생성합니다.</li>
+<li><code>components</code> 폴더 내에 <code>customButton.ios.js</code>와 <code>customButton.android.js</code> 파일을 생성합니다.</li>
+</ol>
+<h4 id="ios-컴포넌트-코드-custombuttoniosjs">iOS 컴포넌트 코드 (customButton.ios.js)</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Pressable</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">StyleSheet</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">CustomButton</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">onPress</span><span class="p">,</span> <span class="nx">title</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">Pressable</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">button</span><span class="p">}</span> <span class="nx">onPress</span><span class="o">=</span><span class="p">{</span><span class="nx">onPress</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/Pressable&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">button</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;lightblue&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">borderRadius</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">padding</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;purple&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">18</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">CustomButton</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h4 id="android-컴포넌트-코드-custombuttonandroidjs">Android 컴포넌트 코드 (customButton.android.js)</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Pressable</span><span class="p">,</span> <span class="nx">Text</span><span class="p">,</span> <span class="nx">StyleSheet</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">CustomButton</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">onPress</span><span class="p">,</span> <span class="nx">title</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">Pressable</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">button</span><span class="p">}</span> <span class="nx">onPress</span><span class="o">=</span><span class="p">{</span><span class="nx">onPress</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">text</span><span class="p">}</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/Text&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/Pressable&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">button</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;lightblue&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">borderRadius</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">padding</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fontSize</span><span class="o">:</span> <span class="mi">18</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">CustomButton</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 <code>App.js</code>에서 <code>CustomButton</code> 컴포넌트를 import하고 사용합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">StyleSheet</span><span class="p">,</span> <span class="nx">View</span><span class="p">,</span> <span class="nx">Alert</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react-native&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">CustomButton</span> <span class="nx">from</span> <span class="s1">&#39;./components/customButton&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">View</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">CustomButton</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Press Me&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">onPress</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">Alert</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;Pressed&#39;</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/View&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">container</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">flex</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;plum&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">justifyContent</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alignItems</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>React Native는 자동으로 해당 플랫폼에 맞는 컴포넌트를 선택하여 렌더링합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEioqxNVpD4lFiEzIw2Y1andxe7z6iz1oLVcfD-sz7FxQiEpuG2z0UM0AnkYXOwpGoNE1sP_33V07AxcpvsEQ4nYVmz-IDh4hIlw8vOU6s960voZBYr0lRduAOsnzsa38KK8zjafG8cjkEP_f6mnnWKX7-_m5_j5480OO-BchObROKuHSCy9aLQZLhOw2oY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>iOS와 Android에서 각각 다른 스타일의 버튼이 표시됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgpXwTEvwrezgyZWHuPG20p6edf_jkmGVo2MlUqWIS3slMnjgoQjsQ9xqyNMEGGdkL1k6XQRFagYS8QlcLaNkAR4E4vZ-Vu1Wf5seY6uqu7sejnvTHhucpl3BHTgheYTkwGPtjeX_OSoMLS7boHU9uTVostvOhAy5qK8_CWEifCEVm8C6LNkV5MQrhyoHY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi_6uYDdF7mT2RUHtAL2PMNxk9W38byKz3iq2BW8nYCKYzYIqYwo5MvxICcCsbkzMR1Gad_gEH4pdTCKop4MQ8_YX0_oxSROW68iCXp1CW247QB1ow-qXgbNZH1A2nLavccB_NtbupTna_he6HqnTpGl-hpZhEJV28YaRy8GJNbMBNgcASLxeVujR-OPtc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react-native/" role="button">react native</a>
+        <a class="btn btn-light" href="/tags/platform-specific-code/" role="button">platform specific code</a>
+        <a class="btn btn-light" href="/tags/safeareaview/" role="button">SafeAreaView</a>
+        <a class="btn btn-light" href="/tags/usewindowdimensions/" role="button">useWindowDimensions</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-13-react-native-12-react-navigation-guide-drawer-tab-navigation/">리액트 네이티브 강좌. 12편 - 드로어, 탭 네비게이션 그리고 중첩 네비게이션 마스터하기</a></h2>
+                  <p>React Navigation 라이브러리를 사용하여 드로어 및 탭 네비게이션을 구현하는 방법을 자세히 설명합니다. 초심자도 따라 하기 쉬운 단계별 설정부터 고급 옵션 활용까지, UI/UX를 향상시키는 다양한 팁을 제공합니다.</p>
+                  <p>
+  <small>July 13, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-13-react-native-11-stack-navigation/">리액트 네이티브 강좌. 11편 - 스택 네비게이션과 화면 간 데이터 관리</a></h2>
+                  <p>React Navigation에서 스택 네비게이션을 설정하고, 화면 간 데이터 전송 및 옵션 커스터마이징 방법을 다룹니다. navigation prop과 useNavigation Hook 사용법, 화면 간 데이터 주고받기, 그리고 네비게이터 옵션을 다이나믹하게 변경하는 방법을 배워봅시다.</p>
+                  <p>
+  <small>July 13, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>15&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-01-react-native-10-networking-data-fetching-load-state-error-handling-data-post/">리액트 네이티브 강좌. 10편 - Networking 다루기, 데이터 fetching, loading state, error handling</a></h2>
+                  <p>리액트 네이티브 앱에서의 네트워킹 기법을 다룹니다. JSON 데이터를 활용하여 앱에 데이터를 불러오고, 효과적인 에러 처리를 통해 안정성을 높이는 방법을 배워보세요.</p>
+                  <p>
+  <small>July 1, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>17&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

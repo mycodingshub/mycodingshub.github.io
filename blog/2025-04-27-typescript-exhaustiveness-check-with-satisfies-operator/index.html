@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>이제 never 대신 satisfies - 더 간결한 TypeScript 완전성 검사 방법</title>
+<meta name="description" content="TypeScript에서 완전성 검사를 수행하는 전통적인 방법과, TypeScript 4.9 버전부터 도입된 satisfies 연산자를 활용하여 이를 더욱 간결하고 효과적으로 개선하는 방법을 알아보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-04-27-typescript-exhaustiveness-check-with-satisfies-operator/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="이제 never 대신 satisfies - 더 간결한 TypeScript 완전성 검사 방법" />
+<meta property="og:description" content="TypeScript에서 완전성 검사를 수행하는 전통적인 방법과, TypeScript 4.9 버전부터 도입된 satisfies 연산자를 활용하여 이를 더욱 간결하고 효과적으로 개선하는 방법을 알아보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-04-27-typescript-exhaustiveness-check-with-satisfies-operator/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-04-27T11:43:16Z" />
+<meta property="article:modified_time" content="2025-04-27T11:43:16Z" />
+<meta property="article:tag" content="typescript" />
+<meta property="article:tag" content="exhaustiveness check" />
+<meta property="article:tag" content="완전성 검사" />
+<meta property="article:tag" content="satisfies" />
+<meta property="article:tag" content="never" />
+<meta property="article:tag" content="타입스크립트" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="이제 never 대신 satisfies - 더 간결한 TypeScript 완전성 검사 방법" />
+<meta name="twitter:description" content="TypeScript에서 완전성 검사를 수행하는 전통적인 방법과, TypeScript 4.9 버전부터 도입된 satisfies 연산자를 활용하여 이를 더욱 간결하고 효과적으로 개선하는 방법을 알아보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"이제 never 대신 satisfies - 더 간결한 TypeScript 완전성 검사 방법\"",
+  "description": "\"TypeScript에서 완전성 검사를 수행하는 전통적인 방법과, TypeScript 4.9 버전부터 도입된 satisfies 연산자를 활용하여 이를 더욱 간결하고 효과적으로 개선하는 방법을 알아보겠습니다.\"",
+  "datePublished": "\"2025-04-27T11:43:16Z\"",
+  "dateModified": "\"2025-04-27T11:43:16Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-04-27-typescript-exhaustiveness-check-with-satisfies-operator/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>이제 never 대신 satisfies - 더 간결한 TypeScript 완전성 검사 방법</h1>
+        <p>
+  <small>April 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요!</p>
+<p>TypeScript 개발자 여러분. TypeScript의 강력한 타입 시스템은 개발 과정에서 수많은 오류를 미리 방지해주는데요.</p>
+<p>하지만 유니온(Union) 타입이나 열거형(Enum)처럼 타입이 확장될 가능성이 있는 경우, 모든 케이스를 빠짐없이 처리했는지 확인하는 것은 여전히 중요한 과제입니다.</p>
+<p>바로 여기서 <strong>완전성 검사(Exhaustiveness Check)</strong> 의 중요성이 부각되는데요.</p>
+<p>오늘은 TypeScript에서 완전성 검사를 수행하는 전통적인 방법과, TypeScript 4.9 버전부터 도입된 <code>satisfies</code> 연산자를 활용하여 이를 더욱 간결하고 효과적으로 개선하는 방법을 알아보겠습니다.</p>
+<h2 id="1-완전성-검사-왜-필요할까요"><strong>1. 완전성 검사, 왜 필요할까요?</strong></h2>
+<p>애플리케이션을 개발하다 보면, 특정 상태나 타입을 나타내기 위해 유니온 타입이나 열거형을 자주 사용합니다.</p>
+<p>예를 들어, 사용자의 액션 타입을 다음과 같이 정의할 수 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserAction</span> <span class="o">=</span> <span class="s1">&#39;CREATE&#39;</span> <span class="o">|</span> <span class="s1">&#39;READ&#39;</span> <span class="o">|</span> <span class="s1">&#39;UPDATE&#39;</span> <span class="o">|</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 <code>UserAction</code> 타입에 따라 다른 로직을 처리하는 함수를 <code>switch</code> 문으로 작성한다고 가정해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">handleAction</span><span class="p">(</span><span class="nx">action</span>: <span class="kt">UserAction</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;CREATE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Creating resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;READ&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Reading resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;UPDATE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Updating resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;DELETE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Deleting resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 모든 케이스를 처리했습니다!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>지금 당장은 문제가 없어 보입니다. 하지만 시간이 흘러 애플리케이션 요구사항이 변경되어 새로운 액션 타입,</p>
+<p>예를 들어 <code>'ARCHIVE'</code> 가 <code>UserAction</code>에 추가된다면 어떻게 될까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">UserAction</span> <span class="o">=</span> <span class="s1">&#39;CREATE&#39;</span> <span class="o">|</span> <span class="s1">&#39;READ&#39;</span> <span class="o">|</span> <span class="s1">&#39;UPDATE&#39;</span> <span class="o">|</span> <span class="s1">&#39;DELETE&#39;</span> <span class="o">|</span> <span class="s1">&#39;ARCHIVE&#39;</span><span class="p">;</span> <span class="c1">// &#39;ARCHIVE&#39; 추가!
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>만약 <code>handleAction</code> 함수의 <code>switch</code> 문을 수정하는 것을 잊는다면,</p>
+<p><code>'ARCHIVE'</code> 액션이 들어왔을 때 아무런 처리도 하지 않고 함수가 종료되는 잠재적인 버그가 발생할 수 있습니다.</p>
+<p>TypeScript의 타입 검사기는 기본적으로 <code>switch</code> 문이 모든 케이스를 다루는지 강제하지 않기 때문인데요.</p>
+<p>이런 상황을 방지하기 위해,</p>
+<p>즉 <strong>유니온이나 열거형의 모든 멤버가 코드에서 명시적으로 처리되었음을 컴파일 시점에 보장</strong>받기 위해 완전성 검사가 필요합니다.</p>
+<h2 id="2-전통적인-완전성-검사-방법"><strong>2. 전통적인 완전성 검사 방법: <code>never</code> 타입 활용</strong></h2>
+<p>오랫동안 TypeScript 커뮤니티에서 사용되어 온 완전성 검사 방법은 <code>never</code> 타입을 활용하는 것입니다.</p>
+<p><code>never</code> 타입은 이론적으로 도달할 수 없는 코드 경로를 나타내는 특별한 타입인데요.</p>
+<p>이를 <code>switch</code> 문의 <code>default</code> 절과 결합하여 사용합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">handleActionWithNever</span><span class="p">(</span><span class="nx">action</span>: <span class="kt">UserAction</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;CREATE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Creating resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;READ&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Reading resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;UPDATE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Updating resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;DELETE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Deleting resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// &#39;ARCHIVE&#39; 케이스 처리를 잊었다고 가정합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 모든 예상 케이스를 처리했다면 이 코드는 도달 불가능해야 합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// 따라서 action 변수는 이론적으로 never 타입이어야 합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">_exhaustiveCheck</span>: <span class="kt">never</span> <span class="o">=</span> <span class="nx">action</span><span class="p">;</span> <span class="c1">// (1) 컴파일 타임 체크
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// 만약 &#39;ARCHIVE&#39;가 들어오면 action은 &#39;ARCHIVE&#39; 타입이므로,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// never 타입 변수에 할당할 수 없어 컴파일 에러가 발생합니다!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 런타임 안전성을 위해 에러를 던지는 것도 좋은 습관입니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="sb">`Unhandled action: </span><span class="si">${</span><span class="nx">_exhaustiveCheck</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span> <span class="c1">// (2) 런타임 방어
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드의 <code>default</code> 절에서 (1)번 라인이 핵심입니다. 만약 우리가 <code>case 'ARCHIVE'</code> 를 추가하는 것을 잊는다면,</p>
+<p><code>'ARCHIVE'</code> 값이 <code>action</code>으로 들어왔을 때 <code>default</code> 절이 실행됩니다.</p>
+<p>이때 <code>action</code> 변수의 타입은 <code>'ARCHIVE'</code> 이지만, 우리는 이 변수를 <code>never</code> 타입으로 선언된 <code>_exhaustiveCheck</code>에 할당하려고 시도합니다.</p>
+<p><code>'ARCHIVE'</code> 타입은 <code>never</code> 타입에 할당될 수 없으므로, TypeScript 컴파일러는 여기서 타입 에러를 발생시킵니다.</p>
+<p>덕분에 우리는 처리하지 않은 케이스가 있음을 즉시 인지하고 코드를 수정할 수 있습니다.</p>
+<p>(2)번 라인처럼 <code>throw new Error</code>를 추가하면, 혹시 모를 런타임 상황(예: 타입 정의와 다른 값이 외부 API 등을 통해 들어오는 경우)에서도 예상치 못한 값이 처리되지 않고 에러를 발생시켜 문제를 조기에 발견하도록 돕습니다.</p>
+<p>이 <code>never</code> 타입을 이용한 방식은 매우 효과적이며 오랫동안 표준처럼 사용되어 왔습니다.</p>
+<p>하지만 <code>default</code> 절에 항상 상용구(boilerplate) 코드를 추가해야 하는 약간의 번거로움이 있었습니다.</p>
+<h2 id="3-더-간결한-방법"><strong>3. 더 간결한 방법: <code>satisfies</code> 연산자의 등장</strong></h2>
+<p>TypeScript 4.9에서 도입된 <code>satisfies</code> 연산자는 변수의 타입을 바꾸지 않으면서 <strong>특정 타입의 요구사항을 만족하는지 검사</strong>할 수 있게 해주는 강력한 도구입니다.</p>
+<p>이 <code>satisfies</code> 연산자를 <code>never</code> 타입과 조합하면, 기존의 완전성 검사를 훨씬 간결하게 표현할 수 있습니다.</p>
+<p>어떻게 사용하는지 바로 코드로 확인해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">handleActionWithSatisfies</span><span class="p">(</span><span class="nx">action</span>: <span class="kt">UserAction</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span> <span class="p">(</span><span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;CREATE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Creating resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;READ&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Reading resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;UPDATE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Updating resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s1">&#39;DELETE&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Deleting resource...&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 여전히 &#39;ARCHIVE&#39; 케이스 처리를 잊었다고 가정합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// (3) satisfies never 를 사용하여 한 줄로 검사 및 에러 처리!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// action 변수가 모든 케이스에서 처리되었다면, default에 도달했을 땐
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// 이론적으로 never 타입이어야 합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// 만약 &#39;ARCHIVE&#39; 타입이 들어오면 &#39;ARCHIVE&#39; satisfies never 는 false가 되어
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// 타입 에러를 발생시킵니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="sb">`Unhandled action: </span><span class="si">${</span><span class="nx">action</span> <span class="nx">satisfies</span> <span class="kt">never</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>놀랍지 않습니까?</p>
+<p>기존 방식에서 <code>const _exhaustiveCheck: never = action;</code> 라인과 <code>throw new Error(...)</code> 라인으로 나누어 처리했던 것을,</p>
+<p>(3)번 라인처럼 단 한 줄로 통합했습니다!</p>
+<p><code>action satisfies never</code> 부분은 컴파일 시점에 다음과 같이 동작합니다.</p>
+<ul>
+<li>만약 <code>switch</code> 문의 <code>case</code>들이 <code>UserAction</code>의 모든 멤버를 처리했다면, <code>default</code> 절은 이론적으로 도달 불가능하므로 <code>action</code>의 타입은 <code>never</code>로 간주됩니다. <code>never satisfies never</code>는 참이므로 타입 에러가 발생하지 않습니다.</li>
+<li>만약 <code>'ARCHIVE'</code> 케이스 처리를 잊었다면, <code>default</code> 절에서 <code>action</code>의 타입은 <code>'ARCHIVE'</code>가 됩니다. <code>'ARCHIVE' satisfies never</code>는 거짓(타입 불일치)이므로, TypeScript 컴파일러는 여기서 타입 에러를 발생시킵니다. &ldquo;Argument of type &lsquo;string&rsquo; is not assignable to parameter of type &rsquo;never&rsquo;.&rdquo; 와 유사한 에러 메시지를 보게 될 것입니다.</li>
+</ul>
+<p>결과적으로, <strong>기존 <code>never</code> 할당 방식과 동일한 컴파일 타임 완전성 검사 효과</strong>를 더 적은 코드로 달성할 수 있습니다. 동시에 <code>throw new Error</code> 구문은 그대로 유지되므로, <strong>런타임 안전성 역시 확보</strong>됩니다. (<code>satisfies</code> 연산자 자체는 컴파일 시점에만 사용되고 런타임 코드에는 영향을 주지 않습니다.)</p>
+<h2 id="4"><strong>4.<code>satisfies</code>로 더 나은 TypeScript 코드를!</strong></h2>
+<p>TypeScript의 <code>satisfies</code> 연산자는 완전성 검사를 더욱 간결하고 우아하게 만들어주는 훌륭한 도구입니다.</p>
+<p>기존의 <code>never</code> 타입을 활용한 방식도 여전히 유효하지만, <code>satisfies never</code>를 사용하면 다음과 같은 이점을 얻을 수 있습니다.</p>
+<ul>
+<li><strong>간결성:</strong> 임시 변수 선언 없이 한 줄로 완전성 검사와 에러 메시지 생성이 가능합니다.</li>
+<li><strong>가독성:</strong> 코드의 의도(<code>action</code>이 <code>never</code>여야 함을 만족하는지 검사)가 더 명확하게 드러날 수 있습니다.</li>
+<li><strong>동일한 안정성:</strong> 기존 방식과 동일한 컴파일 타임 및 런타임 안전성을 제공합니다.</li>
+</ul>
+<p>물론 새로운 문법에 익숙해지는 데는 약간의 시간이 필요할 수 있습니다.</p>
+<p>하지만 <code>satisfies</code> 연산자가 제공하는 명확성과 간결함은 충분히 그럴 만한 가치가 있습니다.</p>
+<p>앞으로 TypeScript 프로젝트에서 유니온 타입이나 열거형을 다룰 때, <code>satisfies never</code>를 활용하여 더욱 견고하고 읽기 좋은 코드를 작성해 보시는 것은 어떨까요?</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/typescript/" role="button">typescript</a>
+        <a class="btn btn-light" href="/tags/exhaustiveness-check/" role="button">exhaustiveness check</a>
+        <a class="btn btn-light" href="/tags/%EC%99%84%EC%A0%84%EC%84%B1-%EA%B2%80%EC%82%AC/" role="button">완전성 검사</a>
+        <a class="btn btn-light" href="/tags/satisfies/" role="button">satisfies</a>
+        <a class="btn btn-light" href="/tags/never/" role="button">never</a>
+        <a class="btn btn-light" href="/tags/%ED%83%80%EC%9E%85%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8/" role="button">타입스크립트</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-14-typescript-satisfies-keyword-guide/">TypeScript &#39;satisfies&#39; 완벽 가이드 - &#39;as&#39; 대신 써야 하는 이유</a></h2>
+                  <p>TypeScript의 숨겨진 보석, 'satisfies' 키워드를 아시나요? 타입 추론은 유지하면서 타입 검사는 강화하는 satisfies의 마법을 통해, 왜 'as'보다 더 안전하고 현명한 선택인지 알아봅니다.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-07-14-understanding-typescript-satisfies-operator/">타입스크립트 satisfies 연산자(operator) 이해하기</a></h2>
+                  <p>타입스크립트 satisfies 연산자(operator) 이해하기</p>
+                  <p>
+  <small>July 14, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-27-building-excel-formula-engine-with-typescript-from-scratch/">타입스크립트로 Excel 수식 엔진 직접 만들기 (ANTLR, 스택 VM)</a></h2>
+                  <p>수천 개의 의존성을 가진 복잡한 Excel 수식이 느려지는 문제를 해결하기 위해, 타입스크립트를 이용해 파싱부터 실행까지 직접 수식 엔진을 만들어 본 경험을 공유합니다. ANTLR, 역폴란드 표기법(RPN), 스택 VM의 원리를 파헤쳐 봅니다.</p>
+                  <p>
+  <small>August 31, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

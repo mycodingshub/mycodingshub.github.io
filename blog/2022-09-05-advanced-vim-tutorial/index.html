@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>고급 VIM 강좌 with VIM Text Objects</title>
+<meta name="description" content="VIM Text Objects를 활용한 고급 VIM 강좌" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2022-09-05-advanced-vim-tutorial/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="고급 VIM 강좌 with VIM Text Objects" />
+<meta property="og:description" content="VIM Text Objects를 활용한 고급 VIM 강좌" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2022-09-05-advanced-vim-tutorial/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2022-09-05T06:26:54Z" />
+<meta property="article:modified_time" content="2022-09-05T06:26:54Z" />
+<meta property="article:tag" content="vim" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="고급 VIM 강좌 with VIM Text Objects" />
+<meta name="twitter:description" content="VIM Text Objects를 활용한 고급 VIM 강좌" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"고급 VIM 강좌 with VIM Text Objects\"",
+  "description": "\"VIM Text Objects를 활용한 고급 VIM 강좌\"",
+  "datePublished": "\"2022-09-05T06:26:54Z\"",
+  "dateModified": "\"2022-09-05T06:26:54Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2022-09-05-advanced-vim-tutorial/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>고급 VIM 강좌 with VIM Text Objects</h1>
+        <p>
+  <small>September 5, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘은 VIM의 기초와 함께 VIM Text Objects를 사용한 VIM 고급 기술에 대해 알아보겠습니다.</p>
+<p>VIM의 명령어는 다음과 같은 형태로 이루어져 있습니다.</p>
+<p><code>&lt;number&gt;&lt;command&gt;&lt;text object or motion&gt;</code></p>
+<p>제일 처음에 있는 number는 명령어의 횟수를 의미하고,</p>
+<p>두 번째 command는 행위의 주체 즉, 명령어 자체를 나타내고,</p>
+<p>마지막 형태인 text object or motion이 오늘 우리가 배울 내용입니다.</p>
+<p>예를 들어 3줄을 삭제하고 싶으면 &lsquo;3dd&rsquo;라고 입력하면 세줄이 삭제되는데요.</p>
+<p>&lsquo;3dd&rsquo;의 각각이 위에서 얘기한 number, command, text object or motion입니다.</p>
+<p>그럼 VIM에서 말하는 Text Objects에 대해 더 알아보겠습니다.</p>
+<h3 id="words">Words</h3>
+<p>단어 단위의 작업을 할 때 쓰는 Text Objects입니다.</p>
+<ul>
+<li>aw - 한 개의 단어(단어 앞 뒤의 공백 문자 포함)</li>
+<li>iw - 한 개의 단어(단어 앞 뒤의 공백 문자 미포함)</li>
+</ul>
+<p>w는 words를 나타내는 약자이고, a와 i가 궁금할 건데요.</p>
+<p>a는 around라고 생각하시면 되고, i는 inner라고 생각하시면 됩니다.</p>
+<p>a는 around로써 단어 앞 뒤의 공백 문자를 포함하고, i는 inner로써 공백 문자를 미포함한다고 생각하시면 됩니다.</p>
+<p>aw와 iw를 언제 쓰냐면 아래와 같이 예를 들어 알아보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">Lorem ipsum dolor sit amet...</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같은 상태에서 우리가 ipsum이라는 단어를 삭제하고 싶으면 &ldquo;d&quot;라는 명령어를 사용합니다.</p>
+<p>보통은 &ldquo;dw&rdquo; = &ldquo;delete word&quot;라는 명령어를 쓰죠.</p>
+<p>근데, 고급 VIM 기술에는 &ldquo;daw&quot;와 &ldquo;diw&rdquo; 명령어를 쓸 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg4s5Wf-5uIaDyRDYPvheanAHBBGOxpfX3xMpquzL_b5JWkMGdyEYtVbHcq89J5H6Lpy-q6fOIYE5N1ePfLFCqavxwaOupzauDhr_P6D-BHlZEer3mFyDBNWX8pNtSNuW_Dxogd2VqSzpT2Rt3NxfK0jAN1r_Z7tNUdxrccXPNoHaYr_wrcCfvaDNyn"
+         alt="mycodingshub.github.io-advanced-vim-tutorial"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-advanced-vim-tutorial</figcaption>
+  </figure></p>
+<p>위 GIF 그림에서 보시면 ipsum 단어의 &ldquo;s&quot;자에 커서를 놓은 상태에서 &ldquo;daw&rdquo; 명령어를 쳤습니다.</p>
+<p>그러면 delete word 명령어가 delete around word 명령어가 되는 거죠.</p>
+<p>그래서 단어 앞 뒤로 여백까지 delete가 되었습니다.</p>
+<p>그럼 &ldquo;diw&rdquo; 명령어로 삭제하면 어떻게 될까요?</p>
+<p>아래 그림을 보십시오.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh_wAoNENVYjesxkXyCz7O98qP1O88eewdVNUXuIDhReyQxSmoxsbrH8HBYqzJR0zQzlUV0lSk1ywMTKFHvfb5SuOqR47BJ7KXDqarXYZoPGaEt9suzRPt6f37Z9WhBfpWZEGMEk_7lmZtf2QQeVPlsvpXBhb91P9g_yPvLJUMxx3NFKONsp5kxGeH8"
+         alt="mycodingshub.github.io-advanced-vim-tutorial"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-advanced-vim-tutorial</figcaption>
+  </figure></p>
+<p>&ldquo;diw&rdquo; 명령어를 입력하면 &ldquo;delete inner word&quot;가 되어 ipsum 단어의 앞뒤 공백은 그대로 나 두고 단어만 삭제되었습니다.</p>
+<p>이제 VIM에서 말하는 Text Objects에 대해 조금은 이해가 되셨는지요?</p>
+<p>Vim의 Text Objects는 word 말고 다른 것도 많습니다.</p>
+<p>두 번째로, Sentences가 있는데요.</p>
+<ul>
+<li>as - 한 문장(Sentence)인데 앞뒤 공백 포함</li>
+<li>is - 한 문장(Sentence)인데 앞뒤 공백 미포함</li>
+</ul>
+<p>Sentence에도 똑같이 적용됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjfqGPtLTNp7rPPPEaMQt6CIbnNoxiwgwlQmNL5CHInNJmNK2hwzuuUwRBQXJe7sbWQ1A0Dy4PU44szBBNDasitYx2euFMLN82p1DVJOphEUBiGOtAzHVHEBqdZAdLiGTWGlEN0tPrcfvU_LhfnF-CyG3ND3n2hJuZBZuwv_fZ3zKp-aliI_xsgpwci"
+         alt="mycodingshub.github.io-advanced-vim-tutorial"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-advanced-vim-tutorial</figcaption>
+  </figure></p>
+<p>위 GIF 그림을 보시면 &ldquo;das&rdquo; 명령어를 입력하고 그다음 undo 명령어를 실행했고, 마지막으로 &ldquo;dis&rdquo; 명령어를 실행한 결과입니다.</p>
+<p>앞뒤 공백을 포함하느냐, 안 하느냐가 차이인 겁니다.</p>
+<p>세 번째로, Paragraphs가 있습니다.</p>
+<ul>
+<li>ap - 한 단락(paragraphs)인데 앞뒤 공백 포함</li>
+<li>ip - 한 단락(paragraphs)인데 앞뒤 공백 미포함</li>
+</ul>
+<p>&ldquo;dap&rdquo; 명령어와 &ldquo;dip&rdquo; 명령어의 차이는 그림을 따로 보여주지 않아도 쉽게 그 차이를 이해할 수 있을 겁니다.</p>
+<h3 id="프로그래밍-언어에도-적용">프로그래밍 언어에도 적용</h3>
+<p>VIM은 프로그래밍 언어에서도 사용할 수 있는 Text Objects를 제공해 주는데요.</p>
+<ul>
+<li>a&rdquo;</li>
+<li>i&rdquo;</li>
+<li>a&rsquo;</li>
+<li>i&rsquo;</li>
+<li>a`</li>
+<li>i`</li>
+</ul>
+<p>around의 &lsquo;a&rsquo;와 inner의 &lsquo;i&rsquo;에 대해서 각각 더블 쿼트(&rdquo;&rdquo;), 싱글 쿼트(&rsquo;&rsquo;), 백 틱(``)을 제공해 줍니다.</p>
+<p>만약에 아래와 같은 코드가 있다고 하면,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">puts</span> <span class="s1">&#39;Hello &#34;World&#34;&#39;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>커서를 World 단어 안에 높인 상태에서 World를 고치고 싶고, 더블 쿼트(&rdquo;&quot;)는 그대로 두고 싶다면 아래와 같이</p>
+<p>ci&quot;라고 입력하면 됩니다.</p>
+<p><code>ci&quot;</code>의 뜻을 풀이해 보면 change inner &ldquo;&ldquo;라는 뜻입니다.</p>
+<p>여기서 inner를 쓴 이유는 만약에 <code>ca&quot;</code>라고 입력하면 around가 되기 때문에 &ldquo;&ldquo;까지 없어집니다.</p>
+<p>그래서, 프로그래밍에서는 inner 명령어를 자주 씁니다.</p>
+<p>만약에 <code>ci'</code>라고 싱글 쿼트를 입력해 주면 &lsquo;Hello &ldquo;World&rdquo;&lsquo;가 &lsquo;&lsquo;상태로 변하게 됩니다.</p>
+<p>change inner &lsquo;&lsquo;라는 명령어이기 때문입니다.</p>
+<p>이와 같은 형태의 명령어는 다음과 같이 괄호 중괄호, 대괄호 모두에도 적용됩니다.</p>
+<ul>
+<li>a)</li>
+<li>i)</li>
+<li>a}</li>
+<li>i}</li>
+<li>a]</li>
+<li>i]</li>
+<li>a[</li>
+<li>i[</li>
+</ul>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같은 코드가 있을 때 [] 사이에 커서를 놓은 상태에서 &ldquo;ci[&rdquo; 또는 &ldquo;ci]&rdquo; 명령어를 입력하면 [] 안에 있는 게 다 지워진 상태에서 편집할 수 있는 상태가 됩니다.</p>
+<h3 id="마크업-랭귀지-태그에도-적용">마크업 랭귀지 태그에도 적용</h3>
+<p>VIM의 Text Objects는 HTML이나 JSX 같은 마크업 랭귀지에도 적용되는데요.</p>
+<ul>
+<li>at : 태그 블록 앞뒤 여백 포함</li>
+<li>it : 태그 블록 앞뒤 여백 미포함</li>
+</ul>
+<p>만약에 다음과 같은 HTML 코드가 있다고 치면</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Test<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 상태에서 Test 부분만 고치고 싶으면 &ldquo;cit&quot;라고 입력하면 됩니다.</p>
+<p>그러면 <code>&lt;h1&gt;&lt;/h1&gt;</code> 태그는 살아 있는 상태에서 안의 내용만 지워진 상태에서 편집할 수 있습니다.</p>
+<p>그리고 <code>&lt;h1&gt;</code>자체를 지우고 다시 쓰려면 &ldquo;cat&quot;이라고 입력하면 됩니다.</p>
+<p>마크업 랭귀지의 두 번째 활용으로 다음과 같이도 할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">a</span><span class="o">&gt;</span> <span class="o">:</span> <span class="nx">커서가</span> <span class="nx">있는</span> <span class="nx">쪽</span> <span class="nx">한쪽</span> <span class="nx">태그만</span> <span class="nx">편집하는데</span> <span class="nx">한쪽</span> <span class="nx">태그를</span> <span class="nx">다</span> <span class="nx">지움</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">i</span><span class="o">&gt;</span> <span class="o">:</span> <span class="nx">커서가</span> <span class="nx">있는</span> <span class="nx">쪽</span> <span class="nx">한쪽</span> <span class="nx">태그만</span> <span class="nx">편집하는데</span> <span class="nx">브래킷은</span> <span class="nx">유지</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;content&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>첫 번째 태그 안에 커서를 위치해 둔 상태에서 &ldquo;di&gt;&rdquo; 명령어를 치면 다음과 같이 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;&gt;&lt;</span><span class="err">/div&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>지금까지 VIM의 고급 편집 기술에 대해 알아보았는데요.</p>
+<p>&ldquo;ci[&rdquo; 같이 프로그래밍할 때 수정하기 쉬운 명령어인 &ldquo;ci&rdquo; 명령어를 꼭 외워두시면 훨씬 쉽게 코딩할 수 있을 겁니다.</p>
+<hr>
+<p>참고로 아래 마크다운 자로는 제가 VIM 명령어가 헷갈릴 때 항상 찾아보는 Cheat Sheet입니다.</p>
+<hr>
+<h2 id="vim-cheat-sheet">VIM Cheat Sheet</h2>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="err">##</span> <span class="nx">Essentials</span>
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Cursor</span> <span class="nx">movement</span> <span class="p">(</span><span class="nx">Normal</span><span class="o">/</span><span class="nx">Visual</span> <span class="nx">Mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">h</span> <span class="nx">j</span> <span class="nx">k</span> <span class="nx">l</span> <span class="o">-</span> <span class="nx">Arrow</span> <span class="nx">keys</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">w</span> <span class="o">/</span> <span class="nx">b</span> <span class="o">-</span> <span class="nx">Next</span><span class="o">/</span><span class="nx">previous</span> <span class="nx">word</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">W</span> <span class="o">/</span> <span class="nx">B</span> <span class="o">-</span> <span class="nx">Next</span><span class="o">/</span><span class="nx">previous</span> <span class="nx">word</span> <span class="p">(</span><span class="nx">space</span> <span class="nx">seperated</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">e</span> <span class="o">/</span> <span class="nx">ge</span> <span class="o">-</span> <span class="nx">Next</span><span class="o">/</span><span class="nx">previous</span> <span class="nx">end</span> <span class="k">of</span> <span class="nx">word</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="mi">0</span> <span class="o">/</span> <span class="nx">$</span> <span class="o">-</span> <span class="nx">Start</span><span class="o">/</span><span class="nx">End</span> <span class="k">of</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">^</span> <span class="o">-</span> <span class="nx">First</span> <span class="nx">non</span><span class="o">-</span><span class="nx">blank</span> <span class="nx">character</span> <span class="k">of</span> <span class="nx">line</span> <span class="p">(</span><span class="nx">same</span> <span class="nx">as</span> <span class="mi">0</span><span class="nx">w</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Editing</span> <span class="nx">text</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">i</span> <span class="o">/</span> <span class="nx">a</span> <span class="o">-</span> <span class="nx">Start</span> <span class="nx">insert</span> <span class="nx">mode</span> <span class="nx">at</span><span class="o">/</span><span class="nx">after</span> <span class="nx">cursor</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">I</span> <span class="o">/</span> <span class="nx">A</span> <span class="o">-</span> <span class="nx">Start</span> <span class="nx">insert</span> <span class="nx">mode</span> <span class="nx">at</span> <span class="nx">the</span> <span class="nx">beginning</span><span class="o">/</span><span class="nx">end</span> <span class="k">of</span> <span class="nx">the</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">o</span> <span class="o">/</span> <span class="nx">O</span> <span class="o">-</span> <span class="nx">Add</span> <span class="nx">blank</span> <span class="nx">line</span> <span class="nx">below</span><span class="o">/</span><span class="nx">above</span> <span class="nx">current</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Esc</span> <span class="nx">or</span> <span class="nx">Ctrl</span><span class="o">+</span><span class="p">[</span> <span class="o">-</span> <span class="nx">Exit</span> <span class="nx">insert</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">d</span> <span class="o">-</span> <span class="nx">Delete</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">dd</span> <span class="o">-</span> <span class="nx">Delete</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">c</span> <span class="o">-</span> <span class="nx">Delete</span><span class="p">,</span> <span class="nx">then</span> <span class="nx">start</span> <span class="nx">insert</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">cc</span> <span class="o">-</span> <span class="nx">Delete</span> <span class="nx">line</span><span class="p">,</span> <span class="nx">then</span> <span class="nx">start</span> <span class="nx">insert</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Operators</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Operators</span> <span class="nx">also</span> <span class="nx">work</span> <span class="k">in</span> <span class="nx">Visual</span> <span class="nx">Mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">d</span> <span class="o">-</span> <span class="nx">Deletes</span> <span class="nx">from</span> <span class="nx">the</span> <span class="nx">cursor</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">movement</span> <span class="nx">location</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">c</span> <span class="o">-</span> <span class="nx">Deletes</span> <span class="nx">from</span> <span class="nx">the</span> <span class="nx">cursor</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">movement</span> <span class="nx">location</span><span class="p">,</span> <span class="nx">then</span> <span class="nx">starts</span> <span class="nx">insert</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">y</span> <span class="o">-</span> <span class="nx">Copy</span> <span class="nx">from</span> <span class="nx">the</span> <span class="nx">cursor</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">movement</span> <span class="nx">location</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">&gt;</span> <span class="o">-</span> <span class="nx">Indent</span> <span class="nx">one</span> <span class="nx">level</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">&lt;</span> <span class="o">-</span> <span class="nx">Unindent</span> <span class="nx">one</span> <span class="nx">level</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">You</span> <span class="nx">can</span> <span class="nx">also</span> <span class="nx">combine</span> <span class="nx">operators</span> <span class="kd">with</span> <span class="nx">motions</span><span class="p">.</span> <span class="nx">Ex</span><span class="o">:</span> <span class="nx">d$</span> <span class="nx">deletes</span> <span class="nx">from</span> <span class="nx">the</span> <span class="nx">cursor</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">end</span> <span class="k">of</span> <span class="nx">the</span> <span class="nx">line</span><span class="p">.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Marking</span> <span class="nx">text</span> <span class="p">(</span><span class="nx">visual</span> <span class="nx">mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">v</span> <span class="o">-</span> <span class="nx">Start</span> <span class="nx">visual</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">V</span> <span class="o">-</span> <span class="nx">Start</span> <span class="nx">linewise</span> <span class="nx">visual</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Ctrl</span><span class="o">+</span><span class="nx">v</span> <span class="o">-</span> <span class="nx">Start</span> <span class="nx">visual</span> <span class="nx">block</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Esc</span> <span class="nx">or</span> <span class="nx">Ctrl</span><span class="o">+</span><span class="p">[</span> <span class="o">-</span> <span class="nx">Exit</span> <span class="nx">visual</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Clipboard</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">yy</span> <span class="o">-</span> <span class="nx">Yank</span> <span class="p">(</span><span class="nx">copy</span><span class="p">)</span> <span class="nx">a</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">p</span> <span class="o">-</span> <span class="nx">Paste</span> <span class="nx">after</span> <span class="nx">cursor</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">P</span> <span class="o">-</span> <span class="nx">Paste</span> <span class="nx">before</span> <span class="nx">cursor</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">dd</span> <span class="o">-</span> <span class="nx">Delete</span> <span class="p">(</span><span class="nx">cut</span><span class="p">)</span> <span class="nx">a</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">x</span> <span class="o">-</span> <span class="nx">Delete</span> <span class="p">(</span><span class="nx">cut</span><span class="p">)</span> <span class="nx">current</span> <span class="nx">character</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">X</span> <span class="o">-</span> <span class="nx">Delete</span> <span class="p">(</span><span class="nx">cut</span><span class="p">)</span> <span class="nx">previous</span> <span class="nx">character</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">d</span> <span class="o">/</span> <span class="nx">c</span> <span class="o">-</span> <span class="nx">By</span> <span class="k">default</span><span class="p">,</span> <span class="nx">these</span> <span class="nx">copy</span> <span class="nx">the</span> <span class="nx">deleted</span> <span class="nx">text</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Exiting</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span><span class="nx">w</span> <span class="o">-</span> <span class="nx">Write</span> <span class="p">(</span><span class="nx">save</span><span class="p">)</span> <span class="nx">the</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">but</span> <span class="nx">don</span><span class="err">’</span><span class="nx">t</span> <span class="nx">quit</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span><span class="nx">wq</span> <span class="o">-</span> <span class="nx">Write</span> <span class="p">(</span><span class="nx">save</span><span class="p">)</span> <span class="nx">and</span> <span class="nx">quit</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span><span class="nx">q</span> <span class="o">-</span> <span class="nx">Quit</span> <span class="p">(</span><span class="nx">fails</span> <span class="k">if</span> <span class="nx">anything</span> <span class="nx">has</span> <span class="nx">changed</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span><span class="nx">q</span><span class="o">!</span> <span class="o">-</span> <span class="nx">Quit</span> <span class="nx">and</span> <span class="k">throw</span> <span class="nx">away</span> <span class="nx">changes</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Search</span><span class="o">/</span><span class="nx">Replace</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="err">/pattern - Search for pattern</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">?</span><span class="nx">pattern</span> <span class="o">-</span> <span class="nx">Search</span> <span class="nx">backward</span> <span class="k">for</span> <span class="nx">pattern</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">n</span> <span class="o">-</span> <span class="nx">Repeat</span> <span class="nx">search</span> <span class="k">in</span> <span class="nx">same</span> <span class="nx">direction</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">N</span> <span class="o">-</span> <span class="nx">Repeat</span> <span class="nx">search</span> <span class="k">in</span> <span class="nx">opposite</span> <span class="nx">direction</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:%</span><span class="nx">s</span><span class="o">/</span><span class="nx">old</span><span class="o">/</span><span class="k">new</span><span class="err">/g - Replace all old with new throughout file (gn is better though)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:%</span><span class="nx">s</span><span class="o">/</span><span class="nx">old</span><span class="o">/</span><span class="k">new</span><span class="err">/gc - Replace all old with new throughout file with confirmations</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">General</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">u</span> <span class="o">-</span> <span class="nx">Undo</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Ctrl</span><span class="o">+</span><span class="nx">r</span> <span class="o">-</span> <span class="nx">Redo</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">##</span> <span class="nx">Advanced</span>
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Cursor</span> <span class="nx">movement</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Ctrl</span><span class="o">+</span><span class="nx">d</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">down</span> <span class="nx">half</span> <span class="nx">a</span> <span class="nx">page</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Ctrl</span><span class="o">+</span><span class="nx">u</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">up</span> <span class="nx">half</span> <span class="nx">a</span> <span class="nx">page</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="p">}</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">forward</span> <span class="nx">by</span> <span class="nx">paragraph</span> <span class="p">(</span><span class="nx">the</span> <span class="nx">next</span> <span class="nx">blank</span> <span class="nx">line</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="p">{</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">backward</span> <span class="nx">by</span> <span class="nx">paragraph</span> <span class="p">(</span><span class="nx">the</span> <span class="nx">next</span> <span class="nx">blank</span> <span class="nx">line</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">gg</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">top</span> <span class="k">of</span> <span class="nx">the</span> <span class="nx">page</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">G</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">the</span> <span class="nx">bottom</span> <span class="k">of</span> <span class="nx">the</span> <span class="nx">page</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span> <span class="p">[</span><span class="nx">num</span><span class="p">]</span> <span class="p">[</span><span class="nx">enter</span><span class="p">]</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">that</span> <span class="nx">line</span> <span class="k">in</span> <span class="nx">the</span> <span class="nb">document</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">ctrl</span><span class="o">+</span><span class="nx">e</span> <span class="o">/</span> <span class="nx">ctrl</span><span class="o">+</span><span class="nx">y</span> <span class="o">-</span> <span class="nx">Scroll</span> <span class="nx">down</span><span class="o">/</span><span class="nx">up</span> <span class="nx">one</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Character</span> <span class="nx">search</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">f</span> <span class="p">[</span><span class="kr">char</span><span class="p">]</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">forward</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">given</span> <span class="kr">char</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">F</span> <span class="p">[</span><span class="kr">char</span><span class="p">]</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">backward</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">given</span> <span class="kr">char</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">t</span> <span class="p">[</span><span class="kr">char</span><span class="p">]</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">forward</span> <span class="nx">to</span> <span class="nx">before</span> <span class="nx">the</span> <span class="nx">given</span> <span class="kr">char</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">T</span> <span class="p">[</span><span class="kr">char</span><span class="p">]</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">backward</span> <span class="nx">to</span> <span class="nx">before</span> <span class="nx">the</span> <span class="nx">given</span> <span class="kr">char</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="p">;</span> <span class="err">/ , - Repeat search forwards/backwards</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Editing</span> <span class="nx">text</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">J</span> <span class="o">-</span> <span class="nx">Join</span> <span class="nx">line</span> <span class="nx">below</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">current</span> <span class="nx">one</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">r</span> <span class="p">[</span><span class="kr">char</span><span class="p">]</span> <span class="o">-</span> <span class="nx">Replace</span> <span class="nx">a</span> <span class="nx">single</span> <span class="nx">character</span> <span class="kd">with</span> <span class="nx">the</span> <span class="nx">specified</span> <span class="kr">char</span> <span class="p">(</span><span class="nx">does</span> <span class="nx">not</span> <span class="nx">use</span> <span class="nx">Insert</span> <span class="nx">mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Visual</span> <span class="nx">mode</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">O</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">to</span> <span class="nx">other</span> <span class="nx">corner</span> <span class="k">of</span> <span class="nx">block</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">o</span> <span class="o">-</span> <span class="nx">Move</span> <span class="nx">to</span> <span class="nx">other</span> <span class="nx">end</span> <span class="k">of</span> <span class="nx">marked</span> <span class="nx">area</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">File</span> <span class="nx">Tabs</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span><span class="nx">e</span> <span class="nx">filename</span> <span class="o">-</span> <span class="nx">Edit</span> <span class="nx">a</span> <span class="nx">file</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span><span class="nx">tabe</span> <span class="o">-</span> <span class="nx">Make</span> <span class="nx">a</span> <span class="k">new</span> <span class="nx">tab</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">gt</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">next</span> <span class="nx">tab</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">gT</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">previous</span> <span class="nx">tab</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">:</span><span class="nx">vsp</span> <span class="o">-</span> <span class="nx">Vertically</span> <span class="nx">split</span> <span class="nx">windows</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">ctrl</span><span class="o">+</span><span class="nx">ws</span> <span class="o">-</span> <span class="nx">Split</span> <span class="nx">windows</span> <span class="nx">horizontally</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">ctrl</span><span class="o">+</span><span class="nx">wv</span> <span class="o">-</span> <span class="nx">Split</span> <span class="nx">windows</span> <span class="nx">vertically</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">ctrl</span><span class="o">+</span><span class="nx">ww</span> <span class="o">-</span> <span class="nx">Switch</span> <span class="nx">between</span> <span class="nx">windows</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">ctrl</span><span class="o">+</span><span class="nx">wq</span> <span class="o">-</span> <span class="nx">Quit</span> <span class="nx">a</span> <span class="nb">window</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Marks</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Marks</span> <span class="nx">allow</span> <span class="nx">you</span> <span class="nx">to</span> <span class="nx">jump</span> <span class="nx">to</span> <span class="nx">designated</span> <span class="nx">points</span> <span class="k">in</span> <span class="nx">your</span> <span class="nx">code</span><span class="p">.</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">m</span><span class="p">{</span><span class="nx">a</span><span class="o">-</span><span class="nx">z</span><span class="p">}</span> <span class="o">-</span> <span class="nx">Set</span> <span class="nx">mark</span> <span class="p">{</span><span class="nx">a</span><span class="o">-</span><span class="nx">z</span><span class="p">}</span> <span class="nx">at</span> <span class="nx">cursor</span> <span class="nx">position</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">A</span> <span class="nx">capital</span> <span class="nx">mark</span> <span class="p">{</span><span class="nx">A</span><span class="o">-</span><span class="nx">Z</span><span class="p">}</span> <span class="nx">sets</span> <span class="nx">a</span> <span class="nx">global</span> <span class="nx">mark</span> <span class="nx">and</span> <span class="nx">will</span> <span class="nx">work</span> <span class="nx">between</span> <span class="nx">files</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="s1">&#39;{a-z} - Move the cursor to the start of the line where the mark was set
+</span></span></span><span class="line"><span class="cl"><span class="s1">- &#39;</span><span class="err">&#39;</span> <span class="o">-</span> <span class="nx">Go</span> <span class="nx">back</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">previous</span> <span class="nx">jump</span> <span class="nx">location</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">Text</span> <span class="nx">Objects</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Say</span> <span class="nx">you</span> <span class="nx">have</span> <span class="nx">def</span> <span class="p">(</span><span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="nx">arg3</span><span class="p">),</span> <span class="nx">where</span> <span class="nx">your</span> <span class="nx">cursor</span> <span class="nx">is</span> <span class="nx">somewhere</span> <span class="k">in</span> <span class="nx">the</span> <span class="nx">middle</span> <span class="k">of</span> <span class="nx">the</span> <span class="nx">parenthesis</span><span class="p">.</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">di</span><span class="p">(</span> <span class="nx">deletes</span> <span class="nx">everything</span> <span class="nx">between</span> <span class="nx">the</span> <span class="nx">parenthesis</span><span class="p">.</span> <span class="nx">That</span> <span class="nx">says</span> <span class="err">“</span><span class="nx">change</span> <span class="nx">everything</span> <span class="nx">inside</span> <span class="nx">the</span> <span class="nx">nearest</span> <span class="nx">parenthesis</span><span class="err">”</span><span class="p">.</span> <span class="nx">Without</span> <span class="nx">text</span> <span class="nx">objects</span><span class="p">,</span> <span class="nx">you</span> <span class="nx">would</span> <span class="nx">need</span> <span class="nx">to</span> <span class="k">do</span> <span class="nx">T</span><span class="p">(</span><span class="nx">dt</span><span class="p">).</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">###</span> <span class="nx">General</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="p">.</span> <span class="o">-</span> <span class="nx">Repeat</span> <span class="nx">last</span> <span class="nx">command</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">Ctrl</span><span class="o">+</span><span class="nx">r</span> <span class="o">+</span> <span class="mi">0</span> <span class="k">in</span> <span class="nx">insert</span> <span class="nx">mode</span> <span class="nx">inserts</span> <span class="nx">the</span> <span class="nx">last</span> <span class="nx">yanked</span> <span class="nx">text</span> <span class="p">(</span><span class="nx">or</span> <span class="k">in</span> <span class="nx">command</span> <span class="nx">mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="nx">gv</span> <span class="o">-</span> <span class="nx">reselect</span> <span class="p">(</span><span class="nx">select</span> <span class="nx">last</span> <span class="nx">selected</span> <span class="nx">block</span> <span class="k">of</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">from</span> <span class="nx">visual</span> <span class="nx">mode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="o">%</span> <span class="o">-</span> <span class="nx">jumps</span> <span class="nx">between</span> <span class="nx">matching</span> <span class="p">()</span> <span class="nx">or</span> <span class="p">{}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/vim/" role="button">vim</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-08-07-vs-code-with-korean-input-auto-change/">VS Code Vim에서 한글 세팅 제대로 하기</a></h2>
+                  <p>VS Code Vim에서 한글 입력 후 ESC키를 눌러 명령 모드로 전환 시 자동으로 영문 키보드로 전환하기</p>
+                  <p>
+  <small>August 6, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

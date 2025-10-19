@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js의 SSR과 React의 RSC(React Server Components) 완벽 이해</title>
+<meta name="description" content="SSR과 RSC의 차이에 대해 심도 있게 공부해 보기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-01-28-complete-understanding-nextjs-ssr-and-react-rsc/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js의 SSR과 React의 RSC(React Server Components) 완벽 이해" />
+<meta property="og:description" content="SSR과 RSC의 차이에 대해 심도 있게 공부해 보기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-01-28-complete-understanding-nextjs-ssr-and-react-rsc/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-01-28T08:15:33Z" />
+<meta property="article:modified_time" content="2024-01-28T08:15:33Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="ssr" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="rsc" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js의 SSR과 React의 RSC(React Server Components) 완벽 이해" />
+<meta name="twitter:description" content="SSR과 RSC의 차이에 대해 심도 있게 공부해 보기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js의 SSR과 React의 RSC(React Server Components) 완벽 이해\"",
+  "description": "\"SSR과 RSC의 차이에 대해 심도 있게 공부해 보기\"",
+  "datePublished": "\"2024-01-28T08:15:33Z\"",
+  "dateModified": "\"2024-01-28T08:15:33Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-01-28-complete-understanding-nextjs-ssr-and-react-rsc/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js의 SSR과 React의 RSC(React Server Components) 완벽 이해</h1>
+        <p>
+  <small>January 28, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Next.js의 SSR과 React 18의 RSC(React Server Components)에 대해 알아 볼건데요.</p>
+<p>Next.js의 SSR과 App Router에 대한 글은 아래 링크를 통해 한번 읽어 보고 이 글을 진행해 나가면 좀 더 이해가 쉬울겁니다.</p>
+<p>** 목 차 **</p>
+<ul>
+<li>
+<ol>
+<li><a href="#1">서론</a></li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li><a href="#ReactCSR">React 렌더링 (CSR)</a></li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li><a href="#SSR">SSR(서버 사이드 렌더링)</a></li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li><a href="#Next.js">Next.js</a></li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li><a href="#Next.js-1">Next.js의 렌더링 방식</a></li>
+</ol>
+<ul>
+<li>5.1. <a href="#SSGStaticSiteGeneration">SSG(Static Site Generation)</a></li>
+<li>5.2. <a href="#ISRIncrementalStaticRegeneration">ISR(Incremental Static Regeneration)</a></li>
+</ul>
+</li>
+<li>
+<ol start="6">
+<li><a href="#AppRouter">App Router</a></li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li><a href="#RSCReactServerComponent">RSC(React Server Component)</a></li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li><a href="#2">배포 번들 크기의 경량화</a></li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li><a href="#RSCReactServerComponent-1">RSC(React Server Component) 렌더링</a></li>
+</ol>
+</li>
+<li>
+<ol start="10">
+<li><a href="#3">비동기 렌더링</a></li>
+</ol>
+</li>
+<li>
+<ol start="11">
+<li><a href="#useclient">use client 디렉티브</a></li>
+</ol>
+</li>
+<li>
+<ol start="12">
+<li><a href="#useclient-1">use client의 의미</a></li>
+</ol>
+</li>
+<li>
+<ol start="13">
+<li><a href="#4">다룰 수 있는 데이터의 차이</a></li>
+</ol>
+</li>
+<li>
+<ol start="14">
+<li><a href="#useclient-2">경계 내에서는 use client를 한 번만 선언해야 함</a></li>
+</ol>
+</li>
+<li>
+<ol start="15">
+<li><a href="#5">마무리</a></li>
+</ol>
+</li>
+</ul>
+<hr>
+<h2 id="1-서론">1. <a name='1'></a>서론</h2>
+<p>Github vercel의 Next.js 리포지터리에서 아래와 같은 토론이 지금 화두인데요.</p>
+<p>https://github.com/vercel/next.js/discussions/46795</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi6hQSBc9DJVsGF00smG7DB278UkrrLuC4D0zo6Ny4xU7FZ9NK3tVgjgtI4HpouBinfamFxv18Quqy8LSpAaRl48QeVCjJ-YIOvmfhmp1TVXNNR5Qbj3RsUTCBlYX1N510C8LwCO218-nATincL-kX8V1FZWGuUEBfrCz1T3UEWR1TZMde73RVjiACi8FU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>도대체 이해할 수가 없어 RSC나 클라이언트 컴포넌트에 대해 이번에 배운 내용을 한번 정리해 봤습니다.</p>
+<p>이 글에서 아래의 내용을 이해할 수 있을 겁니다:</p>
+<ul>
+<li>
+<p>React와 Next.js에 대해 App Router란 무엇인가?</p>
+</li>
+<li>
+<p>RSC(React Server Component)란 무엇인가?</p>
+</li>
+<li>
+<p>RSC와 클라이언트 컴포넌트의 차이</p>
+</li>
+<li>
+<p>RSC와 클라이언트 컴포넌트의 렌더링에 대해 (SSR과 CSR에 대해)</p>
+</li>
+</ul>
+<hr>
+<h2 id="2-react-렌더링-csr">2. <a name='ReactCSR'></a>React 렌더링 (CSR)</h2>
+<p>React로 구현된 애플리케이션을 SPA(싱글 페이지 애플리케이션)라고 합니다.</p>
+<p>이 SPA의 한 가지 문제점은 초기 표시가 느리다는 겁니다.</p>
+<p>초기 표시가 느린 이유는 React 등의 SPA 애플리케이션은 모두 CSR(클라이언트 사이드 렌더링)으로 렌더링을 수행하기 때문입니다.</p>
+<p>CSR은 브라우저에서 JavaScript를 실행하여 DOM을 생성하고 화면을 표시하는 렌더링 방법입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEie-GWUPtQlEeLHNpcnYl_Sq5C1WRReKFYbCbd_P337LjT76VSLGRj9zyoJ09W2_-sCujLt_viPz-65uCECDfT33RUcPO0AcZlYwjnO30Vg3LOjyfDjXy0OIGUhgfMII4BGFg2tquoKHXIZyRpozxykPzu3vHDRAIfL8l2scOAl3UU5rIqobU0uD6PKR-E"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>즉, 다양한 라이브러리 등을 포함한 React 애플리케이션 내의 코드가 실행되어야만 처음으로 화면이 표시된다는 겁니다.</p>
+<p>그러나, React는 가상 DOM이라는 기술을 사용하여, 렌더링 시에 DOM의 차이를 감지하고, 차이가 있는 DOM만 업데이트하므로, 첫 표시 이후의 렌더링은 빠릅니다.</p>
+<p>단지, 첫 표시가 느리다는 문제가 있다는 것을 인식해 주십시요.</p>
+<p>React 렌더링에 대해 더 자세히 알고 싶으신 분은 아래의 문서를 참조해 주세요.</p>
+<p><a href="https://ko.react.dev/learn/render-and-commit">렌더링 그리고 커밋</a></p>
+<hr>
+<h2 id="3-ssr서버-사이드-렌더링">3. <a name='SSR'></a>SSR(서버 사이드 렌더링)</h2>
+<p>SPA(싱글 페이지 애플리케이션)의 초기 표시가 느린 문제를 해결하는 방법이 SSR(서버 사이드 렌더링)입니다.</p>
+<p>SSR에서는, 애플리케이션의 모든 것을 JavaScript로 그리는 것이 아니라, 미리 서버에서 정적인 HTML을 생성하는 렌더링 방법입니다.</p>
+<p>즉, SPA의 처음에 표시되는 화면의 HTML만 서버에서 렌더링하여 배포하는 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi05A2pMhW3yUro-4igJBc3vxYPlWBaE1K09C42amZ4rf4jjDERJf5JilM1D6NMccZnZ9Z7TXTx8KgbyURcrvAWwXH1q33of5tUl38blzbJMGtfvwvWYxREUqNyL-FkSb8pSlJ0X40Ks8fIHHzmS3Hg3nKzoRyfXTRK1Wh6kU3XAi3fV9umVyG0hRde9Cc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<blockquote>
+<p>하이드레이션(Hydration): 서버 측에서 렌더링된 HTML에 대해 JavaScript를 클라이언트에서 연결하는 작업(HTML에 연결된 JavaScript를 실행하여 이벤트 리스너 등 인터랙티브한 조작을 할 수 있게 하는 작업)</p></blockquote>
+<p>하이드레이션를 통해, SPA의 문제점이었던 초기 렌더링을 빠르게 할 수 있습니다.</p>
+<p>UX는 물론, 서버 측에서 생성한 HTML에는 메타 정보도 포함할 수 있으므로 SEO에도 효과가 있다고 합니다.</p>
+<p>(CSR에서는 JavaScript가 실행되어 처음으로 HTML이 생성되므로, 크롤러가 다운로드하는 HTML에 메타 정보가 포함되어 있지 않은 경우가 있어 SEO에 불리하다고 합니다)</p>
+<p>그러나, 이러한 SSR을 구현한 애플리케이션은 React에서는 구현할 수 없습니다.</p>
+<p>그래서, 나오는 것이 Next.js입니다.</p>
+<p>참고로, Next.js(Pages Router)에서 SSR을 구현하는 경우에는, getServerSideProps라는 비동기 함수를 이용하면 됩니다.</p>
+<hr>
+<h2 id="4-nextjs">4. <a name='Next.js'></a>Next.js</h2>
+<p>현재, Next.js에는 두 가지 구현 방식(라우팅 방식)이 있지만, 렌더링의 종류에 대해서는 변하지 않으므로, 각 렌더링 방식을 알아본 후, 라우팅 방식의 차이를 알아보겠습니다.</p>
+<ul>
+<li>
+<p>Pages Router</p>
+</li>
+<li>
+<p>App Router</p>
+</li>
+</ul>
+<hr>
+<h2 id="5-nextjs의-렌더링-방식">5. <a name='Next.js-1'></a>Next.js의 렌더링 방식</h2>
+<p>기본적으로, Next.js에서는 모든 페이지를 사전 렌더링합니다.</p>
+<p>사전 렌더링이란, Next.js가 각 페이지의 HTML을 클라이언트 측의 JavaScript로 생성하는 것이 아니라, 미리 생성해 두는 것입니다.</p>
+<p>즉, 사전 렌더링은 SSR과 같다는 것입니다.</p>
+<p>그래서, Next.js의 렌더링 방식의 종류에 대해 이야기하면, Next.js에는 SSR을 포함하여 아래의 4가지 렌더링 방식이 있습니다.</p>
+<p>CSR을 제외하면 모두 사전 렌더링입니다.</p>
+<ul>
+<li>SSR</li>
+<li>SSG</li>
+<li>ISR</li>
+<li>CSR</li>
+</ul>
+<p>SSR과 CSR은 앞서 설명했으므로, 설명을 생략하고, SSG, ISR만 살펴보겠습니다.</p>
+<h3 id="51-ssgstatic-site-generation">5.1. <a name='SSGStaticSiteGeneration'></a>SSG(Static Site Generation)</h3>
+<p>SSG는 애플리케이션을 빌드할 때 HTML을 생성하는 렌더링 방식입니다.</p>
+<p>SSR과 달리, 유저의 요청보다 먼저 HTML이 생성되어 있는 렌더링이라는 겁니다.</p>
+<p>SSG로 생성된 HTML은 요청마다 재사용되며, CDN에서 캐시할 수도 있습니다.</p>
+<p>Next.js에서는, 데이터가 없는 페이지(정적 HTML)뿐만 아니라, 빌드 시에 데이터를 가져오거나 등록한 HTML을 생성할 수도 있습니다.</p>
+<p>Pages Router에서는, getStaticProps나 getStaticPaths를 사용하여, 위의 내용을 실현할 수 있습니다.</p>
+<p>SSG에서는 요청마다 서버가 HTML을 렌더링할 필요가 없습니다(이미 HTML이 생성되어 있음).</p>
+<p>따라서, SSR에 비해 렌더링이 매우 빠릅니다. 그래서, 기본적으로는 SSG의 사용이 권장됩니다.</p>
+<h3 id="52-isrincremental-static-regeneration">5.2. <a name='ISRIncrementalStaticRegeneration'></a>ISR(Incremental Static Regeneration)</h3>
+<p>SSG의 경우, 빌드를 다시 하지 않는 한 페이지를 업데이트할 수 없는 문제가 발생합니다.</p>
+<p>이를 해결하는 것이 ISR이라는 렌더링 방식입니다.</p>
+<p>ISR의 메커니즘은, 먼저, 페이지에 요청이 들어왔을 때 빌드 완료된 정적 페이지를 표시하면서, 백그라운드에서 재렌더링을 수행합니다.</p>
+<p>그리고, 재렌더링이 완료되면 즉시, 새로 생성한 페이지를 표시합니다.</p>
+<p>이것이 ISR의 메커니즘입니다.</p>
+<p>즉, SSG와 SSR의 장점을 모두 취할 수 있는 렌더링 방식이라는 위치입니다</p>
+<p>(SSG에 의한 빠른 응답을 실현하면서, 어느 정도의 데이터 일관성을 보장할 수 있음)</p>
+<p>Next.js(Pages Router)에서는, getStaticProps의 반환 값에 revalidate라는 파라미터를 추가하여 실현할 수 있습니다.</p>
+<p>이 revalidate에는 페이지의 재생성 간격을 지정합니다.</p>
+<p>예를 들어, revalidate: 60으로 설정하면, 60초마다 페이지를 재생성할 수 있습니다.</p>
+<hr>
+<h2 id="6-app-router">6. <a name='AppRouter'></a>App Router</h2>
+<p>RSC는 App Router의 기반 기술입니다.</p>
+<p>그러므로 App Router를 이해하기 위해서는 RSC의 이해가 필수입니다.</p>
+<p>전제로, App Router에서는 모든 컴포넌트가 기본적으로 RSC가 되었습니다.</p>
+<p>그리고 클라이언트 컴포넌트로 처리하고 싶은 경우에는, 파일의 맨 앞에 use client 지시문을 선언하도록 변경되었습니다.</p>
+<p>즉, 필요한 부분만 클라이언트에서 실행하도록 하는 것이 기본적인 생각입니다.</p>
+<p>이 점을 전제 지식으로 가지고 있어야 합니다.</p>
+<p>여기서, 드디어 본론인 RSC와 클라이언트 컴포넌트에 대해 설명하겠습니다.</p>
+<hr>
+<h2 id="7-rscreact-server-component">7. <a name='RSCReactServerComponent'></a>RSC(React Server Component)</h2>
+<p>&ldquo;RSC가 뭐야?&ldquo;라는 질문에 한마디로 말하자면 컴포넌트 단위로 렌더링 방식을 SSR 또는 CSR로 나눌 수 있는 기술입니다.</p>
+<p>즉, 컴포넌트가 렌더링되는 위치가 서버 측인지 클라이언트 측인지를 식별하는 기술입니다.</p>
+<p>여기서, 서버 측에서 렌더링되는 컴포넌트를 &lsquo;서버 컴포넌트’라고 하고, 클라이언트 측에서 렌더링되는 컴포넌트를 &lsquo;클라이언트 컴포넌트’라고 합니다.</p>
+<p>이 RSC에는 다음의 3가지 장점이 있습니다.</p>
+<ul>
+<li>
+<p>배포 번들 크기의 경량화</p>
+</li>
+<li>
+<p>비동기 렌더링 가능</p>
+</li>
+<li>
+<p>백엔드에 직접 액세스 가능</p>
+</li>
+</ul>
+<p>※ RSC를 사용하면, 무조건적으로 번들 크기가 감소하는 것은 아니라고 합니다.</p>
+<p>반대로 단점으로는, 다음의 2가지가 있습니다.</p>
+<ul>
+<li>브라우저 API를 사용할 수 없음</li>
+<li>useEffect 등의 React 훅을 사용할 수 없음</li>
+</ul>
+<p>단점으로 언급한 것처럼 브라우저 API나 훅을 사용하여 사용자와의 인터랙티브한 조작을 구현하려면, 클라이언트 컴포넌트에서 수행해야 합니다.</p>
+<p>그러기 위해서는, 앞서 언급한 것처럼 use client 지시문을 파일에 선언해야 합니다.</p>
+<hr>
+<h2 id="8-배포-번들-크기의-경량화">8. <a name='2'></a>배포 번들 크기의 경량화</h2>
+<p>서버 컴포넌트는 처리 결과만을 브라우저에 전송합니다.</p>
+<p>예를 들어, 날짜 처리를 위한 외부 라이브러리를 설치하여 사용하더라도, 그 라이브러리의 소스 코드 자체는 브라우저에 전송되지 않습니다.</p>
+<p>이로 인해 브라우저에 전송하는 파일의 용량이 줄어들고, 성능이 향상됩니다.</p>
+<hr>
+<h2 id="9-rscreact-server-component-렌더링">9. <a name='RSCReactServerComponent-1'></a>RSC(React Server Component) 렌더링</h2>
+<p>흔히들 하는 오해 중 하나는 &ldquo;SSR과 RSC의 렌더링이 같다&quot;는 것입니다.</p>
+<p>실제로는, SSR과 RSC의 렌더링에는 차이가 있으므로, 조심하게 이해해야하는데요.</p>
+<p>먼저, 앞서 언급한 것처럼, SSR은 다음과 같이 렌더링합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhberVT11KSiX4VWs_YgfAvBMtsgc0D_mFqilAoASQxkW3Uvf9XHCNU9pYncJ_K0urGlSRmtC70Uz9tMsAaCT0JBIiGyuWnMcuDoIDNImRsjcgp7k-kek9OwB0xqbitL8pltL1t29RgvqXqYPH-PcxJ9BuBNeQWYsBdvxqAdqrFeoXZpLbItR9W4tvHa8o"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<ol>
+<li>서버에서 전체를 렌더링하고, HTML을 생성</li>
+<li>생성한 HTML을 DOM에 반영하고, 클라이언트 측에서 표시</li>
+<li>JavaScript 하이드레이션</li>
+</ol>
+<p>서버 측에서 HTML을 생성함으로써 초기 표시를 빠르게 하는 것이 특징이었죠?</p>
+<p>반면, RSC에서는 다음과 같이 렌더링됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi_YrOUcEyvYI-j0MlJ_HrUi-KVdOsiQ1gL2hDfjYPA71WKzdJ1XiKgIKgutooBb0FQV-x9qloHOjUKTZiJfNtcUp88pQS4XXpfngEQTUi_NkzPR-qguohjT-UGZG8DEZ3EUS_3MKMuZxY0YXANWg_dNN_DujVNwYlLBKEEoVZFSbLQfYurtKTs36EECrc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<ol>
+<li>서버 측에서 서버 컴포넌트를 렌더링한다.</li>
+<li>서버 컴포넌트의 HTML과 클라이언트 컴포넌트의 JavaScript를 클라이언트 측에 전송한다.</li>
+<li>클라이언트 컴포넌트를 렌더링한다.</li>
+<li>생성한 HTML을 DOM에 반영하고, 화면을 표시한다</li>
+</ol>
+<p>큰 차이점은 다음의 3가지입니다.</p>
+<ul>
+<li>
+<p>SSR의 경우 초기 표시가 빠르고 SEO에 유리하다.</p>
+</li>
+<li>
+<p>RSC의 경우 서버와 클라이언트에서 각각의 컴포넌트가 렌더링된다</p>
+</li>
+<li>
+<p>SSR의 경우 클라이언트에 전송되는 JavaScript의 양이 많다</p>
+</li>
+</ul>
+<p>SSR과 RSC의 렌더링을 비교했지만, 실제로는 함께 사용할 수도 있습니다.</p>
+<p>조합한 경우는 다음과 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjpxEPlJDOlAL7MVG0eD0vhmCB-bbQcLWBkLuOT_MX6JTzTWNxbEpOwctBlxHmPcu81Q_hy7Hsb3bZ52rgDiNbFh81jZgZcuCkjC3H_8iNTuIxjeQwpnchfYHhnNxOFGIJTc-HNoIWEo91UW_48jZmNP87lNz-I3xIEajn-kkpVHF7KQUURyrlMeR1xkX4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<ol>
+<li>서버 측에서 서버 컴포넌트를 렌더링한다.</li>
+<li>서버 측에서 클라이언트 컴포넌트도 렌더링한다.(SSR 시의 동작)</li>
+<li>생성한 서버 컴포넌트와 클라이언트 컴포넌트의 HTML을 클라이언트 측에 전송하여 DOM에 반영한다.</li>
+<li>초기 표시.</li>
+<li>클라이언트 측에 클라이언트 컴포넌트의 JavaScript를 전송하고, 하이드레이션한다.</li>
+</ol>
+<p>이렇게 SSR과 RSC를 조합함으로써, 초기 표시를 빠르게 하면서, 클라이언트 측에 전송하는 JavaScript의 양을 줄일 수 있습니다.</p>
+<hr>
+<h2 id="10-비동기-렌더링">10. <a name='3'></a>비동기 렌더링</h2>
+<p>React 18에서 서버 사이드 렌더링을 강화하기 위해 비동기 SSR이라는 새로운 기능이 추가되었습니다.</p>
+<p>이를 통해, 컴포넌트 단위로 SSR을 수행할 수 있게 되었습니다.</p>
+<p>즉, 렌더링에 시간이 걸리는 컴포넌트를 서버 측에서 처리하는 도중에 화면을 표시하고, 또한 사용자는 그 화면을 조작할 수 있습니다.</p>
+<p>이전의 React에서 SSR을 수행하면 페이지 전체의 렌더링이 완료될 때까지 브라우저에 HTML을 전송할 수 없었습니다.</p>
+<p>React 18에서는 Suspense라는 컴포넌트로 구분된 단위로 비동기로 SSR을 수행합니다.</p>
+<p>페이지 전체의 렌더링이 완료되지 않아도 브라우저 상에서 표시를 시작할 수 있습니다.</p>
+<p>그리고 렌더링 중인 컴포넌트는 Suspense의 인수로 지정된 로딩을 표시하고, 렌더링이 완료되면 교체됩니다.</p>
+<p>이를 스트리밍 HTML이라고 합니다.</p>
+<p>또한, 비동기 SSR을 수행하면서, 먼저 로드되어 화면에 표시된 부분을 인터랙티브하게 조작할 수도 있습니다.</p>
+<p>즉, 하이드레이션을 단계적으로 수행한다는 것입니다.</p>
+<p>이것도 React 18에서 실행할 수 있게 된 기능 중 하나입니다.</p>
+<p>이러한 단계적인 하이드레이션을 선택적 하이드레이션이라고 합니다.</p>
+<p>구현하면 다음과 같습니다.</p>
+<p>Suspense로 PostList를 감싸서, 데이터가 가져올 수 있을 때까지 Spinner로 로딩 표시를 하면서, Sidebar는 표시하고, 또한 인터랙티브한 조작도 할 수 있게 합니다.</p>
+<p>가져오기가 완료되면 PostList가 표시됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Suspense</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Sidebar</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@/components/Sidebar&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Spinner</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@/components/Spinner&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">PostList</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@/components/PostList&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">Home</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/api/posts&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">posts</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Sidebar</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Suspense</span> <span class="nx">fallback</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">Spinner</span> <span class="o">/&gt;</span><span class="p">}</span> <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">	  <span class="o">&lt;</span><span class="nx">PostList</span> <span class="nx">posts</span><span class="o">=</span><span class="p">{</span><span class="nx">posts</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/Suspense&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Home</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이상이 RSC에 대한 설명입니다.</p>
+<hr>
+<h2 id="11-use-client-디렉티브">11. <a name='useclient'></a>use client 디렉티브</h2>
+<p>use client 디렉티브에 대해 설명하겠습니다.</p>
+<p>자주 하는 오해 중 하나는 &ldquo;use client를 붙이면 클라이언트 컴포넌트가 된다&quot;는 겁니다.</p>
+<p>아래 토론을 참고하면 이해가 깊어질 겁니다.</p>
+<p><a href="https://github.com/vercel/next.js/discussions/46795">
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjSOJLj3ObeudCnaPgk5pdCwpYzXzIc6MtGyojYBd7Ayi30VWEtW9iuHkdPZtjsKe8_8OwF1Ktbk5cFzkmj5pr7W_kMgdHBaiUYilMgM-Xii1C9Dc4e2rcSWHER8OJeoOXBSgZqE_iWKzPf7QSQU-81k6aS6oSDx5d-Qh4YcV6jXcEElYHnpymD7M6UASQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></a></p>
+<hr>
+<h2 id="12-use-client의-의미">12. <a name='useclient-1'></a>use client의 의미</h2>
+<p>use client 디렉티브는 해당 파일 내의 컴포넌트가 클라이언트 측에서만 실행된다는 것을 나타냅니다.</p>
+<p>이는 해당 파일이 서버 컴포넌트와 클라이언트 컴포넌트의 경계를 나타낸다는 의미입니다.</p>
+<p>이것이 무엇을 의미하는지라는 것은, RSC의 컴포넌트 간 통신에서 다룰 수 있는 데이터에 차이가 있다는 것을 의미합니다.</p>
+<p>즉, props로 전달할 수 있는 데이터에 차이가 있다는 것입니다.</p>
+<hr>
+<h2 id="13-다룰-수-있는-데이터의-차이">13. <a name='4'></a>다룰 수 있는 데이터의 차이</h2>
+<p>결론적으로 말하면, 네트워크(서버)를 통한 데이터의 교환은 직렬화된 데이터로 통신해야 한다는 것입니다.</p>
+<p>use client 디렉티브가 있는 경우, 해당 파일 내의 하위 컴포넌트의 속성은 직렬화 가능해야 하며, 이는 네트워크를 통해 데이터를 전송하는 요구사항입니다.</p>
+<p>직렬화 가능한 데이터는 JSON으로 표현할 수 있는 데이터(객체, 배열, 문자열, 숫자, 불리언, null, undefined)를 가리킵니다.</p>
+<p>이들 이외의 것들은 직렬화할 수 없는 데이터가 됩니다.</p>
+<p>예를 들어, 객체나 배열은 JSON으로 다룰 수 있으므로, 직렬화된 데이터라고 할 수 있습니다.</p>
+<p>반면에, 함수는 객체로 다룰 수 있지만, JSON 객체로 표현할 수는 없습니다.</p>
+<p>그러므로, 함수는 직렬화할 수 없는 데이터가 됩니다.</p>
+<hr>
+<h2 id="14-경계-내에서는-use-client를-한-번만-선언해야-함">14. <a name='useclient-2'></a>경계 내에서는 use client를 한 번만 선언해야 함</h2>
+<p>토론의 예에서는, MessageInput에 use client를 선언하고 있어서 &ldquo;Props must be serializable for components in the &lsquo;use client&rsquo; entry file, &lsquo;setMessages&rsquo; is invalid.&ldquo;라는 오류가 발생합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// parent.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Message</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@prisma/client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">MessageInput</span> <span class="nx">from</span> <span class="s2">&#34;./MessageInput&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">initialMessages</span><span class="o">:</span> <span class="nx">Message</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">MessagesContainer</span><span class="p">({</span> <span class="nx">initialMessages</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">messages</span><span class="p">,</span> <span class="nx">setMessages</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="nx">initialMessages</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col items-center justify-center h-full&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">MessageInput</span> <span class="nx">messages</span><span class="o">=</span><span class="p">{</span><span class="nx">messages</span><span class="p">}</span> <span class="nx">setMessages</span><span class="o">=</span><span class="p">{</span><span class="nx">setMessages</span><span class="p">}</span> <span class="nx">conversationId</span><span class="o">=</span><span class="p">{</span><span class="s2">&#34;&#34;</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// child.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ConversationRole</span><span class="p">,</span> <span class="nx">Message</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@prisma/client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">Props</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">messages</span><span class="o">:</span> <span class="nx">Message</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">setMessages</span><span class="o">:</span> <span class="p">(</span><span class="nx">message</span><span class="o">:</span> <span class="nx">Message</span><span class="p">[])</span> <span class="p">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">conversationId</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// The error exists on `setMessages` here
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">MessageInput</span><span class="p">({</span> <span class="nx">messages</span><span class="p">,</span> <span class="nx">setMessages</span><span class="p">,</span> <span class="nx">conversationId</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">input</span><span class="p">,</span> <span class="nx">setInput</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onKeyDown</span><span class="o">=</span><span class="p">{</span><span class="kr">async</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">key</span> <span class="o">===</span> <span class="s2">&#34;Enter&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">setMessages</span><span class="p">(</span><span class="nx">newMessage</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">setInput</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">input</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setInput</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 경우, MessageInput에서 use client를 제거하면 정상적으로 작동합니다.</p>
+<p>왜냐하면, 부모 컴포넌트에서 use client를 선언하고 있고, 그곳에서 import하고 있기 때문에, 다시 MessageInput에 대해 use client를 선언하지 않아도 클라이언트 컴포넌트로 인식되기 때문입니다.</p>
+<p>즉, use client 지시문 내에서 import된 것은 부모 컴포넌트 내의 범위에서 실행되므로 클라이언트 컴포넌트로 인식됩니다.</p>
+<p>따라서, 직렬화되지 않은 함수를 props로 전달할 수 있습니다.</p>
+<p>즉, use client는 서버 컴포넌트와의 경계이므로, &ldquo;이 파일에 import된 것은 클라이언트 컴포넌트로 처리하십시오&quot;라는 선언이 됩니다.</p>
+<p>따라서, MessageInput에서 use client를 선언하면, &ldquo;이 파일에 import된 것은 클라이언트 컴포넌트로 처리하십시오&quot;라는 것을 자식 컴포넌트에서도 선언하게 됩니다.</p>
+<p>그러므로, MessageInput에 import된 것은 클라이언트 컴포넌트로 인식됩니다.</p>
+<p>여기까지가 올바른 동작입니다.</p>
+<p>이것을 use client 지시문을 선언하고 있는 부모 컴포넌트에서 import하면 &ldquo;서버 컴포넌트와의 경계는 이 파일이어야 하는데, import된 컴포넌트에도 경계가 있다&quot;라고 Next.js는 인식합니다.</p>
+<p>즉, 자식 컴포넌트의 파일에서 새로운 클라이언트 컴포넌트의 경계를 만들려고 하므로, Next.js가 혼란스러워하여 오류가 발생하는 것입니다.</p>
+<p>요약하면, 이 문제는 부모와 자식에서 use client를 선언하려고 할 때 발생합니다.</p>
+<p>서버 컴포넌트와의 경계라는 것을 알고 있다면, 부모 컴포넌트에서만 선언할 수 있어야 합니다.</p>
+<p>왜냐하면, use client를 선언한 파일에서 import된 컴포넌트는 클라이언트 컴포넌트로 인식되기 때문입니다.</p>
+<hr>
+<h2 id="15-마무리">15. <a name='5'></a>마무리</h2>
+<p>Next.js는 기능이 매우 많으며, 개발하기 상당히 쉽지만, 개념 이해를 소홀히 하면 산으로 갈 수 있기 때문에 기본 지식을 이해하고 넘어가는게 가장 중요합니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/ssr/" role="button">ssr</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/rsc/" role="button">rsc</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-20-rsc-guide-2-bundler-interleaving-optimization/">RSC(리액트 서버 컴포넌트) 이해 2편, 번들러와 인터리빙, 그리고 성능 최적화 전략까지</a></h2>
+                  <p>RSC(리액트 서버 컴포넌트)에 대해 번들러와 인터리빙, 그리고 성능 최적화 전략까지 알아보겠습니다.</p>
+                  <p>
+  <small>January 20, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-20-rsc-tutorial-1-react-server-components-explained/">RSC(리액트 서버 컴포넌트) 동작 원리부터 성능 최적화까지</a></h2>
+                  <p>React Server Comoponents 에 대해 심도 있게 공부해 봅시다.</p>
+                  <p>
+  <small>January 20, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

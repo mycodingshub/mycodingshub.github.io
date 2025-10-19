@@ -1,0 +1,1319 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React 19 강좌 4편 - Context Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값 및 에러 핸들링 개선</title>
+<meta name="description" content="React 19에서의 주요 변경 사항과 개선된 기능들을 포괄적으로 다루고 있다는 점을 강조합니다.(Context.Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값, 에러 핸들링 개선)" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-4-context-provider-discouraged-ref-cleanup-usedeferredvalue-improvements/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React 19 강좌 4편 - Context Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값 및 에러 핸들링 개선" />
+<meta property="og:description" content="React 19에서의 주요 변경 사항과 개선된 기능들을 포괄적으로 다루고 있다는 점을 강조합니다.(Context.Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값, 에러 핸들링 개선)" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-4-context-provider-discouraged-ref-cleanup-usedeferredvalue-improvements/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-07-14T08:25:04Z" />
+<meta property="article:modified_time" content="2024-07-14T08:25:04Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="react 19" />
+<meta property="article:tag" content="ref callback" />
+<meta property="article:tag" content="useDeferredValue" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React 19 강좌 4편 - Context Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값 및 에러 핸들링 개선" />
+<meta name="twitter:description" content="React 19에서의 주요 변경 사항과 개선된 기능들을 포괄적으로 다루고 있다는 점을 강조합니다.(Context.Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값, 에러 핸들링 개선)" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React 19 강좌 4편 - Context Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값 및 에러 핸들링 개선\"",
+  "description": "\"React 19에서의 주요 변경 사항과 개선된 기능들을 포괄적으로 다루고 있다는 점을 강조합니다.(Context.Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값, 에러 핸들링 개선)\"",
+  "datePublished": "\"2024-07-14T08:25:04Z\"",
+  "dateModified": "\"2024-07-14T08:25:04Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-4-context-provider-discouraged-ref-cleanup-usedeferredvalue-improvements/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React 19 강좌 4편 - Context Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값 및 에러 핸들링 개선</h1>
+        <p>
+  <small>July 14, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>React 19 강좌 전체 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-1-usetransition-and-new-form-api">React 19 강좌 1편 - 액션과 useTransition으로 비동기 작업 처리하기 기본 사용법과 폼 처리 변화</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-2-handling-async-tasks-with-react-19-form-elements-actions-useactionstate-useformstatus">React 19 강좌 2편 - 폼 요소의 액션과 useActionState useFormStatus 조합으로 비동기 작업 처리하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-3-react-19-formdata-server-actions-useactionstate-optimization">React 19 강좌 3편 - FormData와 Server Actions, useActionState의 조합으로 폼 제출 최적화하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-4-context-provider-discouraged-ref-cleanup-usedeferredvalue-improvements">React 19 강좌 4편 - Context Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값 및 에러 핸들링 개선</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-14-react-19-tutorial-5-breaking-changes-prop-types-context-ref">React 19 강좌 5편 - React 19 주요 변경 사항 - propTypes와 defaultProps의 폐지, Legacy Context의 제거, ref 개선 및 useReducer 타입 시그니처 변경</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#react-19-%ea%b0%95%ec%a2%8c-4%ed%8e%b8---context-provider-%eb%b9%84%ec%b6%94%ec%b2%9c%ed%99%94-ref-%ec%bd%9c%eb%b0%b1-%ed%81%b4%eb%a6%b0%ec%97%85-usedeferredvalue-%ec%b4%88%ea%b8%b0%ea%b0%92-%eb%b0%8f-%ec%97%90%eb%9f%ac-%ed%95%b8%eb%93%a4%eb%a7%81-%ea%b0%9c%ec%84%a0">React 19 강좌 4편 - Context Provider 비추천화, ref 콜백 클린업, useDeferredValue 초기값 및 에러 핸들링 개선</a>
+<ul>
+<li><a href="#contextprovider%ec%9d%98-%eb%b9%84%ec%b6%94%ec%b2%9c%ed%99%94"><code>&lt;Context.Provider&gt;</code>의 비추천화</a>
+<ul>
+<li><a href="#%ec%9d%b4%ec%a0%84-%eb%b0%a9%ec%8b%9d">이전 방식</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-%ea%b8%b0%ec%a1%b4-%eb%b0%a9%ec%8b%9d">예제: 기존 방식</a></li>
+</ul>
+</li>
+<li><a href="#%ec%83%88%eb%a1%9c%ec%9a%b4-%eb%b0%a9%ec%8b%9d">새로운 방식</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-%ec%83%88%eb%a1%9c%ec%9a%b4-%eb%b0%a9%ec%8b%9d">예제: 새로운 방식</a></li>
+</ul>
+</li>
+<li><a href="#%ec%84%a4%eb%aa%85">설명</a></li>
+<li><a href="#%ec%9a%94%ec%95%bd">요약</a></li>
+</ul>
+</li>
+<li><a href="#ref-%ec%bd%9c%eb%b0%b1%ec%9d%98-%ed%81%b4%eb%a6%b0%ec%97%85-%ed%95%a8%ec%88%98">ref 콜백의 클린업 함수</a>
+<ul>
+<li><a href="#ref-%ec%bd%9c%eb%b0%b1%ec%9d%98-%ea%b8%b0%ec%a1%b4-%ec%82%ac%ec%96%91">ref 콜백의 기존 사양</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-ref-%ec%bd%9c%eb%b0%b1%ec%9d%98-%ea%b8%b0%ec%a1%b4-%ec%82%ac%ec%96%91">예제: ref 콜백의 기존 사양</a></li>
+</ul>
+</li>
+<li><a href="#ref-%ec%bd%9c%eb%b0%b1%ea%b3%bc-%ec%9e%ac%eb%a0%8c%eb%8d%94%eb%a7%81">ref 콜백과 재렌더링</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-ref-%ec%bd%9c%eb%b0%b1%ea%b3%bc-%ec%9e%ac%eb%a0%8c%eb%8d%94%eb%a7%81">예제: ref 콜백과 재렌더링</a></li>
+</ul>
+</li>
+<li><a href="#ref-%ec%bd%9c%eb%b0%b1%ec%9d%84-%eb%a9%94%eb%aa%a8%ec%9d%b4%ec%a0%9c%ec%9d%b4%ec%85%98%ed%95%98%eb%8a%94-%ec%98%88">ref 콜백을 메모이제이션하는 예</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-ref-%ec%bd%9c%eb%b0%b1%ec%9d%84-%eb%a9%94%eb%aa%a8%ec%9d%b4%ec%a0%9c%ec%9d%b4%ec%85%98%ed%95%98%eb%8a%94-%eb%b0%a9%eb%b2%95">예제: ref 콜백을 메모이제이션하는 방법</a></li>
+</ul>
+</li>
+<li><a href="#ref-%ec%bd%9c%eb%b0%b1%ea%b3%bc-useeffect%ec%9d%98-%ec%9c%a0%ec%82%ac%ec%84%b1%ea%b3%bc-%ec%b0%a8%ec%9d%b4%ec%a0%90">ref 콜백과 useEffect의 유사성과 차이점</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-useeffect%eb%a1%9c-dom-%ec%a1%b0%ec%9e%91">예제: useEffect로 DOM 조작</a></li>
+</ul>
+</li>
+<li><a href="#%eb%ac%b8%ec%a0%9c-%ec%9e%88%eb%8a%94-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8">문제 있는 컴포넌트</a></li>
+<li><a href="#ref-%ec%bd%9c%eb%b0%b1%ec%9d%84-%ec%82%ac%ec%9a%a9%ed%95%98%eb%8a%94-%ec%98%88">ref 콜백을 사용하는 예</a></li>
+</ul>
+</li>
+<li><a href="#%ec%9a%94%ec%95%bd-1">요약</a></li>
+<li><a href="#ref%eb%a5%bc-prop%ec%9c%bc%eb%a1%9c-%ec%a0%84%eb%8b%ac%ed%95%a0-%ec%88%98-%ec%9e%88%eb%8a%94-%ea%b0%9c%ec%84%a0">ref를 prop으로 전달할 수 있는 개선</a>
+<ul>
+<li><a href="#react-18%ec%9d%98-ref-%eb%8f%99%ec%9e%91">React 18의 ref 동작</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-react-18%ec%9d%98-ref-%eb%8f%99%ec%9e%91">예제: React 18의 ref 동작</a></li>
+</ul>
+</li>
+<li><a href="#forwardref-%ec%82%ac%ec%9a%a9%eb%b2%95">forwardRef 사용법</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-forwardref-%ec%82%ac%ec%9a%a9%eb%b2%95">예제: forwardRef 사용법</a></li>
+</ul>
+</li>
+<li><a href="#react-19%ec%9d%98-ref-%eb%8f%99%ec%9e%91">React 19의 ref 동작</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-react-19%ec%9d%98-ref-%eb%8f%99%ec%9e%91">예제: React 19의 ref 동작</a></li>
+</ul>
+</li>
+<li><a href="#%ec%84%a4%eb%aa%85-1">설명</a></li>
+<li><a href="#%ec%9a%94%ec%95%bd-2">요약</a></li>
+</ul>
+</li>
+<li><a href="#usedeferredvalue%ec%9d%98-%ec%b4%88%ea%b8%b0%ea%b0%92">useDeferredValue의 초기값</a>
+<ul>
+<li><a href="#usedeferredvalue%eb%9e%80">useDeferredValue란</a></li>
+<li><a href="#%ec%98%88%ec%8b%9c">예시</a></li>
+<li><a href="#react-19%ec%9d%98-%ec%83%88%eb%a1%9c%ec%9a%b4-%ea%b8%b0%eb%8a%a5">React 19의 새로운 기능</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-%ec%b4%88%ea%b8%b0%ea%b0%92-%ec%84%a4%ec%a0%95">예제: 초기값 설정</a></li>
+</ul>
+</li>
+<li><a href="#%ec%84%a4%eb%aa%85-2">설명</a></li>
+</ul>
+</li>
+<li><a href="#%ec%9a%94%ec%95%bd-3">요약</a></li>
+<li><a href="#%ec%97%90%eb%9f%ac-%ed%95%b8%eb%93%a4%eb%a7%81%ec%9d%98-%ea%b0%9c%ec%84%a0">에러 핸들링의 개선</a>
+<ul>
+<li><a href="#%ea%b8%b0%ec%a1%b4%ec%9d%98-%eb%ac%b8%ec%a0%9c%ec%a0%90">기존의 문제점</a></li>
+<li><a href="#react-19%ec%9d%98-%ea%b0%9c%ec%84%a0">React 19의 개선</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-oncaughterror-%ec%82%ac%ec%9a%a9">예제: onCaughtError 사용</a></li>
+</ul>
+</li>
+<li><a href="#%ec%84%a4%eb%aa%85-3">설명</a></li>
+<li><a href="#onuncaughterror-%ec%82%ac%ec%9a%a9">onUncaughtError 사용</a>
+<ul>
+<li><a href="#%ec%98%88%ec%a0%9c-onuncaughterror-%ec%82%ac%ec%9a%a9">예제: onUncaughtError 사용</a></li>
+</ul>
+</li>
+<li><a href="#%ec%84%a4%eb%aa%85-4">설명</a></li>
+<li><a href="#%ec%9a%94%ec%95%bd-4">요약</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="contextprovider의-비추천화"><code>&lt;Context.Provider&gt;</code>의 비추천화</h2>
+<p>React 19에서는 기존의 <code>Context.Provider</code>를 비추천하고, 대신 <code>&lt;Context&gt;</code> 자체를 Provider로 사용하는 새로운 방식을 도입했습니다.</p>
+<p>이 변경은 Context API를 더 간단하게 사용하고, 코드의 일관성을 높이는 데 도움을 줍니다.</p>
+<h3 id="이전-방식">이전 방식</h3>
+<p>기존에는 <code>Context.Provider</code>를 사용하여 Context 값을 하위 컴포넌트에 전달했습니다.</p>
+<p>이 방식은 <code>Context.Provider</code>와 <code>Context.Consumer</code>를 쌍으로 사용하여 Context의 값을 제공하고 소비했습니다.</p>
+<h4 id="예제-기존-방식">예제: 기존 방식</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">createContext</span><span class="p">,</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Context 생성
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">MyContext</span> <span class="o">=</span> <span class="nx">createContext</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 부모 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">ParentComponent</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">setValue</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Context.Provider를 사용하여 값 전달
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">&lt;</span><span class="nt">MyContext.Provider</span> <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">value</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">ChildComponent</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">MyContext.Provider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 자식 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">ChildComponent</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">MyContext.Consumer</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">value</span> <span class="p">=&gt;</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Value</span><span class="o">:</span> <span class="p">{</span><span class="nx">value</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">MyContext.Consumer</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">ParentComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<ul>
+<li>
+<p><strong><code>MyContext.Provider</code></strong>: <code>value</code>를 하위 컴포넌트인 <code>ChildComponent</code>에 전달합니다.</p>
+</li>
+<li>
+<p><strong><code>MyContext.Consumer</code></strong>: <code>value</code>를 받아서 화면에 표시합니다.</p>
+</li>
+</ul>
+<p>이 방식은 <code>Context.Provider</code>와 <code>Context.Consumer</code>를 쌍으로 사용하는 방식으로, Context 값을 제공하고 소비하는 데 필요한 코드가 비교적 복잡했습니다.</p>
+<h3 id="새로운-방식">새로운 방식</h3>
+<p>React 19에서는 <code>Context</code> 자체를 Provider로 사용할 수 있게 되었습니다.</p>
+<p>이제는 <code>Context.Provider</code>와 <code>Context.Consumer</code>를 사용하는 대신, <code>Context</code>를 직접 Provider로 사용하여 더 간단하게 Context를 관리할 수 있습니다.</p>
+<h4 id="예제-새로운-방식">예제: 새로운 방식</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">createContext</span><span class="p">,</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useContext</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Context 생성
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">MyContext</span> <span class="o">=</span> <span class="nx">createContext</span><span class="p">(</span><span class="s1">&#39;Default Value&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 부모 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">ParentComponent</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">setValue</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Context 자체를 Provider로 사용
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">&lt;</span><span class="nt">MyContext.Provider</span> <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">value</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">ChildComponent</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">MyContext.Provider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 자식 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">ChildComponent</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">useContext</span><span class="p">(</span><span class="nx">MyContext</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Value</span><span class="o">:</span> <span class="p">{</span><span class="nx">value</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">ParentComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="설명">설명</h3>
+<ol>
+<li>
+<p><strong><code>createContext</code></strong>: Context를 생성합니다. 생성 시 기본값을 설정할 수 있습니다. 기본값은 <code>useContext</code>를 사용할 때 Context가 제공되지 않으면 사용됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyContext</span> <span class="o">=</span> <span class="nx">createContext</span><span class="p">(</span><span class="s1">&#39;Default Value&#39;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+<li>
+<p><strong><code>Context.Provider</code></strong>: Context를 제공하는 Provider 역할을 합니다. <code>value</code> 속성에 제공할 값을 설정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">MyContext.Provider</span> <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">value</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">ChildComponent</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">MyContext.Provider</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+<li>
+<p><strong><code>useContext</code></strong>: Context 값을 읽어오는 훅입니다. 함수 컴포넌트에서 사용하여 Context의 값을 쉽게 가져올 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">useContext</span><span class="p">(</span><span class="nx">MyContext</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+<li>
+<p><strong><code>MyContext</code></strong>: 이제 <code>MyContext</code>를 직접 Provider로 사용하여 Context 값을 제공할 수 있습니다. <code>useContext</code>를 사용하여 값을 읽어올 수 있습니다. 이로 인해 <code>Context.Provider</code>와 <code>Context.Consumer</code>의 비대칭 상태가 해소됩니다.</p>
+</li>
+</ol>
+<h3 id="요약">요약</h3>
+<ul>
+<li>
+<p><strong><code>Context.Provider</code> 비추천화</strong>: React 19에서 <code>Context.Provider</code> 대신 <code>&lt;Context&gt;</code>를 직접 Provider로 사용할 수 있게 되었습니다. 이를 통해 코드가 더 간단하고 일관되게 관리됩니다.</p>
+</li>
+<li>
+<p><strong><code>createContext</code>와 <code>useContext</code> 사용</strong>: <code>createContext</code>로 Context를 생성하고, <code>useContext</code>를 사용하여 Context 값을 읽어오는 방식으로 변경되었습니다.</p>
+</li>
+<li>
+<p><strong>예제</strong>: 새로운 Context API를 사용하여 Context를 제공하고, 함수 컴포넌트에서 Context 값을 쉽게 읽어오는 방법을 설명했습니다.</p>
+</li>
+</ul>
+<hr>
+<h2 id="ref-콜백의-클린업-함수">ref 콜백의 클린업 함수</h2>
+<p>React 19에서는 <code>ref</code> 콜백 함수에서 클린업 함수를 반환할 수 있는 기능이 추가되었습니다.</p>
+<p>이를 통해 DOM 노드가 제거되거나 변경될 때 클린업 작업을 더 간편하게 처리할 수 있습니다.</p>
+<p>이 기능을 활용하면, DOM 노드의 생성과 제거를 보다 효율적으로 관리할 수 있습니다.</p>
+<h3 id="ref-콜백의-기존-사양">ref 콜백의 기존 사양</h3>
+<p>기존에는 ref 콜백 함수에서 DOM 노드가 제거될 때 <code>null</code>이 인자로 전달되었습니다.</p>
+<p>이를 통해 클린업 작업을 수행할 수 있었습니다.</p>
+<h4 id="예제-ref-콜백의-기존-사양">예제: ref 콜백의 기존 사양</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">refCallback</span> <span class="o">=</span> <span class="p">(</span><span class="nx">node</span><span class="o">:</span> <span class="nx">HTMLDivElement</span> <span class="o">|</span> <span class="kc">null</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Node mounted:&#39;</span><span class="p">,</span> <span class="nx">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Node unmounted&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">refCallback</span><span class="p">}&gt;</span><span class="nx">Hello</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">MyComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 예제에서는 <code>refCallback</code> 함수가 DOM 노드가 마운트되거나 언마운트될 때 호출됩니다.</p>
+<p><code>node</code>가 <code>null</code>로 전달될 때는 DOM 노드가 제거되었음을 알 수 있으며, 이를 통해 클린업 작업을 수행할 수 있습니다.</p>
+<h3 id="ref-콜백과-재렌더링">ref 콜백과 재렌더링</h3>
+<p>컴포넌트가 재렌더링될 때마다 ref 콜백이 호출됩니다.</p>
+<p>이 메커니즘은 이전 콜백 함수가 <code>null</code>을 전달받아 역할을 종료하고, 새로운 콜백 함수가 현재 DOM 노드를 전달받는 방식입니다.</p>
+<h4 id="예제-ref-콜백과-재렌더링">예제: ref 콜백과 재렌더링</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useCallback</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">refCallback</span> <span class="o">=</span> <span class="p">(</span><span class="nx">node</span><span class="o">:</span> <span class="nx">HTMLDivElement</span> <span class="o">|</span> <span class="kc">null</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span> <span class="nx">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">refCallback</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">c</span> <span class="p">=&gt;</span> <span class="nx">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}&gt;</span><span class="nx">Increment</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">MyComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 경우, 버튼 클릭으로 인해 컴포넌트가 재렌더링되며, <code>refCallback</code> 함수도 호출됩니다.</p>
+<p>이 메커니즘 덕분에 이전 콜백 함수는 <code>null</code>을 전달받아 역할을 종료하고, 새로운 콜백 함수는 현재 DOM 노드를 전달받습니다.</p>
+<h3 id="ref-콜백을-메모이제이션하는-예">ref 콜백을 메모이제이션하는 예</h3>
+<p><code>useCallback</code> 훅을 사용하여 ref 콜백 함수를 메모이제이션하면, DOM 노드가 변경되거나 컴포넌트가 재렌더링되더라도 ref 콜백이 재호출되지 않게 할 수 있습니다.</p>
+<h4 id="예제-ref-콜백을-메모이제이션하는-방법">예제: ref 콜백을 메모이제이션하는 방법</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useCallback</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">refCallback</span> <span class="o">=</span> <span class="nx">useCallback</span><span class="p">((</span><span class="nx">node</span><span class="o">:</span> <span class="nx">HTMLDivElement</span> <span class="o">|</span> <span class="kc">null</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span> <span class="c1">// 빈 배열로 메모이제이션
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">refCallback</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">c</span> <span class="p">=&gt;</span> <span class="nx">c</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}&gt;</span><span class="nx">Increment</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">MyComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 예제에서 <code>refCallback</code>은 <code>useCallback</code>으로 메모이제이션됩니다.</p>
+<p><code>refCallback</code>이 빈 의존 배열 <code>[]</code>로 메모이제이션되어, DOM 노드가 변경되거나 컴포넌트가 재렌더링되더라도 동일한 콜백 함수가 유지됩니다.</p>
+<h3 id="ref-콜백과-useeffect의-유사성과-차이점">ref 콜백과 useEffect의 유사성과 차이점</h3>
+<p><code>ref</code> 콜백과 <code>useEffect</code>는 모두 이전 상태를 클린업하고 새로운 상태를 설정하는 방식으로 작동하지만, 클린업 방법이 다릅니다.</p>
+<p><code>useEffect</code>는 클린업 함수를 반환하여 이전 이펙트를 정리하고, <code>ref</code> 콜백은 이전 콜백에 <code>null</code>을 전달하여 클린업 작업을 수행합니다.</p>
+<h4 id="예제-useeffect로-dom-조작">예제: useEffect로 DOM 조작</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useRef</span><span class="p">,</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">ref</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">controller</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AbortController</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">node</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;transitionstart&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;transition start&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">signal</span><span class="o">:</span> <span class="nx">controller</span><span class="p">.</span><span class="nx">signal</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">controller</span><span class="p">.</span><span class="nx">abort</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;cleanup&#39;</span><span class="p">,</span> <span class="nx">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}&gt;...&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">MyComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 예제에서는 <code>useEffect</code>를 사용하여 <code>transitionstart</code> 이벤트를 설정하고, 컴포넌트가 언마운트될 때 클린업 작업을 수행합니다.</p>
+<p><code>useEffect</code>는 컴포넌트가 처음 렌더링될 때 <code>ref</code>의 DOM 노드에 이벤트를 추가하고, 컴포넌트가 제거될 때 이벤트 리스너를 제거하는 클린업 함수를 반환합니다.</p>
+<h3 id="문제-있는-컴포넌트">문제 있는 컴포넌트</h3>
+<p>리렌더링 시 DOM 노드가 변경될 때 문제를 발생시킬 수 있습니다. 예를 들어:</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useRef</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isShown</span><span class="p">,</span> <span class="nx">setIsShown</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">ref</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">controller</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AbortController</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">node</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;transitionstart&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;transition start&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">signal</span><span class="o">:</span> <span class="nx">controller</span><span class="p">.</span><span class="nx">signal</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">controller</span><span class="p">.</span><span class="nx">abort</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;cleanup&#39;</span><span class="p">,</span> <span class="nx">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">isShown</span> <span class="o">?</span> <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}&gt;...&lt;/</span><span class="nt">div</span><span class="p">&gt;</span> <span class="o">:</span> <span class="kc">null</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">setIsShown</span><span class="p">(</span><span class="nx">s</span> <span class="p">=&gt;</span> <span class="o">!</span><span class="nx">s</span><span class="p">)}&gt;</span><span class="nx">Toggle</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">MyComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 컴포넌트는 버튼 클릭 시 <code>isShown</code> 상태에 따라 <code>&lt;div&gt;</code> 요소를 토글합니다.</p>
+<p><code>useEffect</code>의 의존 배열이 빈 배열 <code>[]</code>로 설정되어 있기 때문에, <code>useEffect</code>는 최초 렌더링 시에만 호출되고 이후에는 호출되지 않습니다.</p>
+<p>이로 인해 <code>transitionstart</code> 이벤트를 추가한 DOM 노드가 제거될 때 클린업되지 않고, 새 DOM 노드가 추가될 때 이벤트가 추가되지 않습니다.</p>
+<p>이 문제를 해결하기 위해 <code>useEffect</code>의 의존 배열에 <code>[isShown]</code>을 추가할 수 있지만, 이는 바람직하지 않을 수 있습니다.</p>
+<p>이런 상황에서는 ref 콜백을 사용하여 문제를 해결할 수 있습니다.</p>
+<h3 id="ref-콜백을-사용하는-예">ref 콜백을 사용하는 예</h3>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useCallback</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isShown</span><span class="p">,</span> <span class="nx">setIsShown</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">refCallback</span> <span class="o">=</span> <span class="nx">useCallback</span><span class="p">((</span><span class="nx">node</span><span class="o">:</span> <span class="nx">HTMLDivElement</span> <span class="o">|</span> <span class="kc">null</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">controller</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AbortController</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">node</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;transitionstart&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;transition start&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">signal</span><span class="o">:</span> <span class="nx">controller</span><span class="p">.</span><span class="nx">signal</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">controller</span><span class="p">.</span><span class="nx">abort</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;cleanup&#39;</span><span class="p">,</span> <span class="nx">node</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">isShown</span> <span class="o">?</span> <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">refCallback</span><span class="p">}&gt;...&lt;/</span><span class="nt">div</span><span class="p">&gt;</span> <span class="o">:</span> <span class="kc">null</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">setIsShown</span><span class="p">(</span><span class="nx">s</span> <span class="p">=&gt;</span> <span class="o">!</span><span class="nx">s</span><span class="p">)}&gt;</span><span class="nx">Toggle</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">MyComponent</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 예제에서 <code>useCallback</code>을 사용하여 ref 콜백을 메모이제이션합니다.</p>
+<p><code>refCallback</code> 함수는 DOM 노드가 마운트될 때 <code>transitionstart</code> 이벤트를 설정하고, DOM 노드가 언마운트될 때 클린업 작업을 수행합니다.</p>
+<p><code>useCallback</code>을 사용하면, ref 콜백 함수는 DOM 노드가 변경될 때만 호출되며, 재렌더링 시에도 동일한 콜백이 유지됩니다.</p>
+<h2 id="요약-1">요약</h2>
+<ul>
+<li>
+<p><strong>ref 콜백의 클린업 함수</strong>: React 19에서 ref 콜백 함수가 클린업 함수를 반환할 수 있게 되었습니다. 이를 통해 DOM 노드가 제거되거나 변경될 때 클린업 작업을 더 간편하게 처리할 수 있습니다.</p>
+</li>
+<li>
+<p><strong><code>useEffect</code>와의 유사성과 차이점</strong>: <code>useEffect</code>와 ref 콜백은 모두 상태를 클린업하고 새로운 상태를 설정하는 방식으로 작동하지만, 클린업 방법이 다릅니다. <code>useEffect</code>는 클린업 함수를 반환하여 이전 이펙트를 정리하고, ref 콜백은 이전 콜백에 <code>null</code>을 전달하여 클린업 작업을 수행합니다.</p>
+</li>
+<li>
+<p><strong>직접 기억하는 예</strong>: ref 콜백에서 직접 클린업 작업을 기억할 수 있지만, 이는 다소 불편할 수 있습니다. React 19에서는 클린업 함수를 반환할 수 있는 기능이 추가되어, <code>useEffect</code>와 유사한 방식으로 클린업 작업을 처리할 수 있습니다.</p>
+</li>
+<li>
+<p><strong>useEffect로 DOM 조작하는 예</strong>: <code>useEffect</code>를 사용하여 DOM 노드에 이벤트를 설정하고, 컴포넌트 언마운트 시 클린업 작업을 수행하는 예제를 통해 <code>useEffect</code>의 사용법을 설명하였습니다.</p>
+</li>
+<li>
+<p><strong>문제 있는 컴포넌트</strong>: 컴포넌트가 재렌더링될 때 DOM 노드가 변경되면서 발생할 수 있는 문제와 이를 해결하기 위한 방법으로 ref 콜백을 사용한 예제를 제공하였습니다.</p>
+</li>
+<li>
+<p><strong>ref 콜백을 사용하는 예</strong>: <code>useCallback</code>을 사용하여 ref 콜백을 메모이제이션하고, 클린업 작업을 수행하는 방법을 설명했습니다. 이로 인해 DOM 노드의 생성과 제거를 보다 효율적으로 관리할 수 있습니다.</p>
+</li>
+</ul>
+<hr>
+<h2 id="ref를-prop으로-전달할-수-있는-개선">ref를 prop으로 전달할 수 있는 개선</h2>
+<p>React 19에서는 <code>ref</code>를 prop으로 직접 전달할 수 있는 기능이 추가되었습니다.</p>
+<p>이전에는 <code>ref</code>를 prop으로 직접 전달할 수 없었고, <code>forwardRef</code>를 사용하여 ref를 전달할 수 있도록 했습니다.</p>
+<p>이 변경은 코드의 복잡성을 줄이고, 컴포넌트의 사용을 더 직관적으로 만들어 줍니다.</p>
+<h3 id="react-18의-ref-동작">React 18의 ref 동작</h3>
+<p>React 18에서는 <code>ref</code>를 prop으로 직접 전달할 수 없었습니다. 대신, <code>forwardRef</code>를 사용하여 ref를 전달할 수 있었습니다.</p>
+<h4 id="예제-react-18의-ref-동작">예제: React 18의 ref 동작</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ref를 prop으로 전달해도...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">MyComponent</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">ref</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// ref는 undefined로 설정됨
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}&gt;</span><span class="nx">Hello</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 사용 예
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">myRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">MyComponent</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">myRef</span><span class="p">}</span> <span class="p">/&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 예제에서 <code>ref</code>는 <code>MyComponent</code>로 전달되지만, <code>prop</code>으로 전달된 <code>ref</code>는 <code>undefined</code>로 설정됩니다.</p>
+<p>이 경우, <code>MyComponent</code>에서는 <code>ref</code>를 사용할 수 없으며, <code>forwardRef</code>를 사용해야만 ref를 전달할 수 있었습니다.</p>
+<h3 id="forwardref-사용법">forwardRef 사용법</h3>
+<p><code>forwardRef</code>는 ref를 직접 전달받을 수 있는 컴포넌트를 생성하는 데 사용됩니다.</p>
+<h4 id="예제-forwardref-사용법">예제: forwardRef 사용법</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// forwardRef를 사용하여 ref를 전달받는 컴포넌트 생성
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">MyComponent</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">forwardRef</span><span class="p">((</span><span class="nx">props</span><span class="p">,</span> <span class="nx">ref</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}&gt;</span><span class="nx">Hello</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 사용 예
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">myRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">MyComponent</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">myRef</span><span class="p">}</span> <span class="p">/&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드에서 <code>React.forwardRef</code>를 사용하여 <code>MyComponent</code>가 <code>ref</code>를 직접 전달받을 수 있게 됩니다.</p>
+<p><code>MyComponent</code>는 <code>props</code>와 <code>ref</code>를 인자로 받아, <code>ref</code>를 <code>div</code> 요소에 설정합니다.</p>
+<h3 id="react-19의-ref-동작">React 19의 ref 동작</h3>
+<p>React 19에서는 ref를 prop으로 직접 전달할 수 있게 되었습니다.</p>
+<p>이제는 <code>forwardRef</code>를 사용할 필요가 없으며, ref를 prop으로 직접 전달하고 사용할 수 있습니다.</p>
+<h4 id="예제-react-19의-ref-동작">예제: React 19의 ref 동작</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ref를 prop으로 직접 전달받는 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">ref</span><span class="o">?:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Ref</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;</span> <span class="p">}</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">ref</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}&gt;</span><span class="nx">Hello</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 사용 예
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">myRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">MyComponent</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">myRef</span><span class="p">}</span> <span class="p">/&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="설명-1">설명</h3>
+<ol>
+<li>
+<p><strong><code>ref</code>를 prop으로 직접 전달</strong>: React 19에서는 ref를 prop으로 직접 전달할 수 있습니다.</p>
+</li>
+<li></li>
+<li>
+<p>이로 인해 <code>forwardRef</code>를 사용할 필요가 없어졌습니다.</p>
+</li>
+<li></li>
+<li>
+<p><code>MyComponent</code>는 <code>ref</code>를 prop으로 직접 받아, <code>div</code> 요소에 설정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">MyComponent</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">ref</span><span class="o">?:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Ref</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;</span> <span class="p">}</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">ref</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}&gt;</span><span class="nx">Hello</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+<li>
+<p><strong>컴포넌트 사용</strong>: <code>MyComponent</code>를 사용할 때, <code>ref</code>를 prop으로 전달합니다.</p>
+</li>
+<li></li>
+<li>
+<p>이 방식은 코드의 간결성을 높여주며, 컴포넌트가 ref를 쉽게 처리할 수 있게 해줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">myRef</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createRef</span><span class="p">&lt;</span><span class="nt">HTMLDivElement</span><span class="p">&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">App</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">MyComponent</span> <span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">myRef</span><span class="p">}</span> <span class="p">/&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+</li>
+</ol>
+<h3 id="요약-2">요약</h3>
+<ul>
+<li>
+<p><strong><code>ref</code>를 prop으로 직접 전달</strong>: React 19에서는 <code>ref</code>를 prop으로 직접 전달할 수 있으며, <code>forwardRef</code>를 사용할 필요가 없습니다. 이로 인해 코드가 더 간결해지고, 컴포넌트의 사용이 직관적으로 개선되었습니다.</p>
+</li>
+<li>
+<p><strong>실제 예제</strong>: <code>ref</code>를 prop으로 직접 전달받아 사용하는 컴포넌트와 이를 사용하는 방법을 실제 코드 예제로 설명했습니다.</p>
+</li>
+</ul>
+<hr>
+<h2 id="usedeferredvalue의-초기값">useDeferredValue의 초기값</h2>
+<h3 id="usedeferredvalue란">useDeferredValue란</h3>
+<p><code>useDeferredValue</code>는 React 18에서 도입된 훅으로, 비동기 상태 업데이트를 지연시켜 UI의 성능을 최적화하는 데 유용합니다.</p>
+<p>이 훅을 사용하면 상태가 변화할 때 그 변화를 즉시 반영하기보다는 일정 시간 동안 지연시켜서 부드러운 사용자 경험을 제공할 수 있습니다.</p>
+<p>비동기 작업이 완료될 때까지 UI를 안정적으로 유지할 수 있도록 도와줍니다.</p>
+<h3 id="예시">예시</h3>
+<p>다음은 <code>useDeferredValue</code>를 사용하는 기본적인 예제입니다:</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useDeferredValue</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SearchPage</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">query</span><span class="p">,</span> <span class="nx">setQuery</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">deferredQuery</span> <span class="o">=</span> <span class="nx">useDeferredValue</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">query</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">SearchResults</span> <span class="na">query</span><span class="o">=</span><span class="p">{</span><span class="nx">deferredQuery</span><span class="p">}</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SearchResults</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">query</span><span class="o">:</span> <span class="nx">string</span> <span class="p">}</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">query</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 이 컴포넌트는 `query`가 변경될 때마다 다시 렌더링됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Search</span> <span class="nx">results</span> <span class="k">for</span><span class="o">:</span> <span class="p">{</span><span class="nx">query</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 예제에서, 사용자가 입력 필드에 텍스트를 입력하면 <code>query</code> 상태가 업데이트됩니다.</p>
+<p><code>useDeferredValue</code>를 사용하여 <code>deferredQuery</code>를 생성하며, 이 값은 지연되어 업데이트됩니다.</p>
+<p>그 결과, <code>SearchResults</code> 컴포넌트는 입력 필드에서 텍스트를 입력하는 동안 지연된 검색어를 사용하여 결과를 렌더링합니다.</p>
+<p>이로 인해 사용자 입력에 따라 UI가 부드럽게 반응하도록 돕습니다.</p>
+<h3 id="react-19의-새로운-기능">React 19의 새로운 기능</h3>
+<p>React 19에서는 <code>useDeferredValue</code>의 두 번째 인자로 초기값을 설정할 수 있는 기능이 추가되었습니다. 이 기능은 컴포넌트의 최초 렌더링 시에도 트랜지션을 적용하여 사용자 인터페이스를 부드럽게 제공할 수 있도록 합니다.</p>
+<h4 id="예제-초기값-설정">예제: 초기값 설정</h4>
+<p>다음은 <code>useDeferredValue</code>의 두 번째 인자로 초기값을 설정하는 예제입니다:</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useDeferredValue</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SearchPage</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">query</span><span class="p">,</span> <span class="nx">setQuery</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">deferredQuery</span> <span class="o">=</span> <span class="nx">useDeferredValue</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">        <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">query</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">SearchResults</span> <span class="na">query</span><span class="o">=</span><span class="p">{</span><span class="nx">deferredQuery</span><span class="p">}</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SearchResults</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">query</span><span class="o">:</span> <span class="nx">string</span> <span class="p">}</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">query</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 이 컴포넌트는 `query`가 변경될 때마다 다시 렌더링됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Search</span> <span class="nx">results</span> <span class="k">for</span><span class="o">:</span> <span class="p">{</span><span class="nx">query</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="설명-2">설명</h3>
+<ol>
+<li>
+<p><strong>초기값 설정</strong>: 새로운 기능으로 <code>useDeferredValue</code>의 두 번째 인자로 초기값을 설정할 수 있습니다. 이 초기값은 컴포넌트의 최초 렌더링 시에 사용됩니다. 위 예제에서는 빈 문자열 <code>''</code>을 초기값으로 설정했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">deferredQuery</span> <span class="o">=</span> <span class="nx">useDeferredValue</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 초기값은 컴포넌트의 최초 렌더링 시 <code>deferredQuery</code>에 설정되며, 이후 <code>query</code>의 값이 업데이트되면 새로운 값으로 트랜지션이 발생합니다.</p>
+</li>
+<li>
+<p><strong>트랜지션 처리</strong>: 초기값을 사용하면 트랜지션을 통해 상태가 즉시 업데이트되기 전에 부드러운 사용자 인터페이스를 제공할 수 있습니다. 예를 들어, 입력 필드에서 텍스트를 입력하는 동안 <code>deferredQuery</code>는 지연된 값을 사용하여 검색 결과를 렌더링합니다. 이는 입력 필드의 변화에 즉시 반응하지 않고, 지연된 값을 사용하여 결과를 표시함으로써 사용자 인터페이스를 부드럽게 유지합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">SearchResults</span> <span class="na">query</span><span class="o">=</span><span class="p">{</span><span class="nx">deferredQuery</span><span class="p">}</span> <span class="p">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이로 인해 사용자 입력의 반응이 부드럽고, UI의 성능이 향상됩니다.</p>
+</li>
+</ol>
+<h2 id="요약-3">요약</h2>
+<ul>
+<li>
+<p><strong><code>useDeferredValue</code></strong>: 비동기 상태 업데이트의 트랜지션을 지연시키는 훅으로, 사용자 인터페이스의 성능을 최적화합니다.</p>
+</li>
+<li>
+<p><strong>초기값 설정</strong>: React 19에서는 <code>useDeferredValue</code>의 두 번째 인자로 초기값을 설정할 수 있습니다. 이로 인해 최초 렌더링 시에도 트랜지션을 적용할 수 있습니다.</p>
+</li>
+<li>
+<p><strong>예제</strong>: <code>useDeferredValue</code>를 사용해 상태 업데이트를 지연시키고, 사용자 입력에 따라 부드러운 UI를 제공하는 방법을 설명했습니다.</p>
+</li>
+</ul>
+<hr>
+<h2 id="에러-핸들링의-개선">에러 핸들링의 개선</h2>
+<p>React 19에서는 에러 핸들링을 세밀하게 제어할 수 있는 새로운 기능이 도입되었습니다.</p>
+<p>이제 <code>createRoot</code>와 <code>hydrateRoot</code> 메서드에서 <code>onCaughtError</code>와 <code>onUncaughtError</code> 옵션을 사용하여 에러 처리 방식을 조정할 수 있습니다.</p>
+<h3 id="기존의-문제점">기존의 문제점</h3>
+<p>기존에는 <code>Error Boundary</code>를 사용하여 에러를 잡았지만, 여전히 콘솔에 <code>console.error</code>로 에러가 출력되는 문제가 있었습니다.</p>
+<p>이로 인해 개발자는 에러가 정상적으로 처리되었음에도 불구하고 불필요한 에러 메시지를 보게 되었고, 이는 개발 과정에서 혼란을 초래할 수 있었습니다.</p>
+<h3 id="react-19의-개선">React 19의 개선</h3>
+<p>React 19에서는 에러 핸들링을 더 세밀하게 제어할 수 있는 방법이 제공됩니다.</p>
+<p><code>createRoot</code>와 <code>hydrateRoot</code>의 <code>onCaughtError</code> 및 <code>onUncaughtError</code> 옵션을 사용하여 콘솔에 에러 메시지를 출력하는 기본 동작을 덮어쓸 수 있습니다.</p>
+<h4 id="예제-oncaughterror-사용">예제: onCaughtError 사용</h4>
+<p><code>onCaughtError</code>는 <code>Error Boundary</code>가 잡은 에러를 처리할 때 사용됩니다.</p>
+<p>이 옵션을 사용하여 에러가 콘솔에 기록되는 방식을 제어할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 의도적으로 에러를 발생시키는 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Something went wrong!&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="p">,</span> <span class="nx">React</span> <span class="mi">19</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// createRoot를 사용하여 에러 핸들링 설정
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span><span class="o">!</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">onCaughtError</span><span class="o">:</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 에러를 info로 기록
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;Caught an error:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}).</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">App</span> <span class="p">/&gt;);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="설명-3">설명</h3>
+<ol>
+<li>
+<p><strong><code>createRoot</code> 사용</strong>: <code>ReactDOM.createRoot</code> 메서드를 사용하여 루트를 생성하고, <code>onCaughtError</code> 옵션을 설정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span><span class="o">!</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">onCaughtError</span><span class="o">:</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;Caught an error:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}).</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">App</span> <span class="p">/&gt;);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드에서 <code>onCaughtError</code> 옵션에 제공된 함수는 <code>Error Boundary</code>가 잡은 에러를 처리합니다. 기본적으로 <code>console.error</code>로 출력되는 에러를 <code>console.info</code>로 기록하여 개발자 혼란을 줄일 수 있습니다.</p>
+</li>
+<li>
+<p><strong>에러 발생</strong>: <code>App</code> 컴포넌트에서 의도적으로 에러를 발생시킵니다. 이 에러는 <code>createRoot</code>의 <code>onCaughtError</code> 옵션에 의해 처리됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Something went wrong!&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="p">,</span> <span class="nx">React</span> <span class="mi">19</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 경우, <code>onCaughtError</code>는 <code>Error Boundary</code>가 잡은 에러를 <code>console.info</code>로 기록합니다.</p>
+</li>
+</ol>
+<h3 id="onuncaughterror-사용">onUncaughtError 사용</h3>
+<p><code>onUncaughtError</code>는 <code>Error Boundary</code>가 잡지 못한 에러를 처리하는 옵션입니다.</p>
+<p>이 옵션을 사용하면 애플리케이션 전체에서 발생한 예기치 않은 에러를 처리할 수 있습니다.</p>
+<h4 id="예제-onuncaughterror-사용">예제: onUncaughtError 사용</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FC</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 의도적으로 에러를 발생시키는 컴포넌트
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Something went wrong!&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Hello</span><span class="p">,</span> <span class="nx">React</span> <span class="mi">19</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// createRoot를 사용하여 에러 핸들링 설정
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span><span class="o">!</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">onCaughtError</span><span class="o">:</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;Caught an error:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">onUncaughtError</span><span class="o">:</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Uncaught error:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}).</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">App</span> <span class="p">/&gt;);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="설명-4">설명</h3>
+<ol>
+<li>
+<p><strong><code>onUncaughtError</code> 옵션</strong>: 이 옵션에 제공된 함수는 <code>Error Boundary</code>가 잡지 못한 에러를 처리합니다. 이러한 에러는 애플리케이션 전체에서 발생할 수 있는 예기치 않은 에러입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="nx">onUncaughtError</span><span class="o">:</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Uncaught error:&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>onUncaughtError</code>를 사용하여, 애플리케이션에서 발생한 에러를 <code>console.error</code>로 기록합니다. 이는 <code>Error Boundary</code>가 에러를 잡지 못한 경우에 유용합니다.</p>
+</li>
+<li>
+<p><strong>에러 발생</strong>: <code>App</code> 컴포넌트에서 발생한 에러는 <code>onCaughtError</code>와 <code>onUncaughtError</code> 옵션에 의해 처리됩니다. <code>onCaughtError</code>는 <code>Error Boundary</code>가 잡은 에러를 처리하고, <code>onUncaughtError</code>는 잡지 못한 에러를 처리합니다.</p>
+</li>
+</ol>
+<h3 id="요약-4">요약</h3>
+<ul>
+<li>
+<p><strong><code>onCaughtError</code></strong>: <code>Error Boundary</code>가 잡은 에러를 처리하는 옵션입니다. 기본적으로 <code>console.error</code>로 출력되는 에러를 <code>console.info</code>로 기록하여 개발자의 혼란을 줄일 수 있습니다.</p>
+</li>
+<li>
+<p><strong><code>onUncaughtError</code></strong>: <code>Error Boundary</code>가 잡지 못한 에러를 처리하는 옵션입니다. 애플리케이션 전체에서 발생한 예기치 않은 에러를 <code>console.error</code>로 기록합니다.</p>
+</li>
+<li>
+<p><strong>예제</strong>: <code>createRoot</code>를 사용하여 <code>onCaughtError</code>와 <code>onUncaughtError</code> 옵션을 설정하고, 에러를 처리하는 방법을 실제 코드 예제로 설명했습니다.</p>
+</li>
+</ul>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/react-19/" role="button">react 19</a>
+        <a class="btn btn-light" href="/tags/ref-callback/" role="button">ref callback</a>
+        <a class="btn btn-light" href="/tags/usedeferredvalue/" role="button">useDeferredValue</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-14-react-19-tutorial-5-breaking-changes-prop-types-context-ref/">React 19 강좌 5편 - React 19 주요 변경 사항 - propTypes와 defaultProps의 폐지, Legacy Context의 제거, ref 개선 및 useReducer 타입 시그니처 변경</a></h2>
+                  <p>React 19에서의 주요 변경 사항인 propTypes와 defaultProps의 폐지, Legacy Context의 제거, ref의 개선, 그리고 useReducer 타입 시그니처 변경을 포괄적으로 다루고 있음을 강조합니다.</p>
+                  <p>
+  <small>July 14, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-14-react-19-tutorial-3-react-19-formdata-server-actions-useactionstate-optimization/">React 19 강좌 3편 - FormData와 Server Actions, useActionState의 조합으로 폼 제출 최적화하기</a></h2>
+                  <p>FormData, Server Actions, 그리고 useActionState를 조합하여 폼 제출을 최적화하는 방법을 중점적으로 다룬다는 점을 강조합니다.</p>
+                  <p>
+  <small>July 14, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-14-react-19-tutorial-2-handling-async-tasks-with-react-19-form-elements-actions-useactionstate-useformstatus/">React 19 강좌 2편 - 폼 요소의 액션과 useActionState useFormStatus 조합으로 비동기 작업 처리하기</a></h2>
+                  <p>useActionState와 useFormStatus를 사용하여 폼 제출 시 비동기 작업을 처리하는 방법을 중점적으로 다루고 있다는 점을 강조합니다.</p>
+                  <p>
+  <small>July 14, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

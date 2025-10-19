@@ -1,0 +1,1899 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Create-react-app이나 Vite를 이용하지 않고 Webpack, Parcel, Esbuild를 이용해서 React 개발 환경 구축하기</title>
+<meta name="description" content="맨 땅에 헤딩하기 - react 앱 환경 구축" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-12-31-howto-configure-react-with-webpack-parcel-esbuild-from-scratch/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Create-react-app이나 Vite를 이용하지 않고 Webpack, Parcel, Esbuild를 이용해서 React 개발 환경 구축하기" />
+<meta property="og:description" content="맨 땅에 헤딩하기 - react 앱 환경 구축" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-12-31-howto-configure-react-with-webpack-parcel-esbuild-from-scratch/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-12-31T12:29:25Z" />
+<meta property="article:modified_time" content="2023-12-31T12:29:25Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="webpack" />
+<meta property="article:tag" content="parcel" />
+<meta property="article:tag" content="esbuild" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Create-react-app이나 Vite를 이용하지 않고 Webpack, Parcel, Esbuild를 이용해서 React 개발 환경 구축하기" />
+<meta name="twitter:description" content="맨 땅에 헤딩하기 - react 앱 환경 구축" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Create-react-app이나 Vite를 이용하지 않고 Webpack, Parcel, Esbuild를 이용해서 React 개발 환경 구축하기\"",
+  "description": "\"맨 땅에 헤딩하기 - react 앱 환경 구축\"",
+  "datePublished": "\"2023-12-31T12:29:25Z\"",
+  "dateModified": "\"2023-12-31T12:29:25Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-12-31-howto-configure-react-with-webpack-parcel-esbuild-from-scratch/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Create-react-app이나 Vite를 이용하지 않고 Webpack, Parcel, Esbuild를 이용해서 React 개발 환경 구축하기</h1>
+        <p>
+  <small>December 31, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>17&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘은 React 개발 환경 구축을 맨땅에 헤딩하는 방식으로 구현해 볼까 합니다.</p>
+<p>예전에는 create-react-app이란 명령어로 React 앱을 작성했으나 최근에는 더 이상 사용되지 않는 거 같습니다.</p>
+<p>왜냐하면 Vite를 이용한 React 개발 환경을 많이들 쓰고 있기 때문이죠.</p>
+<p>Vite가 빠르고 깔끔하기 때문입니다.</p>
+<p>그래도 예전에 우리가 많이 사용한 Webpack과 Parcel, esbuild를 이용한 React 개발 환경 구축이 어떤 식으로 이루어지고 있는지 살펴보는 것도 좋을 듯 싶어 소개해 볼까 합니다.</p>
+<p>한번 읽어 보시는 것도 좋을 듯싶습니다.</p>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li>
+<p><a href="#1-webpack">1. Webpack</a></p>
+<ul>
+<li>
+<p><a href="#1-1-npm-init%ea%b3%bc-react-%eb%9d%bc%ec%9d%b4%eb%b8%8c%eb%9f%ac%eb%a6%ac-%ec%84%a4%ec%b9%98">1-1. npm init과 react 라이브러리 설치</a></p>
+</li>
+<li>
+<p><a href="#1-2-webpack-%ec%84%a4%ec%b9%98">1-2. Webpack 설치</a></p>
+</li>
+<li>
+<p><a href="#1-3-hello-world-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">1-3. Hello World 구현하기</a></p>
+</li>
+<li>
+<p><a href="#1-4-appjs-%ed%8c%8c%ec%9d%bc-%eb%a7%8c%eb%93%a4%ea%b8%b0">1-4. App.js 파일 만들기</a></p>
+</li>
+<li>
+<p><a href="#1-5-webpack-%ec%84%a4%ec%a0%95">1-5. Webpack 설정</a></p>
+</li>
+<li>
+<p><a href="#1-6-webpack-dev-server-%ec%84%a4%ec%b9%98">1-6. webpack-dev-server 설치</a></p>
+</li>
+<li>
+<p><a href="#1-7-html-webpack-plugin-%ec%84%a4%ec%b9%98">1-7. html-webpack-plugin 설치</a></p>
+</li>
+<li>
+<p><a href="#1-8-npm-run-%ec%8a%a4%ed%81%ac%eb%a6%bd%ed%8a%b8-%ec%b6%94%ea%b0%80">1-8. npm run 스크립트 추가</a></p>
+</li>
+<li>
+<p><a href="#1-9-jsx-%eb%ac%b8%eb%b2%95%ec%9d%84-%ec%9c%84%ed%95%9c-babel-%ec%82%ac%ec%9a%a9">1-9. JSX 문법을 위한 Babel 사용</a></p>
+</li>
+<li>
+<p><a href="#1-10-babel-%ec%84%a4%ec%b9%98">1-10. Babel 설치</a></p>
+</li>
+</ul>
+</li>
+<li>
+<p><a href="#2-parcel">2. Parcel</a></p>
+<ul>
+<li>
+<p><a href="#21-parcel-%ec%9d%b4%ec%9a%a9%ed%95%98%ea%b8%b0">2.1 Parcel 이용하기</a></p>
+</li>
+<li>
+<p><a href="#2-1-jsx-%ec%9d%b4%ec%9a%a9%ed%95%9c-%ea%b2%bd%ec%9a%b0">2-1. JSX 이용한 경우</a></p>
+</li>
+</ul>
+</li>
+<li>
+<p><a href="#3-esbuild">3. esbuild</a></p>
+<ul>
+<li>
+<p><a href="#3-1-%ed%94%84%eb%a1%9c%ec%a0%9d%ed%8a%b8-%ec%84%b8%ed%8c%85">3-1. 프로젝트 세팅</a></p>
+</li>
+<li>
+<p><a href="#3-2-%eb%b9%8c%eb%93%9c-%eb%b0%8f-%ea%b0%9c%eb%b0%9c-%ec%84%9c%eb%b2%84-%eb%8f%8c%eb%a6%ac%ea%b8%b0">3-2. 빌드 및 개발 서버 돌리기</a></p>
+</li>
+<li>
+<p><a href="#3-3-jsx%eb%a5%bc-%ec%9d%b4%ec%9a%a9%ed%95%9c-%ea%b2%bd%ec%9a%b0">3-3. JSX를 이용한 경우</a></p>
+</li>
+<li>
+<p><a href="#3-4-esbuild-%ec%84%a4%ec%a0%95-%ed%8c%8c%ec%9d%bc-%eb%a7%8c%eb%93%a4%ea%b8%b0">3-4. esbuild 설정 파일 만들기</a></p>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="1-webpack">1. Webpack</h1>
+<h2 id="1-1-npm-init과-react-라이브러리-설치">1-1. npm init과 react 라이브러리 설치</h2>
+<p>맨땅에서 헤딩하기 위해 &rsquo;npm init&rsquo; 명령어로 시작하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm init -y
+</span></span><span class="line"><span class="cl">Wrote to /Users/cpro95/Codings/Javascript/blog/scratch-react/package.json:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;scratch-react&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;version&#34;</span>: <span class="s2">&#34;1.0.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;description&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;main&#34;</span>: <span class="s2">&#34;index.js&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;scripts&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;test&#34;</span>: <span class="s2">&#34;echo \&#34;Error: no test specified\&#34; &amp;&amp; exit 1&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;keywords&#34;</span>: <span class="o">[]</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;author&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;license&#34;</span>: <span class="s2">&#34;ISC&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 react 라이브러리를 아래와 같이 설치합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install react react-dom</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="1-2-webpack-설치">1-2. Webpack 설치</h2>
+<p>Webpack이라는 모듈 번들러를 설치합니다.</p>
+<p>여기서 말하는 모듈은 파일에 해당합니다.</p>
+<p>번들러는 여러 파일을 하나의 파일로 결합하는 도구입니다.</p>
+<p>Webpack은 번들러 기능 이외에도 여러 가지 기능이 있는데 대표적으로 babel loader를 설치하면 JSX를 자바스크립트로 변환시킬 수 있습니다.</p>
+<p>Webpack은 명령어로 작업을 수행하기 때문에 webpack-cli도 함께 설치합니다.</p>
+<p>개발환경에 필요한 거라 &lsquo;-D&rsquo; 옵션을 넣고 설치합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install --save-dev webpack webpack-cli</span></span></code></pre></div>
+  </figure>
+</div>
+<p>지금까지의 package.json 구성입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  scratch-react&gt; bat package.json
+</span></span><span class="line"><span class="cl">───────┬─────────────────────────
+</span></span><span class="line"><span class="cl">       │ File: package.json
+</span></span><span class="line"><span class="cl">───────┼─────────────────────────
+</span></span><span class="line"><span class="cl">   <span class="m">1</span>   │ <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="m">2</span>   │   <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;scratch-react&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">3</span>   │   <span class="s2">&#34;version&#34;</span>: <span class="s2">&#34;1.0.0&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">4</span>   │   <span class="s2">&#34;description&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">5</span>   │   <span class="s2">&#34;main&#34;</span>: <span class="s2">&#34;index.js&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">6</span>   │   <span class="s2">&#34;scripts&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="m">7</span>   │     <span class="s2">&#34;test&#34;</span>: <span class="s2">&#34;echo \&#34;Error: no test specified\&#34; &amp;&amp; exit 1&#34;</span>
+</span></span><span class="line"><span class="cl">   <span class="m">8</span>   │   <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">9</span>   │   <span class="s2">&#34;keywords&#34;</span>: <span class="o">[]</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">10</span>   │   <span class="s2">&#34;author&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">11</span>   │   <span class="s2">&#34;license&#34;</span>: <span class="s2">&#34;ISC&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">12</span>   │   <span class="s2">&#34;dependencies&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="m">13</span>   │     <span class="s2">&#34;react&#34;</span>: <span class="s2">&#34;^18.2.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">14</span>   │     <span class="s2">&#34;react-dom&#34;</span>: <span class="s2">&#34;^18.2.0&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="m">15</span>   │   <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">16</span>   │   <span class="s2">&#34;devDependencies&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="m">17</span>   │     <span class="s2">&#34;webpack&#34;</span>: <span class="s2">&#34;^5.89.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">18</span>   │     <span class="s2">&#34;webpack-cli&#34;</span>: <span class="s2">&#34;^5.1.4&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="m">19</span>   │   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="m">20</span>   │ <span class="o">}</span>
+</span></span><span class="line"><span class="cl">───────┴───────────────────────────</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="1-3-hello-world-구현하기">1-3. Hello World 구현하기</h2>
+<p>지금까지 설치한 react, react-dom, webpack의 최소 구성만으로 React를 이용해서 브라우저에 &ldquo;Hello World&quot;를 표시해 봅시다.</p>
+<p>보통 webpack 명령은 &rsquo;npx webpack&rsquo; 명령어로 실행합니다.</p>
+<p>한번 &rsquo;npx webpack&rsquo; 명령어를 실행시켜 보면 &lsquo;src&rsquo; 폴더가 없다고 나옵니다.</p>
+<p>이제 src 폴더를 만들고 그 밑에 index.js 파일을 만들어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir src
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> src
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">touch index.js</span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/index.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">App</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>react, react-dom, webpack 만의 최소 구성이기 때문에 아직은 JSX 컴파일러가 없습니다.</p>
+<p>그래서 React의 createElement 함수를 사용해야 합니다.</p>
+<p>코드 내용은 간단합니다.</p>
+<p>App 이라는 Element를 만들고 그리고 &lsquo;root&rsquo;라는 엘리먼트를 Root로하고 렌더링하고 있습니다.</p>
+<p>JSX가 없다고 이건 리액트가 아니라고 할 수 있는데요, 초창기 리액트는 이랬습니다.</p>
+<p>JSX는 나중에 다뤄보고 일단은 &rsquo;npx webpack&rsquo; 명령어를 실행해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  scratch-react&gt; npx webpack
+</span></span><span class="line"><span class="cl">assets by status <span class="m">0</span> bytes <span class="o">[</span>cached<span class="o">]</span> <span class="m">1</span> asset
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WARNING in configuration
+</span></span><span class="line"><span class="cl">The <span class="s1">&#39;mode&#39;</span> option has not been set, webpack will fallback to <span class="s1">&#39;production&#39;</span> <span class="k">for</span> this value.
+</span></span><span class="line"><span class="cl">Set <span class="s1">&#39;mode&#39;</span> option to <span class="s1">&#39;development&#39;</span> or <span class="s1">&#39;production&#39;</span> to <span class="nb">enable</span> defaults <span class="k">for</span> each environment.
+</span></span><span class="line"><span class="cl">You can also <span class="nb">set</span> it to <span class="s1">&#39;none&#39;</span> to disable any default behavior. Learn more: https://webpack.js.org/configuration/mode/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ERROR in main
+</span></span><span class="line"><span class="cl">Module not found: Error: Can<span class="s1">&#39;t resolve &#39;</span>./src<span class="s1">&#39; in &#39;</span>/Users/cpro95/Codings/Javascript/blog/scratch-react<span class="s1">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">resolve &#39;</span>./src<span class="s1">&#39; in &#39;</span>/Users/cpro95/Codings/Javascript/blog/scratch-react<span class="s1">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">  using description file: /Users/cpro95/Codings/Javascript/blog/scratch-react/package.json (relative path: .)
+</span></span></span><span class="line"><span class="cl"><span class="s1">    Field &#39;</span>browser<span class="s1">&#39; doesn&#39;</span>t contain a valid <span class="nb">alias</span> configuration
+</span></span><span class="line"><span class="cl">    using description file: /Users/cpro95/Codings/Javascript/blog/scratch-react/package.json <span class="o">(</span>relative path: ./src<span class="o">)</span>
+</span></span><span class="line"><span class="cl">      no extension
+</span></span><span class="line"><span class="cl">➜  scratch-react npx webpack
+</span></span><span class="line"><span class="cl">asset main.js <span class="m">137</span> KiB <span class="o">[</span>emitted<span class="o">]</span> <span class="o">[</span>minimized<span class="o">]</span> <span class="o">(</span>name: main<span class="o">)</span> <span class="m">1</span> related asset
+</span></span><span class="line"><span class="cl">modules by path ./node_modules/react-dom/ <span class="m">131</span> KiB
+</span></span><span class="line"><span class="cl">  ./node_modules/react-dom/client.js <span class="m">619</span> bytes <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  ./node_modules/react-dom/index.js 1.33 KiB <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  ./node_modules/react-dom/cjs/react-dom.production.min.js <span class="m">129</span> KiB <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">modules by path ./node_modules/react/ 6.94 KiB
+</span></span><span class="line"><span class="cl">  ./node_modules/react/index.js <span class="m">190</span> bytes <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  ./node_modules/react/cjs/react.production.min.js 6.75 KiB <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">modules by path ./node_modules/scheduler/ 4.33 KiB
+</span></span><span class="line"><span class="cl">  ./node_modules/scheduler/index.js <span class="m">198</span> bytes <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  ./node_modules/scheduler/cjs/scheduler.production.min.js 4.14 KiB <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">./src/index.js <span class="m">215</span> bytes <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WARNING in configuration
+</span></span><span class="line"><span class="cl">The <span class="s1">&#39;mode&#39;</span> option has not been set, webpack will fallback to <span class="s1">&#39;production&#39;</span> <span class="k">for</span> this value.
+</span></span><span class="line"><span class="cl">Set <span class="s1">&#39;mode&#39;</span> option to <span class="s1">&#39;development&#39;</span> or <span class="s1">&#39;production&#39;</span> to <span class="nb">enable</span> defaults <span class="k">for</span> each environment.
+</span></span><span class="line"><span class="cl">You can also <span class="nb">set</span> it to <span class="s1">&#39;none&#39;</span> to disable any default behavior. Learn more: https://webpack.js.org/configuration/mode/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">webpack 5.89.0 compiled with <span class="m">1</span> warning in <span class="m">2286</span> ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단은 Waring 경고는 무시하고 뭔가 성공했다고 나옵니다.</p>
+<p>바로 아래처럼 &lsquo;dist&rsquo; 폴더가 생겼는데요.</p>
+<p>한번 &lsquo;dist&rsquo; 폴더를 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  scratch-react&gt; tree --du -h ./dist
+</span></span><span class="line"><span class="cl"><span class="o">[</span>137K<span class="o">]</span>  ./dist
+</span></span><span class="line"><span class="cl">├── <span class="o">[</span>137K<span class="o">]</span>  main.js
+</span></span><span class="line"><span class="cl">└── <span class="o">[</span> 721<span class="o">]</span>  main.js.LICENSE.txt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> 137K used in <span class="m">1</span> directory, <span class="m">2</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>main.js 파일이 137K 크기로 있네요.</p>
+<p>이 main.js 파일이 React 라이브러리와 우리가 아까 만든 index.js 파일을 컴파일해서 하나의 파일로 번들링 한겁니다.</p>
+<p>당연히 react-dom 라이브러리도 함께 들어가 있죠.</p>
+<p>이제 React를 이용한 자바스크립트 코드를 완성했으니 이걸 HTML 파일 안에 불러와야 합니다.</p>
+<p>프로젝트 최상단 위치에 index.html 파일을 아래와 같이 만들고 이 html 파일 안에 &lsquo;dist&rsquo; 폴더에 우리가 만든 main.js 파일을 불러오면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>React App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;./dist/main.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">noscript</span><span class="p">&gt;</span>You need to enable JavaScript to run this app.<span class="p">&lt;/</span><span class="nt">noscript</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;root&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 브라우저에서 이 &lsquo;index.html&rsquo; 파일을 불러와 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjbT7bhRH8o6QeD7WZrq0hSNsuwYUyPLnabggm_Kf8xqP1j9vpC2-B1AwtEBmVrNl8FWtp_mwateAPQ1LCp7SbYD6D94nSEZims9vLaEWgk9DgLj0FtcNS1j-B00IPVXqVXzwxRt8Ql3YPlB9-pAoPCjO3zvmxXx3HVuMo5bCG1LC2eprXevn-EmTAzFyc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Hello World 문구가 잘 보이고, h1 태그도 잘 보이네요.</p>
+<p>React가 정상적으로 작동하고 있습니다.</p>
+<hr>
+<h2 id="1-4-appjs-파일-만들기">1-4. App.js 파일 만들기</h2>
+<p>지금까지 만든 코드를 리팩토링하기 위해 &lsquo;Hello World&rsquo; 부분을 App.js 이름으로 따로 만들겠습니다.</p>
+<p>src 폴더 밑에 App.js라는 파일을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/App.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 src 폴더에 아까 만들었던 index.js파일은 아래와 같이 바꿉니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/index.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./App&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">App</span><span class="p">())</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 보니, 약간 요즘 쓰이는 React 코드 같은 구조가 된 거 같네요.</p>
+<p>여기서 다시 &rsquo;npx webpack&rsquo; 명령어를 수행해도 같은 결과가 나올 겁니다.</p>
+<p>React 코드가 제대로 작동되는지 보기 위해 useEffect 훅을 추가해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/App.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다시 &rsquo;npx webpack&rsquo; 명령어를 수행해 봅시다.</p>
+<p>그리고 브라우저에서 index.html 파일을 불어오면 개발 콘솔창에 아래와 같은 에러가 뜹니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhKBh8AhQhOUccgbJbNST9Vcn4q1Tj9d8iNAC4k9UptUJohQHZk9C4p0LHUEViUEL2sjLuygx6nl41pE8RzAnksU5dQRw3TBBELGpRs_sZnhDG8h7rmjcJucxh76I5yTPajSmFlckTcAjOCidcOxrTloE1Feem5De1gE4_OmIBGwy7zL0KiaSOSW_MjaEE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>왜 그렇냐면 root.render 부분에서 App.js 의 App 컴포넌트로 엘리먼트로 만들어서 전달해줘야 합니다.</p>
+<p>index.js 파일을 다음과 같이 바꿉니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./App&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">App</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">))</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 &rsquo;npx webpack&rsquo; 명령어를 실행하고 브라우저에서 index.html 파일을 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjQMAoU9fEpG-sCGWkcRnhf7D-OQueSbfY_nFKTExC9Fs_0ZGCo-ILDRIbnqKqTJczXc-Lf2gERbFuJTwPxMwhFKfZvgqqyXYmhHAIUUUQgm14g3dJZzkLiiQiAAadt1bUovoIV0VtltjEorw5Z6NlEO9u-1o_lmqsqXB_Xc-ruE3vKyOoq3F1Pp-N4O7w"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 useEffect 훅도 정상적으로 작동합니다.</p>
+<p>지금까지 JSX가 아니라 React의 createElement를 이용해서 최소한의 구성으로 React 앱을 만들었습니다.</p>
+<hr>
+<h2 id="1-5-webpack-설정">1-5. Webpack 설정</h2>
+<p>Webpack은 설정 파일에 원하는 부분을 적을 수 있는데요.</p>
+<p>프로젝트 폴더에 webpack.config.js 파일을 만들면 됩니다.</p>
+<p>그리고 지금까지 우리가 만들었던 React+Webpack의 구조를 구성하는 설정 파일을 적어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// webpack.config.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entry</span><span class="o">:</span> <span class="s1">&#39;./src/index.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">output</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">filename</span><span class="o">:</span> <span class="s1">&#39;main.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 설정이 가장 기본이 되는 Webpack 설정 구성입니다.</p>
+<p>entry는 index.js가 시점이 되는 것이며, output은 dist 폴더의 main.js가 되는 거죠.</p>
+<p>여기서 다른 폴더 다른 이름으로 구성하고 싶으면 그렇게 하면 됩니다.</p>
+<hr>
+<h2 id="1-6-webpack-dev-server-설치">1-6. webpack-dev-server 설치</h2>
+<p>이제 개발을 좀 더 편안하게 해주는 dev-server를 설치해 볼까요?</p>
+<p>개발 관련이라 &lsquo;-D&rsquo; 옵션입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -D webpack-dev-server</span></span></code></pre></div>
+  </figure>
+</div>
+<p>개발 서버를 돌리기 위해 webpack.config.js 파일을 아래와 같이 수정할 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// webpack.config.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entry</span><span class="o">:</span> <span class="s1">&#39;./src/index.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">output</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">filename</span><span class="o">:</span> <span class="s1">&#39;main.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">devServer</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">static</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">directory</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>devServer 용으로 static 폴더인 public 폴더를 구성했습니다.</p>
+<p>그래서 우리가 아까 만들었던 index.html 파일을 이 public 폴더로 이동시켜 주면 됩니다.</p>
+<p>단 여기서 index.html 파일 안에 있던 다음 코드는 지워주시기 바랍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;./dist/main.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>왜냐하면 html-webpack-plugin을 이용해서 자동으로 main.js 파일을 위한 script를 추가시켜 주려고 하기 때문입니다.</p>
+<hr>
+<h2 id="1-7-html-webpack-plugin-설치">1-7. html-webpack-plugin 설치</h2>
+<p>html-webpack-plugin 패키지는 index.html 파일 안에 자동으로 script 태그를 추가시켜 주는 기능을 합니다.</p>
+<p>또, production 모드로 빌드하면 자동으로 dist 폴더에 index.html 파일을 작성해 줍니다.</p>
+<p>아주 좋은 플러그인이네요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -D html-webpack-plugin</span></span></code></pre></div>
+  </figure>
+</div>
+<p>설치를 했으면 webpack 설정 파일에 html-webpack-plugin 부분을 지정해줘야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// webpack.config.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">HtmlWebpackPlugin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;html-webpack-plugin&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entry</span><span class="o">:</span> <span class="s1">&#39;./src/index.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">output</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">filename</span><span class="o">:</span> <span class="s1">&#39;main.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">devServer</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">static</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">directory</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="nx">HtmlWebpackPlugin</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">template</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="1-8-npm-run-스크립트-추가">1-8. npm run 스크립트 추가</h2>
+<p>npm run 명령어를 작성해야겠죠.</p>
+<p>이게 있으면 아주 간단한 명령어로 개발 서버를 돌릴 수 있거든요.</p>
+<p>package.json 파일에서 &lsquo;scripts&rsquo; 항목을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl">  <span class="s2">&#34;scripts&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;start&#34;</span><span class="p">:</span> <span class="s2">&#34;webpack-dev-server --mode development --open&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="err">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 scripts에 start 부분을 추가했으니 &rsquo;npm start&rsquo;로 개발 서버를 실행해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  scratch-react&gt; npm start
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; scratch-react@1.0.0 start
+</span></span><span class="line"><span class="cl">&gt; webpack-dev-server --mode development --open
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&lt;i&gt; <span class="o">[</span>webpack-dev-server<span class="o">]</span> Project is running at:
+</span></span><span class="line"><span class="cl">&lt;i&gt; <span class="o">[</span>webpack-dev-server<span class="o">]</span> Loopback: http://localhost:8080/
+</span></span><span class="line"><span class="cl">&lt;i&gt; <span class="o">[</span>webpack-dev-server<span class="o">]</span> On Your Network <span class="o">(</span>IPv4<span class="o">)</span>: http://192.168.29.145:8080/
+</span></span><span class="line"><span class="cl">&lt;i&gt; <span class="o">[</span>webpack-dev-server<span class="o">]</span> On Your Network <span class="o">(</span>IPv6<span class="o">)</span>: http://<span class="o">[</span>fe80::1<span class="o">]</span>:8080/
+</span></span><span class="line"><span class="cl">&lt;i&gt; <span class="o">[</span>webpack-dev-server<span class="o">]</span> Content not from webpack is served from <span class="s1">&#39;/Users/cpro95/Codings/Javascript/blog/scratch-react/public&#39;</span> directory
+</span></span><span class="line"><span class="cl">&lt;i&gt; <span class="o">[</span>webpack-dev-middleware<span class="o">]</span> <span class="nb">wait</span> <span class="k">until</span> bundle finished: /
+</span></span><span class="line"><span class="cl">asset main.js 1.38 MiB <span class="o">[</span>emitted<span class="o">]</span> <span class="o">(</span>name: main<span class="o">)</span>
+</span></span><span class="line"><span class="cl">asset index.html <span class="m">271</span> bytes <span class="o">[</span>emitted<span class="o">]</span>
+</span></span><span class="line"><span class="cl">runtime modules 27.5 KiB <span class="m">13</span> modules
+</span></span><span class="line"><span class="cl">modules by path ./node_modules/ 1.25 MiB
+</span></span><span class="line"><span class="cl">  modules by path ./node_modules/webpack-dev-server/client/ 71.8 KiB <span class="m">16</span> modules
+</span></span><span class="line"><span class="cl">  modules by path ./node_modules/webpack/hot/*.js 5.3 KiB <span class="m">4</span> modules
+</span></span><span class="line"><span class="cl">  modules by path ./node_modules/html-entities/lib/*.js 81.8 KiB <span class="m">4</span> modules
+</span></span><span class="line"><span class="cl">  modules by path ./node_modules/react-dom/ <span class="m">1000</span> KiB <span class="m">3</span> modules
+</span></span><span class="line"><span class="cl">  modules by path ./node_modules/react/ 85.7 KiB <span class="m">2</span> modules
+</span></span><span class="line"><span class="cl">  modules by path ./node_modules/scheduler/ 17.3 KiB <span class="m">2</span> modules
+</span></span><span class="line"><span class="cl">  ./node_modules/ansi-html-community/index.js 4.16 KiB <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  ./node_modules/events/events.js 14.5 KiB <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">modules by path ./src/*.js <span class="m">408</span> bytes
+</span></span><span class="line"><span class="cl">  ./src/index.js <span class="m">213</span> bytes <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">  ./src/App.js <span class="m">195</span> bytes <span class="o">[</span>built<span class="o">]</span> <span class="o">[</span>code generated<span class="o">]</span>
+</span></span><span class="line"><span class="cl">webpack 5.89.0 compiled successfully in <span class="m">1040</span> ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>아주 자동으로 webpack으로 컴파일되면서 브라우저도 오픈시켜 주네요.</p>
+<p>콘솔창을 보시면 favicon.ico 파일이 없다고 나오는 것 외에는 아주 잘 작동합니다.</p>
+<p>&lsquo;Hello World&rsquo; 부분의 텍스트를 다른 걸로 바꾸고 저장해 보시면 Hot-Reloading이 잘 작동하는 걸 볼 수 있을 겁니다.</p>
+<p>그리고 개발서버의 HTML 구조를 보시면 head 태그 밑에 script 태그가 아주 잘 들어가 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgb3EtGjinlOZ_ptXwr8xQ0sRwSOKpdLdW2N2ockxXEALpshj8PJqf9dHj61Niikvsa28QQdhkGDcUcSbDQ4UbcZJuHTtvwJV9OA2gcrF-w3gCzRNl61N7KICWOGkZLmiIymeqe7f-cmojAXR-hmUKn64X00EvD-YAmslpWCVvQM6d3fVfK5nBeJX7iXrE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>바로 html-webpack-plugin 패키지가 알아서 삽입해주고 있는 거죠.</p>
+<p>그리고 Production용 script도 package.json 파일에 추가해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;scripts&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;start&#34;</span><span class="p">:</span> <span class="s2">&#34;webpack-dev-server --mode development --open&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;build&#34;</span><span class="p">:</span> <span class="s2">&#34;webpack --mode production&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="err">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>한번 실행해 볼까요?</p>
+<p>&rsquo;npm run build&rsquo; 명령어를 실행시키고 dist 폴더를 보면 아래와 같을 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  scratch-react&gt; tree --du -h ./dist
+</span></span><span class="line"><span class="cl"><span class="o">[</span>138K<span class="o">]</span>  ./dist
+</span></span><span class="line"><span class="cl">├── <span class="o">[</span> 244<span class="o">]</span>  index.html
+</span></span><span class="line"><span class="cl">├── <span class="o">[</span>137K<span class="o">]</span>  main.js
+</span></span><span class="line"><span class="cl">└── <span class="o">[</span> 721<span class="o">]</span>  main.js.LICENSE.txt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> 138K used in <span class="m">1</span> directory, <span class="m">3</span> files
+</span></span><span class="line"><span class="cl">➜  scratch-react&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>dist 폴더에 있는 index.html 파일을 볼가요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>React App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">defer</span><span class="o">=</span><span class="s">&#34;defer&#34;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;main.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">noscript</span><span class="p">&gt;</span>You need to enable JavaScript to run this app.<span class="p">&lt;/</span><span class="nt">noscript</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;root&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>main.js 파일을 불러오는 script 태그가 보이시죠.</p>
+<p>html-webpack-plugin 패키지가 자동으로 삽입해주고 있네요.</p>
+<hr>
+<h2 id="1-9-jsx-문법을-위한-babel-사용">1-9. JSX 문법을 위한 Babel 사용</h2>
+<p>이제 React의 가장 큰 장점인 JSX 형태의 코드 작성을 위한 Babel 로더를 추가해 보겠습니다.</p>
+<p>먼저, index.js 파일을 아래와 같이 바꿉니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./App&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">App</span> <span class="o">/&gt;</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>createElement 대신에 <code>&lt;App /&gt;</code> 이라고 JSX 코드를 넣었습니다.</p>
+<p>이렇게 하고 테스트를 위해 개발 서버를 돌려 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjiGqTwrzbmbDn1BvDHECslvAzmcduBqf1xBPNt816yACDGikpbjG_dYHEQLJ5FH9yjCfxd7jZ6ehvEtEn5RRR8iZ8Mimg7LqUPgOyfwFrMRzgruHVL4u8qtfICraseH_MNJPWn0K4jgokzopWkfcu_Tg8PMABQvwg-nbQjfSRRPZd_33NsPms9uArLn94"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 무시무시한 에러가 나옵니다.</p>
+<p>예상했듯이 JSX를 자바스크립트로 변환하기 위한 로더가 필요하죠.</p>
+<p>JSX는 HTML도 JavaScript도 아니고 React용으로 JavaScript를 확장한 것이므로 브라우저에 표시하려면 JavaScript로 변환이 필요합니다.</p>
+<p>여기서 우리가 사용할 로더가 바로 Babel인데요.</p>
+<p>바벨탑의 그 바벨 맞습니다.</p>
+<p>Babel을 사용하면 JSX 태그를 이해할 뿐만 아니라 JSX를 Javascript로 변환시킬 수도 있죠.</p>
+<hr>
+<h2 id="1-10-babel-설치">1-10. Babel 설치</h2>
+<p>영어로는 &lsquo;베이벌&rsquo; 이라는 발음으로 말합니다.</p>
+<p>근데 우리나라는 &lsquo;바벨&rsquo;이라는 발음으로 쓰고 있죠.</p>
+<p>아마도 바벨탑 때문일 겁니다.</p>
+<p>뭐 일단 Babel을 설치해 볼까요?</p>
+<p>Babel을 설치하려면 babel-loader와 @babel/core를 설치하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -D babel-loader @babel/core</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 JSX를 자바스크립트로 변환하기 위한 babel 플러그인을 설치해야 하는데요.</p>
+<p>그게 바로 @babel/plugin-transform-react-jsx 패키지입니다.</p>
+<p>그런데, @babel/plugin-syntax-jsx, @babel/plugin-transform-react-display-name 이런 것도 필요하거든요.</p>
+<p>그래서 이 3개를 쉽게 설치해 주는 패키지가 있습니다.</p>
+<p>바로 preset이죠.</p>
+<p>그래서 @babel/preset-react 이란 패키지만 설치하면 @babel/plugin-transform-react-jsx, @babel/plugin-syntax-jsx, @babel/plugin-transform-react-display-name 이 3개 패키지를 모두 설치할 수 있는 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -D @babel/preset-react</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Webpack 설정 파일에 Babel 부분을 추가해 봅시다.</p>
+<p>아래와 같이 module 부분에 Babel 부분을 넣으면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// webpack.config.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">HtmlWebpackPlugin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;html-webpack-plugin&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entry</span><span class="o">:</span> <span class="s1">&#39;./src/index.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">output</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">filename</span><span class="o">:</span> <span class="s1">&#39;main.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">devServer</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">static</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">directory</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="k">new</span> <span class="nx">HtmlWebpackPlugin</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">template</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;public&#39;</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">rules</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">loader</span><span class="o">:</span> <span class="s1">&#39;babel-loader&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Babel은 rules라는 걸 관리하는데요.</p>
+<p>test 부분은 어떤 파일을 변환시킬 것인가 하는 부분이고 나머지는 이름 그대로입니다.</p>
+<p>loader 부분에 &lsquo;babel-loader&rsquo;이라고 아까 설치한 바벨 로더를 지정했네요.</p>
+<p>그리고 babel에 대한 설정 파일인 &lsquo;.babelrc&rsquo; 파일을 프로젝트 최상단에 만들어야 합니다.</p>
+<p>내용은 다음과 같이 preset-react 을 사용한다고 하는 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;presets&#34;</span>: <span class="o">[</span><span class="s2">&#34;@babel/preset-react&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 JSX 처리를 위한 모든 준비가 끝났습니다.</p>
+<p>App.js 파일도 JSX 문법으로 바꿔 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/App.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">World</span><span class="o">!&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다시 &rsquo;npm start&rsquo; 명령어를 실행시켜 보면 아주 잘 작동되는 걸 볼 수 있을 겁니다.</p>
+<p>지금까지 구축한 것이 바로 Webpack, Babel 조합의 React 개발 환경 구축입니다.</p>
+<p>React 개발 환경 구축에는 Webpack 말고 다른 번들러도 많습니다.</p>
+<p>그것도 함께 살펴볼까요?</p>
+<hr>
+<h1 id="2-parcel">2. Parcel</h1>
+<h2 id="21-parcel-이용하기">2.1 Parcel 이용하기</h2>
+<p>Parcel이라는 빌드 툴이 있는데요.</p>
+<p>Webpack + babel 과 동일한 환경을 만들 수 있습니다.</p>
+<p>지금까지 만들었던 코드는 다 지우시고, &rsquo;npm init -y&rsquo; 부터 새로 시작하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  scratch-react&gt; rm -rf *
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">➜  scratch-react&gt; npm init -y
+</span></span><span class="line"><span class="cl">Wrote to /Users/cpro95/Codings/Javascript/blog/scratch-react/package.json:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;scratch-react&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;version&#34;</span>: <span class="s2">&#34;1.0.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;description&#34;</span>: <span class="s2">&#34;```bash npm init -y Wrote to /Users/cpro95/Codings/Javascript/blog/scratch-react/package.json:&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;main&#34;</span>: <span class="s2">&#34;index.js&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;scripts&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;test&#34;</span>: <span class="s2">&#34;echo \&#34;Error: no test specified\&#34; &amp;&amp; exit 1&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;keywords&#34;</span>: <span class="o">[]</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;author&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;license&#34;</span>: <span class="s2">&#34;ISC&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>React와 parcel 앱을 설치하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install react react-dom
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm install -D parcel</span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기까지의 package.json 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">───────┬───────────────────────────
+</span></span><span class="line"><span class="cl">       │ File: package.json
+</span></span><span class="line"><span class="cl">───────┼───────────────────────────
+</span></span><span class="line"><span class="cl">   <span class="m">1</span>   │ <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="m">2</span>   │   <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;scratch-react&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">3</span>   │   <span class="s2">&#34;version&#34;</span>: <span class="s2">&#34;1.0.0&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">4</span>   │   <span class="s2">&#34;description&#34;</span>: <span class="s2">&#34;```bash npm init -y Wrote to /Users/cpro95/Codings/Javascript/blog/scratch-react/package.
+</span></span></span><span class="line"><span class="cl"><span class="s2">       │ json:&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">5</span>   │   <span class="s2">&#34;main&#34;</span>: <span class="s2">&#34;index.js&#34;</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">6</span>   │   <span class="s2">&#34;scripts&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="m">7</span>   │     <span class="s2">&#34;test&#34;</span>: <span class="s2">&#34;echo \&#34;Error: no test specified\&#34; &amp;&amp; exit 1&#34;</span>
+</span></span><span class="line"><span class="cl">   <span class="m">8</span>   │   <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">   <span class="m">9</span>   │   <span class="s2">&#34;keywords&#34;</span>: <span class="o">[]</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">10</span>   │   <span class="s2">&#34;author&#34;</span>: <span class="s2">&#34;&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">11</span>   │   <span class="s2">&#34;license&#34;</span>: <span class="s2">&#34;ISC&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">12</span>   │   <span class="s2">&#34;dependencies&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="m">13</span>   │     <span class="s2">&#34;react&#34;</span>: <span class="s2">&#34;^18.2.0&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">14</span>   │     <span class="s2">&#34;react-dom&#34;</span>: <span class="s2">&#34;^18.2.0&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="m">15</span>   │   <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="m">16</span>   │   <span class="s2">&#34;devDependencies&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="m">17</span>   │     <span class="s2">&#34;parcel&#34;</span>: <span class="s2">&#34;^2.10.3&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="m">18</span>   │   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="m">19</span>   │ <span class="o">}</span>
+</span></span><span class="line"><span class="cl">───────┴─────────────────────────────</span></span></code></pre></div>
+  </figure>
+</div>
+<p>webpack 때와 마찬가지로 src 폴더를 만들고 그 밑에 index.html 파일과 index.js 파일을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>React App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;index.js&#34;</span> <span class="na">defer</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">noscript</span><span class="p">&gt;</span>You need to enable JavaScript to run this app.<span class="p">&lt;/</span><span class="nt">noscript</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;root&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>먼더, index.js 파일에는 react의 createElement를 이용한 코드를 먼저 넣었습니다.</p>
+<p>JSX는 나중에 추가하도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">App</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 설정이 완료되었네요.</p>
+<p>parcel 명령어를 실행시켜 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx parcel src/index.html
+</span></span><span class="line"><span class="cl">Server running at http://localhost:1234
+</span></span><span class="line"><span class="cl">✨ Built in 644ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>뭔가 터미널창이 빠르게 바뀌더니 위와 같이 단 2줄만 나타나네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhcsFETVjlCiVtxMPnQ__Rw8Z85clUf1ZgCCrWQ3ZK75vl0DavkRUmm9YLT8LA97yT5TNLGgCrvH88Tmk8R6DeA9ict8Y7Kjz_LuhJS8zfghnfmmu6I3LbkcOPe9vGj1Xn0LVCousuLeHnXTUtIsKOtzgYDC2S6yBPjFfo6buJzmZoRt9xLZHwaiYGTMgw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>브라우저에는 역시나 제대로 Hello World가 표시되고 있습니다.</p>
+<p>webpack 명령어와 마찬가지로 &lsquo;dist&rsquo; 폴더에 컴파일되어 번들링 된 파일이 아래와 같이 나옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tree --du -h ./dist
+</span></span><span class="line"><span class="cl"><span class="o">[</span>3.6M<span class="o">]</span>  ./dist
+</span></span><span class="line"><span class="cl">├── <span class="o">[</span>1.6M<span class="o">]</span>  index.975ef6c8.js
+</span></span><span class="line"><span class="cl">├── <span class="o">[</span>2.0M<span class="o">]</span>  index.975ef6c8.js.map
+</span></span><span class="line"><span class="cl">└── <span class="o">[</span> 288<span class="o">]</span>  index.html
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> 3.6M used in <span class="m">1</span> directory, <span class="m">3</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>index.js 파일이름이 뭔가 hash가 포함된 거 같네요.</p>
+<p>실제로 index.html 파일 안의 script 태그를 보시면 아래와 같이 나올 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;/index.975ef6c8.js&#34;</span> <span class="na">defer</span><span class="o">=</span><span class="s">&#34;&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>parcel이 알아서 이름을 매칭시켜주고 있네요.</p>
+<hr>
+<h2 id="2-1-jsx-이용한-경우">2-1. JSX 이용한 경우</h2>
+<p>이제 index.js 파일에서 createElement 부분을 전부 JSX 부분으로 바꾸겠습니다.</p>
+<p>물론, App.js 파일도 따로 분리해서 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/App.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">World</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./App&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">App</span> <span class="o">/&gt;</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 parcel 명령어를 실행시켜 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">px parcel src/index.html
+</span></span><span class="line"><span class="cl">Server running at http://localhost:1234
+</span></span><span class="line"><span class="cl">✨ Built in 12ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>아까랑 변한 게 없이 그대로인데요.</p>
+<p>Babel 로더도 필요 없나 봅니다.</p>
+<p>맞습니다.</p>
+<p>Parcel은 알아서 JSX를 변환시켜 주거든요.</p>
+<p>이제 Build 해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx parcel build ./src/index.html
+</span></span><span class="line"><span class="cl">🚨 Build failed.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@parcel/namer-default: Target <span class="s2">&#34;main&#34;</span> declares an output file path of <span class="s2">&#34;index.js&#34;</span> which does not
+</span></span><span class="line"><span class="cl">match the compiled bundle <span class="nb">type</span> <span class="s2">&#34;html&#34;</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  /Users/cpro95/Codings/Javascript/blog/scratch-react/package.json:5:11
+</span></span><span class="line"><span class="cl">    <span class="m">4</span> <span class="p">|</span>   <span class="s2">&#34;description&#34;</span>: <span class="s2">&#34;```bash npm init -y Wrote to /Users/cpro95/Codings/Javascript/blog/scratc
+</span></span></span><span class="line"><span class="cl"><span class="s2">  &gt; 5 |   &#34;</span>main<span class="s2">&#34;: &#34;</span>index.js<span class="s2">&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s2">  &gt;   |           ^^^^^^^^^^ Did you mean &#34;</span>index.html<span class="s2">&#34;?
+</span></span></span><span class="line"><span class="cl"><span class="s2">    6 |   &#34;</span>scripts<span class="s2">&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s2">    7 |     &#34;</span>test<span class="s2">&#34;: &#34;</span><span class="nb">echo</span> <span class="se">\&#34;</span>Error: no <span class="nb">test</span> specified<span class="se">\&#34;</span> <span class="o">&amp;&amp;</span> <span class="nb">exit</span> 1<span class="s2">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">  💡 Try changing the file extension of &#34;</span>main<span class="s2">&#34; in package.json.</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>package.json 파일에서 main 부분을 고치라고 하네요.</p>
+<p>&ldquo;main&rdquo;:&ldquo;index.js&rdquo; 부분을 삭제하면 됩니다.</p>
+<p>이제 다시 build 하기 전에 &lsquo;dist&rsquo; 폴더를 지웁시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">rm -rf dist
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npx parcel build ./src/index.html
+</span></span><span class="line"><span class="cl">✨ Built in 1.71s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dist/index.html               <span class="m">280</span> B    565ms
+</span></span><span class="line"><span class="cl">dist/index.ce397799.js    139.48 KB    571ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 이 dist 폴더를 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tree --du -h ./dist
+</span></span><span class="line"><span class="cl"><span class="o">[</span>859K<span class="o">]</span>  ./dist
+</span></span><span class="line"><span class="cl">├── <span class="o">[</span>139K<span class="o">]</span>  index.ce397799.js
+</span></span><span class="line"><span class="cl">├── <span class="o">[</span>719K<span class="o">]</span>  index.ce397799.js.map
+</span></span><span class="line"><span class="cl">└── <span class="o">[</span> 263<span class="o">]</span>  index.html
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> 859K used in <span class="m">1</span> directory, <span class="m">3</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>완성된 React 프로젝트가 나오네요.</p>
+<p>이 파일을 serve 하면 리액트 앱이 돌아갈 겁니다.</p>
+<hr>
+<h1 id="3-esbuild">3. esbuild</h1>
+<p>esbuild는 다른 번들러, 빌드 도구와 달리 Go 언어로 작성되어 빠른 빌드를 수행할 수 있습니다.</p>
+<p>Vite의 Pre-Bundling에서도 이용되고 있습니다.</p>
+<p>Vite에도 이용되고 있습니다만 실은 아직 버전 1.0.0에 이르지 않고 현재도 개발이 진행되고 있는 툴입니다.</p>
+<p>Vite에 사용되고 있다는 뜻은 그만큼 좋다는 뜻입니다.</p>
+<h2 id="3-1-프로젝트-세팅">3-1. 프로젝트 세팅</h2>
+<p>맨땅에 헤딩하기 위해 &rsquo;npm init -y&rsquo; 부터 시작하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm init -y
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm install react react-dom
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm install -D esbuild</span></span></code></pre></div>
+  </figure>
+</div>
+<p>설치직후 package.json 파일을 보면 아래와 같을 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl">  <span class="s2">&#34;dependencies&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;react&#34;</span><span class="p">:</span> <span class="s2">&#34;^18.2.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;react-dom&#34;</span><span class="p">:</span> <span class="s2">&#34;^18.2.0&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="err">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;devDependencies&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;esbuild&#34;</span><span class="p">:</span> <span class="s2">&#34;^0.19.11&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다른 도구와 마찬가지로 src 폴더를 만드고 그 밑에 React.createElement를 이용한 index.js 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/index.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">App</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 빌드된 자바스크립트 파일이 존재할 dist 폴더에 미리 index.html 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;utf-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>React App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;./main.js&#34;</span> <span class="na">defer</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">noscript</span><span class="p">&gt;</span>You need to enable JavaScript to run this app.<span class="p">&lt;/</span><span class="nt">noscript</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;root&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>main.js 파일을 읽어오는 script가 있네요.</p>
+<hr>
+<h2 id="3-2-빌드-및-개발-서버-돌리기">3-2. 빌드 및 개발 서버 돌리기</h2>
+<p>esbuild는 빌드 및 개발 서버를 한꺼번에 돌릴 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx esbuild --bundle src/index.js --outfile<span class="o">=</span>dist/main.js --servedir<span class="o">=</span>dist
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> &gt; Local:   http://127.0.0.1:8000/
+</span></span><span class="line"><span class="cl"> &gt; Network: http://192.168.29.145:8000/</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 개발 서버가 나오는데요.</p>
+<p>정상 작동될 겁니다.</p>
+<p>그리고 위 명령줄을 잘 보시면 &lsquo;&ndash;outfile&rsquo; 옵션으로 빌드된 후 저장할 파일을 지정했고, 그리고 개발 서버를 위해 &lsquo;&ndash;servedir&rsquo; 옵션을 이용해서 &lsquo;dist&rsquo; 폴더를 웹 서빙하라고 지시했습니다.</p>
+<p>여기서 &lsquo;&ndash;watch&rsquo; 옵션을 추가하면 소스코드가 변경될 걸 감지해서 새로 빌드합니다.</p>
+<p>&lsquo;&ndash;watch&rsquo; 옵션은 핫 리로딩이 되지는 않네요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx esbuild --bundle src/index.js --outfile<span class="o">=</span>dist/main.js --servedir<span class="o">=</span>dist --watch</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="3-3-jsx를-이용한-경우">3-3. JSX를 이용한 경우</h2>
+<p>이제 JSX를 이용한 방식으로 코드를 다시 짜볼까요?</p>
+<p>App.js 파일과 index.js 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/App.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">World</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">App</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">ReactDOM</span> <span class="nx">from</span> <span class="s1">&#39;react-dom/client&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">App</span> <span class="nx">from</span> <span class="s1">&#39;./App&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">App</span> <span class="o">/&gt;</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 빌드 및 watch를 해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx esbuild --bundle src/index.js --outfile<span class="o">=</span>dist/main.js --servedir<span class="o">=</span>dist --watch
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> &gt; Local:   http://127.0.0.1:8000/
+</span></span><span class="line"><span class="cl"> &gt; Network: http://192.168.29.145:8000/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✘ <span class="o">[</span>ERROR<span class="o">]</span> The JSX syntax extension is not currently enabled
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    src/index.js:6:12:
+</span></span><span class="line"><span class="cl">      <span class="m">6</span> │ root.render<span class="o">(</span>&lt;App /&gt;<span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        ╵             ^
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  The esbuild loader <span class="k">for</span> this file is currently <span class="nb">set</span> to <span class="s2">&#34;js&#34;</span> but it must be <span class="nb">set</span> to <span class="s2">&#34;jsx&#34;</span> to be able
+</span></span><span class="line"><span class="cl">  to parse JSX syntax. You can use <span class="s2">&#34;--loader:.js=jsx&#34;</span> to <span class="k">do</span> that.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✘ <span class="o">[</span>ERROR<span class="o">]</span> The JSX syntax extension is not currently enabled
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    src/App.js:7:9:
+</span></span><span class="line"><span class="cl">      <span class="m">7</span> │   <span class="k">return</span> &lt;h1&gt;Hello World&lt;/h1&gt;<span class="p">;</span>
+</span></span><span class="line"><span class="cl">        ╵          ^
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  The esbuild loader <span class="k">for</span> this file is currently <span class="nb">set</span> to <span class="s2">&#34;js&#34;</span> but it must be <span class="nb">set</span> to <span class="s2">&#34;jsx&#34;</span> to be able
+</span></span><span class="line"><span class="cl">  to parse JSX syntax. You can use <span class="s2">&#34;--loader:.js=jsx&#34;</span> to <span class="k">do</span> that.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">2</span> errors
+</span></span><span class="line"><span class="cl"><span class="o">[</span>watch<span class="o">]</span> build finished, watching <span class="k">for</span> changes...</span></span></code></pre></div>
+  </figure>
+</div>
+<p>에러코드를 자세히 보시면 확장자가 js라서 문제가 발생한 거 같습니다.</p>
+<p>jsx 라는 확장자로 사용하라는 문구 같네요.</p>
+<p>아니면 &lsquo;&ndash;loader:.js=jsx&rsquo; 옵션을 추가하라고 합니다.</p>
+<p>이 옵션을 추가해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx esbuild --bundle src/index.js --outfile<span class="o">=</span>dist/main.js --servedir<span class="o">=</span>dist --watch --loader:.js<span class="o">=</span>jsx
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> &gt; Local:   http://127.0.0.1:8000/
+</span></span><span class="line"><span class="cl"> &gt; Network: http://192.168.29.145:8000/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>watch<span class="o">]</span> build finished, watching <span class="k">for</span> changes...</span></span></code></pre></div>
+  </figure>
+</div>
+<p>아무 에러 없이 잘 되고 있습니다.</p>
+<p>브라우저에서 보면 화면에 아무것도 안 나타나고 콘솔창에는 아래와 같은 에러가 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgZuvZgzCzUS2BVQAyBjiTVBGCmiGmuK3EeVRkkS-3D3Zkkzj2dKdZrZNY11yK6upb0rt6dDSKqh932jc8itAtCjZMm72waSY4QHEVDO2MkStZV2sdB3PaCGy90KzXsblkLzxjutdvtq5ACSldDP0J3v-fG5wGtEg7sTKD-tOfjovp29sJPtkMyuwTCv0Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>App.js파일과 index.js 파일에 &lsquo;React&rsquo;를 import 하는 문구가 빠졌네요.</p>
+<p>아래 문구를 모든 JSX 파일에 넣어 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하니까 아래와 같이 브라우저에 제대로 표시됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiyEWidxJYOBXD6j-AynTjkRuxJzMKTZ7wWPrGuhNOQDddBhc-SD747_HH5YDxAaDYQj4S6nIjqS53k1z-vr-9je5oELEkFY59dy_kMjcHr_J_hWHiN17e_vtUgUrhrwmcB0FaaAOAzAluql73v0QSI3vE9OxuO0_uaFI2xPiz5mnqQ_daI5uWt8zs4gPU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>React를 import해야 하는 이유는 JSX에서 JS로 변환할 때 React.createElement를 사용하기 때문입니다.</p>
+<p>esbuild는 기본적으로 JSX에서 JS 변환을 지원하므로 추가로 플러그인 등을 설치할 필요가 없습니다.</p>
+<p>그런데 우리가 알고 있는 거는 최근에는 React를 import 하지 않는데요.</p>
+<p>왜냐하면 React 17 이후부터 컴파일시 createElement와는 다른 함수를 이용하게 되었기 때문입니다.</p>
+<p>그래서 esbuild에서도 같은 방식을 적용하려면 &lsquo;&ndash;jsx=automatic&rsquo; 옵션을 넣으면 됩니다.</p>
+<p>이제 다시 &lsquo;import React from react&rsquo; 문구를 모두 삭제하고 다시 아래와 같이 실행해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx esbuild --bundle src/index.js --outfile<span class="o">=</span>dist/main.js --servedir<span class="o">=</span>dist --watch --loader:.js<span class="o">=</span>jsx --jsx<span class="o">=</span>automatic</span></span></code></pre></div>
+  </figure>
+</div>
+<p>예상했던 데로 아주 잘 작동하네요.</p>
+<p>만약에 확장자가 jsx를 사용한다면 &lsquo;&ndash;loader:.js=jsx&rsquo; 옵션을 지워도 됩니다.</p>
+<p>그런데 너무 긴 옵션인데요.</p>
+<p>그래서 설정파일이 따로 존재합니다.</p>
+<hr>
+<h2 id="3-4-esbuild-설정-파일-만들기">3-4. esbuild 설정 파일 만들기</h2>
+<p>프로젝트 최상단에 builder.js 파일을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="nx">as</span> <span class="nx">esbuild</span> <span class="nx">from</span> <span class="s1">&#39;esbuild&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">esbuild</span><span class="p">.</span><span class="nx">context</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entryPoints</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;src/index.js&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">loader</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;.js&#39;</span><span class="o">:</span> <span class="s1">&#39;jsx&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">jsx</span><span class="o">:</span> <span class="s1">&#39;automatic&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">bundle</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">outfile</span><span class="o">:</span> <span class="s1">&#39;dist/main.js&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">await</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">watch</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;watching...&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">serve</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">servedir</span><span class="o">:</span> <span class="s1">&#39;dist&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">host</span><span class="o">:</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`server is running </span><span class="si">${</span><span class="nx">server</span><span class="p">.</span><span class="nx">host</span><span class="si">}</span><span class="sb">:</span><span class="si">${</span><span class="nx">server</span><span class="p">.</span><span class="nx">port</span><span class="si">}</span><span class="sb">`</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Nodejs를 이용해서 좀 더 쉽게 esbuild를 수행할 수 있게 해주고 있네요.</p>
+<p>실행은 &rsquo;node builder.js&rsquo; 명령어로 수행하면 됩니다.</p>
+<p>한번 해볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">node builder.js
+</span></span><span class="line"><span class="cl"><span class="o">(</span>node:45517<span class="o">)</span> Warning: To load an ES module, <span class="nb">set</span> <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;module&#34;</span> in the package.json or use the .mjs extension.
+</span></span><span class="line"><span class="cl"><span class="o">(</span>Use <span class="sb">`</span>node --trace-warnings ...<span class="sb">`</span> to show where the warning was created<span class="o">)</span>
+</span></span><span class="line"><span class="cl">/Users/cpro95/Codings/Javascript/blog/scratch-react/builder.js:1
+</span></span><span class="line"><span class="cl">import * as esbuild from <span class="s1">&#39;esbuild&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">^^^^^^
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SyntaxError: Cannot use import statement outside a module
+</span></span><span class="line"><span class="cl">    at internalCompileFunction <span class="o">(</span>node:internal/vm:73:18<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at wrapSafe <span class="o">(</span>node:internal/modules/cjs/loader:1178:20<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at Module._compile <span class="o">(</span>node:internal/modules/cjs/loader:1220:27<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at Module._extensions..js <span class="o">(</span>node:internal/modules/cjs/loader:1310:10<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at Module.load <span class="o">(</span>node:internal/modules/cjs/loader:1119:32<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at Module._load <span class="o">(</span>node:internal/modules/cjs/loader:960:12<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at Function.executeUserEntryPoint <span class="o">[</span>as runMain<span class="o">]</span> <span class="o">(</span>node:internal/modules/run_main:81:12<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    at node:internal/main/run_main_module:23:47
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Node.js v18.17.1</span></span></code></pre></div>
+  </figure>
+</div>
+<p>type module 에러가 떴네요.</p>
+<p>builder.js는 import를 사용하므로 package.json 파일에 type 옵션을 추가하여 module을 설정하거나 파일 확장자를 builder.js에서 builder.mjs로 변경해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;type&#34;</span><span class="err">:</span> <span class="s2">&#34;module&#34;</span><span class="err">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 입력하고 다시 실행해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">node builder.js
+</span></span><span class="line"><span class="cl">watching...
+</span></span><span class="line"><span class="cl">server is running 127.0.0.1:8000</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 아주 잘 되고 있습니다.</p>
+<p>loader 부분도 옵션으로 넣어줘서 js 확장자도 그대로 사용할 수 있죠.</p>
+<p>지금까지 esbuild를 이용한 React 개발 환경 구축이었습니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/webpack/" role="button">webpack</a>
+        <a class="btn btn-light" href="/tags/parcel/" role="button">parcel</a>
+        <a class="btn btn-light" href="/tags/esbuild/" role="button">esbuild</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-25-brief-history-of-web-rendering-before-and-after-react/">웹 렌더링, React 탄생 전부터 RSC(React Server Components)까지의 흐름</a></h2>
+                  <p>React 탄생 전부터 App Router with RSC까지의 웹 렌더링 역사 살펴보기</p>
+                  <p>
+  <small>December 25, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-25-react-framework-debate-nextjs-vs-remix-by-kentcdodds-and-leerob/">kentcdodds님과 leerob님의 리액트 프레임 워크 논쟁 - Next.js vs Remix</a></h2>
+                  <p>kentcdodds님과 leerob님의 리액트 프레임 워크 논쟁 - Next.js vs Remix</p>
+                  <p>
+  <small>December 25, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-21-differences-of-importing-react-in-next-js/">Next.js에서 React를 import 하는 것과 안 하는 것의 차이점 알아보기</a></h2>
+                  <p>Next.js에서 React를 import 하는 것과 안 하는 것의 차이점 알아보기</p>
+                  <p>
+  <small>December 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

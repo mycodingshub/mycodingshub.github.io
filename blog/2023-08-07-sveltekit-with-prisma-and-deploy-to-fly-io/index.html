@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>SvelteKit 실전 예제 4편 - Prisma 설치 후 백 엔드 DB 세팅 및 클라우드에 자동 배포하기</title>
+<meta name="description" content="Dockerfile 세팅해서 자동으로 Prisma 설치 및 초기 데이터 세팅까지" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-08-07-sveltekit-with-prisma-and-deploy-to-fly-io/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="SvelteKit 실전 예제 4편 - Prisma 설치 후 백 엔드 DB 세팅 및 클라우드에 자동 배포하기" />
+<meta property="og:description" content="Dockerfile 세팅해서 자동으로 Prisma 설치 및 초기 데이터 세팅까지" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-08-07-sveltekit-with-prisma-and-deploy-to-fly-io/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-08-07T11:57:32Z" />
+<meta property="article:modified_time" content="2023-08-07T11:57:32Z" />
+<meta property="article:tag" content="prisma" />
+<meta property="article:tag" content="sveltekit" />
+<meta property="article:tag" content="sveltejs" />
+<meta property="article:tag" content="fly.io" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SvelteKit 실전 예제 4편 - Prisma 설치 후 백 엔드 DB 세팅 및 클라우드에 자동 배포하기" />
+<meta name="twitter:description" content="Dockerfile 세팅해서 자동으로 Prisma 설치 및 초기 데이터 세팅까지" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"SvelteKit 실전 예제 4편 - Prisma 설치 후 백 엔드 DB 세팅 및 클라우드에 자동 배포하기\"",
+  "description": "\"Dockerfile 세팅해서 자동으로 Prisma 설치 및 초기 데이터 세팅까지\"",
+  "datePublished": "\"2023-08-07T11:57:32Z\"",
+  "dateModified": "\"2023-08-07T11:57:32Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-08-07-sveltekit-with-prisma-and-deploy-to-fly-io/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>SvelteKit 실전 예제 4편 - Prisma 설치 후 백 엔드 DB 세팅 및 클라우드에 자동 배포하기</h1>
+        <p>
+  <small>August 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>이번 시간에는 좀 더 어려운 주제인데요.</p>
+<p>바로 Sveltekit에서 백 엔드에서 작동하는 DB 세팅 방법과 Fly.io에 배포까지 할 수 있는 Dockerfile을 작성할 예정입니다.</p>
+<p><strong>-지난 시간 강좌 보기-</strong></p>
+<p><a href="https://mycodingshub.github.io/blog/2023-08-03-how-to-deploy-sveltekit-to-fly-io-with-server-side-rendering">SvelteKit 실전 예제 - Fly.io에 배포(deploy)하기 with 서버 사이드 렌더링</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy">SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기</a></p>
+<p><a href="https://mycodingshub.github.io/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io">SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)</a></p>
+<p>그러면 시작하겠습니다.</p>
+<hr>
+<h2 id="prisma">Prisma</h2>
+<p>Next.js나 Remix Framework으로 풀 스택 애플리케이션을 만들 때 가장 많이 쓰이는 백 엔드 DB 관련 ORM은 바로 Prisma인데요.</p>
+<p>MySql, PostgreSQL, MongoDB, Sqlite3 등 다양한 데이터베이스를 지원합니다.</p>
+<p>한 개의 코드로 DB 유형을 바꿔 가면서 세팅할 수 있어 아주 편한데요.</p>
+<p>오늘은 개발 서버 및 블로그 강좌라서 sqlite3 로 개발 하겠습니다.</p>
+<h2 id="prisma-설치">Prisma 설치</h2>
+<p>먼저, 아래와 같이 명령어를 실행합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx prisma init --datasource-provider sqlite</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 명령어를 실행하면 prisma 세팅 파일이 생기는데요.</p>
+<p>.env 파일과 그리고 prisma 폴더가 생깁니다.</p>
+<p>prisma 폴더에는 schema.prisma 파일이 생기는데요.</p>
+<p>데이터베이스의 뼈대를 구성하는 기초 파일입니다.</p>
+<p>우리는 DB 테스트를 위해 User 모델로 로그인을 구현해 보도록 하겠습니다.</p>
+<p>그래서 schema.prisma 파일에 model User 부분을 추가해 주십시오.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">generator client <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">provider</span> <span class="o">=</span> <span class="s2">&#34;prisma-client-js&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">datasource db <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">provider</span> <span class="o">=</span> <span class="s2">&#34;sqlite&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">url</span>      <span class="o">=</span> env<span class="o">(</span><span class="s2">&#34;DATABASE_URL&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">model User <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  id            String @id @default<span class="o">(</span>uuid<span class="o">())</span>
+</span></span><span class="line"><span class="cl">  username      String @unique
+</span></span><span class="line"><span class="cl">  passwordHash  String
+</span></span><span class="line"><span class="cl">  userAuthToken String @unique
+</span></span><span class="line"><span class="cl">  role          String @default<span class="o">(</span><span class="s2">&#34;USER&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  createAt  DateTime @default<span class="o">(</span>now<span class="o">())</span>
+</span></span><span class="line"><span class="cl">  updatedAt DateTime @updatedAt
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Prisma를 자바스크립트에서 사용할 수 있는 PrismaClient를 설치해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i @prisma/client</span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 여기까지 진행했으면 PrismaClient를 생성해야 하는데요.</p>
+<p>두 가지로 진행해야 합니다.</p>
+<p>node_modules 부분과 코드 부분입니다.</p>
+<p>먼저, node_modules 부분에서는 아래와 같이 명령어를 실행시키면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx prisma db push</span></span></code></pre></div>
+  </figure>
+</div>
+<p>라고 실행하면 아래와 같이 실행됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Environment variables loaded from .env
+</span></span><span class="line"><span class="cl">Prisma schema loaded from prisma/schema.prisma
+</span></span><span class="line"><span class="cl">Datasource <span class="s2">&#34;db&#34;</span>: SQLite database <span class="s2">&#34;dev.db&#34;</span> at <span class="s2">&#34;file:./dev.db&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SQLite database dev.db created at file:./dev.db
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">🚀  Your database is now in sync with your Prisma schema. Done in 27ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Generated Prisma Client <span class="o">(</span>5.1.1 <span class="p">|</span> library<span class="o">)</span> to ./node_modules/@prisma/client in 96ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>즉, .env 파일에 있는 DATABASE_URL 변수를 읽어서 디스크 상에 실제 db 파일을 만듭니다.</p>
+<p>그리고 Prisma Client를 코드 부분에서 만들어 주는데요.</p>
+<p>Prisma Client 클라이언트를 생성하는 명령어는 다음과 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx prisma generate</span></span></code></pre></div>
+  </figure>
+</div>
+<p>다시 한번 실행해도 괜찮습니다.</p>
+<p>이제 코드 부분에서 PrismaClient를 세팅해야 하는데요.</p>
+<p>src/lib 폴더에 database.ts 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">prisma</span> <span class="nx">from</span> <span class="s2">&#34;@prisma/client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">PrismaClient</span><span class="p">();</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 우리는 Prisma를 사용할 수 있는 제반사항을 모두 만들었는데요.</p>
+<h2 id="db에-자동으로-초기값-넣는-seed-파일-만들기">DB에 자동으로 초기값 넣는 seed 파일 만들기</h2>
+<p>Prisma는 애플리케이션 처음 빌드시 DB 값을 초기화할 수 있는 seed 파일을 제공하는데요.</p>
+<p>먼저, package.json 파일에서 맨 끝에 아래처럼 코드를 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="s2">&#34;prisma&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;seed&#34;</span><span class="o">:</span> <span class="s2">&#34;node prisma/seed.js&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>package.json 에서 prisma 항목이란 걸 만들었고, 실제 이 부분은 Prisma가 직접 사용하는 부분입니다.</p>
+<p>코드를 보시면 seed 부분이 node 명령어 실행 이란걸 볼 수 있는데요.</p>
+<p>이제 이 seed.js 파일을 만들도록 하겠습니다.</p>
+<p>prisma 폴더에 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">PrismaClient</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@prisma/client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">bcrypt</span> <span class="nx">from</span> <span class="s2">&#34;bcrypt&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">crypto</span> <span class="nx">from</span> <span class="s1">&#39;crypto&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">prisma</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PrismaClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">seed</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="s2">&#34;test&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// cleanup the existing database
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="k">delete</span><span class="p">({</span> <span class="nx">where</span><span class="o">:</span> <span class="p">{</span> <span class="nx">username</span><span class="o">:</span> <span class="nx">username</span> <span class="p">}</span> <span class="p">}).</span><span class="k">catch</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(&#34;Delete database&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">hashedPassword</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="s2">&#34;1234&#34;</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">username</span><span class="o">:</span> <span class="nx">username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">passwordHash</span><span class="o">:</span> <span class="nx">hashedPassword</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">userAuthToken</span><span class="o">:</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">randomUUID</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">role</span><span class="o">:</span> <span class="s2">&#34;ADMIN&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Database has been seeded.!\n</span><span class="si">${</span><span class="nx">user</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">seed</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="k">finally</span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">$disconnect</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드를 보시면 User 테이블에 신규 사용자를 직접 집어넣는 코드인데요.</p>
+<p>천천히 보시면 쉽게 이해할 수 있을 겁니다.</p>
+<p>그리고 이걸 실행하기 위해서는 bcrypt 패키지가 필요합니다.</p>
+<p>bcrypt는 암호를 해시 하는 툴입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">npm</span> <span class="nx">i</span> <span class="nx">bcrypt</span>
+</span></span><span class="line"><span class="cl"><span class="nx">npm</span> <span class="nx">i</span> <span class="o">-</span><span class="nx">D</span> <span class="err">@</span><span class="nx">types</span><span class="o">/</span><span class="nx">bcrypt</span> <span class="nx">prisma</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 여기서 prisma도 직접 설치하게끔 명령어를 작성했습니다.</p>
+<p>이제 준비가 끝난 거 같은데요.</p>
+<h2 id="실제-db-적용하기">실제 DB 적용하기</h2>
+<p>이제 마이그레이션이란 걸 해야 하는데요.</p>
+<p>Schema 파일을 SQL 파일로 변환해 주는 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx prisma migrate dev</span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Environment variables loaded from .env
+</span></span><span class="line"><span class="cl">Prisma schema loaded from prisma/schema.prisma
+</span></span><span class="line"><span class="cl">Datasource <span class="s2">&#34;db&#34;</span>: SQLite database <span class="s2">&#34;dev.db&#34;</span> at <span class="s2">&#34;file:./dev.db&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Drift detected: Your database schema is not in sync with your migration history.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">The following is a summary of the differences between the expected database schema given your m
+</span></span><span class="line"><span class="cl">igrations files, and the actual schema of the database.                                        
+</span></span><span class="line"><span class="cl">It should be understood as the <span class="nb">set</span> of changes to get from the expected schema to the actual sch
+</span></span><span class="line"><span class="cl">ema.                                                                                           
+</span></span><span class="line"><span class="cl">If you are running this the first <span class="nb">time</span> on an existing database, please make sure to <span class="nb">read</span> this d
+</span></span><span class="line"><span class="cl">ocumentation page:                                                                             https://www.prisma.io/docs/guides/database/developing-with-prisma-migrate/troubleshooting-devel
+</span></span><span class="line"><span class="cl">opment                                                                                         
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Added tables
+</span></span><span class="line"><span class="cl">  - User
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> Changed the <span class="sb">`</span>User<span class="sb">`</span> table
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>+<span class="o">]</span> Added unique index on columns <span class="o">(</span>userAuthToken<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">[</span>+<span class="o">]</span> Added unique index on columns <span class="o">(</span>username<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ We need to reset the SQLite database <span class="s2">&#34;dev.db&#34;</span> at <span class="s2">&#34;file:./dev.db&#34;</span>
+</span></span><span class="line"><span class="cl">Do you want to <span class="k">continue</span>? All data will be lost. … yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Enter a name <span class="k">for</span> the new migration: … 
+</span></span><span class="line"><span class="cl">Applying migration <span class="sb">`</span>20230807122145_<span class="sb">`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">The following migration<span class="o">(</span>s<span class="o">)</span> have been created and applied from new schema changes:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">migrations/
+</span></span><span class="line"><span class="cl">  └─ 20230807122145_/
+</span></span><span class="line"><span class="cl">    └─ migration.sql
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Your database is now in sync with your schema.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ Generated Prisma Client <span class="o">(</span>5.1.1 <span class="p">|</span> library<span class="o">)</span> to ./node_modules/@prisma/client in 115ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Running seed <span class="nb">command</span> <span class="sb">`</span>node prisma/seed.js<span class="sb">`</span> ...
+</span></span><span class="line"><span class="cl">Database has been seeded.!
+</span></span><span class="line"><span class="cl"><span class="o">[</span>object Object<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">🌱  The seed <span class="nb">command</span> has been executed.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>마이그레이션을 하니까 prisma seed 까지 완벽히 실행 했네요.</p>
+<p>실제 sqlite DB 파일에 들어가 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> prisma
+</span></span><span class="line"><span class="cl">sqlite3 dev.db</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 실행하고 아래와 같이 User 부분의 레코드를 select 해보면 test 유저가 잘 보입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">SQLite version 3.37.0 2021-12-09 01:34:53
+</span></span><span class="line"><span class="cl">Enter <span class="s2">&#34;.help&#34;</span> <span class="k">for</span> usage hints.
+</span></span><span class="line"><span class="cl">sqlite&gt; <span class="k">select</span> * from user<span class="p">;</span>
+</span></span><span class="line"><span class="cl">f3f9d8c8-d19d-43ef-9660-a58f68effe67<span class="p">|</span>test<span class="p">|</span><span class="nv">$2</span>b<span class="nv">$10$WF</span>/xmu4abbapYjkZfuHM/.Dpr2t9KSMEF8jayiNGTNjSdy
+</span></span><span class="line"><span class="cl">tAmUtb2<span class="p">|</span>3d06c60f-fb6d-4d78-9270-58d7c6d3b50e<span class="p">|</span>ADMIN<span class="p">|</span>1691410906968<span class="p">|</span><span class="m">1691410906968</span>   sqlite&gt; .quit</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러면 이제 Prisma를 이용해서 SvelteKit에서 코드를 작성해 볼까요?</p>
+<hr>
+<h2 id="get_user-api-엔드포인트-만들기">get_user API 엔드포인트 만들기</h2>
+<p>DB는 백엔드이기 때문에 서버사이드에서 작동합니다.</p>
+<p>API를 만들어 놓으면 클라이언트 사이드에서나 백 엔드 사이드에서나 언제든지 자유롭게 사용할 수 있어서 아주 유용한데요.</p>
+<p>api/get_user 경로로 API 엔드 포인트를 하나 만들겠습니다.</p>
+<p>src/routes/api/get_user/+server.ts 파일을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">db</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;$lib/database&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">json</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@sveltejs/kit&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">getUser</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">findMany</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">where</span><span class="o">:</span> <span class="p">{</span> <span class="nx">role</span><span class="o">:</span> <span class="s2">&#34;ADMIN&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">user</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="sb">`Could not find User`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">GET</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getUser</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">json</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>테스트를 위해 role 이 &ldquo;ADMIN&quot;인 걸 찾는 코드인데요.</p>
+<p>HTTP GET 메서드로 작동하는 코드입니다.</p>
+<p>저장하고 개발서버를 돌려볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjLgj0NuFd4ZHgGwGGxoh3DVZbx_8m_PwQd4lsY7RlqZZ-zZ0aE3fR11Zu38Bgu8KRh6p-yes17hdpASRbMRYxsLZqpbBiEJRsElXj9xiQdXNWEID8F3Kq7jNOr-4GKPXPy8FZMVLNYq1gkdvTu_odqx1r4anJVqF_lolkhmDEaSwHuoDxGzVdPMwyfuA0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>get_user 부분이 아주 잘 작동하네요.</p>
+<h2 id="api-엔드-포인트를-활용하여-페이지에-뿌리기">API 엔드 포인트를 활용하여 페이지에 뿌리기</h2>
+<p>이제 우리 앱의 최상단 경로인 &lsquo;/&lsquo;에 user 부분을 화면에 뿌려주겠습니다.</p>
+<p>온전히 테스트를 위한 작업입니다.</p>
+<p>/src/routes/+page.server.ts 파일을 열어보시면 지난 시간에 작성한 popularMovies 얻는 코드가 있는데요.</p>
+<p>거기에 이어서 User 부분도 얻는 코드를 작성하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">load</span><span class="p">({</span> <span class="nx">fetch</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;api/get_popular_movies&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">popularMovies</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response2</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;api/get_user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">response2</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span> <span class="nx">popularMovies</span><span class="p">,</span> <span class="nx">user</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제, +page.svelte 파일에서 직접 화면에 뿌리는 코드를 추가해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">export</span> <span class="kd">let</span> <span class="nx">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">popularMovies</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">popularMovies</span><span class="p">.</span><span class="nx">results</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">h1</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-4xl font-bold&#34;</span><span class="o">&gt;</span><span class="nx">Welcome</span> <span class="nx">to</span> <span class="nx">SvelteKit</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">#</span><span class="k">if</span> <span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h2</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-2xl font-semibold&#34;</span><span class="o">&gt;</span><span class="nx">Hello</span><span class="o">!</span> <span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="o">:</span><span class="k">else</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h2</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-2xl font-semibold&#34;</span><span class="o">&gt;</span><span class="nx">Hello</span><span class="o">!</span> <span class="nx">There</span><span class="o">!&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="err">/if}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ul</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;p-4 mt-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="err">#</span><span class="nx">each</span> <span class="nx">popularMovies</span> <span class="nx">as</span> <span class="nx">movie</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="p">{</span><span class="sb">`/</span><span class="si">${</span><span class="nx">movie</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span> <span class="o">/</span> <span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">vote_average</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="err">/each}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/ul&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgK4gAhljPs00KQjT_wLHbH1LkPyV0JWv8D4wG_wuKC9bkyTJdDKBwWL_KIuq7xJBWXO2iKBA2d36dV44ubGkGsTa1gmJ3tG_QMWGmUJRNZRDqiEFmGhPqKSCErLjLVPZUFGt5TvEHGcGbnouZQQnZaeEkaJ1cNhwpDCXtIjOsCzTKzfP26X7OxwtEIufg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 User 부분도 잘 나오네요.</p>
+<hr>
+<h2 id="flyio에-배포하기">Fly.io에 배포하기</h2>
+<p>현재 로컬상 개발 서버에서는 정상 작동하는데요.</p>
+<p>그러면 Fly.io에 배포했을 때도 똑같이 작동하느냐가 문제인데요.</p>
+<p>Fly.io에 Prisma가 작동되게 하려면 많은 잡다한 작업을 해줘야 합니다.</p>
+<h2 id="volumes-찾기">Volumes 찾기</h2>
+<p>Fly.io는 도커로 움직이는데요.</p>
+<p>그런데 Fly.io는 따로 DB용 디스크도 지원해 줍니다.</p>
+<p>우리는 이걸 1GB 형식으로 지정할 수 있는데요.</p>
+<p>일단 지금 상태를 살펴볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sveltekit-deploy-on-fly-io git:<span class="o">(</span>main<span class="o">)</span> ✗ flyctl volumes list</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 명령어를 치시면 아래와 같이 나오는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ID                      STATE   NAME    SIZE    REGION  ZONE    ENCRYPTED       ATTACHED VM   CREATED AT  
+</span></span><span class="line"><span class="cl">vol_0o6d4230231r87gy    created data    1GB     nrt     fe01    <span class="nb">true</span>            e784e669a416389 hours ago                                                                                   </span></span></code></pre></div>
+  </figure>
+</div>
+<p>저 같은 경우는 NAME이 data인 디스크로 1GB가 nrt REGION(도쿄)이 있다는 뜻입니다.</p>
+<p>만약 없다면 아래 명령어로 직접 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly volumes create data --size <span class="m">1</span> --app my-svelteki-test2</span></span></code></pre></div>
+  </figure>
+</div>
+<p>디스크 이름은 data로 정했으며 1GB이고 해당 앱은 my-svelteki-test2 입니다.</p>
+<p>자 이제, DB를 위힌 디스크 스페이스도 확보했으니까 본격적인 배포작업에 들어가 보겠습니다.</p>
+<h2 id="flytoml-파일-수정하기">fly.toml 파일 수정하기</h2>
+<p>일단 Fly.io에 Prisma DB 사용을 위한 도커를 올리기 위해서는 몇 가지 기법이 적용되는데요.</p>
+<p>일단 아래와 같이 fly.toml 파일에서도 실험적으로 제공해 주는 기능을 사용해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="c"># fly.toml app configuration file generated for my-svelteki-test2 on 2023-08-03T22:20:33+09:00</span>
+</span></span><span class="line"><span class="cl"><span class="c">#</span>
+</span></span><span class="line"><span class="cl"><span class="c"># See https://fly.io/docs/reference/configuration/ for information about how to use this file.</span>
+</span></span><span class="line"><span class="cl"><span class="c">#</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span> <span class="p">=</span> <span class="s2">&#34;my-svelteki-test2&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">primary_region</span> <span class="p">=</span> <span class="s2">&#34;nrt&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">env</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">DATABASE_URL</span> <span class="p">=</span> <span class="s2">&#34;file:/data/sqlite.db&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">experimental</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">allowed_public_ports</span> <span class="p">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auto_rollback</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cmd</span> <span class="p">=</span> <span class="s2">&#34;start.sh&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">entrypoint</span> <span class="p">=</span> <span class="s2">&#34;sh&#34;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">mounts</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">source</span> <span class="p">=</span> <span class="s2">&#34;data&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">destination</span> <span class="p">=</span> <span class="s2">&#34;/data&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">http_service</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">internal_port</span> <span class="p">=</span> <span class="mi">3000</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">force_https</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auto_stop_machines</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auto_start_machines</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">min_machines_running</span> <span class="p">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">processes</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;app&#34;</span><span class="p">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 파일에서 제일 중요한 부분이 바로 mounts인데요.</p>
+<p>data라는 이름의 우리 디스크 스페이스를 경로명 &ldquo;/data&quot;로 마운트 한다는 뜻입니다.</p>
+<p>나중에 콘솔에서 직접 보여드리겠습니다.</p>
+<p>그리고, 위 파일을 보시면 env 부분에 DATABASE_URL 값이 있습니다.</p>
+<p>이 변수의 값이 file:/data/ 로 시작하는데요.</p>
+<p>/data 경로는 아까 우리가 만들었던 디스크 스페이스를 가리킵니다.</p>
+<p>즉, /data 폴더 밑에 sqlite.db 파일이름으로 하라는 얘기죠.</p>
+<p>그리고, experimental 부분에 cmd 부분과 entrypoint가 있는데요.</p>
+<p>이 건 실제, bash 파일을 실행시킬 수 있는 기능입니다.</p>
+<p>start.sh 파일을 우리 프로젝트 최상단에 작성합시다.</p>
+<p>package.json 파일과 같은 위치입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1"># This file is how Fly starts the server (configured in fly.toml). Before starting</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># the server though, we need to run any prisma migrations that haven&#39;t yet been</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># run, which is why this file exists in the first place.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Learn more: https://community.fly.io/t/sqlite-not-getting-setup-properly/4386</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -ex
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Finally start the app</span>
+</span></span><span class="line"><span class="cl">npx prisma migrate deploy
+</span></span><span class="line"><span class="cl">npx prisma db seed
+</span></span><span class="line"><span class="cl">npm run start</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 prisma 부분을 실행시켜 주면서 마지막으로 서버를 구동하는 &ldquo;npm run start&quot;를 실행시키는 코드인데요.</p>
+<p>이 코드가 최종적으로 우리 서버를 시작하는 파일 인거죠.</p>
+<h2 id="dockerfile-개조하기">Dockerfile 개조하기</h2>
+<p>마지막으로 본격적으로 Dockerfile을 개조해야 하는데요.</p>
+<p>전체 내용은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># base node image</span>
+</span></span><span class="line"><span class="cl">FROM node:16-bullseye-slim as base
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># set for base and all layer that inherit from it</span>
+</span></span><span class="line"><span class="cl">ENV NODE_ENV production
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ENV <span class="nv">DATABASE_URL</span><span class="o">=</span>file:/data/sqlite.db
+</span></span><span class="line"><span class="cl">ENV <span class="nv">NODE_ENV</span><span class="o">=</span><span class="s2">&#34;production&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Set TMDB API key at build time</span>
+</span></span><span class="line"><span class="cl">ARG TMDB_API_KEY
+</span></span><span class="line"><span class="cl">ENV <span class="nv">VITE_TMDB_API_KEY</span><span class="o">=</span><span class="nv">$TMDB_API_KEY</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install openssl for Prisma</span>
+</span></span><span class="line"><span class="cl">RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y openssl sqlite3
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install all node_modules, including dev dependencies</span>
+</span></span><span class="line"><span class="cl">FROM base as deps
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WORKDIR /myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ADD package.json .npmrc ./
+</span></span><span class="line"><span class="cl">RUN npm install --include<span class="o">=</span>dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Setup production node_modules</span>
+</span></span><span class="line"><span class="cl">FROM base as production-deps
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WORKDIR /myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>deps /myapp/node_modules /myapp/node_modules
+</span></span><span class="line"><span class="cl">ADD package.json .npmrc ./
+</span></span><span class="line"><span class="cl">RUN npm prune --omit<span class="o">=</span>dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Build the app</span>
+</span></span><span class="line"><span class="cl">FROM base as build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WORKDIR /myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>deps /myapp/node_modules /myapp/node_modules
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ADD prisma .
+</span></span><span class="line"><span class="cl">RUN npx prisma generate
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ADD . .
+</span></span><span class="line"><span class="cl">RUN npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Finally, build the production image with minimal footprint</span>
+</span></span><span class="line"><span class="cl">FROM base
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WORKDIR /myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>production-deps /myapp/node_modules /myapp/node_modules
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>build /myapp/node_modules/.prisma /myapp/node_modules/.prisma
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>build /myapp/build /myapp/build
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>build /myapp/package.json /myapp/package.json
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>build /myapp/start.sh /myapp/start.sh
+</span></span><span class="line"><span class="cl">COPY --from<span class="o">=</span>build /myapp/prisma /myapp/prisma
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ENTRYPOINT <span class="o">[</span> <span class="s2">&#34;./start.sh&#34;</span> <span class="o">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 Dockerfile에서 TMDB_API_KEY, DATABASE_URL 같은 환경 변수도 지정했는데요.</p>
+<p>하나하나 따져보면 쉽게 이해할 수 있을 겁니다.</p>
+<hr>
+<h2 id="github-action으로-deploy하기">Github Action으로 Deploy하기</h2>
+<p>이제 실제 배포해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git add .
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;prisma setting ended&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git push</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 현재 상태로 Github에 Push가 되면서 우리가 지난 시간에 만들었던 Github Action이 작동되면서 자동으로 fly.io에 배포가 되는데요.</p>
+<p>한참 기다리고 나면 성공했다고 나오는데요.</p>
+<p>이제, 실제 주소로 접속해 봅시다.</p>
+<p>그러면 아래와 같이 API 엔드 포인트까지 정상 작동한다고 나올 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_EBOo4fBR1XW82MW_LLBktAbP4gWlU2KzT8h8Ljxpg5hBhsOCIhhzEq69PvGP5JxEktwGpm7_eHgM262UADJBwqyZqdykBKQFq5lLVdx98bM98DJD6hM3SD19a6A0F9ECTgbwUdG-zGJuNzfI-s3o_6dX9cHzASugPKUCTMOlboB01E1SOnPXKrI_O_U"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjptdanwxHrWtXEQlcC6KIHINM3IYF7O-ByHaWqnX_RhOz_fz2759po1BRuRbIU48FRu_BoUWGuy_aXftYmTM5TncVkVMYSQkw5FZ7sFIAnjzTTzVxs8QiaNQ9E0L_pXrzoVwi8CrZQ_vf6vu2c1x1VsJnrBkJKXZUSnkOE7shLHogSy_W947HQFiiICA4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제, 실제 fly.io 도커 이미지가 있는 가상머신으로 ssh 접속해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console</span></span></code></pre></div>
+  </figure>
+</div>
+<p>ssh 접속하면 우분투 콘솔에 접속하게 되는데요.</p>
+<p>아래와 같이 데이터를 확인해 보면 Dockerfile로 우리가 작성했던 게 다 나올 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  sveltekit-deploy-on-fly-io git:<span class="o">(</span>main<span class="o">)</span> ✗ fly ssh console
+</span></span><span class="line"><span class="cl">Connecting to fdaa:0:57cc:a7b:17c:5313:2eed:2... <span class="nb">complete</span>
+</span></span><span class="line"><span class="cl">root@e784e669a41638:/myapp# ls -al
+</span></span><span class="line"><span class="cl">total <span class="m">28</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">5</span> root root <span class="m">4096</span> Aug  <span class="m">7</span> 11:53 .
+</span></span><span class="line"><span class="cl">drwxr-xr-x <span class="m">24</span> root root <span class="m">4096</span> Aug  <span class="m">7</span> 12:52 ..
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">4</span> root root <span class="m">4096</span> Aug  <span class="m">7</span> 11:53 build
+</span></span><span class="line"><span class="cl">drwxr-xr-x <span class="m">76</span> root root <span class="m">4096</span> Aug  <span class="m">7</span> 11:53 node_modules
+</span></span><span class="line"><span class="cl">-rw-r--r--  <span class="m">1</span> root root <span class="m">1225</span> Aug  <span class="m">7</span> 11:52 package.json
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">3</span> root root <span class="m">4096</span> Aug  <span class="m">7</span> 11:53 prisma
+</span></span><span class="line"><span class="cl">-rw-r--r--  <span class="m">1</span> root root  <span class="m">688</span> Aug  <span class="m">7</span> 11:52 start.sh
+</span></span><span class="line"><span class="cl">root@e784e669a41638:/myapp# ls -l /data
+</span></span><span class="line"><span class="cl">total <span class="m">44</span>
+</span></span><span class="line"><span class="cl">drwx------ <span class="m">2</span> root root <span class="m">16384</span> Aug  <span class="m">7</span> 07:21 lost+found
+</span></span><span class="line"><span class="cl">-rw-r--r-- <span class="m">1</span> root root <span class="m">28672</span> Aug  <span class="m">7</span> 12:52 sqlite.db
+</span></span><span class="line"><span class="cl">root@e784e669a41638:/myapp# </span></span></code></pre></div>
+  </figure>
+</div>
+<p>&ldquo;/data&rdquo; 이 경로는 우리가 만든 1GB의 디스크 스페이스로 여기에 sqlite.db 파일이 저장되어 있습니다.</p>
+<p>실제 우분투 가상 머신의 디스크 구조를 보시면 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">root@e784e669a41638:/myapp# df -h
+</span></span><span class="line"><span class="cl">Filesystem      Size  Used Avail Use% Mounted on
+</span></span><span class="line"><span class="cl">devtmpfs         97M     <span class="m">0</span>   97M   0% /dev
+</span></span><span class="line"><span class="cl">/dev/vda        7.8G  300M  7.1G   4% /
+</span></span><span class="line"><span class="cl">shm             109M     <span class="m">0</span>  109M   0% /dev/shm
+</span></span><span class="line"><span class="cl">tmpfs           109M     <span class="m">0</span>  109M   0% /sys/fs/cgroup
+</span></span><span class="line"><span class="cl">/dev/vdb        974M   52K  908M   1% /data
+</span></span><span class="line"><span class="cl">root@e784e669a41638:/myapp# </span></span></code></pre></div>
+  </figure>
+</div>
+<p>어떤가요?  &ldquo;/data&rdquo; 부분이 908M로 거의 1GB인 게 확인되실 겁니다.</p>
+<p>그리고 &ldquo;/&rdquo; 경로는 우분투가 올려져 있는 곳인데요.</p>
+<p>이렇게 DB 저장소를 다른 볼륨으로 하는 이유는 왜냐하면 우리가 앱을 업그레이드나 업데이트하면 Docker가 앱을 전부 새로 만들기 때문입니다.</p>
+<p>그러면 기존에 가지고 있던 DB 부분을 전부 읽어버리게 되기 때문인 거죠.</p>
+<p>&ldquo;/data&quot;라고 따로 가지고 있으면 Docker와 상관없이 DB를 유지 관리 할 수 있는 거죠.</p>
+<p>지금까지 Prisma와 SvelteKit 그리고 Fly.io에 배포하는 방법을 알아봤는데요.</p>
+<p>이렇게 총 4편에 걸쳐 SvelteKit 초기 세팅을 공부했는데요.</p>
+<p>이제 본격적으로는 풀 스택 앱 개발을 위한 모든 준비가 끝난 거 같습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/prisma/" role="button">prisma</a>
+        <a class="btn btn-light" href="/tags/sveltekit/" role="button">sveltekit</a>
+        <a class="btn btn-light" href="/tags/sveltejs/" role="button">sveltejs</a>
+        <a class="btn btn-light" href="/tags/fly.io/" role="button">fly.io</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-21-how-to-avoid-my-fly-io-app-sleep-issue/">SvelteKit 실전 예제 6편 - Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</a></h2>
+                  <p>Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</p>
+                  <p>
+  <small>August 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-07-sveltekit-auto-deploy-with-github-action-to-fly-io/">SvelteKit 실전 예제 3편 - Github Action으로 자동 배포하기(Auto Deploy)</a></h2>
+                  <p>Github Action 살펴보기 및 SvelteKit을 Fly.io에 자동으로 배포해 보기</p>
+                  <p>
+  <small>August 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-05-sveltekit-server-side-full-stack-example-and-fly-io-deploy/">SvelteKit 실전 예제 2편 - 서버 사이드 렌더링 풀 스택 무비 앱 만들기</a></h2>
+                  <p>SvelteKit을 이용해서 서버 사이드 렌더링 풀 스택 무비 앱 만들기</p>
+                  <p>
+  <small>August 5, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

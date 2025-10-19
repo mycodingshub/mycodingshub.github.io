@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>ReactJS의 작동 원리 파헤치기</title>
+<meta name="description" content="ReactJS의 작동 원리 파헤치기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2022-07-15-understanding-react-js/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="ReactJS의 작동 원리 파헤치기" />
+<meta property="og:description" content="ReactJS의 작동 원리 파헤치기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2022-07-15-understanding-react-js/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2022-07-15T07:14:50Z" />
+<meta property="article:modified_time" content="2022-07-15T07:14:50Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="react 원리" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ReactJS의 작동 원리 파헤치기" />
+<meta name="twitter:description" content="ReactJS의 작동 원리 파헤치기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"ReactJS의 작동 원리 파헤치기\"",
+  "description": "\"ReactJS의 작동 원리 파헤치기\"",
+  "datePublished": "\"2022-07-15T07:14:50Z\"",
+  "dateModified": "\"2022-07-15T07:14:50Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2022-07-15-understanding-react-js/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>ReactJS의 작동 원리 파헤치기</h1>
+        <p>
+  <small>July 15, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>드리프트의 myCodingsHub 블로그에 오신 걸 환영합니다.</p>
+<p>이 글은 구글 블로거에도 올렸던 내용인데, 새로 오픈한 나만의 블로그인 <a href="https://mycodingshub.github.io">mycodingshub.github.io</a>에 처음으로 다시 살짝 각색해서 올려볼까 합니다.</p>
+<p>각색하지 않으면 구글님께서 표절로 오해할 수도 있으니까요!</p>
+<p>ReactJS를 접하기 전에는 AngularJS를 이리저리 시도했었는데요.</p>
+<p>ReactJS가 대세가 되면서 저 또한 이제는 React를 이용해서 웹 프로그래밍하고 있고요.</p>
+<p>최근에는 무조건 NextJS를 이용했었는데요, Remix가 나오면서 Full Stack 개발이 너무 편해져서 Remix Framework을 사용하고 있습니다.</p>
+<p>이렇듯 ReactJS는 VueJS나 SvelteJS가 나와도 React만의 유저 기반이 탄탄해서 앞으로도 유망한 웹 프레임워크가 될 거라고 확신합니다.</p>
+<p>오늘은 ReactJS가 어떻게 작동하는지 알아보는 시간을 갖도록 하겠습니다.</p>
+<h2 id="테스트-환경-준비">테스트 환경 준비</h2>
+<p>먼저 ReactJS의 작동 원리를 알아보기 위한 웹 개발 테스트 환경을 준비해 보도록 하겠습니다.</p>
+<p>먼저, 빈 폴더에 index.html 파일을 만들 건데요.</p>
+<p>HTML 파일을 실시간으로 브라우저에 반영되게 하는 Hot-Reload 환경을 만들기 위해 추가로 설치해야 하는 NPM 패키지가 있는데요.</p>
+<p>바로 simple-hot-reload-server입니다.</p>
+<p>다음과 같이 전역으로 설치하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g simple-hot-reload-server</span></span></code></pre></div>
+  </figure>
+</div>
+<p>테스트를 위해 실행해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hrs .</span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhfrD0zohMyGwoPPFCwzLMp6-9R8ClTbOfU5bM3HUIGN07eqEudHJSAaIwE3L2NhwneuZE2MwaW4Y8jSjKFNRihb-9l9ySbdnL-Udt06b07qMe2IqmKABI_XBxAjFa6z1s1IyodOt_EXj9vqezjIJ4FRma28hU-wU2CSVpVk8wLll2vueFVyuxPBqgd=w640-h112"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>hrs 명령어를 실행하면 위와 같이 현재 폴더를 서버가 호스팅 하듯이 웹 브라우저에서 인식할 수 있게 되는데요.</p>
+<p>기본 주소는 다음과 같습니다.</p>
+<p>http://localhost:8082</p>
+<p>그러면 index.html 파일에서 html 파일의 골격을 작성한 다음 테스트를 해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">&#34;X-UA-Compatible&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;IE=edge&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;viewport&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;width=device-width, initial-scale=1.0&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Understanding React<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      Hello! React!!
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjZrafpzkohmHaAB0RlZ0299fn9SJ89cp8cV5W_MJDdeQmoAmjfKmpT6I3ansGdQO3QKzaFSZ3-_tERzeuXLM7wJYLJtzuGSGmGXdgdVJ37j48yvm3Z7je4kDZWvKth6xtL46JaDr2SAxu7QKvcbXqR0Zlr12hwWTQ-jKtPXro_xRDBqbDqPXw2uC5V=w640-h222"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>Hot-Reload 방식이 제대로 작동되고 있습니다.</p>
+<p>그럼 본격적으로 ReactJS의 작동 원리에 대해 알아보겠습니다.</p>
+<h2 id="자바스크립트">자바스크립트</h2>
+<p>ReactJS는 자바스크립트 라이브러리입니다.</p>
+<p>우리가 DOM 태그를 HTML 파일에 표면적으로 직접 작성하는 방식 말고, 코드를 통해 DOM에 직접 원하는 HTML 태그를 추가하는 방식을 자바스크립트를 이용해서 라이브러리화 한 겁니다.</p>
+<p>자바스크립트로 HTML 태그 DOM상에 추가하는 방법이 뭘까요?</p>
+<p>바로 자바스크립트 명령어 중 <code>document.createElement</code> 명령어입니다.</p>
+<p>createElement에 대한 예제를 만들어 볼까요?</p>
+<p>HTML 파일 안에서 자바스크립트를 실행하려면 <code>&lt;script&gt;</code> 태그를 이용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="s2">&#34;Hello React&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Hot Reloaded 된 브라우저를 보면 아무런 변화가 없는데요.</p>
+<p>혹시 모르니 새로고침도 해보십시오. 아무 변화가 없을 겁니다.</p>
+<p>왜냐하면 우리가 만든 div Element가 그냥 메모리상에 있는 Element이기 때문입니다.</p>
+<p>메모리상에 있는 Element를 브라우저가 현재 보여주는 DOM에 삽입해야 하는데요.</p>
+<p>다음 코드와 같이 <code>document.body.appendChild</code> 명령어를 통해 DOM상에 추가해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="s2">&#34;Hello React&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjs-s6Bn8wvF0FVJw9w5Y3sOY_KK67nEzaIi_hC05EjIU7qIWHH-I56uJt460HczOKUck40bfxIVEscuGGvQSwBo9g4olMCVB8gjzFkpsDWqefq5bjSiPpTAeJ6BDBxFHhZ7gaRdYlxlpWHfolJz94QCw6UOVy9z8xcucKPDZNRXc2cD-AZ74V9nYZu=w640-h220"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>크롬 DevTools로 보시면 우리가 위에서 만들었던 div 엘러먼트가 body 태그 밑에 잘 삽입되어 있습니다.</p>
+<p>div 컨텐트에 자바스크립트 코드를 넣어볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Date.now()라고 하면 현재 날짜를 UNIX 시간으로 표시해 줍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi6L5dgXSCKN2wlLLOUdT4gSzC7SbzhX5lSliyyv6OGRuUjJo4HNdznJjmFXYK4uTVREgCG5H4DBXtZb6dOjkharDhNCrhu5CAkXC_R6FF7xcEOphoW-BNGdAjkOy4nQG2mGUA9isEL9c6flL9kvzvomsfCvZeguBIIvY-QdGvA4TTJ8HGAGr-Xl4P1=w640-h190"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>우리가 작성한 자바스크립트 코드가 제대로 작동하고 있네요.</p>
+<p>브라우저를 계속 새로고침 하면 숫자는 계속 변하게 됩니다.</p>
+<p>왜냐하면 동적 데이터이기 때문입니다.</p>
+<p>여기서 우리는 div 엘레먼트를 body 태그에 붙였는데요.</p>
+<p>좀 더 일반적인 방식은 body 말고 다른 태그를 id를 붙여 만들고 거기에 붙이는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">).</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJf2xdiIXr9doHeWNC1u6krTXcESuC_e1ma0yOqOeAn0lhBKNsjL6zvr8m9yiHH0d4SEMhjD0DTVbd8Qas5iRtAKlAeril-YimCG7GsEzAbtBBNl52CzhSaT1Xc29fnzp5Dn0t3zWhVmbHq97X7l6Q_EI27Q8QoywwbpyCV6ntctF7CfSicZ4gZCcT=w640-h248"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>참고로 HTML 태그에 id라는 특성이 붙으면 자바스크릡트는 window 객체에 그에 해당하는 이름으로 객체를 만듭니다.</p>
+<p>아래 그림처럼요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj3PUXodTvphOnPdK_nyk5-3TppLnl7K5sWK3rjyf7Q-ube0uJRcLFDZ5Stn5NeVE68LJV3CcOJ4T9oD5okMnHV05OdYV2_DLuMLVbPcEZ86Ax5Pjg78oUZ7GCkHT83-dum81kUkfXy-u_4AJv6kQK0vMGE5Uh3LZS7s6uRynIXlC6RTOf2SyeR3GIi=w640-h256"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>window.root라는 객체가 위 그림에서 보듯이 <code>&lt;div&gt;</code> 태그가 되었네요.</p>
+<p>우리가 만들었던 div 태그에 CSS class를 추가해 볼까요?</p>
+<p>자바스크립트에서는 className이라고 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">div</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s2">&#34;container&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">).</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjjflwpgnJBhWUtn71qZx3ILx51hBaYMoAqbam4I_xXkV2LzTPggAWim1cJmmr-TbntlqK0QZsiFZVoNAKJ-DEDem0rSaGnR5Ybvu6Y172-y5r8ErUdCsc8PKbOw1MLbZzX1FCXrh3pAuKZu_e-b5ZteRSkcghqRVwXvOyyFRFff8lv6oAgydKjI6Y8=w640-h316"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>ReactJS에서 CSS Class를 className이라고 하는 이유가 바로 여기에 있습니다.</p>
+<p>다음으로 div 엘레먼트에 id를 추가해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">div</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s2">&#34;container&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">div</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">,</span> <span class="s2">&#34;sub_root&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">).</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjJtnbEkginD-S5_qxbtA-8Jqo640UZwy3zE4rPocbahPF7-3EnBU21KOmTXpkPkW6S2pm_Ree2xPDJ6QxvPnGBdQ4SDHNNniTH-p44W_3dHHtgDvWtynAwb6Uf-8o2pc8Fr0pnUmO67w7r0HLm_JVRMryj_f9zYcM9aVlVH5hdli6ctRtahTpPbhBZ=w640-h222"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>우리가 만든 div 태그에 class와 id가 보입니다.</p>
+<p>이렇듯 자바스크립트로 HTML의 모든 태그를 컨트롤할 수 있는데요.
+바로 ReactJS가 이 방법으로 HTML의 DOM을 컨트롤하는 겁니다.</p>
+<p>이제 ReactJS로 넘어가 볼까요?</p>
+<h2 id="reactjs-원리">ReactJS 원리</h2>
+<p>ReactJS도 자바스크립트이기 때문에 HTML 파일에 <code>&lt;script src=”https://~~~~&gt;&lt;/script&gt;</code> 방식으로 해당 라이브러리를 로딩할 수 있습니다.</p>
+<p>ReactJS의 Full source code를 볼 수 있는 곳이 바로 unpkg 사이트인데요.</p>
+<p>https://unpkg.com/</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi50VQKB7OzDixzCSxkQjpxWqByuUBSH7xBHwrZg2H6zp3M348nIqd-3ZZcTmMgVnrDwQH5Vvv7OT_1-zYBO9gBKXykTddagid9cWJsuMgT1nSzl6W_KgEr7atAE94gRFzb-XqDL_QLmyFtGDGU4zR0NIjC12iejRYPevrXRBd5dMP9lw7y4-1lyhlC=w640-h543"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>브라우저에서 다음과 같이 입력해 봅시다.</p>
+<p>https://unpkg.com/react</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh0io7ZBai7z3OpNuXawQbphdL57GyBE0iqk2-00_FkLDRXlOEpngi-imwkO8Y_E0LA6QHAcHgw8aKH-0MWF4g9cF4FDJ_5DtpfsFoU-sTtVoHdtupS1s5D5H84bP3zfn_paCyqmCuxKpKg5qvNNKkYtXJYlUZaOoKHXToIVOUV8i-Qymhv9xLOIE7h=w640-h236"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>최신 버전이 18.1.0이네요.</p>
+<p>그리고 index.js 파일이 보이는데 실제 이 파일의 React의 첫 코드입니다.</p>
+<p>NODE.ENV에 따라 production이냐, development이냐로 분기하는 코드네요.</p>
+<p>그럼 우리가 필요한 건 바로 실제 React코드이기 때문에 브라우저에 다음과 같이 입력해 봅시다.</p>
+<p>https://unpkg.com/browse/react@18.1.0/</p>
+<p>위와 같이 입력하면 react 버전 18.1.0의 디렉터리를 보여주는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgOnYdvWfvkmHBcUNnHPBbaH19pAE0GPS7xs5dfm65LkWZ3Oy7Qcnbqnpx2wWG2EtQbDCsKK5a6NOfm-PRl6KvThsjtXITznZNKNGT3wgKt_6qXPRFH987z7FHmEM2Bk_S06BXK5REP91VygTGCOmDzRihpJsC31cXbQHQYoiSkkPSYNuQ9cmMvFiGm=w640-h448"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>우리가 필요로 하는 코드는 umd 폴더에 있습니다.</p>
+<p>umd 폴더의 뜻은 Universal Module Definition의 뜻입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgAVBBtQVohkJqz3_VmYSSfCk8H6T7zOb_o1xLkzPGQGgH4lHK3DeMyhTgswUnMRMlFfiWGFFwRfDVbsdz-X9Mi0kprrIO41hYmc5iU4_v7I7X6Cr8ZyeznHX3S8ssh4NKXL1l6IW_Btyu6doKvDObGYJvNpa3gqnj4cLWoO1kGijkYjf3P7QeikDAx=w640-h296"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>umd 폴더에 보면 react.development.js와 기타 파일이 있네요.</p>
+<p>한번 열어볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjF1S0LuAgcxwfCGF_ycr0wgB8WVSxKh8ReXzPXkeOKo0vqyT7mzojBBzeix3AkftH27gB3BSCsyljUo6ayLDjH3HJYDvoIWBEKkJnqY7bJ7GDmiCZUAnytP6WgypKymQuCVy3yIOlOT3jNnUEnoee6jiT_jnDZB1Z_xHuRHLZNjbcJaHMUBGH7Wx6q=w640-h605"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>와우! 실제 Facebook이 만든 ReactJS의 Full Source Code입니다.</p>
+<p>이제 이 파일을 index.html 파일에 넣어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"> <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;https://unpkg.com/browse/react@18.1.0/umd/react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>ReactJS 라이브러리를 <code>script src</code> 방식으로 삽입했습니다.</p>
+<p>그럼 브라우저에서 제대로 로딩됐는지 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgW3BYwUFwfyDyDkbuEFRqrWIr3s39Cv26kV54Hlql_h7muCshECr640jg81SoKoykrNx93gAhDRD_vk9IvzzQ_5maGpWvdgWlqYnx7Bs1Uno5nHkqDxhd6SgPqviJrheGZfGKWeuBmY6_gXCpouk6jd2XVmf6qDSHnbV1YIw05phlq6vMD7dATBILS=w640-h152"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>교차 출처 읽기 차단(CORB)이 되었네요.</p>
+<p>react.development.js파일을 로컬로 저장해서 불러와야겠네요.</p>
+<p>아까 unpkg 사이트에서 오른쪽에 View Raw 버튼을 누른 다음 전체를 선택해서 복사하고 VS Code에서 react.development.js파일 이름으로 저장합니다.</p>
+<p>그리고 다시 아까 브라우저에서 로딩해보면 아무 이상이 없다고 나옵니다.</p>
+<p>ReactJS가 로딩되어 있는지 확인해 볼까요?</p>
+<p>Chrome 콘솔 창에서 React라고 입력해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEimOZqntgRnzxMRwSQ2O1kM7rGj3QeG3GJbP0iClD950vDzEHnQuQVn0gEXdAtmdHj9tE2z9LpzxYQza1-hRWwa9N3pGNAtoboMcs8G655aMDblXkk4RFakzUf1mZ6vdMmFuOqhjMRAg7MeaZCtGVrboVZ0yP5TShFMbFvI6oyzWmj5A08hilWVIYmi=w629-h640"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>React 객체가 로드되어 있네요.</p>
+<p>React의 명령어를 사용해 볼까요?</p>
+<p>React.createElement를 먼저 해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">div</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">div</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s2">&#34;container&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">div</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">,</span> <span class="s2">&#34;sub_root&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">).</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>element라는 변수에 React.createElement(’div’)라고 div 엘러멘트를 만들고 그걸 console.log 했습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjMCZanWoZhSh1ChUNtwHSVNZ2ZopXwUt_d1lmM_moeF8n_gnarMZ7G_payfTR2PLoQ7jG3XudHYDiNZiC9bzgsEEe0KLL-YHgJjAS4RAyOPKRcEwvOM5-slyzXuQrSQtRZueCRgCOkiMeTxROPTHTcoTcU0QSYzn1QR-tcHFISRBwBiVIbn9z9B_W7=w640-h342"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>위와 같이 div 엘러먼트가 나오네요.</p>
+<p>console.dir 명령어로도 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhEckQha4PZuoSSy9mx0NnAcx6WB1SUrB-YIu6utqtgkds08S63SwkIHpbxJarXrjSeljR1iKgQWCAzD5DkWeKuoST0q0idzjzk7W7x7Y6GRQLj_Sk2Cv4r1oeqmzmqwzykZXT87YXOSVci-VJkB7rxM0Kfb34ukwRIQvdW-XRbWCH9n75T20Uqhhir=w640-h444"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>React 객체가 만들어져 있고 props 항목도 있고 store 항목도 있고 type 항목도 있고, 여러 가지가 있네요.</p>
+<p>참고로 언더스코어(_)로 시작되는 항목은 우리가 접근하지 못하는 겁니다.</p>
+<p>이 모든 게 다 ReactJS의 가장 기본이 되는 항목입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">~~~~</span>
+</span></span><span class="line"><span class="cl">    <span class="o">~~~~</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">children</span><span class="o">:</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>React의 createElement 함수는 첫 번째가 태그 네임이고 두 번째가 옵션입니다.</p>
+<p>위와 같이 두 번째 옵션에 className과 children을 지정했는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjof7YWzY6ZdntOQsbpDwpGpAikpa6EncthnJ0rtOiQubSBWsAjA9ljUSlmdLoZkSeLibezdtGhQTxpIDrQE2BQZWLiHE7sgGgWVYlEj5Cvq-XTNBY4aBjGvoht-jZmaxBa-7d8aCaaaCuRf5gzDMszNmv453H05rO8ZDRF1DSBvXaNzmpNAZ6eOEOm=w640-h252"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>props에 해당되는 내용인 className과 children이 제대로 적용되었네요.</p>
+<p>이제 React Element를 브라우저 상에서 보이게 해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">children</span><span class="o">:</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">).</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhrh7Sz_vV2oXLlbX_yRJ_IQlVb-q9ZYk225UXqVf1z2TUNyXF-dl9awnKFctqETt8LmHTs6oapyZCa_Prkv0-254B0jp2BMibtyx1OoxSuSO70kul4hgFkEUbQTr7z7hYyJGiTiSWee1_FxMGSNYN7hFcbxOZxSZhWT1jkegEe4EGXESpf1bXClLAL=w640-h130"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>우리가 맨 처음 자바스크립트로 div 태그를 id가 root인 div에 appendChild 했을 때와 같은 방식으로 적용했는데 위와 같이 에러가 발생했습니다.</p>
+<p>React.createElement로 만든 엘러먼트는 HTML의 DOM 엘러먼트가 아니라서 그런 겁니다.</p>
+<p>ReactJS의 Element를 DOM Element로 변환하는 것이 바로 ReactDOM입니다.</p>
+<p>unpkg 사이트에서 아까와 마찬가지로 ReactDOM을 가져와 보겠습니다.</p>
+<p>https://unpkg.com/browse/react-dom@18.1.0/</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiznvwk4EiWpjXywHCIx0f1jOi3nnj21gAlValQu33aKMv82RChjbFlPLeNmtWQIAkc99-wwtxhRFGbzTYxulHpuXPRINfm0GEqhY-FSheWZBKkVtEt0WTN43lpyJ0yu4nG0y1h62l9rC_xLzBLTK1VK850_HCw_XKfDxwaopzy5f6r3MyygljztgW1=w640-h478"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>우리가 필요로 하는 거는 바로 react-dom.development.js파일입니다.</p>
+<p>이것도 로컬 파일로 저장해서 아래처럼 로딩해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react-dom.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위에서 로컬로 저장했던 react-dom.development.js 파일을 <code>&lt;script&gt;</code> 태그로 불러오고 브라우저 콘솔 창에서 ReactDOM을 인식해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiL3eaq5n-P3pf92nltkJgxMSAEqvzp626EZLblsTW1TL1H33jfyZnjj-Bn8LnFkbKUn716XBwhcykJ2bhOGQHalyAUtOrxZGcgVgvFvpbwYLMD4JHFo_vL60-hdvx-ijKmOZFq4UB4tDrSUfHjmpD34z7hPLx4bPOPu5bngtmCAeluv_6FZjEb-Ies=w640-h324"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>reactDOM이 제대로 로드되었네요.</p>
+<p>우리가 원하는 함수인 render 함수도 보입니다.</p>
+<p>즉, React 엘레먼트를 reactDOM의 render 함수로 렌더링 하는 게 바로 React 엘러먼트를 HTML의 DOM 형식으로 바꾸는 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react-dom.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">children</span><span class="o">:</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">element</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiNjT5BTsJQK0hilHuQy6l94tH-yV0IR5XefzUpka0NAeUaBc_A-TeUN4EJfFmzELiqER0EPJqSkq-3QVySHfunCSwPVBMxrG8_eYd_HR-Mh6bdBUXSum8PLsWxT8c1Ve6yg5I440s-t73Kt_ZYIpNi4p5ePl3_8lLQBvZywa1ydvxpY8tIkX2onV0n=w640-h198"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>React 18 버전부터 ReactDOM.render를 위와 같이 쓰지 말라고 하는데요.</p>
+<p>React 18 버전으로 코드를 바꿔 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react-dom.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">children</span><span class="o">:</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>container 엘러먼트를 document.getElementById로 지정하고</p>
+<p>ReactDOM.createRoot로 container 항목을 이용해서 Root를 만들고 그 Root에서 render 함수를 적용하는 방식입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgjizxI0AeRYURPsgydUwvrPj51_g_qd8g8mgGAVi1aWe5N42Bl8yRZewhnbJtbiAvEukCQCcYvv8vHAMuKqG0FXdKUwBZqH-9trES8Zv0IzU6VrNiRn5N-OIvMr41f1YUptym3lskeRRT7FisiqqMfc3VcjSdlD5ftabxACz1w_vZ7qFVgcBVzn9mw=w640-h174"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>이제 브라우 저상에서 완벽하게 React 엘러먼트가 적용되었네요.</p>
+<p>그러면 React로 다음과 같은 중첩된 구조의 HTML 태그 구현을 어떻게 할까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">	<span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>ReactJS의 props에 있는 children이 그 역할을 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">	<span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">children</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;현재 시각 :&#34;</span><span class="p">,</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">()],</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// console.dir(element);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>React.createElement의 옵션인 children 항목에 Array를 지정해주면 무한정 데이터를 넣을 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiEasjekMkvHu0dEj6D7RM9IiM5jpeo5OaWdsOnPeZW7ciq0lPLN4bYYQtTk0y2XENa_Ep_5bVGVQ6Xuhw__W5MjB9P9SluDPiR7yN47g3EeJh_A7Cb9f9psYW9Idxkp313dzWHXCNcPqcS4TNEiDjcbLfHbN1sR3xm6Gvkwyso9I6GVpyAKMVW3W0W=w640-h248"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>브라우저에도 제대로 표시될 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEih2WohuhIpTarQBn2GmlkCbpXG9AAvBtzeE28fp5bya-vV4rOnuJT03WWVZUGek_tW4dtrbuaFt6qW_br_BxXkE1C14tyMVrVH0BKQWD5R3UceI9vnbxli8eoxeSQ1LhoF1Y5IeKPQxGQMLAvByt5nUGFRJbLi68JuRvr9Y2YgxJK3Ry0YLdk-YipA=w640-h244"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>결론적으로 말하면 children에 원하는 항목을 넣으면 되는데요.</p>
+<p>children에 React.createElement항목을 넣으면 바로 HTML의 중첩 구조가 되는 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">children</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;현재 시각 :&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;span&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">children</span><span class="o">:</span> <span class="s2">&#34;It is span tag&#34;</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi8mn6hPDUWJqi5hBRu69MhH6EzjJ_lnAqLDsEmDKhPImCWKco0SS_lQYvhOC-NYuVfdavwIZyAgDm0KIsp7uDrOv1wIX2hGd9VZo2fGUiUs8eoJa6t5Ozi9qndtg0SlZsXpEUvo4XNDmuSszm-8Pu4JG0TTc-TExK3BlxBT8Ufxj6NwUPK4FIgiR6Y=w640-h122"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>key 항목을 넣어야 한다는 ReactJS의 경고가 나왔네요.</p>
+<p>중첩된 span 엘러먼트에 key 항목을 아무거나 넣어주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;span&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">children</span><span class="o">:</span> <span class="s2">&#34;It is span tag&#34;</span> <span class="p">}),</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 경고가 보이지 않게 되는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">	<span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;div&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">children</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;현재 시각 :&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;span&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">key</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">children</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;It is span tag&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;p&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">children</span><span class="o">:</span> <span class="s2">&#34;It is a p&#34;</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 span 태그 밑에 또 p 태그를 만들었습니다.</p>
+<p>이렇게 하는 것이 바로 HTML의 중첩 구조를 ReactJS 방식으로 구현하는 건데요.</p>
+<p>React.createElement는 세 번째 인자(인수, argument)를 제공하는데요.</p>
+<p>바로 children을 바로 세 번째 인자(인수)로 넣는 겁니다.</p>
+<p><code>React.createElement(”이름&quot;, {엘리먼트 특성}, ”세 번째 인수”)</code> 방식입니다.</p>
+<p>세 번째 인수 방식은 무한정 넣을 수 있다는 점입니다.</p>
+<p>아래와 같이요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;div&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">className</span><span class="o">:</span> <span class="s2">&#34;container&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;현재 시각 :&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;span&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">key</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">children</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;It is span tag&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">React</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;p&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">key</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">children</span><span class="o">:</span> <span class="s2">&#34;It is a p&#34;</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 해도 결과는 똑같습니다.</p>
+<p>그런데 실제로 우리가 작성하는 React 코드는 위와 같은 방식이 아닌데요.</p>
+<p>우리가 작성하는 ReactJS 코드는 JSX 스타일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">	<span class="kr">const</span> <span class="nx">element2</span> <span class="o">=</span> <span class="p">(</span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">현재</span> <span class="nx">시각</span> <span class="o">:</span> <span class="p">{</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">span</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span><span class="nx">It</span> <span class="nx">is</span> <span class="nx">span</span> <span class="nx">tag</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">It</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">p</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리는 ReactJS 코드를 작성할 때 위와 같은 방식으로 작성하는데요.</p>
+<p>그럼 JSX 스타일의 코드가 어떻게 아까 위에서 만든 React.createElement 방식으로 바뀌게 될까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react-dom.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;container&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">현재</span> <span class="nx">시각</span> <span class="o">:</span> <span class="p">{</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">It</span> <span class="nx">is</span> <span class="nx">span</span> <span class="nx">tag</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">It</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">p</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 에러가 어떻게 나오는지 볼까요?</p>
+<p>강제로 JSX 방식으로 element를 만들어서 그걸 그냥 render 해 봤습니다.</p>
+<p>결과는 에러인데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjxMiDTsft6n0Yt8yNKFySNsK6A1xH-vbW2_6yrUAcspWx0FNWvdX9XMgIxpSLedy174Ikkqu5KTXgGcMUbnyw2jFdkINmvx-i-RlLhUmnVJBEsZjvPvdtLLeY2CsKmAkjqtwfgzvgzomivvhcZYOfmhVqlGEizvKsL3fWm2fcZu_6on-_WyyDaoGVS=w640-h92"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>위와 같은 SyntaxError가 나옵니다.</p>
+<p>왜 그런 걸까요?</p>
+<p>HTML이나 자바스크립트는 위 element 변수의 JSX 코드를 인식하지 못합니다.</p>
+<p>실제로는 element 변수의 내용이 자바스크립트가 아니기 때문입니다.</p>
+<p>그러면 뭐가 더 필요할까요?</p>
+<p>바로 Babel 같은 JSX 컴파일러가 필요합니다.</p>
+<p>Create-React-App으로 작성된 ReactJS 앱을 잘 보시면 webpack과 함께 babel이 설치되어 있는데요.</p>
+<p>바벨(Babel)은 JSX 문법을 자바스크립트 문법으로 바꾸는 트랜스 파일 라이브러리입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjd7irlsYUtT7mVtrFhStnuNHp8VAr2e0Iyg6J6zHGHNlgkn2VyGKU5hBBlDrurTpJLRA6Z4WVK5iELtHk1g76_ORghdjAu-lg31PNcbUUA5Gfh5R8UYipQO-Avh1glvjOoOTsmxYLh4W4fXr5_IpFQx84TVG_MdJ2oo3Ijf3TwP_uY55Ghh3ixd8nB=w640-h422"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>위 사이트에서 “Try it out”을 눌러서 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhU35x8v1fkN8Gqj1MQxCOgvmbXjE9IjK2x1hDthYy76L94y_js_y2t5FULse9L31OsFoa7oe6n-DzGpP_f8jcChwVo7MWj85onLxqyiqBWKtpQD74HoTmcQPmuZrxY0yhkWyDuUck6-q7JIJPEK7cqvzBQtlwzP_z-ir2aF_-hMKBV2JLrDA2rEl2s=w640-h262"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>JSX 스타일이 React.createElement 방식으로 변환되었네요.</p>
+<p>그럼 우리의 index.html 파일에 babeljs를 어떻게 적용시킬까요?</p>
+<p>다시 unpkg 사이트가 갑시다.</p>
+<p>https://unpkg.com/browse/babel-standalone@6.26.0/</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiQzTRVjYudQQjSzALtutsGuMI38eb1zjLHjOaR_c34HWT8bTEtbWk3irQE1NeaUn_20AeU0qfrc3eRS5bjlscGVUxo9Ma6fBRZUL75Q3HvJer-FukI_CNMa6d-Kbi71DtrLsSM0yhzDsi_nUpkC3MiwQXFULgE8bYsAeEuNVVrZaqbMyntRsIZ4QJS=w640-h336"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">https</span><span class="o">:</span><span class="c1">//unpkg.com/browse/babel-standalone@6.26.0/babel.js
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 babel-standalone 파일을 로컬로 저장하면 됩니다.</p>
+<p>babel.js 파일로 저장해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react-dom.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;babel.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 나서 위와 같이 babel.js를 script 태그로 불러옵니다.</p>
+<p>그러면 babel 컴파일러가 어떻게 우리의 JSX 코드를 어떻게 컴파일할까요?</p>
+<p>다음과 같이 JSX 코드가 들어있는 script 태그를 바꾸면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text/babel&#34;</span><span class="o">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>script의 type를 “text/babel”이라고 지정하면 babel 컴파일러가 알아서 컴파일해줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="o">&gt;&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;react-dom.development.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;babel.js&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text/babel&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">element</span> <span class="o">=</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;container&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">현재</span> <span class="nx">시각</span> <span class="o">:</span> <span class="p">{</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">().</span><span class="nx">toLocaleString</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">It</span> <span class="nx">is</span> <span class="nx">span</span> <span class="nx">tag</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">It</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">p</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">container</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&#34;root&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">root</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>전체 Source Code이고 실행 결과는 아까와 같이 아래 그럼처럼 잘 나오게 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh_lSJ0DqOd1e4E83pUrO8-o_-JDiZHiQn6s_Yrly906d5U7FmeLI1Oz-VsWByojpSENICmxoRE6vWIACu-antxLaDIMITmWLY7-bs7fY0_DOCfc4DS2fO4r289cZdHsiA9yTPXYFOqJWvR6RB7ZZ0hOHMzBw-C56foDStI5kvjhXDnUKRmzeWHEi2J=w640-h98"
+         alt="mycodingshub.github.io-understanding-react-fundamentals"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>mycodingshub.github.io-understanding-react-fundamentals</figcaption>
+  </figure></p>
+<p>babel에서 경고를 날리는데 크게 문제 될 건 없어 보이네요.</p>
+<h2 id="끝맺음">끝맺음</h2>
+<p>뭔가 간단해 보이지 않나요?</p>
+<p>이제 ReactJS의 작동원리는 이해했으니까 ReactJS 코드도 더 잘 짤 수 있지 않을까 싶네요.</p>
+<p>희망사항이지만요.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/react-%EC%9B%90%EB%A6%AC/" role="button">react 원리</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-12-17-how-to-insert-google-adsense-into-react-code/">리액트(React) 코드에 구글 애드센스(google adsense) 추가하기</a></h2>
+                  <p>리액트(React) 코드에 구글 애드센스(google adsense) 추가하기</p>
+                  <p>
+  <small>December 17, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>2&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-11-27-react-practices/">React 코드 작성에 있어 가장 효율적인 관행은?</a></h2>
+                  <p>React 코드 작성에 있어 가장 효율적인 관행은?</p>
+                  <p>
+  <small>November 27, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-11-14-how-to-use-and-why-we-use-usememo-hook-in-react/">useMemo Hook을 이용한 반응속도 빠른 React 코드 작성하기</a></h2>
+                  <p>useMemo Hook의 이해와 이를 이용한 반응속도 빠른 React 코드 작성하기</p>
+                  <p>
+  <small>November 14, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

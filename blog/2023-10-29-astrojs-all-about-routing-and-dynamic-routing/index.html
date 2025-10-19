@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</title>
+<meta name="description" content="astrojs에서 라우팅(다이내믹 라우팅)에 대해 살펴봅시다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)" />
+<meta property="og:description" content="astrojs에서 라우팅(다이내믹 라우팅)에 대해 살펴봅시다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-10-29T04:40:26Z" />
+<meta property="article:modified_time" content="2023-10-29T04:40:26Z" />
+<meta property="article:tag" content="astrojs" />
+<meta property="article:tag" content="routing" />
+<meta property="article:tag" content="dynamic routing" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)" />
+<meta name="twitter:description" content="astrojs에서 라우팅(다이내믹 라우팅)에 대해 살펴봅시다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)\"",
+  "description": "\"astrojs에서 라우팅(다이내믹 라우팅)에 대해 살펴봅시다.\"",
+  "datePublished": "\"2023-10-29T04:40:26Z\"",
+  "dateModified": "\"2023-10-29T04:40:26Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</h1>
+        <p>
+  <small>October 29, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>astrojs 강좌가 벌써 5번째네요.</p>
+<p>지난 시간 강좌 목록입니다.</p>
+<p>전체 astrojs 강좌 목록입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs">astrojs 강좌 1편. astrojs에서 데이터 가져오기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme">astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component">astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture">astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing">astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing">astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering">astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token">astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia">astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목차 **</p>
+<ol>
+<li>
+<p><a href="#1-astrojs-%ed%8f%b4%eb%8d%94-%eb%b0%8f-%ed%8c%8c%ec%9d%bc-%eb%9d%bc%ec%9a%b0%ed%8c%85">AstroJS pages 폴더</a></p>
+</li>
+<li>
+<p><a href="#2-pages-%ed%8f%b4%eb%8d%94-%eb%b0%91%ec%97%90-%ec%9e%88%eb%8a%94-%ed%8c%8c%ec%9d%bc-%eb%9d%bc%ec%9a%b0%ed%8c%85-%ec%a0%9c%ec%99%b8%ed%95%98%ea%b8%b0">pages 폴더 밑에 있는 파일 라우팅 제외하기</a></p>
+</li>
+<li>
+<p><a href="#3-%eb%8b%a4%ec%9d%b4%eb%82%b4%eb%af%b9-%eb%9d%bc%ec%9a%b0%ed%8c%85">다이내믹 라우팅</a></p>
+</li>
+<li>
+<p><a href="#4-rest-parameters%eb%a5%bc-%ec%9d%b4%ec%9a%a9%ed%95%9c-%eb%8b%a4%ec%9d%b4%eb%82%b4%eb%af%b9-%eb%9d%bc%ec%9a%b0%ed%8c%85">Rest Parameters를 이용한 다이내믹 라우팅</a></p>
+</li>
+<li>
+<p><a href="#5-props%eb%8f%84-%ea%b0%99%ec%9d%b4-%eb%a6%ac%ed%84%b4%ed%95%98%ea%b8%b0">props도 같이 리턴하기</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-astrojs-폴더-및-파일-라우팅">1. AstroJS 폴더 및 파일 라우팅</h2>
+<p>AstroJS에서 라우팅은 Next.js에서와 같이 src/pages 폴더에 있는 파일은 무조건 라우팅이 되는 방식인데요.</p>
+<p>src/pages 폴더의 index.astro 파일이 가장 기본이 되는 라우팅입니다.</p>
+<p>개발서버일 경우 <code>http://localhost:3000/</code> 주소가 되는 거죠.</p>
+<p>그러면 <code>/about</code> 이라는 라우팅을 만들려면 다음과 같이 하면 됩니다.</p>
+<p>src/pages/about/index.astro 방식과</p>
+<p>src/pages/about.astro 방식이 있습니다.</p>
+<p>이렇듯 폴더 방식, 파일 방식 모두 제공하기 때문에 편한 방식을 쓰는게 좋습니다.</p>
+<p>그리고, astro.config.mjs 파일에서 다음과 같이 MDX를 추가했으면,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;astro/config&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">react</span> <span class="nx">from</span> <span class="s2">&#34;@astrojs/react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">mdx</span> <span class="nx">from</span> <span class="s2">&#34;@astrojs/mdx&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">tailwind</span> <span class="nx">from</span> <span class="s2">&#34;@astrojs/tailwind&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// https://astro.build/config
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">integrations</span><span class="o">:</span> <span class="p">[</span><span class="nx">react</span><span class="p">(),</span> <span class="nx">mdx</span><span class="p">(),</span> <span class="nx">tailwind</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>mdx(md) 확장자도 astro 확장자와 더불어 라우팅이 됩니다.</p>
+<p>리액트 컴포넌트는 라우팅이 되지 않으니 각별히 주의 바랍니다.</p>
+<hr>
+<h2 id="2-pages-폴더-밑에-있는-파일-라우팅-제외하기">2. pages 폴더 밑에 있는 파일 라우팅 제외하기</h2>
+<p>pages 폴더 밑에 부득이하게 컴포넌트를 만들었는데 이 파일은 라우팅에서 제외하려면 파일 이름 첫 글자로 &lsquo;_&lsquo;를 추가해 주면 됩니다.</p>
+<p>아래와 같이 notroute.astro 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../layouts/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Not route&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">a</span> <span class="nx">route</span> <span class="nx">file</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 브라우저에서 보시면 아래와 같이 잘 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiLJA2TJ-mPL6XQ4WxELS4srjTRRuMcK8Fl2muHXSdPrAeVQVAx65OrlNF2DmePC7fhJI-XOcDagiy8yRj3uiIcn1pNJP_VsnS5Qm_E1p0t3goNgMqjydIQXiSQSnICFqaOFijaRsCRgkovs1fwkbWOgBtOxG66lrjmPRuqBzH4Q5mP6qweRQnBQGgm4Po"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 파일이름 첫 글자로 &lsquo;_&lsquo;를 추가해 볼까요?</p>
+<p>src/pages/_notroute.astro</p>
+<p>다시 브라우저에서 보시면 아래와 같이 라우팅에서 제외된 게 보이실 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjkgWzekAchadWuojxSlJUZa8VJtnYs3UMINiZSNfR77aFPNuRHdt93BqLilVD0u_QOkf824kk65d1OER10w8XN7QpAstD3NUQ_u2hRs7OBzCds7qV8llUO3BlSvGTncPLOnum1NrQiGVNMw4z8JFCr3VKPDP7vevre4Hmutv0cStXiBPwKISdiy2AkG7E"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="3-다이내믹-라우팅">3. 다이내믹 라우팅</h2>
+<p>우리가 Next.js나 Remix.run에서 보듯이 다이내믹 라우팅은 현대 자바스크립트 프레임워크에서 필수인데요.</p>
+<p>AstroJS도 다이내믹 라우팅을 제공해 줍니다.</p>
+<p>방식은 Next.js와 같은 방식이고요.</p>
+<p>테스트를 위해 src/pages 폴더에서 dynamic 폴더를 만듭시다.</p>
+<p>그리고 다이내믹 라우팅을 위해 아래 이름과 같이 만들어 볼까요?</p>
+<p><code>src/pages/dynamic/[year]/[title].astro</code></p>
+<p>다이내믹 라우팅을 두 개 사용하고 있는데요.</p>
+<p>바로 year, title 파라미터입니다.</p>
+<p>이제, 이 코드를 Astro 컴포넌트에서 접근해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../../../layouts/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">year</span><span class="p">,</span> <span class="nx">title</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">params</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">year</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 만들고 주소창에 <code>http://localhost:4321/dynamic/2023/title-1</code> 주소로 접근하면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi5M0xfvLAsVF11ZJyUEJZ4QCkrU-wIlNCSfCDvl5kuRjCnVrcqCJRMxsyUlIS36ONvUuHFB1j-n5fhc_qGMQVuxxOhQi7i4kP3asp5RCbbSXIlYFv5JwfoTQDawVeuEwa6GAR4jeGXPC-uV7aEOg6iZJbl1Wr7R7tq89buZKOEW_P8M9MWZCZfPoJimS8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>getStaticPaths 함수를 이용해서 다이내믹 라우팅을 구성하라는 에러메시지인데요.</p>
+<p>왜 getStaticPaths 함수를 이용해야 하냐면 Next.js의 getStaticProps, getStaticPaths와 같은 이유인데요.</p>
+<p>AstroJS는 정적 사이트 제조기로 유명합니다.</p>
+<p>빌드 시에 단순히 HTML 파일을 만드는데요.</p>
+<p>그래서 다이내믹 라우팅에서는 다이내믹 라우팅이 될만한 경우의 수를 제공해 줘야 합니다.</p>
+<p>여기서 경우의 수는 바로 params 가 되는데요.</p>
+<p>우리가 아래와 같이 다이내믹 라우팅으로 year와 title 두 개를 사용했는데요.</p>
+<p><code>src/pages/dynamic/[year]/[title].astro</code></p>
+<p>그러면 params에 year와 title에 대한 모든 경우의 수를 제공해 줘야 합니다.</p>
+<p>이제, 다시 코드를 만들어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">GetStaticPaths</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../../../layouts/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">getStaticPaths</span> <span class="o">=</span> <span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">year</span><span class="o">:</span> <span class="s2">&#34;2023&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;title-1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">year</span><span class="o">:</span> <span class="s2">&#34;2024&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;title-2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="nx">satisfies</span> <span class="nx">GetStaticPaths</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">year</span><span class="p">,</span> <span class="nx">title</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">params</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">year</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드는 별거 없이 AstroJS에서 이름이 예약된 함수인 getStaticPaths 함수를 export 하면 됩니다.</p>
+<p>getStaticPaths 함수는 async 방식으로도 작동할 수 있습니다.</p>
+<p>params를 어떻게 주냐면요.</p>
+<p>getStaticPaths 함수는 무조건 배열을 리턴해야 되는데요.</p>
+<p>이 배열은 params 항목이 있는 객체가 들어 있어야 합니다.</p>
+<p>그래야 Astro.params로 params에 접근할 수 있기 때문입니다.</p>
+<p>그리고 params 객체에는 다시 우리가 다이내믹 라우팅으로 사용한 year, title에 대한 구체적인 값을 지정해 줘야 합니다.</p>
+<p>위 코드에서 보시면 경우의 수가 2가지인데요.</p>
+<p>이제 브라우저에서 경우의 수에 맞게 접속해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjo7ClZv8ezeNwlSnG__lI2gvQFM8hLocQ03EooQFgpWq25pFuOESDmiE5Q7TbSuwsR69usrrMEDddEB1kWgUlu3fQVuvi0lOwerbAzRfu5gf6Yfv6avJtVF5Aio7rYtB-2sydPme4U9r0vHj2mmgEWaYoYzzKC7_WZRhxhgQfjvFnn_M3CHrgJlm8ku3M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg2UjvC8qemBEvNAXHJ3_r8oF2vNVCX-jk2Uas0mMQO3_SVzKfiRl3WXdCqW_X-If7KscHy2_r8mVMUWX_2a9zxp0VVHml_Ky5r4vnq8UlkJ7g6mrXE_KqWdmxDPOfga7cboI_vW2niPeCl9d7UrVjHMcWB7gsgDBxnLO98gn6tNL8wDia9upEG8aYc4ig"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjHIPHkqC9nMYkQdOROTr1fsIkuDs8jm0b19e1a7F4g_g_27-LKJlkqi8YVD5DNZlqE96r8ilJw0Ywj07qW7tbLoWoO2lizYYypLaTZRXMGe0UumurI4W9ZKMrFcoPtHR05qOqyrmfrOciWLOjLx6RUX4K-nQydLsNJnga8g3dYvkciB-Iexjs3sVs-3B8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 3개의 그림을 보시면 우리가 params으로 지정했던 경우의 수에 맞으면 라우팅이 작동되고 그렇지 않으면 없는 페이지라고 나옵니다.</p>
+<p>실제 페이지를 빌드했을 경우 어떻게 나오는지 한번 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  dist git:<span class="o">(</span>main<span class="o">)</span> ✗ tree ./dynamic -L <span class="m">3</span>
+</span></span><span class="line"><span class="cl">./dynamic
+</span></span><span class="line"><span class="cl">├── <span class="m">2023</span>
+</span></span><span class="line"><span class="cl">│   └── title-1
+</span></span><span class="line"><span class="cl">│       └── index.html
+</span></span><span class="line"><span class="cl">└── <span class="m">2024</span>
+</span></span><span class="line"><span class="cl">    └── title-2
+</span></span><span class="line"><span class="cl">        └── index.html
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">5</span> directories, <span class="m">2</span> files
+</span></span><span class="line"><span class="cl">➜  dist git:<span class="o">(</span>main<span class="o">)</span> ✗ </span></span></code></pre></div>
+  </figure>
+</div>
+<p>Bash 창에서 tree 명령어를 이용해서 dist 폴더의 dynamic 폴더를 조사해 보면 위와 같이 우리가 경우의 수로 제공한 params으로 이루어진 폴더 및 파일만 빌드되었습니다.</p>
+<hr>
+<h2 id="4-rest-parameters를-이용한-다이내믹-라우팅">4. Rest Parameters를 이용한 다이내믹 라우팅</h2>
+<p>아까 우리가 했던 다이내믹 라우팅은 year, title 두 개의 params을 이용했는데요.</p>
+<p>이 경우 year와 title을 브라켓이 넣은 폴더 또는 파일을 넣었는데요.</p>
+<p>&lsquo;&hellip;&rsquo; 같은 Rest Parameters를 사용하면 AstroJS에서 파일 이름을 좀 더 간단하게 사용할 수 있습니다.</p>
+<p>src/pages/dynamic2 폴더에 <code>[...path].astro</code>라는 파일을 만듭시다.</p>
+<p>브라켓 안에서 &lsquo;&hellip;&lsquo;로 시작하고 이름은 &lsquo;path&rsquo;가 됩니다.</p>
+<p>그러면 params에 &lsquo;path&rsquo; 항목을 넣어 getStaticPaths 함수를 리턴해 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">GetStaticPaths</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../../layouts/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">getStaticPaths</span> <span class="o">=</span> <span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;2023/10/29/test-1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;2024/1/1/test-2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="nx">satisfies</span> <span class="nx">GetStaticPaths</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">path</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">params</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;dynamic2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">path</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Rest Parameters를 이용하면 아주 복잡한 URL을 구현할 수 있죠.</p>
+<p>이제 실행해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgpXxDHB1chrvXyyUVlGoKDbKKioUlamRFzMOGOeVw38EDjXWBopLlqXicJx3N8J_oaPrmZ3ZQ9MJ0VxprCh9ie5fOAcJhlEjLPH9Gf3IZPBKXqprx6zZDWF93vy3zCs0JUyAUc30sZgRmn5FX6PPx4N1XygPUOAWl8C3__0OL4O2wJfFnu19yoHBDwtA8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 정상 작동합니다.</p>
+<p>다이내믹 라우팅에 대해 정리하자면,</p>
+<p>우리가 리턴 할 객체에는 params 항목을 넣어야 하는데요.</p>
+<p>params 항목도 객체입니다.</p>
+<p>그리고 params 항목의 객체에 들어갈 항목은 바로 우리가 브라켓 안에 넣었던 이름의 항목이어야 하는 거죠.</p>
+<p>예를 들어, 브라켓에 <code>[...path]</code>라고 path라는 이름으로 정했는데, params에 아래와 같이 &lsquo;url&rsquo;이라고 하면 에러가 납니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">getStaticPaths</span> <span class="o">=</span> <span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">url</span><span class="o">:</span> <span class="s2">&#34;2023/10/29/test-1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="5-props도-같이-리턴하기">5. props도 같이 리턴하기</h2>
+<p>getStaticPaths 함수는 배열을 리턴하고 배열 안에는 객체가 들어가야 하는데, 그 객체에는 params 항목이 들어가야 한다고 했는데요.</p>
+<p>params 항목 외에 props 항목도 같이 리턴할 수 있습니다.</p>
+<p>그러면 Astro.props를 이용해서 접근할 수 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">GetStaticPaths</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../../layouts/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">getStaticPaths</span> <span class="o">=</span> <span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;2023/10/29/test-1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">props</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">test</span><span class="o">:</span> <span class="s2">&#34;test-1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;2024/1/1/test-2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">props</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">test</span><span class="o">:</span> <span class="s2">&#34;test-2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="nx">satisfies</span> <span class="nx">GetStaticPaths</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">path</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">params</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">test</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;dynamic2&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">path</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">test</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjuF5v-hUAW6c7ORY9rBcNGnZIwB2z4r3MZk2Q30zeW57Ce-_T6NGXboX0PvT6rVjZzDOFdJaUzRePb4ss9SALDclYGDLYaFQQs4cqx4Hlh9RxqtQ9IC6-PYVp4tOS6YeHibNmHhIvvKNbDEsQ4eISFPswdpBLwpZ92ogQ7UDgFkPDghQdzn3rsh2dlR3g"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 test 변수의 값이 잘 나오고 있습니다.</p>
+<p>여기서 배운 props를 같이 전달하는 방식은 다음 시간에 배울 Content Collection편에서 사용할 예정이라 미리 배워 두는 겁니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/astrojs/" role="button">astrojs</a>
+        <a class="btn btn-light" href="/tags/routing/" role="button">routing</a>
+        <a class="btn btn-light" href="/tags/dynamic-routing/" role="button">dynamic routing</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm/">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></h2>
+                  <p>풀스택 개발하기 AstroJS + Cloudflare pages + D1 + Drizzle ORM</p>
+                  <p>
+  <small>December 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></h2>
+                  <p>Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session/">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></h2>
+                  <p>Firebase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

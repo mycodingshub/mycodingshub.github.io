@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성</title>
+<meta name="description" content="2편, 백엔드 로직을 위한 rusqlite, serde_json 설치 및 코드 작성" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성" />
+<meta property="og:description" content="2편, 백엔드 로직을 위한 rusqlite, serde_json 설치 및 코드 작성" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-08-21T06:36:04Z" />
+<meta property="article:modified_time" content="2023-08-21T06:36:04Z" />
+<meta property="article:tag" content="tauri" />
+<meta property="article:tag" content="sveltejs" />
+<meta property="article:tag" content="rust" />
+<meta property="article:tag" content="desktop app" />
+<meta property="article:tag" content="cross platform" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성" />
+<meta name="twitter:description" content="2편, 백엔드 로직을 위한 rusqlite, serde_json 설치 및 코드 작성" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성\"",
+  "description": "\"2편, 백엔드 로직을 위한 rusqlite, serde_json 설치 및 코드 작성\"",
+  "datePublished": "\"2023-08-21T06:36:04Z\"",
+  "dateModified": "\"2023-08-21T06:36:04Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-08-21-tauri-desktop-app-tutorial-rust-svelte/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Tauri 실전 코딩 2편 - Rust로 Sqlite3 DB 읽어오는 백엔드 로직 작성</h1>
+        <p>
+  <small>August 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간에 이어 Rust로 크로스플랫폼 데스크탑 앱 만들기 2편을 시작하겠습니다.</p>
+<p>1편. <a href="https://mycodingshub.github.io/blog/2023-08-20-tauri-desktop-app-cross-platform-vs-electronjs">Tauri 실전 코딩 1편 - Tauri로 일렉트론JS 같은 데스크탑 앱 만들기</a></p>
+<hr>
+<h2 id="db-작업을-위한-패키지-설치하기">DB 작업을 위한 패키지 설치하기</h2>
+<p>Rust에서 Sqlite3 DB를 다루는 패키지로 가장 많이 쓰이는게 바로 rusqlite인데요.</p>
+<p>그리고 JSON 관련 패키지는 serde_json입니다.</p>
+<p>일단 Cargo.toml 파일이 있는 src-tauri 폴더로 가서 차례대로 패키지를 설치합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> src-tauri
+</span></span><span class="line"><span class="cl">cargo add serde --features<span class="o">=</span>derive
+</span></span><span class="line"><span class="cl">cargo add serde_json
+</span></span><span class="line"><span class="cl">cargo add rusqlite --features<span class="o">=</span>serde_json --features<span class="o">=</span>bundled</span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="sqlite3-db-파일-준비하기">Sqlite3 DB 파일 준비하기</h2>
+<p>테스트를 위해 sqlite3 DB 파일을 준비해야 하는데요.</p>
+<p>저는 KODI라는 동영상 관린 프로그램이 만든 DB 파일인 &ldquo;MyVideos116.db&rdquo; 파일을 사용할겁니다.</p>
+<p>본인한테 있는 sqlite3 DB 파일이면 다 되니까요 참고바랍니다.</p>
+<p>일단 &ldquo;MyVideos116.db&rdquo; 파일을 src-tauri 폴더로 복사해 놓습니다.</p>
+<hr>
+<h2 id="tauri-command-손보기">tauri command 손보기</h2>
+<p>지난 시간에 잠깐 맛 봤던 tauri command가 2개 있었습니다.</p>
+<p>greet, hello가 그건데요.</p>
+<p>일단 hello란 함수를 get_count라는 이름으로 바꾸고,</p>
+<p>greet란 함수를 search라는 이름으로 바꿉시다.</p>
+<p>그러면, main함수에 있는 tauri Builder에 있는 이름도 바꿔줘야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">tauri</span>::<span class="n">Builder</span>::<span class="n">default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">invoke_handler</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_handler!</span><span class="p">[</span><span class="n">search</span><span class="p">,</span><span class="w"> </span><span class="n">get_count</span><span class="p">])</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">tauri</span>::<span class="fm">generate_context!</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;error while running tauri application&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고, Svelte 코드로 돌아가서 Search.svelte 파일에 있는 관련 내용도 바꿔야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">invoke</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@tauri-apps/api/tauri&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">onMount</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;svelte&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">returnMsg</span><span class="o">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">countMsg</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">onMount</span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">countMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;get_count&#34;</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="kd">function</span> <span class="nx">search</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">let</span> <span class="nx">result</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;search&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">query</span><span class="o">:</span> <span class="nx">query</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span> <span class="o">!==</span> <span class="s2">&#34;Error&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">returnMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Svelte 코드를 보시면 invoke를 두 번 했는데요.</p>
+<p>첫번재는 onMount 훅을 이용해서 Svelte 컴포넌트가 마운트 될 때 자동으로 하게끔 했습니다.</p>
+<p>get_count는 DB에 있는 총 데이터 개수를 구하는 로직입니다.</p>
+<p>그걸 countMsg라는 변수에 저장했고요.</p>
+<p>두번째, search invoke에서는 query라는 값으로 전달하고 다시 그걸 result로 받아서 JSON 파싱해서 returnMsg라는 스트링 배열로 받습니다.</p>
+<p>일단 여기까지 해놓고 다시 Rust 코드로 넘어가 보겠습니다.</p>
+<hr>
+<h2 id="get_count-함수-구현하기">get_count 함수 구현하기</h2>
+<p>rusqlite 패키지로 DB에서 COUNT 정보를 얻어오는 로직을 구현해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">get_count</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_sqlite_count</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Err</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#34;Error&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 tauri command는 위와 같이 get_sqlite_count라는 함수를 호출하고, 그 결과를 String 타입으로 전달해 주면 끝입니다.</p>
+<p>COUNT인데 왜 String으로 전달했냐면요.</p>
+<p>인터넷의 모든 Request나 Response가 모두 문자열로 이루어지는 거 아시죠.</p>
+<p>그래서 문자열로 전달하는게 가장 쉽습니다.</p>
+<p>UI 부분에서는 계산을 하는게 아니라 화면에 그냥 보여주면 되기 때문에 number 타입으로 줄 필요가 없는거죠.</p>
+<p>자, 이제 get_sqlite_count 함수를 구현해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">use</span><span class="w"> </span><span class="n">rusqlite</span>::<span class="p">{</span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">Connection</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">get_sqlite_count</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="kt">usize</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">std</span>::<span class="n">error</span>::<span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Connection</span>::<span class="n">open</span><span class="p">(</span><span class="s">&#34;MyVideos116.db&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">stmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conn</span><span class="p">.</span><span class="n">prepare</span><span class="p">(</span><span class="s">&#34;SELECT COUNT(c00) from movie_view&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stmt</span><span class="p">.</span><span class="n">query_map</span><span class="p">([],</span><span class="w"> </span><span class="o">|</span><span class="n">row</span><span class="o">|</span><span class="w"> </span><span class="n">row</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">first_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rows</span><span class="p">.</span><span class="n">next</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">first_result</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Some</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">unwrap_or</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">None</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>rusqlite 패키지는 무조건 Result를 리턴해야 하거든요.</p>
+<p>그래서 get_sqlite_count 함수도 Result를 리턴하게 끔 설계했습니다.</p>
+<p>코드를 잠깐 보시면 Connection::open으로 DB 파일을 오픈하고,</p>
+<p>그리고 우리가 원하는 SQL 문장인 stmt(statement)를 준비한 다음 query_map을 이용해서 데이터를 얻습니다.</p>
+<p>여기서 우리가 COUNT를 가져오기 때문에 숫자입니다.</p>
+<p>그래서 rows.next()와 match 문법으로 값을 count라는 변수에 넣어주고 최종적으로 Ok(count)라고 리턴 해 줍니다.</p>
+<p>그러면 다시 get_count라는 tauri command를 보시면, count 값을 String으로 변환해서 리턴 해 줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">get_count</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_sqlite_count</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Err</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#34;Error&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 잘못 된 경우 문자열로 &ldquo;Error&quot;이라고 명시적으로 리턴했습니다.</p>
+<p>나중에 Svelte에서 &ldquo;Error&quot;에 대한 처리를 해주면 됩니다.</p>
+<p>이제 테스트 해볼가요?</p>
+<p>Search.svelte 코드에서 countMsg라는 변수를 아래 위치에 넣어둡니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">invoke</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@tauri-apps/api/tauri&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">onMount</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;svelte&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">countMsg</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">onMount</span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">countMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;get_count&#34;</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="p">...</span>
+</span></span><span class="line"><span class="cl"> <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">section</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;w-full space-y-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;li-style&#34;</span><span class="o">&gt;</span><span class="nx">Total</span> <span class="o">:</span> <span class="p">{</span><span class="nx">countMsg</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">section</span><span class="o">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjgF_ZEot8dCytVIfhv5sFBqLz6avmPwvate465bjFONy3-wocPdTfAsEhpxVsgX66rbi6mViyYxKzoMCfI8WyrFaPG3cJWcA6DGJUlVgewrTrGaZ68-V9oKXX3SkWrEOdgVIA3fDMGDrs_3e1IFWD4t1E6qQdVQrVShHyw6Y9pAbwljsK10XDlCvuRlPI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>실행 결과는 위와 같이 성공적입니다.</p>
+<hr>
+<h2 id="search-버튼에-대한-벡엔드-로직-구현하기">search 버튼에 대한 벡엔드 로직 구현하기</h2>
+<p>이제 남은 건 search 버튼에 입력된 텍스트에 따라 DB에서 값을 검색하는 로직을 구현해야 하는데요.</p>
+<p>일단 Svelte 쪽 UI 코드 전부를 적어 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;ts&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">invoke</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@tauri-apps/api/tauri&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span> <span class="p">{</span> <span class="nx">onMount</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;svelte&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">returnMsg</span><span class="o">:</span> <span class="p">[</span><span class="nx">string</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">countMsg</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">onMount</span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">countMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;get_count&#34;</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="kd">function</span> <span class="nx">search</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">result</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;search&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">query</span><span class="o">:</span> <span class="nx">query</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span> <span class="o">!==</span> <span class="s2">&#34;Error&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">returnMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">section</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;w-full space-y-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;li-style&#34;</span><span class="o">&gt;</span><span class="nx">Total</span> <span class="o">:</span> <span class="p">{</span><span class="nx">countMsg</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span>
+</span></span><span class="line"><span class="cl">      <span class="k">for</span><span class="o">=</span><span class="s2">&#34;default-search&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span><span class="nx">Search</span><span class="o">&lt;</span><span class="err">/label</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;relative&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">svg</span>
+</span></span><span class="line"><span class="cl">          <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;w-4 h-4 text-gray-500 dark:text-gray-400&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">aria</span><span class="o">-</span><span class="nx">hidden</span><span class="o">=</span><span class="s2">&#34;true&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">xmlns</span><span class="o">=</span><span class="s2">&#34;http://www.w3.org/2000/svg&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">fill</span><span class="o">=</span><span class="s2">&#34;none&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">viewBox</span><span class="o">=</span><span class="s2">&#34;0 0 20 20&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">path</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">=</span><span class="s2">&#34;currentColor&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">-</span><span class="nx">linecap</span><span class="o">=</span><span class="s2">&#34;round&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">-</span><span class="nx">linejoin</span><span class="o">=</span><span class="s2">&#34;round&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">stroke</span><span class="o">-</span><span class="nx">width</span><span class="o">=</span><span class="s2">&#34;2&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">d</span><span class="o">=</span><span class="s2">&#34;m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/svg&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;search&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;default-search&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;css-input&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&#34;Search...&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">bind</span><span class="o">:</span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">query</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">required</span>
+</span></span><span class="line"><span class="cl">      <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span> <span class="nx">on</span><span class="o">:</span><span class="nx">click</span><span class="o">|</span><span class="nx">preventDefault</span><span class="o">=</span><span class="p">{</span><span class="nx">search</span><span class="p">}</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;css-button&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span><span class="nx">Search</span><span class="o">&lt;</span><span class="err">/button</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="err">#</span><span class="k">if</span> <span class="nx">returnMsg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!==</span> <span class="s2">&#34;&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">ul</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;ul-style&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="err">#</span><span class="nx">each</span> <span class="nx">returnMsg</span> <span class="nx">as</span> <span class="nx">result</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">li</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;li-style&#34;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">result</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="err">/each}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="err">/if}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/section&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">style</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;postcss&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/style&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>style 부분은 지난 시간과 동일해서 생략했습니다.</p>
+<p>UI 로직은 아주 간단합니다.</p>
+<p>returnMsg 라는 스트링 배열에 값을 받아와서 그냥 화면에 <code>ul&gt;li</code> 방식으로 뿌려주는 겁니다.</p>
+<hr>
+<h2 id="search-커맨드-작성">search 커맨드 작성</h2>
+<p>이제, 러스트쪽 tauri command 부분을 손보겠습니다.</p>
+<p>지난 시간에 greet란 이름의 함수였는데요.</p>
+<p>이 이름을 search라고 바꾸고 아래처럼 입력합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">search</span><span class="p">(</span><span class="n">query</span>: <span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_sqlite_search</span><span class="p">(</span><span class="n">query</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">json_strings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serde_json</span>::<span class="n">to_string</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">match</span><span class="w"> </span><span class="n">json_strings</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="nb">Ok</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="n">json_string</span><span class="p">.</span><span class="n">is_empty</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="s">&#34;No Results&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">json_string</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="nb">Err</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#34;Error&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Err</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#34;Error&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>search 함수도 이론적으로는 get_count 함수와 비슷합니다.</p>
+<p>get_sqlite_search 함수를 실행해서 그 결과 값을 JSON 형태로 리턴 해 주면 됩니다.</p>
+<p>match 부분을 잘 보시면 첫 번째 match는 get_sqlite_search 리턴에 대한 match 부분이고,</p>
+<p>두 번째 match는 serde_json의 결과에 대한 match입니다.</p>
+<p>그래서 값이 없으면 &ldquo;No Results&quot;를 리턴하게 끔 설계했습니다.</p>
+<p>그리고 에러인 경우 &ldquo;Error&quot;라고 리턴하고요.</p>
+<p>이제, get_sqlite_search 함수를 설계해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">get_sqlite_search</span><span class="p">(</span><span class="n">query</span>: <span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">std</span>::<span class="n">error</span>::<span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Connection</span>::<span class="n">open</span><span class="p">(</span><span class="s">&#34;MyVideos116.db&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">query_param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">format!</span><span class="p">(</span><span class="s">&#34;%</span><span class="si">{}</span><span class="s">%&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">stmt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conn</span><span class="p">.</span><span class="n">prepare</span><span class="p">(</span><span class="s">&#34;SELECT c00 FROM movie_view WHERE c00 LIKE ?&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stmt</span><span class="p">.</span><span class="n">query_map</span><span class="p">(</span><span class="fm">params!</span><span class="p">[</span><span class="n">query_param</span><span class="p">],</span><span class="w"> </span><span class="o">|</span><span class="n">row</span><span class="o">|</span><span class="w"> </span><span class="nb">Ok</span><span class="p">(</span><span class="n">row</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">))</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Vec</span>::<span class="n">new</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">rows</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">results</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">row</span><span class="o">?</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">is_empty</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Err</span><span class="p">(</span><span class="s">&#34;No Results&#34;</span><span class="p">.</span><span class="n">into</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// println!(&#34;{:?}&#34;, results);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>get_sqlite_search 함수는 리턴 타입이 조금 복잡한데요.</p>
+<p>rusqlite 패키지를 쓰기 때문에 무조건 Result를 리턴해야 하고, 성공했을 때는 String의 벡터를 리턴할 겁니다.</p>
+<p>왜냐하면 결과 값이 여러 가지기 때문입니다.</p>
+<p>get_sqlite_count 함수와 마찬가지로 Connection을 구한 다음, stmt를 만들고, 마지막으로 query_map으로 실행하면 됩니다.</p>
+<p>여기서, params! 라는 매크로를 썼는데요.</p>
+<p>SQL에서 특정 문자열이 포함 되는 가를 표현할 때 &lsquo;%&lsquo;를 씁니다.</p>
+<p>&ldquo;%{}%&rdquo; 라고 쓴 거는 앞 뒤로 %를 써서 검색 query가 어디에 있듯 query가 포함된 모든 자료를 찾을 수 있습니다.</p>
+<p>이제 실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgDQXSiVjGrCavJ1bIZ3xFsld7GT_p1q8dnmuBCBDf5Iu1F0Tad0p_FRv3t_WRlYe4pjB7_7rMOvpL3YnpPFbnTh2CDcQ0_sa5x2JlIibloKXkQPTH88W-TgTNjtvC5gbTw-ayNVde9CH69QKnZ93tyRSdufAmlQibHhWgfPwYrMcmztVchBMhujHCMGNE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>깔끔한 디자인으로 검색결과가 잘 나오고 있습니다.</p>
+<p>Rust에서 Svelte로 넘겨준 검색결과는 처음에는 문자열 벡터였는데, 그걸 serde_json으로 아주 긴 문자열로 변환했고,</p>
+<p>다시 Svelte 코드의  search 함수에서 아래와 같이 JSON 파싱했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">search</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">result</span><span class="o">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">invoke</span><span class="p">(</span><span class="s2">&#34;search&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">query</span><span class="o">:</span> <span class="nx">query</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span> <span class="o">!==</span> <span class="s2">&#34;Error&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">returnMsg</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇듯 러스트에서 넘겨주는 거는 모두 문자열로 넘겨주면 자바스크립트 쪽에서 편하게 화면에 보여줄 수 있기 때문에 되도록이면 문자열로 리턴하게 끔 tauri command를 설계하시기 바랍니다.</p>
+<hr>
+<h2 id="release-버전-빌드하기">release 버전 빌드하기</h2>
+<p>이제 코드도 완성했으니까 production release 버전을 빌드해야겠죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run tauri build</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 입력하면 tauri가 알아서 release 버전을 빌드합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  macos&gt; <span class="nb">pwd</span>
+</span></span><span class="line"><span class="cl">/Users/cpro95/Codings/Rust/tauri-test/src-tauri/target/release/bundle/macos
+</span></span><span class="line"><span class="cl">➜  macos&gt; ls -l
+</span></span><span class="line"><span class="cl">total <span class="m">0</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x  <span class="m">3</span> cpro95  staff  <span class="m">96</span>  <span class="m">8</span> <span class="m">21</span> 16:40 tauri-test.app
+</span></span><span class="line"><span class="cl">➜  macos</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 위에 있는 release 버전을 실행해 볼까요?</p>
+<p>아래 그림처럼 Error가 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjCdJu0J9wnqcalgyIRy9CrcIj6e8rrj4schrW8cxLm8j0qzyEgNShK36in4tiJs7jkpSBRE0hn2g-yMLqQCojv-cIr2TmtUIP-8jyYLITQuqdNjDx1aeipzrNgeUHOaba0QbW0kfNzgBCI9ICLWGj6jlu3EzSdyYWVi1nJTKaAZXMwSS4e372DHz5GUCU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>왜 그런걸까요?</p>
+<p>바로 &ldquo;MyVideos116.db&rdquo; 파일이 없기 때문입니다.</p>
+<p>그러면 &ldquo;MyVideos116.db&rdquo; 파일을 어디에 놓아야 할까요?</p>
+<p>아주 복잡한데요.</p>
+<p>그래서 tauri에서는 외부 리소스 bundle이라는 개념을 도입했습니다.</p>
+<p>아예 외부 리소스라고 명시한 파일은 빌드 시 함께 묶어 빌드할 수 있게 말입니다.</p>
+<p>일단 src-tauri 폴더에서 tauri.conf.json 파일을 열어서 수정하도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl">    <span class="s2">&#34;bundle&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;active&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;targets&#34;</span><span class="p">:</span> <span class="s2">&#34;all&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;identifier&#34;</span><span class="p">:</span> <span class="s2">&#34;com.cpro95&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;icon&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/32x32.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/128x128.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/128x128@2x.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/icon.icns&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;icons/icon.ico&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;resources&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;assets/*&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span><span class="err">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>resoureces 라는 부분만 추가했는데요.</p>
+<p>&ldquo;assets 폴더 밑에 있는 모든 파일을 리소스라고 등록하는 겁니다.</p>
+<p>이제 src-tauri 폴더 밑에 assets 폴더를 만들고 그 밑에 &ldquo;MyVideos116.db&rdquo; 파일을 옮기도록 하겠습니다.</p>
+<p>Tauri의 리소스 폴더의 위치를 지정했습니다.</p>
+<p>이제 코드에서 이 부분을 반영해야 하는데요.</p>
+<p>Tauri에서 리소스 부분을 핸들링하는 방법은 공식 문서에 나와 있듯이 tauri::Builder를 이용한 방법과, 그리고 tauri::AppHandle을 이용하는 방법입니다.</p>
+<p>저는 tauri::AppHandle을 이용해 보겠습니다.</p>
+<hr>
+<h2 id="러스트-코드에-리소스-폴더-처리-로직-추가">러스트 코드에 리소스 폴더 처리 로직 추가</h2>
+<p>일단 main.rs파일에 PathBuf를 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">use</span><span class="w"> </span><span class="n">rusqlite</span>::<span class="p">{</span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="n">Connection</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">std</span>::<span class="n">path</span>::<span class="n">PathBuf</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 먼저, get_count()라는 tauri command를 손보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">get_count</span><span class="p">(</span><span class="n">handle</span>: <span class="nc">tauri</span>::<span class="n">AppHandle</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">resource_path</span>: <span class="nc">PathBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">handle</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">path_resolver</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">resolve_resource</span><span class="p">(</span><span class="s">&#34;assets/MyVideos116.db&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;failed to resolve resources.&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_sqlite_count</span><span class="p">(</span><span class="n">resource_path</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">count</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nb">Err</span><span class="p">(</span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&#34;Error&#34;</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>handle이라는 tauri::AppHandle을 불러와서 resolve_resource 메서드로 원하는 파일의 PathBuf를 구하는 코드입니다.</p>
+<p>그리고 이걸 다시 get_sqlite_count(resource_path) 방식으로 넘깁니다.</p>
+<p>이제 get_sqlite_count() 함수를 고치도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">get_sqlite_count</span><span class="p">(</span><span class="n">resource_path</span>: <span class="nc">PathBuf</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="kt">usize</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">std</span>::<span class="n">error</span>::<span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Connection</span>::<span class="n">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">resource_path</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 고치면 됩니다.</p>
+<p>두 번째로 search tauri command도 바꾸겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="cp">#[tauri::command]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">fn</span> <span class="nf">search</span><span class="p">(</span><span class="n">query</span>: <span class="kp">&amp;</span><span class="kt">str</span><span class="p">,</span><span class="w"> </span><span class="n">handle</span>: <span class="nc">tauri</span>::<span class="n">AppHandle</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">String</span> <span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">resource_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">handle</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">path_resolver</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">resolve_resource</span><span class="p">(</span><span class="s">&#34;assets/MyVideos116.db&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&#34;failed to resolve resource&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_sqlite_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="n">resource_path</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제, 다시 get_sqlite_search 함수도 바꾸겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">get_sqlite_search</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">query</span>: <span class="kp">&amp;</span><span class="kt">str</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">resource_path</span>: <span class="nc">PathBuf</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w"> </span>-&gt; <span class="nb">Result</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nb">Box</span><span class="o">&lt;</span><span class="k">dyn</span><span class="w"> </span><span class="n">std</span>::<span class="n">error</span>::<span class="n">Error</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Connection</span>::<span class="n">open</span><span class="p">(</span><span class="o">&amp;</span><span class="n">resource_path</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">..</span><span class="p">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 마무리되었네요.</p>
+<p>다시 한번 빌드를 해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run tauri build</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 빌드된 앱이 위치한 폴더로 가서 Finder로 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg6Yjzqh4TKw2A8gTzDEZJEs-7mucL_paVmFh7f2ZxIx4eoexSVwuQMQxy8_ZucjiIaf7ifRPKqs4fAF8DpzWQvq3oF16s-EUSR1y51I28ylDuTbl_j5LCiN0v66s3dTwNg-JoxThUPk1MzI046V4mIeEXxWmGCg4KAM31V0nc-8nEvnM4fAyVGnA7lC7k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 패키지 내용 보기로 들어가면 아래와 같이 나올 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhDwBrKl8rDkx6VOYopod7NeAG39IxWVA0EjDIewtz0jflnGKRjd6k9fKW8KeE3dqZ1C7NRI5NcQe50mg3iFIYtv40l4ccoGx5nM062HpWFdw2BqUxd7yE4l-kc2qW6xhyiQruHlpH-EJgtAxYnqDXHHko1tux7m70mAG1A37oS7NH4vp_wC0LOE31C5SY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Contents 폴더 밑에 Resources 폴더 밑에 assets 폴더 밑에 MyVideos116.db 파일이 보입니다.</p>
+<p>우리가 Tauri에서 bundle 세팅에서 assets 폴더를 등록했기 때문에 Tauri가 빌드할 때 같이 번들링 하는 겁니다.</p>
+<p>실제 실행도 아주 잘 됩니다.</p>
+<hr>
+<p>지금까지 2편에 걸쳐 Tauri를 이용한 크로스 플랫폼 데스크탑 앱 만들기에 도전해 봤는데요.</p>
+<p>제가 느낀 점은 일렉트론JS 보다 뭔가 가볍고 빠르다는 느낌을 지울 수가 없었습니다.</p>
+<p>여러분도 꼭 활용해 보시길 바랍니다.</p>
+<p>끝.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/tauri/" role="button">tauri</a>
+        <a class="btn btn-light" href="/tags/sveltejs/" role="button">sveltejs</a>
+        <a class="btn btn-light" href="/tags/rust/" role="button">rust</a>
+        <a class="btn btn-light" href="/tags/desktop-app/" role="button">desktop app</a>
+        <a class="btn btn-light" href="/tags/cross-platform/" role="button">cross platform</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-02-tauri-custom-menu-and-events-to-javascript/">Tauri 실전 코딩 5편 - Tauri의 커스텀 메뉴 만들기와 이벤트(event)로 자바스크립트와 통신하기</a></h2>
+                  <p>커스텀 메뉴 만들기와 이벤트를 이용해서 백엔드에서 프로트엔드로 통신하기</p>
+                  <p>
+  <small>September 2, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-30-tauri-dialog-save-to-local-file/">Tauri 실전 코딩 4편 - Tauri에서 dialog save 또는 writeTextFile 함수로 로컬에 파일 쓰기</a></h2>
+                  <p>dialog save 함수, 또는 writeTextFile 함수로 로컬에 파일 쓰기</p>
+                  <p>
+  <small>August 30, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-28-tauri-dialog-open-read-local-file/">Tauri 실전 코딩 3편 - Tauri에서 dialog open 함수로 로컬 파일 읽기</a></h2>
+                  <p>3편, 자바스크립트에서 tauri/api/dialog의 open 함수 사용</p>
+                  <p>
+  <small>August 28, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

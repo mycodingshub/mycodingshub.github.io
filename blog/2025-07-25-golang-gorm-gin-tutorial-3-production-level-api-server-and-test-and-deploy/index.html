@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Golang, Gin, GORM 실전 API 개발 3편 - 프로덕션 서버 구축하기 설정, 테스트, 그리고 배포</title>
+<meta name="description" content="2편에 이어 Golang API 서버를 프로덕션 수준으로 끌어올리는 방법을 다룹니다. 환경 변수를 이용한 안전한 설정 관리, 유닛 테스트 작성, Docker를 이용한 컨테이너화까지 실전 배포 기술을 마스터합니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-07-25-golang-gorm-gin-tutorial-3-production-level-api-server-and-test-and-deploy/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Golang, Gin, GORM 실전 API 개발 3편 - 프로덕션 서버 구축하기 설정, 테스트, 그리고 배포" />
+<meta property="og:description" content="2편에 이어 Golang API 서버를 프로덕션 수준으로 끌어올리는 방법을 다룹니다. 환경 변수를 이용한 안전한 설정 관리, 유닛 테스트 작성, Docker를 이용한 컨테이너화까지 실전 배포 기술을 마스터합니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-07-25-golang-gorm-gin-tutorial-3-production-level-api-server-and-test-and-deploy/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-07-26T13:00:48Z" />
+<meta property="article:modified_time" content="2025-07-26T13:00:48Z" />
+<meta property="article:tag" content="Golang" />
+<meta property="article:tag" content="Docker" />
+<meta property="article:tag" content="유닛 테스트" />
+<meta property="article:tag" content="CI/CD" />
+<meta property="article:tag" content="배포" />
+<meta property="article:tag" content="환경 변수" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Golang, Gin, GORM 실전 API 개발 3편 - 프로덕션 서버 구축하기 설정, 테스트, 그리고 배포" />
+<meta name="twitter:description" content="2편에 이어 Golang API 서버를 프로덕션 수준으로 끌어올리는 방법을 다룹니다. 환경 변수를 이용한 안전한 설정 관리, 유닛 테스트 작성, Docker를 이용한 컨테이너화까지 실전 배포 기술을 마스터합니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Golang, Gin, GORM 실전 API 개발 3편 - 프로덕션 서버 구축하기 설정, 테스트, 그리고 배포\"",
+  "description": "\"2편에 이어 Golang API 서버를 프로덕션 수준으로 끌어올리는 방법을 다룹니다. 환경 변수를 이용한 안전한 설정 관리, 유닛 테스트 작성, Docker를 이용한 컨테이너화까지 실전 배포 기술을 마스터합니다.\"",
+  "datePublished": "\"2025-07-26T13:00:48Z\"",
+  "dateModified": "\"2025-07-26T13:00:48Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-07-25-golang-gorm-gin-tutorial-3-production-level-api-server-and-test-and-deploy/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Golang, Gin, GORM 실전 API 개발 3편 - 프로덕션 서버 구축하기 설정, 테스트, 그리고 배포</h1>
+        <p>
+  <small>July 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <br />
+<p>지금까지 우리는 1편과 2편에 걸쳐 Golang, Gin, GORM으로 메모 애플리케이션의 핵심 기능을 구현하고, JWT 기반의 사용자 인증 시스템까지 도입하며 견고한 API의 기틀을 마련했습니다.<br /></p>
+<p>이제 여러분의 애플리케이션은 기능적으로는 완성되었지만, &lsquo;실제 운영 환경&rsquo;에 배포하기 위해서는 몇 가지 중요한 단계를 더 거쳐야 합니다.<br /></p>
+<p>개발자의 컴퓨터에서 잘 동작하는 것과, 안정적으로 서비스를 제공하는 것은 전혀 다른 차원의 이야기이기 때문입니다.<br /></p>
+<p>이번 3편에서는 여러분의 API 서버를 &lsquo;취미 프로젝트&rsquo;에서 &lsquo;프로페셔널 프로덕션 애플리케이션&rsquo;으로 격상시키는 세 가지 핵심 기술을 다룰 것입니다.<br /></p>
+<p>첫째, 민감한 정보를 코드로부터 분리하는 &lsquo;환경 변수를 이용한 설정 관리&rsquo;를 통해 보안을 강화합니다.<br /></p>
+<p>둘째, 코드 변경이 기존 기능을 망가뜨리지 않도록 보장하는 &lsquo;유닛 테스트&rsquo;를 작성하여 애플리케이션의 신뢰성을 확보합니다.<br /></p>
+<p>마지막으로, 어떤 환경에서든 동일하게 동작하도록 애플리케이션을 패키징하는 &lsquo;Docker 컨테이너화&rsquo;를 통해 배포 준비를 마칩니다.<br /></p>
+<p>이 과정을 통해 여러분은 비로소 안정적이고 확장 가능하며, 배포 준비가 완료된 진정한 의미의 백엔드 개발자로 거듭나게 될 것입니다.<br /></p>
+<h2 id="1-환경-변수를-이용한-안전한-설정-관리">1. 환경 변수를 이용한 안전한 설정 관리</h2>
+<p>현재 우리 코드에는 아주 위험한 부분이 존재합니다.<br /></p>
+<p>바로 JWT 시크릿 키와 같은 민감한 정보가 코드 안에 그대로 노출되어 있다는 점입니다.<br /></p>
+<p>이러한 정보가 Git과 같은 버전 관리 시스템에 올라가면 심각한 보안 사고로 이어질 수 있습니다.<br /></p>
+<p>&lsquo;환경 변수&rsquo;는 이러한 설정 값들을 코드 외부에서 주입하는 방식으로, 이 문제를 해결하는 가장 표준적인 방법입니다.<br /></p>
+<p>&lsquo;개발 환경 구성을 위한 .env 도입&rsquo;<br /></p>
+<p>개발 시에는 <code>.env</code> 파일을 통해 환경 변수를 쉽게 관리할 수 있도록 도와주는 <code>godotenv</code> 라이브러리를 사용하겠습니다.<br /></p>
+<p>&lsquo;라이브러리 설치&rsquo;<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go get -u github.com/joho/godotenv</span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+<p>&lsquo;프로젝트 루트에 .env 파일 생성&rsquo;<br /></p>
+<p>프로젝트의 최상위 디렉터리에 <code>.env</code> 파일을 만들고 다음과 같이 민감한 정보를 옮깁니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code># .env
+
+JWT_SECRET_KEY=&#34;your_very_secret_key_that_is_long_and_secure&#34;
+DATABASE_URL=&#34;memo.db&#34;</code></pre>
+  </figure>
+</div>
+<br />
+<p>&lsquo;.gitignore에 .env 추가&rsquo;<br /></p>
+<p>이 파일이 Git에 커밋되지 않도록 <code>.gitignore</code> 파일에 반드시 <code>.env</code>를 추가해야 합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code># .gitignore
+
+/memo-api # 컴파일된 바이너리
+*.db
+.env # 이 라인을 추가합니다.</code></pre>
+  </figure>
+</div>
+<br />
+<p>&lsquo;애플리케이션에 환경 변수 로더 적용 (<code>main.go</code>)&rsquo;<br /></p>
+<p><code>main.go</code> 파일의 <code>main</code> 함수 시작 부분에서 <code>.env</code> 파일을 로드하는 코드를 추가합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;log&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;memo-api/database&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;memo-api/handlers&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;memo-api/middleware&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;os&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;github.com/gin-gonic/gin&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;github.com/joho/godotenv&#34;</span><span class="w"> </span><span class="c1">// 라이브러리 임포트</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// .env 파일로부터 환경 변수를 로드합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">godotenv</span><span class="p">.</span><span class="nf">Load</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="nx">log</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="s">&#34;환경 변수 파일을 찾을 수 없습니다. 기본 설정을 사용합니다.&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">database</span><span class="p">.</span><span class="nf">ConnectDatabase</span><span class="p">()</span><span class="w"> </span><span class="c1">// 이제 ConnectDatabase 내부에서 환경 변수를 사용합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// ... 기존 코드 ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 아래 라우팅 코드에서 하드코딩된 os.Setenv는 제거합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// os.Setenv(&#34;JWT_SECRET_KEY&#34;, &#34;...&#34;) // 이 줄을 삭제합니다.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+이제 `database/database.go`와 `handlers/user_handler.go` 등에서 `os.Getenv("변수명")`을 사용하여 안전하게 설정 값을 불러올 수 있습니다.<br />
+<h2 id="2-유닛-테스트로-애플리케이션-신뢰성-확보">2. 유닛 테스트로 애플리케이션 신뢰성 확보</h2>
+<p>좋은 코드는 테스트 코드와 함께 완성됩니다.<br /></p>
+<p>&lsquo;유닛 테스트&rsquo;는 코드의 가장 작은 단위(함수, 메서드)가 의도대로 정확히 동작하는지 검증하는 과정입니다.<br /></p>
+<p>이를 통해 새로운 기능을 추가하거나 코드를 리팩토링할 때 발생할 수 있는 예기치 않은 오류(회귀 버그)를 사전에 방지하여 애플리케이션의 안정성을 극대화할 수 있습니다.<br /></p>
+<p>&lsquo;테스트 환경 설정&rsquo;<br /></p>
+<p>테스트는 실제 운영 데이터베이스가 아닌, &lsquo;격리된 테스트용 데이터베이스&rsquo;를 사용해야 합니다.<br /></p>
+<p>이를 위해 테스트가 시작될 때 테스트 DB를 설정하고, 테스트가 끝나면 깨끗하게 정리하는 로직이 필요합니다.<br /></p>
+<p>&lsquo;로그인 핸들러 테스트 작성 (<code>handlers/user_handler_test.go</code>)&rsquo;<br /></p>
+<p><code>handlers</code> 디렉터리에 <code>user_handler_test.go</code> 파일을 새로 생성하고 로그인 기능에 대한 테스트 코드를 작성해 보겠습니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nx">handlers</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;bytes&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;encoding/json&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;memo-api/database&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;memo-api/models&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;net/http&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;net/http/httptest&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;os&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;testing&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;github.com/gin-gonic/gin&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;github.com/stretchr/testify/assert&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="s">&#34;golang.org/x/crypto/bcrypt&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 테스트를 위한 메인 셋업 함수</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">setupTestRouter</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Engine</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 테스트 모드로 Gin 설정</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">gin</span><span class="p">.</span><span class="nf">SetMode</span><span class="p">(</span><span class="nx">gin</span><span class="p">.</span><span class="nx">TestMode</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 테스트용 데이터베이스 연결</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">database</span><span class="p">.</span><span class="nx">DB</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">gorm</span><span class="p">.</span><span class="nf">Open</span><span class="p">(</span><span class="nx">sqlite</span><span class="p">.</span><span class="nf">Open</span><span class="p">(</span><span class="s">&#34;test_memo.db&#34;</span><span class="p">),</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">gorm</span><span class="p">.</span><span class="nx">Config</span><span class="p">{})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">database</span><span class="p">.</span><span class="nx">DB</span><span class="p">.</span><span class="nf">AutoMigrate</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">models</span><span class="p">.</span><span class="nx">User</span><span class="p">{},</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">models</span><span class="p">.</span><span class="nx">Memo</span><span class="p">{})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">router</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">gin</span><span class="p">.</span><span class="nf">Default</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">router</span><span class="p">.</span><span class="nf">POST</span><span class="p">(</span><span class="s">&#34;/login&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">LoginHandler</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 테스트 종료 후 데이터베이스 파일 삭제</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">os</span><span class="p">.</span><span class="nf">Remove</span><span class="p">(</span><span class="s">&#34;test_memo.db&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">return</span><span class="w"> </span><span class="nx">router</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// 테스트 종료 후 데이터베이스 정리</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">teardownTestDatabase</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">sqlDB</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">database</span><span class="p">.</span><span class="nx">DB</span><span class="p">.</span><span class="nf">DB</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">sqlDB</span><span class="p">.</span><span class="nf">Close</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">os</span><span class="p">.</span><span class="nf">Remove</span><span class="p">(</span><span class="s">&#34;test_memo.db&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">TestLoginHandler</span><span class="p">(</span><span class="nx">t</span><span class="w"> </span><span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 테스트 환경 설정</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">router</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nf">setupTestRouter</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="k">defer</span><span class="w"> </span><span class="nf">teardownTestDatabase</span><span class="p">()</span><span class="w"> </span><span class="c1">// 테스트가 끝나면 반드시 DB 정리</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 1. 테스트용 사용자 생성</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">hashedPassword</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">bcrypt</span><span class="p">.</span><span class="nf">GenerateFromPassword</span><span class="p">([]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;password123&#34;</span><span class="p">),</span><span class="w"> </span><span class="nx">bcrypt</span><span class="p">.</span><span class="nx">DefaultCost</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">testUser</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">models</span><span class="p">.</span><span class="nx">User</span><span class="p">{</span><span class="nx">Username</span><span class="p">:</span><span class="w"> </span><span class="s">&#34;testuser&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">Password</span><span class="p">:</span><span class="w"> </span><span class="nb">string</span><span class="p">(</span><span class="nx">hashedPassword</span><span class="p">)}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">database</span><span class="p">.</span><span class="nx">DB</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">testUser</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 2. 로그인 요청 데이터 준비</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">loginCredentials</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="s">&#34;username&#34;</span><span class="p">:</span><span class="w"> </span><span class="s">&#34;testuser&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">		</span><span class="s">&#34;password&#34;</span><span class="p">:</span><span class="w"> </span><span class="s">&#34;password123&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">requestBody</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">loginCredentials</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 3. HTTP 요청 시뮬레이션</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="s">&#34;POST&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;/login&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">bytes</span><span class="p">.</span><span class="nf">NewBuffer</span><span class="p">(</span><span class="nx">requestBody</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">req</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;Content-Type&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;application/json&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 4. 응답 기록</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">w</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">httptest</span><span class="p">.</span><span class="nf">NewRecorder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">router</span><span class="p">.</span><span class="nf">ServeHTTP</span><span class="p">(</span><span class="nx">w</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 5. 결과 검증</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 상태 코드가 200 OK 인지 확인</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span><span class="p">,</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">Code</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="kd">var</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">w</span><span class="p">.</span><span class="nx">Body</span><span class="p">.</span><span class="nf">Bytes</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">response</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="c1">// 응답에 &#39;token&#39; 필드가 존재하는지 확인</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="nx">assert</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span><span class="w"> </span><span class="nx">response</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;token&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;응답 본문에 토큰이 포함되어야 합니다.&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+이제 터미널에서 `go test ./...` 명령을 실행하면 프로젝트 내의 모든 테스트 코드가 실행됩니다.<br />
+<p><code>TestLoginHandler</code>가 성공적으로 통과한다면, 로그인 기능이 기대한 대로 동작함을 보증할 수 있습니다.<br /></p>
+<h2 id="3-docker를-이용한-컨테이너화-및-배포-준비">3. Docker를 이용한 컨테이너화 및 배포 준비</h2>
+<p>&lsquo;Docker&rsquo;는 애플리케이션과 그 실행에 필요한 모든 환경(라이브러리, 시스템 도구 등)을 &lsquo;컨테이너&rsquo;라는 격리된 공간에 패키징하는 기술입니다.<br /></p>
+<p>이를 통해 &ldquo;제 컴퓨터에서는 잘 되는데&hellip;&ldquo;와 같은 고질적인 문제를 해결하고, 개발, 테스트, 운영 환경 어디에서나 동일한 실행을 보장하여 배포 과정을 획기적으로 단순화하고 안정화합니다.<br /></p>
+<p>&lsquo;Dockerfile 작성&rsquo;<br /></p>
+<p>프로젝트 루트 디렉터리에 <code>Dockerfile</code>이라는 이름의 파일을 생성합니다.<br /></p>
+<p>우리는 Go 애플리케이션에 최적화된 &lsquo;멀티 스테이지 빌드&rsquo; 방식을 사용할 것입니다.<br /></p>
+<p>이는 최종 이미지의 크기를 최소화하고 보안을 강화하는 매우 효과적인 방법입니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code># Dockerfile
+
+# --- 1단계: 빌드 환경 ---
+# Go 공식 이미지를 빌더로 사용합니다.
+FROM golang:1.21-alpine AS builder
+
+# 작업 디렉터리 설정
+WORKDIR /app
+
+# Go 모듈 의존성 먼저 복사 및 다운로드 (레이어 캐싱 활용)
+COPY go.mod go.sum ./
+RUN go mod download
+
+# 소스 코드 전체 복사
+COPY . .
+
+# 애플리케이션 빌드. CGO 비활성화 및 정적 바이너리 생성
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o memo-api .
+
+# --- 2단계: 최종 실행 환경 ---
+# 매우 가벼운 Alpine Linux 이미지를 기반으로 합니다.
+FROM alpine:latest
+
+# 작업 디렉터리 설정
+WORKDIR /root/
+
+# 빌드 환경(builder)에서 컴파일된 바이너리만 복사
+COPY --from=builder /app/memo-api .
+
+# .env 파일을 컨테이너에 복사할 수 있지만,
+# 실제 운영에서는 docker run 시 -e 옵션이나 docker-compose로 주입하는 것이 더 안전합니다.
+# COPY .env . 
+
+# 컨테이너가 8080 포트를 외부에 노출함을 명시
+EXPOSE 8080
+
+# 컨테이너 시작 시 실행될 명령어
+CMD [&#34;./memo-api&#34;]</code></pre>
+  </figure>
+</div>
+<br />
+<p>&lsquo;.dockerignore 파일 작성&rsquo;<br />
+Docker 이미지를 만들 때 불필요한 파일이 포함되지 않도록 <code>.dockerignore</code> 파일을 생성합니다.<br /> 이는 빌드 속도를 높이고 이미지 용량을 줄여줍니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code># .dockerignore
+
+.git
+.gitignore
+.env
+*.db
+Dockerfile</code></pre>
+  </figure>
+</div>
+<br />
+<p>&lsquo;Docker 이미지 빌드 및 컨테이너 실행&rsquo;<br /></p>
+<p>이제 터미널에서 아래 명령어를 사용하여 이미지를 빌드하고 컨테이너를 실행할 수 있습니다.<br /></p>
+<p>&lsquo;1. Docker 이미지 빌드&rsquo;<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker build -t memo-api-app .</span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+'2. Docker 컨테이너 실행'<br />
+<p><code>--env-file</code> 옵션으로 로컬의 <code>.env</code> 파일을 컨테이너에 주입합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run -p 8080:8080 --env-file .env memo-api-app</span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+<p>이제 여러분의 Go 애플리케이션은 완벽하게 격리된 컨테이너 안에서 실행되고 있으며, <code>http://localhost:8080</code>으로 이전과 동일하게 접속할 수 있습니다.<br /></p>
+<p>이 Docker 이미지만 있으면, Docker가 설치된 어떤 서버에서든 단 몇 초 만에 애플리케이션을 배포할 수 있습니다.<br /></p>
+<h2 id="마무리">마무리</h2>
+<p>총 3편에 걸친 튜토리얼을 통해, 우리는 단순한 아이디어에서 출발하여 실제 서비스로 배포 가능한 견고하고 전문적인 API 서버를 완성했습니다.<br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/golang/" role="button">Golang</a>
+        <a class="btn btn-light" href="/tags/docker/" role="button">Docker</a>
+        <a class="btn btn-light" href="/tags/%EC%9C%A0%EB%8B%9B-%ED%85%8C%EC%8A%A4%ED%8A%B8/" role="button">유닛 테스트</a>
+        <a class="btn btn-light" href="/tags/ci/cd/" role="button">CI/CD</a>
+        <a class="btn btn-light" href="/tags/%EB%B0%B0%ED%8F%AC/" role="button">배포</a>
+        <a class="btn btn-light" href="/tags/%ED%99%98%EA%B2%BD-%EB%B3%80%EC%88%98/" role="button">환경 변수</a>
+        <a class="btn btn-light" href="/tags/api/" role="button">API</a>
+        <a class="btn btn-light" href="/tags/%EB%B0%B1%EC%97%94%EB%93%9C/" role="button">백엔드</a>
+        <a class="btn btn-light" href="/tags/%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC/" role="button">튜토리얼</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-25-tutorial-gorm-gin-api-app-pathc-put-and-howto-jwt-authentication/">Golang, Gin, GORM 실전 API 개발 2편 - 사용자 인증과 데이터 수정 기능 구현</a></h2>
+                  <p>1편에 이어 Golang, Gin, GORM을 사용하여 기존 메모 API에 PATCH를 이용한 데이터 수정 기능과 JWT 기반의 안전한 사용자 인증 미들웨어를 추가하는 방법을 다룹니다.</p>
+                  <p>
+  <small>July 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-25-golang-gorm-gin-tutorial-4-fullstack-react-frontend-ui-app/">Golang, Gin, GORM 실전 API 개발 4편 - 최첨단 Full-Stack 완성편 Vite, TanStack, Zustand, shadcn/ui</a></h2>
+                  <p>React 개발의 최신 트렌드를 모두 담아 프론트엔드를 재구축합니다. Vite의 빠른 개발 환경, TanStack의 강력한 라우팅 및 데이터 관리, Zustand의 간결한 상태 관리, shadcn/ui의 미려한 UI를 통해 프로덕션급 풀스택 애플리케이션을 완성합니다.</p>
+                  <p>
+  <small>July 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-18-ultimate-guide-to-ci-pipeline-optimization-patterns/">NDC Oslo 2025 - 빌드 파이프라인이 느리고 답답한 진짜 이유 (그리고 해결법)</a></h2>
+                  <p>개발자의 삶을 좀먹는 느리고 불안정한 CI/CD 파이프라인, 이제 그만 참아도 됩니다. 해외 유명 강연을 통해 생산성을 폭발시키는 8가지 파이프라인 최적화 패턴을 알아봅니다.</p>
+                  <p>
+  <small>August 20, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

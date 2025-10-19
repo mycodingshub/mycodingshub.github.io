@@ -1,0 +1,1288 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Router V7 유저 Auth(로그인) 구현하기</title>
+<meta name="description" content="Remix V3인 React Router V7을 이용해서 가장 기본적인 유저 Auth 즉, 로그인(로그아웃)을 구현해 보겠습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-12-25-tutorial-react-router-v-7-user-auth/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Router V7 유저 Auth(로그인) 구현하기" />
+<meta property="og:description" content="Remix V3인 React Router V7을 이용해서 가장 기본적인 유저 Auth 즉, 로그인(로그아웃)을 구현해 보겠습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-12-25-tutorial-react-router-v-7-user-auth/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-12-25T03:13:42Z" />
+<meta property="article:modified_time" content="2024-12-25T03:13:42Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="react router" />
+<meta property="article:tag" content="react router v7" />
+<meta property="article:tag" content="remix" />
+<meta property="article:tag" content="auth" />
+<meta property="article:tag" content="login" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Router V7 유저 Auth(로그인) 구현하기" />
+<meta name="twitter:description" content="Remix V3인 React Router V7을 이용해서 가장 기본적인 유저 Auth 즉, 로그인(로그아웃)을 구현해 보겠습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Router V7 유저 Auth(로그인) 구현하기\"",
+  "description": "\"Remix V3인 React Router V7을 이용해서 가장 기본적인 유저 Auth 즉, 로그인(로그아웃)을 구현해 보겠습니다.\"",
+  "datePublished": "\"2024-12-25T03:13:42Z\"",
+  "dateModified": "\"2024-12-25T03:13:42Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-12-25-tutorial-react-router-v-7-user-auth/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Router V7 유저 Auth(로그인) 구현하기</h1>
+        <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>** 목차 **</p>
+<ul>
+<li><a href="#react-router-v7-auth-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">React Router V7 Auth 구현하기</a>
+<ul>
+<li><a href="#react-router-v7-%ed%94%84%eb%a0%88%ec%9e%84%ec%9b%8c%ed%81%ac-%ed%85%9c%ed%94%8c%eb%a6%bf-%ec%84%a4%ec%b9%98">React Router V7 프레임워크 템플릿 설치</a></li>
+<li><a href="#remix-%ec%82%ac%ec%9a%a9%ec%9e%90%eb%a1%9c%ec%84%9c-react-router-%ea%b5%ac%ea%b2%bd%ed%95%98%ea%b8%b0">Remix 사용자로서 React Router 구경하기</a>
+<ul>
+<li><a href="#flat-routes-%ec%a0%81%ec%9a%a9%ed%95%98%ea%b8%b0">flat routes 적용하기</a></li>
+</ul>
+</li>
+<li><a href="#home-%ed%99%94%eb%a9%b4-%eb%b0%94%ea%be%b8%ea%b8%b0">home 화면 바꾸기</a></li>
+<li><a href="#createcookiesessionstorage-%ed%95%a8%ec%88%98-%ec%82%b4%ed%8e%b4%eb%b3%b4%ea%b8%b0">createCookieSessionStorage 함수 살펴보기</a></li>
+<li><a href="#login-%ed%8e%98%ec%9d%b4%ec%a7%80-%eb%a7%8c%eb%93%a4%ea%b8%b0">login 페이지 만들기</a></li>
+<li><a href="#%eb%a1%9c%ea%b7%b8%ec%95%84%ec%9b%83logout-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">로그아웃(logout) 구현하기</a></li>
+<li><a href="#%ec%bf%a0%ed%82%a4-%ed%99%95%ec%9d%b8%ed%95%b4-%eb%b3%b4%ea%b8%b0">쿠키 확인해 보기</a></li>
+</ul>
+</li>
+</ul>
+<p>안녕하세요!</p>
+<p>저는 개인적으로 React 프레임웍중에 Next.js 보다 더 좋아하는 프레임웍이 Remix Framework인데요.</p>
+<p>그런 Remix 프레임웍이 V2에서 V3로 넘어가면서 큰 결단을 합니다.</p>
+<p>바로 React Router V7과의 머지(Merge)인데요.</p>
+<p>왜냐하면 Remix 프레임웍은 React Router에 기반한 풀스택 프레임웍이라 React Router와 Remix 프레임웍을 두 개를 따로 개발할 필요가 없다고 합니다.</p>
+<p>그래서 Remix 프레임웍 V3 개발이 중단되고 대신 React Router V7이 한창 개발되고 있었고, 드디어 V7의 출시가 완료되었습니다.</p>
+<p>V7 출시 전에 Remix로 여러 가지 사이드 프로젝트를 많이 만들었는데요.</p>
+<p>이번에 만든 사이트는 블로그 사이트와 팝송 가사를 이용한 영어 공부 사이트입니다.</p>
+<ul>
+<li><a href="https://mytrivia.pages.dev">mytrivia</a></li>
+<li><a href="https://mylyrics.pages.dev">mylyrics</a></li>
+</ul>
+<p>위 두 사이트 모드 Remix V2 프레임웍과 제가 가장 애용하는 호스팅 서비스인 Cloudflare의 D1 기능과 호스팅을 위한 Pages 기능을 이용했습니다.</p>
+<p>Cloudflare는 자체적인 Worker를 통해 Server Side Rendeing을 구현할 수 있게 해주는데요.</p>
+<p>요즘은 Pages 서비스라고 정적사이트 용 홈페이지 웹호스팅 서비스에 Worker 기능까지 구현해서 이제는 Pages 서비스에 여러 React 프레임웍의 SSR을 구현할 수 있게 해주고 있습니다.</p>
+<p>그리고 중요한 건 비용이 안 들기 때문에 사이드 프로젝트로 손색이 없을 정도이고, D1 이라는 아주 빠른 Database도 제공해 주기 때문에 자체적으로 빠른 풀스택 앱을 만들 수 있게 서비스를 제공해 줍니다.</p>
+<p>mytrivia 사이트와 mylyrics 사이트 모두 로그인 서비스를 제공해 주는데요.</p>
+<p>로그인 후 admin 계정일 경우 웹상에서 데이터를 직접 서버에 저장할 수 있게 했습니다.</p>
+<p>그래서 mytrivia 블로그 페이지의 경우 웹상에서 직접 글을 쓰고 저장하고, 발행까지 할 수 있습니다.</p>
+<p>mylyrics 사이트는 오픈된 로그인 서비스를 제공해 주고 있고, 각 유저가 직접 자료를 작성하고 저장할 수 있게 했습니다.</p>
+<p>오늘은 예전에 사용했던 Remix의 Auth 관련 부분을 React Router V7에 구현할 수 있게 직접 테스트 해보는 시간을 갖도록 하겠습니다.</p>
+<hr>
+<h2 id="react-router-v7-프레임워크-템플릿-설치">React Router V7 프레임워크 템플릿 설치</h2>
+<p>React Router V7은 홈페이지에서 볼 수 있듯이 두개의 형태로 이용할 수 있는데요.</p>
+<p>하나는 프레임워크로서 다른 하나는 라이브러리로써 사용할 수 있습니다.</p>
+<p>라이브러리는 기존처럼 React Router를 쓰는 사람들에 해당하고, 프레임워크로 사용하는 거는 Remix 프레임웍 유저들이 React Router를 풀스택 프레임워크로 사용한 걸 의미합니다.</p>
+<p>그래서 이번에는 Framework 으로서 React Router를 사용해서 설치해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npx create-react-router@latest react-router-auth-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pnpx create-react-router@latest react-router-auth-test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>npx나 pnpx 모두 사용할 수 있는데요.</p>
+<p>저는 제 맥북이 용량이 적어 모든 NodeJS 패키지를 전부 PNPM으로 저장합니다.</p>
+<p>PNPM을 사용하면 디스크 절약이 상당히 되니까 여러분도 꼭 사용해 보시기 바랍니다.</p>
+<p>일단 위와 같이 실행하면 React Router 템플릿이 설치되는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">pnpx create-react-router@latest react-router-auth-test
+</span></span><span class="line"><span class="cl"> WARN  <span class="m">2</span> deprecated subdependencies found: glob@7.2.3, inflight@1.0.6
+</span></span><span class="line"><span class="cl">Packages: +194
+</span></span><span class="line"><span class="cl">++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span><span class="line"><span class="cl">Progress: resolved 194, reused 193, downloaded 1, added 194, <span class="k">done</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         create-react-router v7.1.1
+</span></span><span class="line"><span class="cl">      ◼  Directory: Using react-router-auth-test as project directory
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ◼  Using default template See https://github.com/remix-run/react-router-templates <span class="k">for</span> more
+</span></span><span class="line"><span class="cl">      ✔  Template copied
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   git   Initialize a new git repository?
+</span></span><span class="line"><span class="cl">         Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  deps   Install dependencies with pnpm?
+</span></span><span class="line"><span class="cl">         Yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ✔  Dependencies installed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      ✔  Git initialized
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">done</span>   That<span class="err">&#39;</span>s it!
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Enter your project directory using <span class="nb">cd</span> ./react-router-auth-test
+</span></span><span class="line"><span class="cl">         Check out README.md <span class="k">for</span> development and deploy instructions.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Join the community at https://rmx.as/discord</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나오면 성공입니다.</p>
+<p>그리고 해당 디렉토리로 들어가면 React Router V7의 프레임워크로써의 앱 구조가 나옵니다.</p>
+<p>React Router는 Remix 프레임웍과는 다르게 <code>react-router.config.ts</code> 파일을 가지고 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Config</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/config&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Config options...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// Server-side render by default, to enable SPA mode set this to `false`
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">ssr</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="nx">satisfies</span> <span class="nx">Config</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드처럼 &lsquo;ssr&rsquo; 옵션을 기본적으로 &rsquo;true&rsquo;로 지정하고 있습니다.</p>
+<p>기본적으로 Server-side Rendering이라는 거죠.</p>
+<p>SSR 옵션을 켜야 진정한 React Router의 기능을 100% 다 활용한다고 할 수 있습니다.</p>
+<hr>
+<h2 id="remix-사용자로서-react-router-구경하기">Remix 사용자로서 React Router 구경하기</h2>
+<p>아까 <code>react-router.config.ts</code> 파일을 살펴보았는데요.</p>
+<p>이제는 Remix 사용자로서 React Router의 템플릿을 구경해 보겠습니다.</p>
+<p>먼저, Remix는 파일 기반 라우팅을 지원하는데요.</p>
+<p>React Router는 직접 구현할 라우팅을 따로 <code>routes.ts</code> 파일에 구현해야 합니다.</p>
+<p>얼핏 보면 파일 기반 라우팅이 더 좋을 거 같은데요.</p>
+<p><code>routes.ts</code> 파일에 모든 라우팅을 모아 놓으면 전체적인 윤곽을 크게 볼 수 있어서 좀 더 명확하게 앱을 작성할 수 있는 장점도 있습니다.</p>
+<p>그러면 app 폴더에 있는 <code>routes.ts</code> 파일을 열어볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">RouteConfig</span><span class="p">,</span> <span class="nx">index</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/routes&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">index</span><span class="p">(</span><span class="s2">&#34;routes/home.tsx&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span> <span class="nx">satisfies</span> <span class="nx">RouteConfig</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 아주 간단하게 되어 있는데요.</p>
+<p>RouteConfig 타입을 만족하는 걸 default로 export하면 React Router가 알아서 자동으로 라우팅 리스트에 구현하는 형식입니다.</p>
+<p>index 라우팅은 가장 기본이 되는 라우팅으로 웹 주소로는 &ldquo;/&ldquo;에 해당 됩니다.</p>
+<p>그리고 index 라우팅 외 다른 라우팅은 아래와 같이 해당 라우트를 추가하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">RouteConfig</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/routes&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">index</span><span class="p">(</span><span class="s2">&#34;routes/home.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">route</span><span class="p">(</span><span class="s2">&#34;about&#34;</span><span class="p">,</span> <span class="s2">&#34;routes/about.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span> <span class="nx">satisfies</span> <span class="nx">RouteConfig</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&ldquo;about&rdquo; 라우팅 주소를 갖는 라우팅을 추가했는데요.</p>
+<p>해당 라우팅의 리액트 컴포넌트를 지정만 하면 됩니다.</p>
+<p>이제 개발 서버를 돌려볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">pnpm run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>맨 처음 개발 서버를 돌리면 해당 프로젝트 폴더에 <code>.react-router</code> 폴더가 생기는데요.</p>
+<p>이 폴더는 React Router가 자동으로 <code>routes.ts</code> 파일을 분석해서 각 라우팅의 정보와 타입 정보를 저장해 놓는 곳입니다.</p>
+<p>그래서 나중에 이 정보에서 각종 React Router가 제공하는 타입 정보를 가져오는데요.</p>
+<p>이 부분은 나중에 코드 작성할 때 알 수 있습니다.</p>
+<p>개발 서버를 실행하고 브라우저로 가면 about 페이지가 없어서 에러가 뜰 겁니다.</p>
+<p>routes 폴더에 <code>about.tsx</code> 파일을 아래와 같이 간단하게 작성합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">About() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;&gt;</span><span class="nx">About</span><span class="p">&lt;/&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발 서버를 돌리면 에러가 사라질 거고 &ldquo;/about&quot;주소로 가면 About이라는 문자열이 브라우저에 잘 보일 겁니다.</p>
+<h3 id="flat-routes-적용하기">flat routes 적용하기</h3>
+<p><code>routes.ts</code> 파일을 보면 Remix의 파일 기반 라우팅이 그리울 때가 있는데요.</p>
+<p>그렇다고 Remix의 파일 기반 라우팅을 지원하지 않는 건 아닙니다.</p>
+<p>현재, Remix에서 대세로 자리 잡고 있는 <code>flat routes</code>를 공식적으로 지원합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">pnpm install @react-router/fs-routes</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 &lsquo;@react-router/fs-routes&rsquo; 앱을 설치하면 됩니다.</p>
+<p>그리고 <code>routes.ts</code> 파일을 아래와 같이 지정하면 자동으로 React Router 개발 서버가 라우팅을 구현해 줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">RouteConfig</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/routes&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">flatRoutes</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/fs-routes&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">flatRoutes</span><span class="p">()</span> <span class="nx">satisfies</span> <span class="nx">RouteConfig</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하고 개발 서버를 돌리면 브라우저에 아무것도 안 보일 겁니다.</p>
+<p>왜냐하면 flat routes에서 index로 지정하는 라우팅이 없어서 그런 겁니다.</p>
+<p><code>home.tsx</code> 파일의 이름을 &lsquo;_index.tsx&rsquo;로 바꾸면 됩니다.</p>
+<p>그러면 브라우저에 잘 보일 건데요.</p>
+<p>여기서 이름을 바꾼 &lsquo;_index.tsx&rsquo; 파일을 보시면 맨 첫 줄에서 이상한 걸 보실 수 있을 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/home&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이게 아까 얘기한 React Router가 자동으로 생성하는 타입 정보인데요.</p>
+<p>맨 처음의 파일이름이 <code>home.tsx</code> 이라 타입 정보를 <code>home</code>이라는 이름으로 가져왔는데요.</p>
+<p>우리가 이름을 &lsquo;_index&rsquo;로 바꿨기 때문에 타입 정보를 가져오는 경로도 아래와 같이 바꿔야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/_index&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>지금까지 파일 기반 라우팅인 <code>fs-routes</code>에 대한 사용법을 알려드렸는데요.</p>
+<p>공부를 위해서는 <code>fs-routes</code> 말고 수작업으로 라우팅을 모으는 걸 추천 드립니다.</p>
+<p>오늘도 공부를 위해서 <code>fs-routes</code> 방식을 지우고 아래와 같이 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">RouteConfig</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/routes&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">index</span><span class="p">(</span><span class="s2">&#34;routes/home.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">route</span><span class="p">(</span><span class="s2">&#34;about&#34;</span><span class="p">,</span> <span class="s2">&#34;routes/about.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span> <span class="nx">satisfies</span> <span class="nx">RouteConfig</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 다시 지정하고 개발 서버를 다시 실행하면 <code>.react-router</code> 폴더의 타입정보가 업데이트되어 있을 겁니다.</p>
+<p>이제 모든 준비가 끝났네요.</p>
+<p>본격적인 Auth 관련 로직을 구현해 보도록 하겠습니다.</p>
+<hr>
+<h2 id="home-화면-바꾸기">home 화면 바꾸기</h2>
+<p>일단 home 화면을 바꿔볼 건데요.</p>
+<p>불필요한 welcome 폴더를 삭제하고 routes 폴더에 있는 <code>home.tsx</code> 파일을 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/home&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">meta</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">MetaArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;New React Router App&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;description&#34;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s2">&#34;Welcome to React Router!&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;&gt;</span><span class="nx">Home</span><span class="p">&lt;/&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Home 화면을 재정비했고, 드디어 login을 구현해 보도록 하겠습니다.</p>
+<hr>
+<h2 id="createcookiesessionstorage-함수-살펴보기">createCookieSessionStorage 함수 살펴보기</h2>
+<p>우리가 로그인 구현을 위해서 사용할 세션 관련 함수는 바로 createCookieSessionStorage 함수인데요.</p>
+<p>React Router V7의 API를 찾아보면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgct97pGCUrgKOa2dyXJnFiVAi2nIo5huY0gJBFpsFp0zRp5LAMTG676A0GX3c64c9pwRnnG6bpZFO-nV_6IAWZ-GbrfsJQeqfg0R3tc1cCGGf8UV1-rQYukNV9sEZml10wBXT7rxgs3F24-VBvIRCiQN4H2ocgh9EM1hGaVvu-5EMiTsO315nWmsE8AV4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>createCookieSessionStorage 함수는 별도의 데이터베이스가 필요 없이 브라우저가 제공하는 쿠키를 이용해서 간단하게 세션 정보를 저장하게 해주는 아주 유용한 함수입니다.</p>
+<p>세션 데이터는 아래와 같이 아주 간단하게 타입정의 되어 있는데요.</p>
+<p>우리는 userId를 세션 키로 해서 세션 데이터를 저장하고 불러올 계획입니다.</p>
+<p>userId는 그냥 이메일을 사용할 겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">interface</span> <span class="nx">SessionData</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">name</span>: <span class="kt">string</span><span class="p">]</span><span class="o">:</span> <span class="kt">any</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 createCookieSessionStorage 함수를 이용한 세션 관련 헬퍼 유틸을 만들어야 하는데요.</p>
+<p>app 폴더 밑에 services 폴더를 만들고 그 밑에 <code>session.server.ts</code> 파일을 만들겠습니다.</p>
+<p>이름에 server라는 값이 들어가면 이 파일은 꼭 서버 사이드에서 실행한다는 의미입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createCookieSessionStorage</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">User</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span> <span class="nx">username</span>: <span class="kt">string</span><span class="p">;</span> <span class="nx">password</span>: <span class="kt">string</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">sessionStorage</span> <span class="o">=</span> <span class="nx">createCookieSessionStorage</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookie</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;__session&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secrets</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;s3cret1&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="p">{</span> <span class="nx">commitSession</span><span class="p">,</span> <span class="nx">destroySession</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">sessionStorage</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 코드 구현을 하면 되는데요.</p>
+<p>위 코드는 Remix 홈페이지의 Session 관련 부분에 있는 코드입니다.</p>
+<p>세션 네임은 원하는 이름으로 수정하시면 됩니다.</p>
+<p>위 코드를 잘 보시면 createCookieSessionStorage 함수를 이용해서 sessionStorage 를 만듭니다.</p>
+<p>그리고 그 sessionStorage에서 2가지의 함수를 export 해주고 있는데요.</p>
+<p>각각, commitSession, destroySession 헬퍼 함수입니다.</p>
+<p>이름 그대로의 역할을 하는데요.</p>
+<p>먼저, type User 부분에서 우리가 사용할 로그인 유저의 타입 정보를 정의했습니다.</p>
+<p>그러면 여기서 로그인을 했을 경우 세션 정보를 생성해야 하는데요.</p>
+<p>바로 createUserSession 함수를 통해서 세션 정보를 생성하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">USER_SESSION_KEY</span> <span class="o">=</span> <span class="s2">&#34;userId&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">createUserSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">userId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">remember</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">redirectUrl</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span>: <span class="kt">Request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">userId</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">remember</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">redirectUrl?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserSession</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">session</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="nx">USER_SESSION_KEY</span><span class="p">,</span> <span class="nx">userId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="nx">redirectUrl</span> <span class="o">||</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;Set-Cookie&#34;</span><span class="o">:</span> <span class="k">await</span> <span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">commitSession</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">maxAge</span>: <span class="kt">remember</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">7</span> <span class="c1">// 7 days
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 함수를 보면 getUserSession 함수가 또 필요한데요.</p>
+<p>이 함수는 아래와 같이 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">getUserSession</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">request</span>: <span class="kt">Request</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">await</span> <span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">getSession</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;Cookie&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>getUserSession 함수에서 sessionStorage가 초기화되면서 세션 스토리지가 생성되는 겁니다.</p>
+<p>당연히 Request의 헤더에서 &ldquo;Cookie&quot;에 저장하는 세션 스토리지인거죠.</p>
+<p>이렇게 createUserSession 함수와 getUserSession 함수로 인해 sessionStorage가 생성되면 이제 sessionStorage.commitSession 함수도 사용할 수 있게 됩니다.</p>
+<p>그래서 createUserSession 함수에서 보시면 session을 얻은 후 이 session에 USER_SESSION_KEY와 userId 값을 이용해서 유니크한 세션 정보를 저장합니다.</p>
+<p>그래서 userId로 구분해서 로그인 유저를 구분하게 되죠.</p>
+<p>여기서는 당연히 userId는 이메일이 될 겁니다.</p>
+<p>참고로 여기서 헬퍼유틸을 하나 만들고 가는 게 조금 더 편한데요.</p>
+<p>getUserId 함수를 만들어 두면 로그인 여부를 쉽게 알 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">getUserId</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span>: <span class="kt">Request</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span><span class="o">:</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">User</span><span class="err">[</span><span class="s2">&#34;id&#34;</span><span class="err">]</span> <span class="err">|</span> <span class="na">undefined</span><span class="p">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserSession</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">userId</span> <span class="o">=</span> <span class="nx">session</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="nx">USER_SESSION_KEY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">userId</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>getUserId 함수는 getUserSession 함수에서 얻은 session 정보에서 USER_SESSION_KEY 값을 구해서 리턴해 주면 됩니다.</p>
+<p>이 값이 바로 로그인되어 있는 유저의 이메일이 되는 거죠.</p>
+<p>이제, 모든 로그인 관련 백엔드 코드는 작성이 끝났으니까 UI 부분을 구현해서 로그인을 실행하는 action 함수를 만들도록 하겠습니다.</p>
+<hr>
+<h2 id="login-페이지-만들기">login 페이지 만들기</h2>
+<p>login을 페이지를 만드려면 <code>routes.ts</code> 파일에서 먼저 라우팅을 지정해 줘야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">RouteConfig</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/routes&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">index</span><span class="p">(</span><span class="s2">&#34;routes/home.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">route</span><span class="p">(</span><span class="s2">&#34;about&#34;</span><span class="p">,</span> <span class="s2">&#34;routes/about.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">route</span><span class="p">(</span><span class="s2">&#34;login&#34;</span><span class="p">,</span> <span class="s2">&#34;routes/login.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span> <span class="nx">satisfies</span> <span class="nx">RouteConfig</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 실제로 아래와 같이 routes 폴더 밑에 login.tsx 파일을 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Form</span><span class="p">,</span> <span class="kr">type</span> <span class="nx">MetaFunction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/login&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">meta</span>: <span class="kt">MetaFunction</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;New React Router App&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;description&#34;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s2">&#34;Welcome to React Router!&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Login() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-8 min-w-3/4 w-96&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-2xl&#34;</span><span class="p">&gt;</span><span class="nx">React</span> <span class="nx">Router</span> <span class="nx">v7</span> <span class="nx">Auth</span>: <span class="kt">Login</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Form</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;mt-6 &#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-2&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-row&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;min-w-24 &#34;</span><span class="p">&gt;</span><span class="nx">Username</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">input</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex-1 border&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;text&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-row&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">label</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;min-w-24 &#34;</span><span class="p">&gt;</span><span class="nx">Password</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">input</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex-1 border&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-row-reverse mt-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-1 w-32&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">Login</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgGXGWV7mp83KfZgtTahB-cmI6twH3qxkzdyBvqk4PJRcl10x0WtXW-Cg-cch5reWYBmHkn6AkmnPJpdLdtbG7eWbnIsbSVEKsRE96wBXL1JA6aWVEai-2hTbE8xTVkybWptsK0vJ2HGki-FLRwRWwDfqap5lDebVa5OzwnrEg5HvHkcnDLRhRKtjBm17k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 가장 일반적인 로그인 폼입니다.</p>
+<p>그리고 아래 코드는 React Router가 만드는 타입 정보를 가져오는 코드입니다.</p>
+<p>쓰는 방식은 아래와 같이 쓰시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/login&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>login 폼의 method가 &ldquo;POST&rdquo; 방식인데요.</p>
+<p>action 부분이 빠진 걸로 봐서 Login 버튼을 누르면 같은 라우팅 즉, &ldquo;/login&rdquo; 라우팅으로 다시 돌아갑니다.</p>
+<p>그래서 폼의 POST 메서드에 대응하는 action 함수를 만들어야 합니다.</p>
+<p>Remix에서 사용하는 서버 사이드 관련 함수가 바로 loder 함수와 action 함수인데요.</p>
+<p>loader 함수는 해당 컴포넌트가 렌더링되기 전 서버 사이드 단에서 제일 먼저 실행되는 함수입니다.</p>
+<p>그리고 action 함수는 POST 등 폼 메서드에 대응하는 함수입니다.</p>
+<p>먼저, loader 함수를 만들어 보겠습니다.</p>
+<p>아까 우리가 session.server.ts 파일에서 만들었던 getUserId 함수를 이용해서 현재 로그인되어 있으면 홈으로 이동하게끔 하는 코드를 만들겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Form</span><span class="p">,</span> <span class="nx">redirect</span><span class="p">,</span> <span class="kr">type</span> <span class="nx">MetaFunction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/login&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getUserId</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;~/services/session.server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">meta</span>: <span class="kt">MetaFunction</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">userId</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserId</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">userId</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>getUserId 함수는 현재 Request에서 유저 정보를 가져오는데요.</p>
+<p>엄밀히 말하면 Request를 이용해서 getUserSession에서 세션 정보를 가져옵니다.</p>
+<p>이제 다시 개발 서버를 돌려보아도 아무런 일이 일어나지 않는데요.</p>
+<p>당연히 현재 로그인 상태가 아니라서 loader 함수는 그냥 끝납니다.</p>
+<p>만약 userId가 있다면 즉, 로그인되어 있다면 redirect 헬퍼함수로 인해서 홈 라우팅으로 강제 이동할 겁니다.</p>
+<p>이제, 로그인 버튼을 눌렀을 경우, Form의 POST 메서드가 request 되어 서버사이드에서 처리하는 action 함수를 만들어 보겠습니다.</p>
+<p>로그인 로직만 알기 위해 암호를 해싱하는 코드는 생략하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">action</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">ActionArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">response</span>: <span class="kt">Response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nb">Error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span>: <span class="kt">error.message</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;An error occured!&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">throw</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드가 Form의 Post 메서드를 처리하는 가장 기본적인 try-catch 구문입니다.</p>
+<p>일단 Response를 하나 만들고 로그인이 맞다면 해당 response를 리턴하고 아니면 에러가 발생했을 경우 에러메시지를 객체로 리턴하는 코드입니다.</p>
+<p>이제 try 블록안에 로그인 로직을 넣어 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createUserSession</span><span class="p">,</span> <span class="nx">getUserId</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;~/services/session.server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">action</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">ActionArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">response</span>: <span class="kt">Response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">email</span> <span class="o">!==</span> <span class="s2">&#34;test@test.com&#34;</span> <span class="o">||</span> <span class="nx">password</span> <span class="o">!==</span> <span class="s2">&#34;1111&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Invalid email or password!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 세션 만들기
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createUserSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">userId</span>: <span class="kt">email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">remember</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;An error occurred while creating the session!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nb">Error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span>: <span class="kt">error.message</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;An error occured!&#34;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">throw</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이메일과 패스워드는 강제로 만들었습니다.</p>
+<p>DB 연동은 다음에 Cloudflare D1으로 해볼 생각이고요.</p>
+<p>일단 여기서는 로그인 로직과 세션을 만드는 거에 집중해 보겠습니다.</p>
+<p>여기서 잘 보시면 createUserSession 함수를 이용해서 userId가 email 값을 가지는 세션을 하나 만드는데요.</p>
+<p>이 함수의 타입정보를 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">createUserSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">userId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">remember</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">redirectUrl</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">request</span>: <span class="kt">Request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">userId</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">remember</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">redirectUrl?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>request, userId, remember, redirectUrl이네요.</p>
+<p>redirectUrl까지 지정하면 createUserSession 함수에서 직접 세션을 만들고 나서 해당 Url로 이동할 수 있습니다.</p>
+<p>이제 테스트 해볼까요?</p>
+<p>테스트 이메일은 &ldquo;test@test.com&rdquo;, 패스워드는 &ldquo;1111&quot;입니다.</p>
+<p>로그인 버튼을 누르면 홈 라우팅(&rdquo;/&quot;)으로 이동하는 걸 볼 수 있습니다.</p>
+<p>redirectUrl을 지정 안 했는데 왜 홈 라우팅(&rdquo;/&quot;)으로 이동한 걸까요?</p>
+<p>그런 Remix 프레임웍이나 React Router의 특성 때문입니다.</p>
+<p>로그인 버튼을 누르면 해당 라우팅(&quot;/login&rdquo;) 주소로 POST 리퀘스트가 부여됩니다.</p>
+<p>POST 리퀘스트는 action 함수에서 처리하고 다시 같은 주소 즉, &ldquo;/login&rdquo; 화면이 리프레시됩니다.</p>
+<p>이때 리프레시 되면 제일 처음 실행하는 함수가 서버사이드 단에서 loader 함수입니다.</p>
+<p>아까 loader 함수에서 getUserId 함수에 의해 만약 유저가 로그인 되었으면 홈 라우팅(&rdquo;/&quot;)으로 redirect 하라고 했기 때문에 로그인 후 홈으로 이동한게 됩니다.</p>
+<p>이제 로그인까지는 구현했는데요.</p>
+<p>로그아웃을 구현해 보겠습니다.</p>
+<hr>
+<h2 id="로그아웃logout-구현하기">로그아웃(logout) 구현하기</h2>
+<p>로그아웃은 세션 정보를 삭제(파괴)하면 됩니다.</p>
+<p>그런데 라우팅 정보가 있어야겠죠.</p>
+<p>그래서 &ldquo;/logout&rdquo; 주소를 가지는 라우팅을 만들어야 합니다.</p>
+<p>먼저, routes.ts 파일에 해당 라우팅 정보를 업데이트합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">RouteConfig</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@react-router/dev/routes&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">index</span><span class="p">(</span><span class="s2">&#34;routes/home.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">route</span><span class="p">(</span><span class="s2">&#34;about&#34;</span><span class="p">,</span> <span class="s2">&#34;routes/about.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">route</span><span class="p">(</span><span class="s2">&#34;login&#34;</span><span class="p">,</span> <span class="s2">&#34;routes/login.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">route</span><span class="p">(</span><span class="s2">&#34;logout&#34;</span><span class="p">,</span> <span class="s2">&#34;routes/logout.tsx&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span> <span class="nx">satisfies</span> <span class="nx">RouteConfig</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 routes 폴더 밑에 logout.tsx 파일을 만들면 되는데요.</p>
+<p>이 파일은 클라이언트에서는 아무런 정보도 보여줄 필요 없이 서버사이드에서 세션만 파괴하면 되기 때문에 loader 함수와 action 함수만 있으면 됩니다.</p>
+<p>먼저, logout 버튼을 home 라우팅에 만들어 보겠습니다.</p>
+<p>보통 Remix나 React Router에서는 Form의 POST 메서드를 이용해서 로그아웃 버튼을 만듭니다.</p>
+<p>단순하게 onClick 함수를 이용해서 logout 함수를 불러오는 게 아니라 리퀘스트 부여되고 해당 세션을 삭제하고 다시 리프레시하기 위해 POST 메서드를 보통 이용합니다.</p>
+<p>이왕 만든김에 home.tsx 파일에 유저가 로그인 되었을 경우와 아닌 경우에는 로그아웃 버튼을 보여주는 간단한 UI를 리액트로 만들어 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Form</span><span class="p">,</span> <span class="nx">Link</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types/home&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getUserId</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;~/services/session.server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">meta</span><span class="p">({}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">MetaArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;New React Router App&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;description&#34;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s2">&#34;Welcome to React Router!&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">userId</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserId</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">userId</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">userId</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Index</span><span class="p">({</span> <span class="nx">loaderData</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">ComponentProps</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-2xl&#34;</span><span class="p">&gt;</span><span class="nx">Welcome</span> <span class="nx">to</span> <span class="nx">React</span> <span class="nx">Router</span> <span class="nx">v7</span> <span class="nx">Auth</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;mt-6&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">loaderData</span><span class="o">?</span><span class="p">.</span><span class="nx">userId</span> <span class="o">?</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;mb-6&#34;</span><span class="p">&gt;</span><span class="nx">You</span> <span class="nx">are</span> <span class="nx">logged</span> <span class="k">in</span> <span class="p">{</span><span class="nx">loaderData</span><span class="o">?</span><span class="p">.</span><span class="nx">userId</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">Form</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;/logout&#34;</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;post&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded px-2.5 py-1&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">Logout</span>
+</span></span><span class="line"><span class="cl">              <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">Form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span> <span class="o">:</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">to</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="p">&gt;</span><span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 만들었는데요.</p>
+<p>아래 그림처럼 깔끔한 홈 화면이 구성되었을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiyXpo8Q1XVPa6wmbNilgd8WmUZOI87cyksiqU6jLuUKJksGu7F7bhUNJXhmk-ZT8FHJ8kIzauSVpwXWb2lu12VvO7Xbx5GrPOZWiiy-dU5gAytD02QBYChiC4Gxf0yr5N4hR1al0C5dBkLKMf6z0QcqxZx102Sgfx-X_LEahMPLAM54pQCesQdwvPDnJg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>home.tsx 파일에서 loader 함수를 보면 userId를 돌려보내 주고 있는데요.</p>
+<p>Remix 프레임웍이나 React Router에서는 이렇게 loader나 action 함수에서 리턴된 데이터를 Client 컴포넌트에서 loaderData, actionData를 이용해서 쉽게 접근할 수 있습니다.</p>
+<p>그래서 <code>loaderData?.userId?</code> 값에 따라 UI를 구성하면 됩니다.</p>
+<p>이제 로그아웃 버튼을 구현해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="kr">type</span> <span class="nx">MetaFunction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Route</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./+types.logout&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">logout</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;../services/session.server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">meta</span>: <span class="kt">MetaFunction</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;New React Router App&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;description&#34;</span><span class="p">,</span> <span class="nx">content</span><span class="o">:</span> <span class="s2">&#34;Welcome to React Router!&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">action</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">ActionArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">logout</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loader</span><span class="p">({</span> <span class="nx">request</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Route</span><span class="p">.</span><span class="nx">LoaderArgs</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 파일이 로그아웃 라우팅입니다.</p>
+<p>먼저, loader 함수를 볼 필요가 있는데요.</p>
+<p>단순하게 &ldquo;/logout&rdquo; 주소로 GET 메서드를 이용해서 접근했을 때는 그냥 다시 &ldquo;/&rdquo; 라우팅으로 강제로 이동시킵니다.</p>
+<p>GET 메서드 접근은 브라우저에서 해당 &ldquo;/logout&rdquo; 주소로 이동한 경우가 바로 GET 메서드로 접근하는 경우입니다.</p>
+<p>이럴 경우를 방지하기 위해 loader 함수에 redirect 로직을 구현해 놓는 거죠.</p>
+<p>그리고 action 함수가 있는데요.</p>
+<p>이 함수가 바로 POST 메서드로 &ldquo;/logout&rdquo; 라우팅으로 리퀘스트가 온 경우 해당 로직을 처리하는 코드입니다.</p>
+<p>여기서는 단순하게 logout 함수를 불러서 실행시켰는데요.</p>
+<p>session.server.ts 파일에 logout 함수를 추가해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">logout</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;logout&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getUserSession</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;Set-Cookie&#34;</span><span class="o">:</span> <span class="k">await</span> <span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">destroySession</span><span class="p">(</span><span class="nx">session</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 함수를 session.server.ts 파일 아무 곳에 위치해 놓으면 됩니다.</p>
+<p>logout 함수는 request를 인자로 가지는 함수인데요.</p>
+<p>간단하게 해당 세션을 불러온다음 sessionStorage의 destroySession 함수를 이요해서 세션을 삭제하면 됩니다.</p>
+<p>이 방식이 조금 생소할 수 있는데요.</p>
+<p>redirect 하면 &ldquo;/&rdquo; 주소로 리퀘스트가 일어나는데요.</p>
+<p>HTTP의 리퀘스트에는 headers 란에 &ldquo;Cookie&rdquo; 정보가 같이 들어가 있는데 logout 함수에서는 headers 에 &ldquo;Set-Cookie&rdquo; 를 이용해서 해당 쿠키를 삭제해서 리퀘스트한다는 겁니다.</p>
+<p>지금까지 Next.js나 React 공부하면서 HTTP의 Response를 직접 공부한 적 없었는데요.</p>
+<p>React Router나 Remix 프레임웍이 추구하는 방향은 가장 웹 표준에 충실한 코드를 만드는 겁니다.</p>
+<p>그래서 위와 같은 방식도 가장 웹 표준에 충실한 방법인거죠.</p>
+<p>이제 모든 코드가 완성되었습니다.</p>
+<p>로그아웃 버튼을 눌러보면 로그아웃 되어 있을 겁니다.</p>
+<hr>
+<h2 id="쿠키-확인해-보기">쿠키 확인해 보기</h2>
+<p>크롬 DevTools를 열어서 Application 부분에서 쿠키 부분을 보시면 로그인하기 전에는 아래와 같이 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi_Gd_P5C7jfFjuWaMcvovnaBmV_BPaWxgodELIoMjwSOnENgj4PJjHprJIFgbhU23mOAQeqc-3r7nqbqoty39-A1sEoJ0CEkvwyXKlnTwpRTnje2Bq0krWp_wNmc46MiWZmG7CjfG1A_s-e5QhIBXO1PVZn_X3a9QPYlgLLnGbxCo65qeIaBWbt9OcaHQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>로그인하면 아래처럼 쿠키 이름 &ldquo;__session&quot;이 생깁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEij_oBQg2WexZFEUGllI1FmuiuWNavBW8Y0KISBj35YekMPbrVzaojHjiovB0Yjaz6XOP9XxyN0KktOPODhxikqq_muFGA17thvpeDAXzkUPwU6jYHUX4cUmAqd4gledm7GDZdFXoxXy599eZLCDk17dAHLlhcwgDRCojvlhDl-3wUpk0aU6pHy6jCl3VQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>쿠키 이름은 session.server.ts 파일에서 아래 코드에서 우리가 지정한겁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">sessionStorage</span> <span class="o">=</span> <span class="nx">createCookieSessionStorage</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookie</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;__session&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secrets</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;s3cret1&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이름을 특별한 걸로 바꾸는 것도 좋은 방법입니다.</p>
+<hr>
+<p>지금까지 React Router V7으로 가장 기본적인 쿠키를 이용한 세션 로그인, 로그아웃 로직을 구현해 봤습니다.</p>
+<p>이렇게 하면 여러분도 본격적인 풀스택앱을 구현할 수 있을 겁니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/react-router/" role="button">react router</a>
+        <a class="btn btn-light" href="/tags/react-router-v7/" role="button">react router v7</a>
+        <a class="btn btn-light" href="/tags/remix/" role="button">remix</a>
+        <a class="btn btn-light" href="/tags/auth/" role="button">auth</a>
+        <a class="btn btn-light" href="/tags/login/" role="button">login</a>
+        <a class="btn btn-light" href="/tags/logout/" role="button">logout</a>
+        <a class="btn btn-light" href="/tags/session/" role="button">session</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-28-react-router-v-7-supabase-user-auth-login-signup-logout/">React Router V7과 Supabase로 유저 가입, 로그인, 로그아웃(Auth) 구현하기</a></h2>
+                  <p>React Router V7와 함께 Supabase의 User Auth 부분 즉, 로그인(로그아웃)을 구현해 보겠습니다.</p>
+                  <p>
+  <small>December 28, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-ssr-login-with-react-router-and-supabase/">React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기</a></h2>
+                  <p>Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다.</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db/">React Router V7과 Cloudflare Pages 그리고 D1 Database 사용</a></h2>
+                  <p>React Router V7를 Cloudflare Pages에 D1 DB를 이용해서 배포할 수 있게 개조하기</p>
+                  <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,1197 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Hono, Cloudflare Pages, TailwindCSS로 SSR(Server Side Rendering) 웹페이지 만들기</title>
+<meta name="description" content="Hono를 이용한 Cloudflare Pages 작성, 그리고 Twind를 이용한 Tailwind CSS 동적 컴파일" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-05-11-howto-make-ssr-page-with-hono-cloudflare-pages-and-twind-tailwindcss/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Hono, Cloudflare Pages, TailwindCSS로 SSR(Server Side Rendering) 웹페이지 만들기" />
+<meta property="og:description" content="Hono를 이용한 Cloudflare Pages 작성, 그리고 Twind를 이용한 Tailwind CSS 동적 컴파일" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-05-11-howto-make-ssr-page-with-hono-cloudflare-pages-and-twind-tailwindcss/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-05-11T10:14:48Z" />
+<meta property="article:modified_time" content="2024-05-11T10:14:48Z" />
+<meta property="article:tag" content="hono" />
+<meta property="article:tag" content="cloudflare pages" />
+<meta property="article:tag" content="tailwindcss" />
+<meta property="article:tag" content="twind" />
+<meta property="article:tag" content="ssr" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Hono, Cloudflare Pages, TailwindCSS로 SSR(Server Side Rendering) 웹페이지 만들기" />
+<meta name="twitter:description" content="Hono를 이용한 Cloudflare Pages 작성, 그리고 Twind를 이용한 Tailwind CSS 동적 컴파일" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Hono, Cloudflare Pages, TailwindCSS로 SSR(Server Side Rendering) 웹페이지 만들기\"",
+  "description": "\"Hono를 이용한 Cloudflare Pages 작성, 그리고 Twind를 이용한 Tailwind CSS 동적 컴파일\"",
+  "datePublished": "\"2024-05-11T10:14:48Z\"",
+  "dateModified": "\"2024-05-11T10:14:48Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-05-11-howto-make-ssr-page-with-hono-cloudflare-pages-and-twind-tailwindcss/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Hono, Cloudflare Pages, TailwindCSS로 SSR(Server Side Rendering) 웹페이지 만들기</h1>
+        <p>
+  <small>May 11, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘은 Hono와 Cloudflare Pages를 이용해서 SSR 웹페이지를 만들어보겠습니다.</p>
+<p>여기서 한 단계 더 나아가 TailwindCSS도 서버에서 동적으로 컴파일해서 보여주는 웹 페이지를 만들 건데요.</p>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#hono-%ec%95%b1-%eb%a7%8c%eb%93%a4%ea%b8%b0">Hono 앱 만들기</a></li>
+<li><a href="#hono-%ec%9b%b9-%ed%94%84%eb%a0%88%ec%9e%84%ec%9b%8c%ed%81%ac%eb%a5%bc-%ed%86%b5%ed%95%b4-%ea%b8%b0%eb%b3%b8%ec%a0%81%ec%9d%b8-%ec%9b%b9%ed%8e%98%ec%9d%b4%ec%a7%80-%ec%9e%91%ec%84%b1%ed%95%98%ea%b8%b0">Hono 웹 프레임워크를 통해 기본적인 웹페이지 작성하기</a></li>
+<li><a href="#twind-%ed%8c%a8%ed%82%a4%ec%a7%80%eb%a1%9c-%eb%8f%99%ec%a0%81-css-%ec%9e%91%ec%84%b1%ed%95%98%ea%b8%b0">Twind 패키지로 동적 CSS 작성하기</a></li>
+<li><a href="#hono-%eb%9d%bc%ec%9a%b0%ed%8c%85-%eb%a7%8c%eb%93%a4%ea%b8%b0">Hono 라우팅 만들기</a></li>
+<li><a href="#cloudflare-pages%ec%97%90-%eb%b0%b0%ed%8f%ac%ed%95%98%ea%b8%b0">Cloudflare Pages에 배포하기</a></li>
+</ul>
+<hr>
+<h2 id="hono-앱-만들기">Hono 앱 만들기</h2>
+<p>먼저, Hono 앱 템플릿을 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm create hono@latest
+</span></span><span class="line"><span class="cl">create-hono version 0.7.1
+</span></span><span class="line"><span class="cl">? Target directory hono-tailwind-ssr
+</span></span><span class="line"><span class="cl">? Which template <span class="k">do</span> you want to use?
+</span></span><span class="line"><span class="cl">  aws-lambda
+</span></span><span class="line"><span class="cl">  bun
+</span></span><span class="line"><span class="cl">❯ cloudflare-pages
+</span></span><span class="line"><span class="cl">  cloudflare-workers
+</span></span><span class="line"><span class="cl">  deno
+</span></span><span class="line"><span class="cl">  fastly
+</span></span><span class="line"><span class="cl">  lambda-edge
+</span></span><span class="line"><span class="cl"><span class="o">(</span>Use arrow keys to reveal more choices<span class="o">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 Cloudflare-pages를 선택해서 hono 앱을 만들어 줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">tree . -L <span class="m">1</span>
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── README.md
+</span></span><span class="line"><span class="cl">├── node_modules
+</span></span><span class="line"><span class="cl">├── package-lock.json
+</span></span><span class="line"><span class="cl">├── package.json
+</span></span><span class="line"><span class="cl">├── public
+</span></span><span class="line"><span class="cl">├── src
+</span></span><span class="line"><span class="cl">├── tsconfig.json
+</span></span><span class="line"><span class="cl">├── vite.config.ts
+</span></span><span class="line"><span class="cl">└── wrangler.toml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">4</span> directories, <span class="m">7</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 src 폴더와 public 폴더가 보입니다.</p>
+<p>src 폴더를 보시면,</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">tree ./src -L <span class="m">2</span>
+</span></span><span class="line"><span class="cl">./src
+</span></span><span class="line"><span class="cl">├── global.d.ts
+</span></span><span class="line"><span class="cl">├── index.tsx
+</span></span><span class="line"><span class="cl">└── renderer.tsx
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">1</span> directory, <span class="m">3</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>세 개의 파일이 보이는데요.</p>
+<p>우리가 만든 앱의 entry 포인트는 index.tsx 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;hono&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./renderer&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span><span class="o">!&lt;</span><span class="err">/h1&gt;)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>hono 프레임워크의 전체적인 사용법은 다음 블로그 글을 참고하시면 됩니다.</p>
+<p><a href="https://mynewcodings.tistory.com/27">Hono 웹 프레임워크 소개</a></p>
+<p>자세히 보시면 render 부분을 커스텀하게 만들었는데요.</p>
+<p>renderer.tsx 파일을 한번 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">jsxRenderer</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;hono/jsx-renderer&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">renderer</span> <span class="o">=</span> <span class="nx">jsxRenderer</span><span class="p">(({</span> <span class="nx">children</span><span class="p">,</span> <span class="nx">title</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">link</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/static/style.css&#34;</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&#34;stylesheet&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/head&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/html&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>전체적인 HTML 파일 구조를 가지고 있네요.</p>
+<p>이제 Tailwind CSS를 CDN으로 설치해 보겠습니다.</p>
+<p>renderer.tsx 파일에 tailwind CSS를 CDN으로 설치할 수 있는 script 태그를 추가했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">jsxRenderer</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;hono/jsx-renderer&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">renderer</span> <span class="o">=</span> <span class="nx">jsxRenderer</span><span class="p">(({</span> <span class="nx">children</span><span class="p">,</span> <span class="nx">title</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">link</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/static/style.css&#34;</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&#34;stylesheet&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;https://cdn.tailwindcss.com&#34;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/head&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/html&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>테스트를 위해 index.tsx 파일에서 tailwindcss를 이용해서 H1 태그를 수정해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./renderer&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">h1</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-3xl font-bold underline text-clifford&#34;</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">world</span><span class="o">!&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발 서버를 돌려 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm run dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh74ifK0aSu74GEq28IcNSnL9335oSfQdVYfgR1NDX5U5exaafSyVx3FDm4-FiRxC5kiNzLU9dkkJnJQXwa0Udvo20TfHPJJTt920BcNcOj45kndBJh-ueE_6vbwqtEkgtGmMR4VeN7hYI2VaSW-C85qme_17S2yN93h_t18YSopNDMwyee6J5_TRAiAMs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림은 개발 서버임은 감안해도 TailwindCSS 3.4.3 버전을 통째로 다운로드하고 있습니다.</p>
+<p>그 크기는 112kb인데요.</p>
+<p>저는 오늘 서버에서 사용된 Tailwind CSS만 동적으로 컴파일해서 CSS를 HTML에 삽입시켜 주는 코드를 작성해 보겠습니다.</p>
+<hr>
+<h2 id="hono-웹-프레임워크를-통해-기본적인-웹페이지-작성하기">Hono 웹 프레임워크를 통해 기본적인 웹페이지 작성하기</h2>
+<p>Hono 웹 프레임워크는 route 핸들러를 기본적으로 보유하고 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">h1</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-3xl font-bold underline text-clifford&#34;</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">world</span><span class="o">!&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 app.get 함수로 GET 메서드에 대한 &lsquo;/&rsquo; 라우팅을 처리하는 로직입니다.</p>
+<p>위 로직에서 c.render 부분이 renderer.tsx 파일에서 커스텀하게 작성된 렌더러인데요.</p>
+<p>Tailwind CSS를 동적으로 컴파일하기 위해서는 이 렌더러를 지우고 c.html 메서드를 작성해야 하는데요.</p>
+<p>전체적인 코드를 아래와 같이 바꾸겠습니다.</p>
+<p>먼저, src 폴더에 components 폴더를 만들고 아래와 같이 세 개의 파일을 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/components/layout.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">html</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;hono/html&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Layout</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="o">:</span> <span class="p">{</span> <span class="nx">title</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span> <span class="nx">children</span><span class="o">?:</span> <span class="nx">any</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">html</span><span class="sb">`&lt;!DOCTYPE html&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">    &lt;html&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">      &lt;head&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">        &lt;meta charset=&#34;UTF-8&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">        &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">        &lt;title&gt;</span><span class="si">${</span><span class="nx">props</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">&lt;/title&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">      &lt;/head&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">      &lt;body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">        </span><span class="si">${</span><span class="nx">props</span><span class="p">.</span><span class="nx">children</span><span class="si">}</span><span class="sb">
+</span></span></span><span class="line"><span class="cl"><span class="sb">      &lt;/body&gt;
+</span></span></span><span class="line"><span class="cl"><span class="sb">    &lt;/html&gt;`</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 layout.tsx 파일을 만들어 놓으면 귀찮은 HTML 템플릿을 매번 새로 써야 할 필요가 없어서 편합니다.</p>
+<p>두 번째로 header.tsx 파일을 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/components/header.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Header</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">header</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">nav</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">ul</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex flex-row mt-4 font-medium lg:space-x-8 lg:mt-0&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">a</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-gray-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">aria</span><span class="o">-</span><span class="nx">current</span><span class="o">=</span><span class="s2">&#34;page&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">Home</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">a</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/about&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-gray-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">About</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/nav&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/header&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>FlowBite에서 차용한 Tailwind CSS입니다.</p>
+<p>그리고 root-page.tsx 파일을 따로 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/components/root-page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Header</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./header&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Layout</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./layout&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">RootPage</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">Layout</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Hono Tailwind SSR Test&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Header</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-2xl font-bold text-center py-10&#34;</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">Root</span> <span class="nx">Page</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;flex justify-center items-center h-screen&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;grid grid-cols-3 gap-6 max-w-5xl w-full px-4&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">img</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">alt</span><span class="o">=</span><span class="s2">&#34;Image 1&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;rounded-lg object-cover&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;/static/placeholder.svg&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">width</span><span class="o">=</span><span class="s2">&#34;100&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">img</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">alt</span><span class="o">=</span><span class="s2">&#34;Image 2&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;rounded-lg object-cover&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">width</span><span class="o">=</span><span class="s2">&#34;100&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;/static/placeholder.svg&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">img</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">alt</span><span class="o">=</span><span class="s2">&#34;Image 3&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;rounded-lg object-cover&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">width</span><span class="o">=</span><span class="s2">&#34;100&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">src</span><span class="o">=</span><span class="s2">&#34;/static/placeholder.svg&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/Layout&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이미지 테스트를 위해 public 폴더에 보시면 static 폴더가 보이는데요.</p>
+<p>이 폴더에는 나중에 Cloudflare Pages 에 배포할 때 여러가지 정적 이미지나 기타 파일을 넣을 수 있습니다.</p>
+<p>저는 일단 placeholder.svg 파일 아무거나 넣었습니다.</p>
+<p>이제 엔트르포인트닌 src 폴더의 index.tsx 파일을 손 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">RootPage</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./components/root-page&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">RootPage</span> <span class="o">/&gt;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>renderer.tsx 파일을 지웠습니다.</p>
+<p>이제 개발 서버를 돌리면 아래와 같이 브라우저에 나올 건데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjc7hc4RwAJGccvJ_7P3duwRFmEKnqNoxAlXwxIJUYm5o5yWFvy-6-L16UYfoxPTxRsFlXSGsVY4NvNlyA3_TWl8B_RN6KrzKNtmSzt9HflGyRPdZswGkoQ-HvEonz1chgHjr_e0Mz8u9ElzZlezi5U1rwSv2BvdvAxNZ614uDvpM8SWW47U_F96_gBSrk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgqepS-LV3f_YjaBgMMM4wu5IYgiEX5fCb4Zc-je5bkONek4Q6ajK-jSb5Xvkd4WyuQAWJ3VyrziAR1cSpCPqSqaMxVtNsQIXN6PUaNGLT2u3xkeUFGQ8wZCslG2cB5XkQHbG6pmw7JZmtrioALFMXNd81cxJWtVWkLXm8BUqUJqG1tJDdD79MVZdQfLA8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>크롬 검사창에서 보시면 네트워크탭 부분에 자세히 보시면 Tailwind CSS 라이브러리가 없습니다.</p>
+<p>그래서 전체적인 화면도 TailwindCSS가 적용되지 않았는데요.</p>
+<p>이제 이 부분을 동적으로 컴파일해서 Tailwind CSS를 보여주겠습니다.</p>
+<hr>
+<h2 id="twind-패키지로-동적-css-작성하기">Twind 패키지로 동적 CSS 작성하기</h2>
+<p>Twind 패키지가 바로 이 역할을 하기 위한 패키지인데요.</p>
+<p>먼저, lib 폴더를 만들고 ssrTwind.ts 파일을 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">extract</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@twind/core&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">ssrTwind</span><span class="p">(</span><span class="nx">body</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">html</span><span class="p">,</span> <span class="nx">css</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">extract</span><span class="p">((</span><span class="kr">await</span> <span class="nx">body</span><span class="p">).</span><span class="nx">toString</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">html</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&#34;&lt;/head&gt;&#34;</span><span class="p">,</span> <span class="sb">`&lt;style data-twind&gt;</span><span class="si">${</span><span class="nx">css</span><span class="si">}</span><span class="sb">&lt;/style&gt;&lt;/head&gt;`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>당연히 twind/core 패키지를 설치해줘야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm i @twind/core</span></span></code></pre></div>
+  </figure>
+</div>
+<p>ssrTwind 헬퍼 함수는 body 부분에서 html과 css 부분을 추출(extract)합니다.</p>
+<p>단연히 async 함수죠.</p>
+<p>그리고 html 부분에서 <code>&lt;/head&gt;</code> 부분을 바꿔치기해주는 방식으로 동적으로 계산된 TailwindCSS를 삽입해 주는 역할을 합니다.</p>
+<p>이제 엔트리 포인트인 index.tsx 파일에서 ssrTwind 헬퍼함수를 적용시켜 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">RootPage</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./components/root-page&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ssrTwind</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./lib/ssrTwind&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">ssrTwind</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">RootPage</span> <span class="o">/&gt;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 단순하게 <code>&lt;RootPage /&gt;</code>를 감싸면 되는데요.</p>
+<p>그런데, Twind를 쓰기 위해서는 Tailwind Preset을 설치해 줘야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm i @twind/preset-tailwind</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 index.tsx 파일을 아래와 같이 손 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">install</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@twind/core&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">presetTailwind</span> <span class="nx">from</span> <span class="s2">&#34;@twind/preset-tailwind&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ssrTwind</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./lib/ssrTwind&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">RootPage</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./components/root-page&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">install</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">presets</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">presetTailwind</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">theme</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fontFamily</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">sans</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;Monaco&#34;</span><span class="p">,</span> <span class="s2">&#34;sans-serif&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">serif</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;Georgia&#34;</span><span class="p">,</span> <span class="s2">&#34;serif&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">ssrTwind</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">RootPage</span> <span class="o">/&gt;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>theme 부분은 빈칸으로 둬도 됩니다.</p>
+<p>이제 개발 서버를 돌리면 아래 그림과 같이 Tailwind CSS가 완벽하게 적용된 걸 볼 수 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjMlv5Fsq4JmWib-Gb09bne-TRmOoIEcyHTlaZBGu23a181cJiUB5Pena-iGoZE043kFSLHKBrqFXB-KRAPYG6OQRb4r5YyOAveqPuBzAabN3_psRvRSViPahCoUQKs61EjvcbNoPj9KJLDu2ofCnX_gYLZ8OulaNB17bFW8iLJDKmgrk987AYJLnsNO0Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjZwrgeaWuryCdCy_CfIDdntdy0Q_6g0GuJiHAx0iLwldHPuP0x19oepevik-M2K9COQkWjhptXBUaD0r5ItAj-AeGVmSMurtyStUoZtMG9zCXGnqINZ9h8FtEf7lZwDaI01CLnj-MjJcqUFVE7HbJEZAHBF85Lbdvnq8zc65xfY8zdumRz8W7-haBmKMo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>네트워크 탭을 봐도 Tailwind CSS 라이브러리가 없는 게 보일 겁니다.</p>
+<p>그런데도 Tailwind CSS가 완벽하게 작동되었는데요.</p>
+<p>페이지 Source 파일을 보겠습니다.</p>
+<p>네트워크 탭이 아닌 엘리먼트 탭을 보시면 아래 그림과 같이 HTML의 head 태그 안에 style 태그가 있는데요.</p>
+<p>우리가 사용한 Tailwind CSS를 동적으로 컴파일해서 입혀줬네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjZr1lsdVtBX3_0eq5IIUOmTTEOiYjRzAlKiykcrCa5V1vodH9tIwtPa6loXjT2ON-cmi-Uy5MVZ8S9JxFWr9rYijrzN14PkwpiFHALtWAc6U3KxMZoxFHTHQ2QHOF-91bvkzBcolpDN5oPZ7vjIHilxTvXfe2Et-e1AU0LSf-ZkX63sk4_2H8D5kPk46s"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>우리가 처음 의도했던 부분을 성공적으로 구현해 냈습니다.</p>
+<p>그리고 이와 만든김에 &lsquo;/about&rsquo; 라우팅도 만들어 볼까요?</p>
+<hr>
+<h2 id="hono-라우팅-만들기">Hono 라우팅 만들기</h2>
+<p>index.tsx 파일을 아래와 같이 만들어 줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">install</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@twind/core&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">presetTailwind</span> <span class="nx">from</span> <span class="s2">&#34;@twind/preset-tailwind&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ssrTwind</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./lib/ssrTwind&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">RootPage</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./components/root-page&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">about</span> <span class="nx">from</span> <span class="s2">&#34;./routes/about&#34;</span><span class="p">;</span>  <span class="c1">// 추가한 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="nx">install</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">presets</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">presetTailwind</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">theme</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fontFamily</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">sans</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;Monaco&#34;</span><span class="p">,</span> <span class="s2">&#34;sans-serif&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">serif</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;Georgia&#34;</span><span class="p">,</span> <span class="s2">&#34;serif&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">ssrTwind</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">RootPage</span> <span class="o">/&gt;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s2">&#34;/about&#34;</span><span class="p">,</span> <span class="nx">about</span><span class="p">);</span> <span class="c1">// 추가한 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">app</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 잘 보시면 routes 폴더를 따로 만들고 about 라우팅을 import 해서 app.route 함수로 라우팅을 추가해 줬습니다.</p>
+<p>왜 routes 폴더를 따로 만드느냐, 바로 코드를 분산하기 위해서죠.</p>
+<p>그러면 routes 폴더를 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// src/routes/about/index.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ssrTwind</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../lib/ssrTwind&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">About</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;./components/about&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">about</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">about</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">ssrTwind</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">About</span> <span class="o">/&gt;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">about</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 라우팅을 구현하는 파일과 실제 about 페이지를 따로 분리했습니다.</p>
+<p>마지막으로 components 폴더의 about.tsx 파일을 아래와 같이 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Header</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../components/header&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Layout</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../components/layout&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">About</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">Layout</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;About Page&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Header</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;text-2xl font-bold text-center py-10&#34;</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">About</span> <span class="nx">Page</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/Layout&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 개발 서버를 돌려볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjwH5x2A9bY6Gb2TfilYjOatbFlMzOJVJRZLVuwZU5EI92d9b_2ql8yI4vGU4S2y8US50NT2x2UT0K_9kd2U25iQaGWuq6RNssiW9UW2QH73r_FI8spzA8SOHS0YrJMwsCB8jZnw6dIybh1P3K835ysisS4PqPmHUkUZPmmeV-d1WqXhtbhjO6_Z_mvDIA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 about 라우팅도 잘 작동합니다.</p>
+<p>그리고 웹페이지 소스도 보시면 head 태그 안에 style 부분이 Tailwind CSS로 꽉 차 있는 걸 볼 수 있을 겁니다.</p>
+<hr>
+<h2 id="cloudflare-pages에-배포하기">Cloudflare Pages에 배포하기</h2>
+<p>이제 Hono 웹 프레임워크로 웹페이지를 만들었으니 Cloudflare Pages에 실제로 배포해 보겠습니다.</p>
+<p>배포 명령도 단순합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm run deploy</span></span></code></pre></div>
+  </figure>
+</div>
+<p>실제로는 <code>npm run build</code> 명령어를 실행하면 dist 폴더가 생기는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">➜  hono-tailwind-ssr npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; build
+</span></span><span class="line"><span class="cl">&gt; vite build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vite v5.2.11 building SSR bundle <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">47</span> modules transformed.
+</span></span><span class="line"><span class="cl">dist/_worker.js  76.36 kB
+</span></span><span class="line"><span class="cl">✓ built in 361ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 _worker.js 파일 한 개만 생기네요.</p>
+<p>이제 바로 Cloudflare Worker 인데요.</p>
+<p>Hono를 이용해서 동적으로 웹 페이지를 만들었기 때문에 _worker.js 파일이 생기는 겁니다.</p>
+<p>실제로 dist 폴더 안을 살펴볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">tree ./dist -L <span class="m">2</span>
+</span></span><span class="line"><span class="cl">./dist
+</span></span><span class="line"><span class="cl">├── _routes.json
+</span></span><span class="line"><span class="cl">├── _worker.js
+</span></span><span class="line"><span class="cl">└── static
+</span></span><span class="line"><span class="cl">    ├── placeholder.svg
+</span></span><span class="line"><span class="cl">    └── style.css
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">2</span> directories, <span class="m">4</span> files</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 npm run deploy하면 이 dist 폴더가 통째로 Cloudflare 서버에 업로드되는 겁니다.</p>
+<p>실제 package.json 파일의 deploy 부분을 보시면 아래와 같이 되어 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="s2">&#34;deploy&#34;</span>: <span class="s2">&#34;</span><span class="nv">$npm_execpath</span><span class="s2"> run build &amp;&amp; wrangler pages deploy dist&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 배포해 볼까요?</p>
+<p>그러면 아래와 같이 나오는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm run deploy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; deploy
+</span></span><span class="line"><span class="cl">&gt; <span class="nv">$npm_execpath</span> run build <span class="o">&amp;&amp;</span> wrangler pages deploy dist
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&gt; build
+</span></span><span class="line"><span class="cl">&gt; vite build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vite v5.2.11 building SSR bundle <span class="k">for</span> production...
+</span></span><span class="line"><span class="cl">✓ <span class="m">47</span> modules transformed.
+</span></span><span class="line"><span class="cl">dist/_worker.js  76.36 kB
+</span></span><span class="line"><span class="cl">✓ built in 307ms
+</span></span><span class="line"><span class="cl">The project you specified does not exist: <span class="s2">&#34;hono-tailwind-ssr&#34;</span>. Would you like to create it?<span class="s2">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">❯ Create a new project</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나오면 그냥 엔터키를 누르면 됩니다.</p>
+<p>그리고 중요한 부분은 아래와 같이 나오는데요.</p>
+<p>production이라고 디폴트 값이 나오는데요.</p>
+<p>지우고 main이라고 씁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">? Enter the production branch name: › main</span></span></code></pre></div>
+  </figure>
+</div>
+<p>Git의 main 브랜치를 사용한다는 뜻입니다.</p>
+<p>그냥 엔터치면 배포가 안되니까 꼭 main이라고 바꾸고 엔터키를 쳐야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">✨ Successfully created the <span class="s1">&#39;hono-tailwind-ssr&#39;</span> project.
+</span></span><span class="line"><span class="cl">🌎  Uploading... <span class="o">(</span>2/2<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✨ Success! Uploaded <span class="m">2</span> files <span class="o">(</span>1.30 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✨ Compiled Worker successfully
+</span></span><span class="line"><span class="cl">✨ Uploading Worker bundle
+</span></span><span class="line"><span class="cl">✨ Uploading _routes.json
+</span></span><span class="line"><span class="cl">✨ Deployment complete! Take a peek over at https://2eebcc68.hono-tailwind-ssr.pages.dev</span></span></code></pre></div>
+  </figure>
+</div>
+<p>최종적으로 위와 같이 성공적으로 배포가 되었네요.</p>
+<p>임시 배포 주소로 가볼까요?</p>
+<p>처음에는 안 보일 수 있는데요.</p>
+<p>Edge 네트워크라 우리나라 쪽으로 오려면 조금 걸립니다.</p>
+<p>그리고 Cloudflare Dashboard로 가시면 아래와 같이 잘 보일 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhklddapMG4G1LJFs8UZyqTSyz8nPc5CCjvwAwhJwPZCOujg-S73ONPgITweiEOMwuHhM_AbzZMCSK69h2ORUEAEfClbmu_YdtQnWn9d135dcUUX8kYwOe-zaXpCRhIoB8wBaPw5RgzPCltqlypNyJklDROgDEWD1ay3AIYWfnnkKlGVpCFWQ_0zmc0Um0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 실제 사이트인 <code>https://hono-tailwind-ssr.pages.dev/</code>로 가볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiaDop5Bp88jHjyWbv_aVhVr3WQWRAf6EroFr-KO_V8iMFb-whSiAi-PulQibtABunfanUD6AOl7U41zgUX5g3KDGBNt4XsdLIFFuupGS0roYoqBat66zt2Hy0cxzknCP868lPX6xQOBsuJh-yQ2Yi1kUl3AExJiypmI_t6xwfSfOt-I3iVDUpIn3wVZPc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 정상적으로 나옵니다.</p>
+<p>성공이네요.</p>
+<p>네트워크 탭을 검사해 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiQ2-FwPjzWBDbjpqxUVPgSgPJyvioLglsVBgKiIMNb6p0dUPov2GqCftTsCvsg-bXNiPIakncreMR-WWprLu8jFkkzY910AKMVpKGxSBaJhyVXGPus2UWFhlEUKPfZ4gAnaJ1VbFyJeEmuApXCe6S0I1Oit0B3FyeFv1ZTY10L1-TevnR9dsUkdyuYFOc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 정말 가볍고 작은 사이트가 완성되었습니다.</p>
+<p>위 그림을 보시면 Root Page의 사이트 전체 크기가 4.3kb인데요.</p>
+<p>어메이징합니다.</p>
+<p>만약 Tailwind CSS를 CDN에서 통째로 삽입했더라면 112kb가 추가되는 꼴인데요.</p>
+<p>Twind를 이용해서 동적으로 Tailwind를 컴파일해서 필요한 것만 삽입하니까 정말 작고 빠른 웹 페이지가 탄생했네요.</p>
+<p>앞으로 Hono와 CF Pages 그리고 Twind를 이용해서 여러 가지 웹 페이지를 만들어 봐야겠네요.</p>
+<p>정말 만족스럽네요.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/hono/" role="button">hono</a>
+        <a class="btn btn-light" href="/tags/cloudflare-pages/" role="button">cloudflare pages</a>
+        <a class="btn btn-light" href="/tags/tailwindcss/" role="button">tailwindcss</a>
+        <a class="btn btn-light" href="/tags/twind/" role="button">twind</a>
+        <a class="btn btn-light" href="/tags/ssr/" role="button">ssr</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-ssr-login-with-react-router-and-supabase/">React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기</a></h2>
+                  <p>Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다.</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-25-react-router-with-cloudflare-pages-d-1-db/">React Router V7과 Cloudflare Pages 그리고 D1 Database 사용</a></h2>
+                  <p>React Router V7를 Cloudflare Pages에 D1 DB를 이용해서 배포할 수 있게 개조하기</p>
+                  <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>12&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-10-19-cloudflare-remix-hono-todo-app/">Fullstack 강좌 - Hono RPC &#43; Remix &#43; Cloudflare &#43; D1 DB 조합으로 Todo 앱 만들기</a></h2>
+                  <p>Hono RPC 기능을 활용하여 API Endpoint 구축하여 Remix Framework으로 Todo 앱 만들기</p>
+                  <p>
+  <small>October 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>24&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

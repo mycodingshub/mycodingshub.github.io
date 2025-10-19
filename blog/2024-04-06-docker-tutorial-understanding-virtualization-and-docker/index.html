@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기</title>
+<meta name="description" content="가상화와 Docker의 기본 개념 이해하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-virtualization-and-docker/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기" />
+<meta property="og:description" content="가상화와 Docker의 기본 개념 이해하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-virtualization-and-docker/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-04-06T04:23:41Z" />
+<meta property="article:modified_time" content="2024-04-06T04:23:41Z" />
+<meta property="article:tag" content="docker" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기" />
+<meta name="twitter:description" content="가상화와 Docker의 기본 개념 이해하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기\"",
+  "description": "\"가상화와 Docker의 기본 개념 이해하기\"",
+  "datePublished": "\"2024-04-06T04:23:41Z\"",
+  "dateModified": "\"2024-04-06T04:23:41Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-virtualization-and-docker/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기</h1>
+        <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>15&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>새롭게 Docker 강좌를 시작해 볼까 합니다.</p>
+<p>전체적인 강좌 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-virtualization-and-docker">Docker 강좌 1편. 가상화와 Docker 기초 개념 이해하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-docker-container-comprehensive-guide">Docker 강좌 2편. 실무에서 쓰이는 Docker 컨테이너 완벽 가이드</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-docker-image-and-dockerfile">Docker 강좌 3편. Docker 이미지 및 Dockerfile 기초</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-volume-usage-and-principles">Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-understanding-bind-mount-and-port-publish">Docker 강좌 5편. Docker 바인드 마운트와 포트 publish</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-06-docker-tutorial-docker-compose-complete-guide">Docker 강좌 6편. Docker Compose 완벽 가이드</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#1-%ea%b0%80%ec%83%81%ed%99%94">1. 가상화</a>
+<ul>
+<li><a href="#%ec%84%9c%eb%b2%84-%ea%b0%80%ec%83%81%ed%99%94%eb%9e%80"><strong>서버 가상화란?</strong></a></li>
+<li><a href="#%ed%98%b8%ec%8a%a4%ed%8a%b8%ed%98%95-%ea%b0%80%ec%83%81%ed%99%94"><strong>호스트형 가상화</strong></a></li>
+<li><a href="#%ed%95%98%ec%9d%b4%ed%8d%bc%eb%b0%94%ec%9d%b4%ec%a0%80%ed%98%95-%ea%b0%80%ec%83%81%ed%99%94"><strong>하이퍼바이저형 가상화</strong></a></li>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%ed%98%95-%ea%b0%80%ec%83%81%ed%99%94"><strong>컨테이너형 가상화</strong></a></li>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%ed%98%95-%ea%b0%80%ec%83%81%ed%99%94%ec%9d%98-%ed%8a%b9%ec%a7%95"><strong>컨테이너형 가상화의 특징</strong></a>
+<ul>
+<li><a href="#%ec%9e%a5%ec%a0%90"><strong>장점</strong></a>
+<ul>
+<li><a href="#%eb%b9%a0%eb%a5%b8-%ea%b5%ac%eb%8f%99"><strong>빠른 구동</strong></a></li>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%ed%98%95-%ea%b0%80%ec%83%81%ed%99%94%ec%9d%98-%eb%b0%b0%ed%8f%ac-%ec%9a%a9%ec%9d%b4%ec%84%b1"><strong>컨테이너형 가상화의 배포 용이성</strong></a></li>
+</ul>
+</li>
+<li><a href="#%ec%a3%bc%ec%9d%98%ec%82%ac%ed%95%ad"><strong>주의사항</strong></a>
+<ul>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%ec%97%90-os%eb%8a%94-%ed%8f%ac%ed%95%a8%eb%90%98%ec%96%b4-%ec%9e%88%ec%a7%80-%ec%95%8a%ec%a7%80%eb%a7%8c-%ec%9e%88%eb%8a%94-%ea%b2%83%ec%b2%98%eb%9f%bc-%eb%b3%b4%ec%9e%84"><strong>컨테이너에 OS는 포함되어 있지 않지만, 있는 것처럼 보임</strong></a></li>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%ec%9d%98-%ec%bb%a4%eb%84%90%ec%9d%80-%ed%98%b8%ec%8a%a4%ed%8a%b8-%ea%b8%b0%ea%b3%84%ec%9d%98-linux-%ec%bb%a4%eb%84%90%ec%9e%85%eb%8b%88%eb%8b%a4"><strong>컨테이너의 커널은 호스트 기계의 Linux 커널입니다</strong></a></li>
+<li><a href="#%ed%98%b8%ec%8a%a4%ed%8a%b8-os%ec%9d%98-%ec%b0%a8%ec%9d%b4%ea%b0%80-%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%ec%97%90-%ec%98%81%ed%96%a5%ec%9d%84-%ec%a4%8d%eb%8b%88%eb%8b%a4"><strong>호스트 OS의 차이가 컨테이너에 영향을 줍니다</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%ec%9a%94%ec%95%bd">요약</a></li>
+</ul>
+</li>
+<li><a href="#2-docker">2. Docker</a>
+<ul>
+<li><a href="#docker%eb%9e%80">Docker란?</a></li>
+<li><a href="#docker-engine%ec%9d%b4%eb%9e%80">Docker Engine이란?</a></li>
+<li><a href="#docker-cli%eb%9e%80">Docker CLI란?</a></li>
+<li><a href="#docker-desktop%ec%9d%b4%eb%9e%80">Docker Desktop이란?</a></li>
+<li><a href="#%ec%84%a4%ec%b9%98%ec%99%80-%ea%b3%84%ec%a0%95-%ea%b4%80%eb%a0%a8">설치와 계정 관련</a></li>
+<li><a href="#docker-compose%eb%9e%80">Docker Compose란?</a></li>
+<li><a href="#docker-hub%eb%9e%80">Docker Hub란?</a></li>
+<li><a href="#ecs--gke%eb%9e%80">ECS / GKE란?</a></li>
+<li><a href="#ecr--gcr%ec%9d%b4%eb%9e%80">ECR / GCR이란?</a></li>
+<li><a href="#kubernetes%eb%9e%80">Kubernetes란?</a></li>
+<li><a href="#docker-desktop-%ec%9c%a0%eb%a3%8c%ed%99%94%ec%97%90-%eb%8c%80%ed%95%98%ec%97%ac">Docker Desktop 유료화에 대하여</a></li>
+<li><a href="#%ec%9a%94%ec%95%bd-1">요약</a></li>
+</ul>
+</li>
+<li><a href="#docker-%ea%b8%b0%eb%b3%b8-%ea%b0%9c%eb%85%90">Docker 기본 개념</a>
+<ul>
+<li><a href="#%ea%b8%b0%eb%b3%b8-%ec%9a%94%ec%86%8c%eb%8a%94-3%ea%b0%80%ec%a7%80%ec%9e%85%eb%8b%88%eb%8b%a4">기본 요소는 3가지입니다.</a>
+<ul>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88%eb%9e%80">컨테이너란?</a></li>
+<li><a href="#%ec%9d%b4%eb%af%b8%ec%a7%80%eb%9e%80"><strong>이미지란?</strong></a></li>
+<li><a href="#dockerfile%ec%9d%b4%eb%9e%80"><strong>Dockerfile이란?</strong></a></li>
+</ul>
+</li>
+<li><a href="#%ea%b8%b0%eb%b3%b8-%eb%aa%85%eb%a0%b9%ec%96%b4-3%ea%b0%80%ec%a7%80"><strong>기본 명령어 3가지</strong></a>
+<ul>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88-%ec%8b%a4%ed%96%89%ed%95%98%ea%b8%b0"><strong>컨테이너 실행하기</strong></a></li>
+<li><a href="#%ec%9d%b4%eb%af%b8%ec%a7%80-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0"><strong>이미지 생성하기</strong></a></li>
+<li><a href="#%ec%bb%a8%ed%85%8c%ec%9d%b4%eb%84%88-%ec%a1%b0%ec%9e%91%ed%95%98%ea%b8%b0"><strong>컨테이너 조작하기</strong></a></li>
+</ul>
+</li>
+<li><a href="#%eb%aa%85%eb%a0%b9%ec%96%b4%ec%9d%98-%ed%98%95%ed%83%9c%eb%a5%bc-%ec%9d%98%ec%8b%9d%ed%95%98%ea%b8%b0"><strong>명령어의 형태를 의식하기</strong></a>
+<ul>
+<li><a href="#%eb%ac%b4%ec%97%87%ec%9d%84-%ec%96%b4%eb%96%bb%ea%b2%8c-%ed%95%98%eb%8a%94%ec%a7%80">&ldquo;무엇&quot;을 &ldquo;어떻게&rdquo; 하는지</a></li>
+</ul>
+</li>
+<li><a href="#%ec%83%88%eb%a1%9c%ec%9a%b4-%eb%aa%85%eb%a0%b9%ec%96%b4%ec%99%80-%ec%9d%b4%ec%a0%84-%eb%aa%85%eb%a0%b9%ec%96%b4%ec%97%90-%eb%8c%80%ed%95%b4"><strong>새로운 명령어와 이전 명령어에 대해</strong></a></li>
+<li><a href="#docker%ec%99%80-%ec%a3%bc%eb%b3%80-%eb%8f%84%ea%b5%ac-%ea%b5%ac%eb%b6%84%ed%95%98%ea%b8%b0"><strong>Docker와 주변 도구 구분하기</strong></a>
+<ul>
+<li><a href="#1-docker-compose">1. <strong>Docker Compose</strong></a></li>
+<li><a href="#2-kubernetes">2. <strong>Kubernetes</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="1-가상화">1. 가상화</h1>
+<h2 id="서버-가상화란"><strong>서버 가상화란?</strong></h2>
+<p>서버 가상화는 컴퓨터 리소스를 관리하기 위한 다양한 기술을 말합니다.</p>
+<p>예를 들어, 하나의 서버 안에 네트워크나 스토리지를 가상으로 준비하여, 여러 개의 다른 서버가 동작하는 것처럼 보이게 하는 기술입니다.</p>
+<p>서버 가상화는 물리적인 서버와 소프트웨어 사이에 가상화 소프트웨어를 끼워 넣음으로써 실현됩니다.</p>
+<p>가상화 소프트웨어를 어디에 설치할지, 가상화 소프트웨어가 무엇을 관리할지에 따라 몇 가지 패턴으로 분류됩니다.</p>
+<ul>
+<li>호스트형 가상화</li>
+<li>하이퍼바이저형 가상화</li>
+<li>컨테이너형 가상화</li>
+</ul>
+<p>간단히 각각에 대해 설명하겠습니다.</p>
+<h2 id="호스트형-가상화"><strong>호스트형 가상화</strong></h2>
+<p>호스트형 가상화를 실현하는 가상화 소프트웨어는 호스트 OS에 설치되며, 게스트 OS를 관리합니다.</p>
+<p>다음 그램에서 노란색 박스가 바로 &lsquo;가상 서버&rsquo;입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhwDzr1tMafzHFtUbpK9xVUWI3TRyC6PpptpmLS31yrCUFxt6a5PTH3Mt72C3J2D2ViAL7NjmNuVJeydP9FzFR_Hvnzer4_0NW9InZWLSlRy18SojvuYMwa7NDMkXVwBy5Qve796RbFUn6ZOy6-SmTim9NK7BdjYN8pTaQpbZ-gBT-WJ7-qkSLEmlgjMyg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>호스트형 가상화에는 다음과 같은 특징이 있습니다.</p>
+<ul>
+<li>이미 사용 중인 기계에 가상 서버를 구축하는 경우 등에 유용</li>
+<li>호스트 OS가 있기 때문에 브라우저나 에디터도 평소처럼 계속 사용할 수 있음</li>
+</ul>
+<p>호스트형 가상화를 실현하는 가상화 소프트웨어의 대표적인 예로는 Oracle VM VirtualBox나 VMware Fusion 등이 있습니다.</p>
+<h2 id="하이퍼바이저형-가상화"><strong>하이퍼바이저형 가상화</strong></h2>
+<p>하이퍼바이저형 가상화를 구현하는 가상화 소프트웨어는 일반적으로 하드웨어에 설치되어 게스트 OS를 관리합니다.</p>
+<p>호스트형 가상화와 마찬가지로, 다음 그림의 박스 친 부분이 바로 &lsquo;가상 서버&rsquo;입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgG4Drg-NQVpsqdqcgNWZ3PZLsuGH5PPlHU_lcsl_Ov7AQBaFhLOGiuV3zbhLqN0kJ25cha1f4Q4JUg_RCtgP1w77tAvlD29nenticYdSGiCT-oHCML67BevoMDXEgE1L88KpgeJrFvDBUcDk47sh3vvPmcJslBvUdbNhWc7vWdyIV-tTRugT0GFExDh70"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>하이퍼바이저형 가상화의 특징은 다음과 같습니다:</p>
+<ul>
+<li>호스트 OS의 부팅을 기다리거나 리소스를 할당할 필요가 없습니다</li>
+<li>게스트 OS 이외는 작동하지 않습니다</li>
+<li>하이퍼바이저형 가상화를 구현하는 가상화 소프트웨어의 대표적인 예로는 Windows의 Hyper-V나 Linux의 KVM 등이 있습니다.</li>
+<li>Microsoft Hyper-V 등에서 연상할 수 있듯이, 호스트 OS 위에서 하이퍼바이저형 가상화 소프트웨어를 작동시킬 수도 있습니다.</li>
+</ul>
+<h2 id="컨테이너형-가상화"><strong>컨테이너형 가상화</strong></h2>
+<p>컨테이너형 가상화를 구현하는 가상화 소프트웨어는 호스트 OS에 설치되어 애플리케이션을 관리합니다.</p>
+<p>다음 그림이 바로 &lsquo;컨테이너&rsquo;입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiVP2rywaYyqmxoBlPjgmxVAVaKrYREhMcygpuRCZqGH1oBMFpY8-lH0bTqb21VFKvueimEIT6h5tmqkJ0PkEfMMNLKOj_n9GRyhfFBWNlPvCplb9e4X8OHn1U91idcSjLYJFu8HC2hfDyUx-8soBECwfho5-pKKzAutUKzVgY4641XSDsxh-GaviheQiA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>컨테이너형 가상화의 특징은 다음과 같습니다:</p>
+<ul>
+<li>게스트 OS가 존재하지 않아, 부팅의 비용이 크게 줄어듭니다</li>
+<li>서버가 아니기 때문에, 하나의 컨테이너에 여러 애플리케이션을 설치하지 않습니다</li>
+<li>호스트 OS가 있기 때문에 브라우저나 에디터도 평소처럼 계속 사용할 수 있습니다</li>
+<li>컨테이너형 가상화를 구현하는 가상화 소프트웨어의 대표적인 예로는 Docker 등이 있습니다.</li>
+</ul>
+<h2 id="컨테이너형-가상화의-특징"><strong>컨테이너형 가상화의 특징</strong></h2>
+<p>호스트형 가상화와 하이퍼바이저형 가상화를 비교하면서 컨테이너형 가상화의 특징을 살펴보겠습니다.</p>
+<h3 id="장점"><strong>장점</strong></h3>
+<h4 id="빠른-구동"><strong>빠른 구동</strong></h4>
+<p>가장 크게 체감할 수 있는 특징 중 하나는 게스트 OS의 구동이 필요 없기 때문에 앱 구동이 압도적으로 빠르다는 점입니다.</p>
+<p>서버 전체가 아닌 각 애플리케이션별로 구동할 수 있다는 점도 앱 구동이 빨라지는 이유 중 하나입니다.</p>
+<p>다음 그림에서 &lsquo;App A&rsquo;를 실행하기 위해 앱 구동 시간을 비교해보면 얼마나 가벼운지 상상할 수 있습니다.</p>
+<p>매우 단순하게 말하자면 가상 OS의 PC 재시작 대비 &lsquo;App A&rsquo; 실행 정도의 차이가 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhFytgTYNWluuiYPRHC4zTKJsFgSK4ocKCYRLBf2iKhcJYmwHTmavoWG_HRt5lPSJ0Mk2n7bGHrPXDRGT039zv7UBza2deHOjs7tz_LyNGahYxpL8zPkXKrCF74BQABrOC2hThGa1o2eX5vtMnHzJugXqbyx3DFqzR-Cz5FlzWydek-tMBFIRVXPQJoSfM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이러한 이유로 컨테이너 구축의 시행착오가 쉬워지고, 컨테이너를 쉽게 중지하거나 시작할 수 있습니다.</p>
+<p>이러한 편리함을 활용하여 &lsquo;테스트를 실행하는 컨테이너를 준비해두고, 테스트 중에만 시작하여 몇 분 만에 폐기하는&rsquo; 작은 사이클에 통합할 수 있습니다.</p>
+<h4 id="컨테이너형-가상화의-배포-용이성"><strong>컨테이너형 가상화의 배포 용이성</strong></h4>
+<p>호스트형 가상화로 로컬 개발을 하고 있고, 배포 대상 서버에서 하이퍼바이저형 가상화가 이루어지고 있다면, 로컬에서 시작하는 것과 서버에 배포하는 것이 일치하기 때문에 배포는 어느 정도 간단합니다.</p>
+<p>그러나 대부분의 경우, 배포 대상 서버는 가상화되어 있지 않고 로컬에서만 가상화를 진행하는 형태가 많을 것입니다.</p>
+<p>가상화가 로컬에서만 이루어져도, 개발자의 환경을 통일하기 쉬운 등의 장점이 충분히 있기 때문에, 이 자체는 문제가 되지 않습니다.</p>
+<p>그러나 이 경우 로컬에서 시작하는 것과 서버에 배포하는 것이 달라지는 문제가 발생합니다.</p>
+<p>예를 들어 &lsquo;메일(mail) 서버가 독립 시스템으로 운영되고 있으므로 실제 환경에서는 해당 서버로 연결한다&rsquo;는 구성을 상상하기 쉽습니다.</p>
+<p>이러한 차이는 &lsquo;배포 대상의 PHP 버전이(설정이) 달라서&rsquo;라는 위험과 &lsquo;.php만 배포하는 시스템을 만들어야 한다&rsquo;는 비용으로 이어집니다.</p>
+<p>컨테이너형 가상화라면 로컬에서 시작하는 것과 서버에 배포하는 것이 일치하기 때문에 쉽게 배포할 수 있습니다.</p>
+<p>물론 배포 대상이 컨테이너형 가상화가 되어 있지 않다면 같은 문제가 발생하지만, 최근에는 다음과 같은 이미지 레지스트리나 관리되는 컨테이너의 배포 대상이 있기 때문에, 실제 운영도 로컬 개발도 컨테이너형 가상화를 전제로 구축하는 것이 많아지고 있습니다.</p>
+<ul>
+<li><strong>이미지 레지스트리</strong>
+<ul>
+<li>Docker Hub</li>
+<li>Amazon Elastic Container Registry (ECR)</li>
+<li>Google Container Registry (GCR)</li>
+</ul>
+</li>
+<li><strong>컨테이너의 배포 대상</strong>
+<ul>
+<li>Amazon Elastic Container Service (ECS)</li>
+<li>Google Kubernetes Engine (GKE)</li>
+<li>(이에 대해서는 &lsquo;1부: Docker란?&lsquo;에서 간단히 설명합니다)</li>
+</ul>
+</li>
+</ul>
+<p>결과적으로는 호스트형 가상화에서 예로 든 로컬 개발과 실제 운영의 격차는 느껴지기 어렵다고 할 수 있습니다.</p>
+<p>배포 대상이 컨테이너형 가상화가 아닌 경우는 차이가 발생하지만, 가상 서버가 아니므로 컨테이너는 작다는 장점은 남아 있습니다.</p>
+<p>호스트형 가상화에서 게스트 OS를 시작하면, 모든 기능이 같은 Ubuntu에 탑재되어 있어 설정 파일 등이 혼합되기 쉽습니다.</p>
+<p>이 경우 PHP만을 배포하려고 할 때 &lsquo;어떤 설정 파일이 있는데, 이게 PHP용인가요? 메일 시스템용인가요?&rsquo; &lsquo;어, 서버 안의 그런 곳에도 설정 파일이 있었다는 걸 몰랐어요&hellip;&lsquo;와 같은 상황을 초래합니다.</p>
+<p>반면에 컨테이너형 가상화는 기능별로 컨테이너를 시작하기 때문에, 메일 시스템용 설정이 PHP 컨테이너에 혼입되는 일은 없습니다.</p>
+<h3 id="주의사항"><strong>주의사항</strong></h3>
+<h4 id="컨테이너에-os는-포함되어-있지-않지만-있는-것처럼-보임"><strong>컨테이너에 OS는 포함되어 있지 않지만, 있는 것처럼 보임</strong></h4>
+<p>컨테이너형 가상화는 게스트 OS를 시작하지 않지만, Docker에 의해 마치 Linux가 시작된 것처럼 보입니다.</p>
+<p>따라서 컨테이너 내에서는 평범하게 /etc와 같은 디렉토리가 있거나 ls나 cd 명령어를 사용할 수 있습니다.</p>
+<p>실제 사용감은 Ubuntu나 CentOS 등을 조작하는 것과 크게 다르지 않을 것입니다.</p>
+<p>가상 서버만큼 완전한 분리나 에뮬레이트는 이루어지지 않습니다.</p>
+<h4 id="컨테이너의-커널은-호스트-기계의-linux-커널입니다"><strong>컨테이너의 커널은 호스트 기계의 Linux 커널입니다</strong></h4>
+<p>Ubuntu나 CentOS처럼 보이지만 실제로 OS가 시작되지 않기 때문에, 컨테이너의 커널은 호스트 기계의 Linux 커널이 됩니다.</p>
+<p>이는 가상 서버처럼 하드웨어를 에뮬레이트하지 않으며, 호스트 OS(또는 그 위의 Linux)와의 분리도가 낮다는 점에 주의가 필요합니다.</p>
+<p>또한, Docker 컨테이너는 Linux의 커널과 기능을 사용하여 작동하기 때문에, 컨테이너의 OS도 필연적으로 Linux로 제한됩니다.</p>
+<p>예를 들어, Ubuntu 컨테이너와 Windows Server 컨테이너는 공존할 수 없습니다.</p>
+<h4 id="호스트-os의-차이가-컨테이너에-영향을-줍니다"><strong>호스트 OS의 차이가 컨테이너에 영향을 줍니다</strong></h4>
+<p>컨테이너에는 게스트 OS가 포함되어 있지 않고 호스트 기계 위의 Linux 커널을 사용하기 때문에, 호스트 OS의 차이가 컨테이너에 영향을 줄 수 있습니다.</p>
+<p>예를 들어, 최근 M1 Mac에서 Docker가 작동하지 않는 문제가 종종 보고되는데, 이는 호스트 기계의 Linux 커널 차이 때문입니다.</p>
+<p>Linux 커널은 호스트 OS와 동일한 것을 설치하게 되므로, 결과적으로 호스트 OS가 다르면 시작하는 컨테이너도 다를 수 있습니다.</p>
+<p><strong>컨테이너는 가상화 기술이지만, 호스트 OS의 영향을 완전히 받지 않는 것은 아닙니다</strong></p>
+<p>컨테이너는 가상화 기술이지만, 호스트 OS의 영향을 완전히 받지 않는 것은 아니므로 이 점을 기억해야 합니다.</p>
+<h2 id="요약">요약</h2>
+<p>길어진 설명을 간단히 요약하겠습니다.</p>
+<p>호스트 기반 가상화는 호스트 OS에 설치되어 게스트 OS를 관리합니다.</p>
+<p>하이퍼바이저 기반 가상화는 하드웨어에 설치되어 게스트 OS를 관리합니다.</p>
+<p>컨테이너 기반 가상화는 호스트 OS에 설치되어 애플리케이션을 관리합니다.</p>
+<p>컨테이너 기반 가상화의 장점은 다음과 같습니다:</p>
+<ul>
+<li>부팅이 빠릅니다.</li>
+<li>배포가 쉽습니다.</li>
+</ul>
+<p>컨테이너 기반 가상화의 주의점은 다음과 같습니다:</p>
+<ul>
+<li>다른 방법들보다 완전히 분리되어 있지 않습니다.</li>
+<li>호스트 OS의 차이가 컨테이너에 영향을 줍니다.</li>
+</ul>
+<hr>
+<h1 id="2-docker">2. Docker</h1>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhpyZHekG_f2VujwTl_RXN16V-01JQdANFKj9LTVj4AO-xMK8N0gt8aY5PpW637z7eoUPotJCcz8pI6GHTsJajAoAoVvhQqPTtYPYwOHr1v8pfTDahGQ_MNGRBL_1DhcN8cGr1IyYU4-Gp16QSHkH-QidW34HVFpfzUMN2LiXwld5GfkSb39LpmiK-SQT0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>가상화 기술에 대해 공부했으므로, 이 페이지에서는 그 중 하나인 Docker에 대해 배워보겠습니다.</p>
+<p>이 페이지에서는 Docker Engine, Docker Desktop 등 Docker Xxx 라는 명칭의 것들을 정리하겠습니다.</p>
+<p>Docker 초보자 분들은 갑자기 Docker 관련 용어가 나와서 조금 힘들 수도 있겠지만, 앞으로 나올 주요 Docker Engine을 올바르게 이해하기 위해 노력해 보시기 바랍니다.</p>
+<p>Docker에 대해 조사해보면 자주 듣게 되는 &ldquo;컨테이너&rdquo;, &ldquo;이미지&rdquo;, &ldquo;Dockerfile&quot;에 대해서는 다음에 계속 설명하도록 하겠습니다.</p>
+<h2 id="docker란">Docker란?</h2>
+<p>Docker는 컨테이너 기반 가상화를 사용하여 애플리케이션의 개발과 배포를 수행하는 Docker 사의 개발 플랫폼입니다.</p>
+<p>2013년 릴리스 당시 &ldquo;Docker&quot;는 단일 애플리케이션을 지칭하는 용어였던 것 같지만, 표준화와 발전에 따라 다양한 구성 요소를 포함하게 되었고, 현재는 &ldquo;Docker&quot;가 플랫폼을 의미하는 것으로 여겨집니다.</p>
+<p>&ldquo;Docker&quot;라는 단어가 무엇을 지칭하는지는 꽤 애매모호한 편이지만, 이 글에서는 플랫폼을 의미하는 것으로 사용하겠습니다.</p>
+<p>이 페이지에서는 이 플랫폼에 포함된 Docker Xxx 라는 이름의 요소들에 대해 핵심 사항만 간단히 정리하겠습니다.</p>
+<ul>
+<li>Docker Engine</li>
+<li>Docker CLI</li>
+<li>Docker Desktop</li>
+<li>Docker Compose</li>
+<li>Do cker Hub</li>
+</ul>
+<p>그리고 다음 요소들은 이 글에서 다루지 않으므로, 여기서 간단히 언급하고 지금은 학습 범위에 포함되지 않음을 표시해두겠습니다.</p>
+<ul>
+<li>ECS / GKE</li>
+<li>ECR / GCR</li>
+<li>Kubernetes</li>
+</ul>
+<h2 id="docker-engine이란">Docker Engine이란?</h2>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjouW_KwzGht3tR7LylB0KvPCtmwQaoIJfDQObHVOq-pp7N7icqru7HuzoDJIltpv5lZKC5EThmXzvyZx4nxJ1P7tCp3aaFx2BAyYj3_JIu9Ggy1D15191C-tSCoATAyTdEO0mUrtSq4QdFZ2B4qk1ft3JugCcaroAA9qHq67XAJtg5LushQ9cVdB_KoDA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Docker Engine은 앞에서 설명한 &ldquo;가상화&quot;에서 소개한 컨테이너 기반 가상화 소프트웨어의 부분입니다.</p>
+<p>이를 통해 애플리케이션을 컨테이너로 다룰 수 있게 됩니다.</p>
+<p>Docker 컨테이너는 리눅스 커널과 기능을 사용하여 동작하기 때문에, Docker Engine은 리눅스에서만 동작합니다.</p>
+<p>요약하자면 컨테이너를 올리는 부분이며, 리눅스에서 동작하는 소프트웨어입니다.</p>
+<h2 id="docker-cli란">Docker CLI란?</h2>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhyq89hfJa7tt1SkepQ5Y43-moAIZ7zWyUFAr6j-s9g8qO3RQyDdvh4Ft120U-76-sND1WFpKg-oxHuH_E_zJ1Se1a5sW7FU_KeQFMtOjHEA3aoXZrKopFMbiE4ZueRZ5SJpQyTsJoVcUtth0B9pnGFK8VVaFLQpU17la8D73y6QEOWlBVl5B7C93ZjHd0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Docker Engine에 제공되는 것으로, docker run, docker build와 같은 docker로 시작하는 명령어로 Docker에 명령할 수 있습니다.</p>
+<p>요약하자면 명령어를 다루는 것이며, 평소에 가장 많이 보고 상상하기 쉬운 부분일 것입니다.</p>
+<h2 id="docker-desktop이란">Docker Desktop이란?</h2>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiRDIqIA98xMfxH2GYr-K-lsELlVQOqf710ilVMyI5pZDg6WKEJelrTe4zPDY_3SlcbVTOuj-n2IE4pmcRqjYL-BPz4tmQJxa_Rb03YY6LhOmX3TxsHJQ4IU65UjjqAXMuxtkcyf7MZmt3ktqg_CereVdsYws5HBPsEjf0UxhKk3Skgm-foTsitEdy7cDU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Docker Desktop은 Windows나 Mac에서 Docker를 사용하기 위한 GUI 애플리케이션입니다.</p>
+<p>Docker CLI 대신 GUI로 컨테이너 등을 확인하거나 중지할 수 있습니다.</p>
+<p>Docker Desktop에는 Docker Engine과 리눅스 커널이 포함되어 있어, 리눅스 이외의 OS에서도 Docker Engine을 동작시킬 수 있게 됩니다.</p>
+<p>일반적으로 &ldquo;Windows나 Mac에 호스트 머신에 Docker를 설치한다&quot;는 것은 &ldquo;Docker Desktop 애플리케이션을 설치한다&quot;는 뜻이 될 것입니다.</p>
+<p>요약하자면 Windows나 Mac에서 Docker를 사용하고자 할 때 설치하는 Docker 일체가 포함된 GUI 애플리케이션입니다.</p>
+<p>Docker Desktop에는 Docker Compose와 Kubernetes도 포함되어 있습니다.</p>
+<h2 id="설치와-계정-관련">설치와 계정 관련</h2>
+<p>Docker Desktop은 문서 사이트를 읽다 보면 Docker Hub에서 다운로드할 수 있습니다.</p>
+<p>문서에는 &ldquo;Docker for Windows&quot;나 &ldquo;Docker for Mac&quot;이라고 되어 있지만, 이는 모두 Docker Desktop을 의미하니 안심하셔도 됩니다.</p>
+<p>이후 이 글에서는 Docker Desktop이 설치되어 있다고 가정하고 진행하겠습니다.</p>
+<p>Docker Desktop에는 Docker ID를 사용하여 Sign in 할 수 있지만, 계정을 만들지 않아도 충분히 활용할 수 있습니다.</p>
+<p>Sign in 하는 이점에 대해서는 다운로드 속도 제한 등을 참고해 보시기 바랍니다.</p>
+<h2 id="docker-compose란">Docker Compose란?</h2>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhxuEO7U_rx4jaVYb1vOrZ8kxurgkuFRM50UWSN07VxOCX-EpC_BmrYnlWbSHU_N93APGIarYcpSOpEVn8jBxebHi8qPjzoQPvNoEQP3rllKHu4Qj74LgdXjWDB9y2m-wfTDp4pe8Dhi94yt6X3ePtUtXONb9d-skAuuHjGP_jz689aAtr7w93eR4dMoVY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Docker Compose는 Docker CLI를 일괄 실행해주는 편리한 도구로, docker compose up과 같은 docker compose로 시작하는 명령어를 제공합니다.</p>
+<p>&ldquo;2개의 컨테이너를 시작하고&rdquo; &ldquo;각각의 네트워크를 구축하고&rdquo; &ldquo;컨테이너의 데이터를 호스트 머신과 공유하는&rdquo; 등의 복잡한 명령어를 YAML 파일을 작성함으로써 실현할 수 있는 도구입니다.</p>
+<p>요약하자면 docker 명령어를 일괄 실행해주는 것과 같은 것입니다.</p>
+<p>Docker Compose를 도입하면 극히 간단하게 동일한 구성을 재현할 수 있게 됩니다.</p>
+<p>이 글에서는 계속해서 Docker CLI로만 구축한 환경을 Docker Compose로 대체해 보는 경험까지 해볼 수 있는데요,
+아마 그 편리함에 놀랄 것입니다.</p>
+<h2 id="docker-hub란">Docker Hub란?</h2>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiH-0e8DoO3cnFp-oBtKhyzP1dvz9JSJjyv3AxI8AvLycxN718KegMWOiOXQxR6-SLtGS66yBoPXxxcS6xyCXsW6ai_MGAgf5_MqS4ZKXxNpiYLk96IzdNfAV-LmA11QMAGF_HsAQqUSL1OQFSk_Y-kTmcZCORV0Bn4F9RElV5GDSDy7-hM9nlmzaDzzsw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Docker Hub는 Docker의 이미지 레지스트리인 SaaS 서비스입니다.</p>
+<p>공개된 이미지를 git pull하거나, 구축한 이미지를 git push할 수 있는 곳으로 이해하시면 됩니다.</p>
+<p>요약하자면 이미지의 GitHub과 같은 것입니다.</p>
+<p>Docker Hub에서 이미지를 가져오는 데에는 계정이나 로그인이 필요하지 않습니다.</p>
+<h2 id="ecs--gke란">ECS / GKE란?</h2>
+<p>Amazon Elastic Container Service(ECS)와 Google Kubernetes Engine(GKE)는 컨테이너 관리 서비스입니다.</p>
+<p>요약하자면 Docker Engine이 들어간 리눅스로, 로컬 개발에 사용한 컨테이너를 그대로 배포할 수 있는 장소입니다.</p>
+<p>로컬 개발 환경 구축에 한정한다면 필요 없으므로, 이 글에서는 이러한 컨테이너 관리 서비스는 사용하지 않습니다.</p>
+<h2 id="ecr--gcr이란">ECR / GCR이란?</h2>
+<p>Amazon Elastic Container Registry(ECR)와 Google Container Registry(GCR)는 비공개 이미지의 레지스트리입니다.</p>
+<p>요약하자면 프라이빗 Docker Hub와 같은 것이며, &ldquo;상용 서비스의 이미지를 Docker Hub에 공개하고 싶지 않지만, 레지스트리에 등록하지 않으면 배포할 수 없다&quot;와 같은 경우에 사용하게 됩니다.</p>
+<p>로컬 개발 환경 구축에 한정한다면 GitHub과 Dockerfile로 충분하므로, 이 글에서는 이러한 비공개 레지스트리는 사용하지 않습니다.</p>
+<h2 id="kubernetes란">Kubernetes란?</h2>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEixmiMNC5QgK6r5OYExSUI3nk60qn7_uhNfQxb9869pSP0DSJK7Kdczq0wGoMzvPp3hpBdz1hRsj3wGeYqtQxgGQ-aO1web7ebR_SDIZlpg_lS4fHAwmSMfgvBzghMTw1oqMb6gC7z-UIhYOllxI0N45q8HjlX5_-wySX-BBIxdivm3SGRxIrke3PzH65k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>Kubernetes(약자로 k8s라고도 함)는 다수의 컨테이너를 관리하는 오케스트레이션 소프트웨어로, kubectl apply와 같은 kubectl로 시작하는 명령어를 제공해 줍니다.</p>
+<p>오케스트레이션을 통해 로드밸런서 생성, 접속 집중 시 확장 등을 쉽게 실현할 수 있게 됩니다.</p>
+<p>요약하자면 컨테이너를 운영하기 위한 도구입니다.</p>
+<p>Kubernetes도 Docker Desktop에 포함되어 있지만, 개발 환경 구축에 여기까지 필요하게 되는 경우는 거의 없으므로, 이 글에서는 Kubernetes는 사용하지 않습니다.</p>
+<p>참고로 오케스트레이션 도구는 docker 명령어가 아니라 dockerd나 containerd를 직접 사용합니다.</p>
+<h2 id="docker-desktop-유료화에-대하여">Docker Desktop 유료화에 대하여</h2>
+<p>2021/08/31에 Docker 사가 Docker Desktop의 유료화를 발표했습니다.</p>
+<p>간단히 말하면 내용은 다음과 같습니다.</p>
+<ul>
+<li>Docker Desktop은 다음의 경우를 제외하고 유료화한다.
+<ul>
+<li>스몰 비즈니스(직원 250명 미만, 연 매출 1000만 달러 미만)</li>
+<li>개인 사용, 교육 사용, 비상업적 사용</li>
+<li>오픈 소스</li>
+</ul>
+</li>
+<li>새로운 이용 약관은 2021/08/31(발표일)부터 유효하다.</li>
+<li>2022/01/31까지는 유예 기간을 제공한다.</li>
+<li>Docker Engine이나 Docker CLI 등의 기능은 변함없다.</li>
+<li>유료 플랜에서는 새로운 기능을 제공할 예정이다.
+<ul>
+<li>예) Docker Hub에서 프라이빗 리포지토리 생성</li>
+<li>예) 이미지 취약점 스캔 기능</li>
+<li>예) Docker Hub에서 팀, 역할 생성, 감사 로그 수집 등</li>
+</ul>
+</li>
+</ul>
+<p>유료 플랜에 대응할 경우 Docker ID를 사용하여 Docker Hub에 로그인하면 됩니다.</p>
+<p>대규모 기업이지만 유료 플랜에 계약하지 않는 경우 &ldquo;Podman과 같은 Docker 호환 가능한 컨테이너 가상화 소프트웨어 사용&rdquo; 또는 &ldquo;WSL이나 Lima와 같은 가상 Linux를 실행하여 Docker Desktop 없이 Docker Engine을 직접 사용&quot;과 같은 대응이 필요할 것 같습니다.</p>
+<p>어쨌든 유료화 대상은 Docker Desktop 사용 대기업일 뿐, Docker 전체를 사용할 수 없게 되는 것은 아니므로 여전히 Docker를 공부할 가치가 있습니다.</p>
+<h2 id="요약-1">요약</h2>
+<p>글이 조금 길어져 버렸는데 간단히 요약하겠습니다.</p>
+<ul>
+<li>Docker Engine은 컨테이너를 탑재하는 소프트웨어</li>
+<li>Docker CLI는 컨테이너 등을 조작하는 명령어</li>
+<li>Docker Desktop은 리눅스 커널과 Docker 일체가 포함된 GUI 애플리케이션</li>
+<li>Docker Compose는 명령어를 일괄 실행해주는 도구</li>
+<li>Docker Hub는 이미지 레지스트리의 SaaS 서비스</li>
+<li>ECS / GKE는 Docker Engine이 들어간 컨테이너 관리 서비스</li>
+<li>ECR / GCR은 비공개 이미지 레지스트리</li>
+<li>Kubernetes는 실행 중인 컨테이너를 관리해주는 소프트웨어</li>
+</ul>
+<p>참고</p>
+<ol>
+<li>
+<p>Windows에서 Hyper-V를 사용할 수 없는 경우 VirtualBox를 사용하여 Docker를 실행하는 Docker Toolbox라는 것도 있지만, 여기서는 다루지 않습니다.</p>
+</li>
+<li>
+<p>Linux나 Windows의 WSL에서는 Linux 커널을 별도로 설치할 필요가 없기 때문에, 일반적으로 Docker Desktop을 사용하지 않습니다.</p>
+</li>
+</ol>
+<hr>
+<h1 id="docker-기본-개념">Docker 기본 개념</h1>
+<p>Docker에 대해 자세히 들어가기 전에, Docker를 올바르게 이해하고 결과적으로 빨리 습득하기 위해 매우 중요한 포인트 4가지를 먼저 확인하겠습니다.</p>
+<ul>
+<li>기본 요소는 3가지입니다.</li>
+<li>기본 명령어도 3가지입니다.</li>
+<li>명령어 형식을 인식합니다.</li>
+<li>Docker와 주변 도구를 구분합니다.</li>
+</ul>
+<p>Docker를 명령어 목록이나 옵션 목록에서 이해하려고 해도, 단순히 지식을 모으는 것만으로는 기본을 제대로 이해하고 활용할 수 없습니다.</p>
+<p>단순히 많은 명령어를 따라 실행하고 &ldquo;흐음&hellip;??&ldquo;이 되는 것보다는, 먼저 조금의 시간을 내어 기본을 탄탄히 이해하는 것이 더 중요합니다.</p>
+<h2 id="기본-요소는-3가지입니다">기본 요소는 3가지입니다.</h2>
+<p>개발 환경을 Docker로 구축할 때, 실제로 필요한 요소는 그리 많지 않습니다.</p>
+<p>이 글에서는 다음 3가지를 기본 요소로 간주합니다.</p>
+<ul>
+<li>컨테이너</li>
+<li>이미지</li>
+<li>Dockerfile</li>
+</ul>
+<p>이 글의 후반부에서는 컨테이너 데이터를 호스트 머신과 공유하기 위해 볼륨을 생성하거나, 컨테이너간 통신을 위해 네트워크를 생성하는 등의 작업을 합니다만, 이러한 요소들은 기본 요소를 보충하는 것으로 간주될 수 있습니다.</p>
+<p>따라서 먼저 이 3가지의 기본 요소를 하나씩 이해해 보겠습니다.</p>
+<h3 id="컨테이너란">컨테이너란?</h3>
+<p>컨테이너는 특정 명령을 실행하기 위해 호스트 머신 상에서 격리된 영역입니다.</p>
+<p>컨테이너는 호스트 머신에서 실행 중인 가상 OS처럼 느껴질 수 있지만, 컨테이너의 본질은 Linux의 Namespace라는 기능에 의해 다른 것들과 분리된 단순한 프로세스일 뿐입니다.</p>
+<p>Linux의 Namespace는 이미 20년 가까이 된 기술이며, Docker는 이를 컨테이너나 이미지 같은 개념을 사용하여 쉽게 다룰 수 있도록 만든 기술입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiHoDOa5Aoef-zLjv9QHTCdGrIFhHN3Hau7chMjzII9ocORkAZrIAeYWohQGalaWsvXJjHlhb76fPJDZp5yODSVzXHvIrV3LqbiBDaHkrYB2W7cE0ENup8hRPO3VEuyg1yCVyaINacw5KocPDqSkkdcJ1gHeAFuTulEaX1h08SiaCIbKn1VmXx0ywA1dR8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>호스트 머신 및 각 컨테이너에는 프로세스 ID 1과 /etc/hosts 등의 파일이 중복되어 있지만, Namespace에 의해 격리된 영역을 매핑하여 충돌을 피하고 있습니다.</p>
+<p>이 Namespace를 이미지로부터 생성하여 서로 다른 OS처럼 보이도록 하거나, Namespace를 쉽게 생성하거나 삭제할 수 있는 명령을 제공하는 것이 Docker입니다.</p>
+<p>이를 고려하면 이 글의 초반부인 &ldquo;가상화&quot;에서 설명한 것처럼 &ldquo;컨테이너 형 가상화에는 OS가 포함되어 있지 않고, 호스트 머신의 커널을 사용한다&quot;는 것이 이해하기 쉬울 것입니다.</p>
+<p>컨테이너는 결국 호스트 머신의 단순한 프로세스이며, 가상 서버가 아닙니다.</p>
+<p>컨테이너의 특징은 다음과 같습니다.</p>
+<ul>
+<li>컨테이너는 이미지를 기반으로 생성됩니다.</li>
+<li>Docker의 CLI 또는 API를 사용하여 생성, 시작 및 중지할 수 있습니다.</li>
+<li>여러 컨테이너는 서로 독립적이며 영향을 미치지 않고 독립적으로 작동합니다.</li>
+<li>Docker Engine 위에서 로컬 머신이든 가상 머신이든 클라우드 환경이든 어디서든 실행할 수 있습니다.</li>
+</ul>
+<h3 id="이미지란"><strong>이미지란?</strong></h3>
+<p>이미지는 컨테이너를 실행하는 데 필요한 패키지로, 파일 및 메타 정보를 모아놓은 것입니다.</p>
+<p>이미지는 여러 레이어로 구성된 정보를 의미하며, 호스트 머신의 어느 곳에도 .img와 같은 구체적인 단일 파일이 존재하지 않습니다.</p>
+<p>이미지에는 다음과 같은 정보가 레이어별로 포함되어 있습니다.</p>
+<ol>
+<li><strong>베이스 이미지</strong>: 어떤 기반이 되는지</li>
+<li><strong>설치된 내용</strong>: 어떤 소프트웨어나 패키지가 설치되어 있는지</li>
+<li><strong>환경 변수</strong>: 어떤 환경 변수가 설정되어 있는지</li>
+<li><strong>설정 파일</strong>: 어떤 설정 파일이 구성되어 있는지</li>
+<li><strong>기본 명령어</strong>: 기본적으로 실행되는 명령어가 무엇인지</li>
+</ol>
+<p>이미지는 <strong>Docker Hub</strong>에서 공개되어 있습니다. (Docker Hub에 공개된 것은 Dockerfile이 아닙니다.)</p>
+<h3 id="dockerfile이란"><strong>Dockerfile이란?</strong></h3>
+<p><strong>Dockerfile</strong>은 기존 이미지에 추가적인 레이어를 쌓기 위한 텍스트 파일입니다.</p>
+<p>인터넷에서 공개된 이미지에 설치된 명령이 부족한 경우, <strong>Dockerfile</strong>을 작성하여 자신만의 편리한 이미지를 만들 수 있습니다.</p>
+<p>이미지를 만드는 것이 어려워 보일 수 있지만, 공개된 이미지에 <strong>Dockerfile</strong>로 레이어를 추가하는 것만으로도 OS에서 구축하는 번거로움 없이 간단하게 가능합니다.</p>
+<p><strong>Dockerfile</strong>은 주로 GitHub와 같은 곳에서 공유됩니다. (Git으로 관리되는 것은 이미지가 아닙니다.)</p>
+<h2 id="기본-명령어-3가지"><strong>기본 명령어 3가지</strong></h2>
+<p>이 3가지 요소를 중심으로 생각하면, 명령어의 기본 형태도 3가지로 분류할 수 있습니다.</p>
+<ol>
+<li><strong>컨테이너 실행</strong>: 컨테이너를 시작합니다.</li>
+<li><strong>이미지 생성</strong>: 이미지를 만듭니다.</li>
+<li><strong>컨테이너 조작</strong>: 컨테이너를 조작합니다.</li>
+</ol>
+<p>그림으로 표현하면 이 정도입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhBgEkFuV682qs6ChWMH3vvJ5CSiL-V7hxgAxuZW_TPbaxyW-sUOgXrD892BnptqgkJC0-hvRYCykQCAymTjxifLrzrpRqwyNWZPXPWjI5ldAVW2nxonbbDAFkLd4eHYjdY-k5B-6-6mmcqe2bXFshia6U2ZbOSie3GC5rc84JF44hlWHoc3UYxGRlackk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 3가지 기본 명령어를 하나씩 이해해보겠습니다.
+(각각의 자세한 내용은 다음 페이지에서 다시 설명하겠습니다.)</p>
+<h3 id="컨테이너-실행하기"><strong>컨테이너 실행하기</strong></h3>
+<p><code>container run</code>은 이미지로부터 컨테이너를 시작하는 명령입니다.</p>
+<p><code>container run</code>에는 많은 옵션이 있으며, 컨테이너의 목적에 따라 다양한 옵션을 사용해야 합니다.</p>
+<p>그러나 기본적으로 이미지로부터 컨테이너를 하나 생성하는 명령어라는 점을 잊지 마세요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiOM40PSJUJBZKRYBCsIA7Uhm-VRvM3q3Wfis46fhMx2Kuonkmg1wdZ0s1ZuYlk5WmB6NC9HdjiYafI9PClHn7-80y-UEDnvdvjLJ2k9SwXGH616U0oAk3Xz4CzIYpB-F02nAUjjtobUZfch0yCtVKK2wxSn50_vz-8Ic0w4jVR_Jcved8NZxRUl7INJHw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 글에서도 많은 옵션을 설명하겠지만, 옵션이 정말 많기 때문에 강제로 기억하려고 하지 말고 필요한 옵션을 스스로의 타이밍에 하나씩 이해하는 것이 충분합니다.</p>
+<p>또한, 사실 <code>container run</code>은 다음 명령을 한 번에 수행하는 편리한 명령어입니다.</p>
+<p>그러나 이 글에서는 개별 명령어를 설명하지 않고 <code>container run</code>으로 설명하겠습니다.</p>
+<ul>
+<li><code>image pull</code></li>
+<li><code>container create</code></li>
+<li><code>container start</code></li>
+</ul>
+<h3 id="이미지-생성하기"><strong>이미지 생성하기</strong></h3>
+<p><code>image build</code>는 <strong>Dockerfile</strong>로부터 이미지를 생성하는 명령입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgPq-y9mRwkc_e3cGqzEX4-1pqwqMzVPcgV_FlCbfxYKX4lTs0t8H0qOiNpcvan1YpANUCHyreZ4tFe5WE7GP-hoDfAjUrSi0eHrCbAbRSlRby_hZ5ndTI8V6eK94B_GRBX7AsfBPyv_WfVte70jSAStUrm2AF31NNqGvIvdMs2V39YkiKy8lmYjnf22Xs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이미 설명한 대로, <strong>Dockerfile</strong>은 기본 이미지를 지정하고, &ldquo;명령 설치&rdquo; 또는 &ldquo;설정 파일 배치&quot;와 같은 레이어를 쌓아 새로운 이미지를 만드는 데 사용됩니다.</p>
+<p>이렇게 직접 만든 이미지는 다른 이미지와 완전히 동일하게 <code>container run</code>으로 사용할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgXzHeX8LE6vvryq2mbRUTIX71qCNk7cIImXhyki7nYHsrnT76WEqZfIVACuCYvSz2zrSfa5HTt8oPT7zXsenhKScdPpQfUVAyrukNmjS2tqMO_WQ0JbLwmhU1wU7MKHk7LR6owQtXPg1M6FzOOScFyzHzjTPAYSiLD3Cm0vc1HVyiPsJz6XPkii2qaCuE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<h3 id="컨테이너-조작하기"><strong>컨테이너 조작하기</strong></h3>
+<p>예를 들어 <code>container exec</code>는 컨테이너에 명령을 보내는 명령입니다.</p>
+<p>대상이 컨테이너이므로 필연적으로 <code>container run</code> 이후에 사용하는 명령입니다.</p>
+<p>이미지나 Dockerfile에는 명령을 내릴 수 없습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgo9yXGWBBFTuE7yRByKjSBcJ1R4oTh4KfC8918vWy2WW8j8aev0rUggzlhPxyGeAUnoz_U3ZHCULb_ny-1kOmhzBL1k7FucvdWbY-2S7SFeOE-ruPp3VLIZEvl7C5mJSFkXn_0C5KBrJF6c5o5nHb1WJ23EP22u27aYvSfpcNyne8qhKZ5p610D5aQA8M"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p><code>container exec</code>를 통해 &ldquo;로그를 보여줘&rdquo;, &ldquo;컴파일해봐&rdquo;, &ldquo;테스트 실행해봐&quot;와 같은 명령을 실행하여 실행 중인 컨테이너에 다양한 작업을 수행할 수 있습니다.</p>
+<p>또한, <code>container stop</code>과 같이 컨테이너를 중지하는 명령을 포함하여 컨테이너를 대상으로 하는 다양한 명령이 있습니다.</p>
+<h2 id="명령어의-형태를-의식하기"><strong>명령어의 형태를 의식하기</strong></h2>
+<p>기본 요소 3가지와 기본 명령어 3가지를 이해했다면, 이 기초를 최대한 활용하기 위해 &ldquo;명령이 무엇을 어떻게 하는지&quot;를 항상 고려하는 습관을 만들어보세요.</p>
+<p>처음에는 어려울 수 있고 힘들게 느껴질 수 있겠지만, 무작위로 명령어를 외우는 것과 이 습관을 계속하는 것 사이에는 이해의 속도와 깊이에서 엄청난 차이가 있습니다.</p>
+<p>이 습관을 편안하게 수행할 수 있게 되면 &ldquo;Docker를 이해했다는 느낌&quot;의 문이 열리는 순간이 될 것입니다.</p>
+<h3 id="무엇을-어떻게-하는지">&ldquo;무엇&quot;을 &ldquo;어떻게&rdquo; 하는지</h3>
+<p>기본 요소 3가지와 기본 명령어 3가지를 이해했다면, 전체적인 그림을 다시 확인해보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjoYXr9XfjCC-inUQVDlTomHpT3pWmCM1K6FEVxz887q_OPt_OZ669oYvuUR7SNko8jD8jyZVB7-cWUbXuIQJkiDxmGGyru1G-qUhUjNZBf_1Rkndv0f41zwmc4tqhX93C3d3_i3gLR6pBD8oQHZQfc385TOgTcHjDPfsQ4Oq26-6cAVWho3tlFAXyDy4g"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>화살표의 끝이 컨테이너라면 <code>container xxx</code>로, 화살표의 끝이 이미지라면 <code>image xxx</code>로 되어 있을 것입니다.</p>
+<p>이것이 &ldquo;무엇&quot;의 부분입니다.</p>
+<p>그리고 <code>run</code>이나 <code>build</code>와 같은 부분이 &ldquo;어떻게&quot;의 부분입니다.</p>
+<p><code>docker container run</code>이나 <code>docker image build</code>는 <code>docker 무엇 (을) 어떻게</code>로 해석됩니다.</p>
+<p>각 명령을 실행할 때마다 머릿속에 (물론 종이에도) 이 그림을 그릴 수 있다면 이해가 빠르게 깊어질 것입니다.</p>
+<h2 id="새로운-명령어와-이전-명령어에-대해"><strong>새로운 명령어와 이전 명령어에 대해</strong></h2>
+<p>일반적으로 Docker를 사용하시는 분들은 이미 알고 계실 것이지만, 이 글에서는 <code>docker run</code>이 아닌 <code>docker container run</code>을 사용하고 있습니다.</p>
+<p>실제로 Docker의 명령어는 2017년 1월에 출시된 v1.13에서 큰 변화가 있었으며, <code>docker run</code>은 이전 명령어이고 <code>docker container run</code>은 새로운 명령어로 변경되었습니다.</p>
+<p>이는 <code>docker run</code>이나 <code>docker build</code>와 같은 Docker 하위 명령어가 너무 많아져서 무엇이 무엇인지 혼동되기 때문입니다.</p>
+<p>따라서 v1.13부터는 명시적으로 대상을 지정할 수 있는 서브커맨드 형식을 사용하는 것이 권장됩니다.</p>
+<p>보통 보시는 명령어는 아마도 <code>docker run</code>이나 <code>docker build</code>와 같은 이전 명령어가 많을 것으로 생각됩니다.</p>
+<p>저 또한 간단하고 편리하기 때문에 일상적으로 이전 명령어를 사용하지만, 이 책에서는 명확한 새로운 명령어를 사용하여 설명하겠습니다.</p>
+<p>타이핑 수는 많아질 수 있지만, 어떤 것이 이해하기 쉬운지는 한눈에 알 수 있을 것입니다.</p>
+<table>
+  <thead>
+      <tr>
+          <th>이전 명령어</th>
+          <th>새로운 명령어</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>docker build</code></td>
+          <td><code>docker image build</code></td>
+      </tr>
+      <tr>
+          <td><code>docker run</code></td>
+          <td><code>docker container run</code></td>
+      </tr>
+      <tr>
+          <td><code>docker pull</code></td>
+          <td><code>docker image pull</code></td>
+      </tr>
+      <tr>
+          <td><code>docker create</code></td>
+          <td><code>docker container create</code></td>
+      </tr>
+      <tr>
+          <td><code>docker start</code></td>
+          <td><code>docker container start</code></td>
+      </tr>
+      <tr>
+          <td><code>docker images</code></td>
+          <td><code>docker image ls</code></td>
+      </tr>
+      <tr>
+          <td><code>docker ps</code></td>
+          <td><code>docker container ls</code></td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="docker와-주변-도구-구분하기"><strong>Docker와 주변 도구 구분하기</strong></h2>
+<p>Docker를 사용하는 데 있어 몇 가지 전제 조건이 있으므로 초보자는 이를 Docker 자체와 혼동하지 않도록 주의해야 합니다.</p>
+<h3 id="1-docker-compose">1. <strong>Docker Compose</strong></h3>
+<ul>
+<li><strong>Docker Compose</strong>는 Yaml 파일을 작성하여 여러 컨테이너를 함께 시작하거나 관리하는 도구입니다.</li>
+<li><strong>Docker Compose</strong>는 Docker Desktop에 포함되어 있으며, <code>docker compose xxx</code>와 같은 명령어 체계를 사용합니다.</li>
+<li>Docker CLI만 사용하여 환경을 구축하려면 많은 복잡한 명령을 반복적으로 실행해야 하므로 Docker 명령어 매뉴얼이 필요합니다.</li>
+<li>이 문제를 &ldquo;Docker Compose를 사용하여 모든 상세 명령을 Yaml에 작성하고 GitHub에서 공유&quot;하는 방법으로 해결할 수 있습니다.</li>
+<li>소프트웨어 엔지니어로서 Docker를 사용하여 개발 환경을 구축하는 경우 <strong>Docker Compose</strong>는 필수 기술입니다.</li>
+<li>이 책에서는 &ldquo;Docker를 올바르게 이해하기&rdquo; → &ldquo;Docker를 사용하여 환경 구축하기&rdquo; → &ldquo;Docker Compose로 간편하게 전환하기&quot;라는 순서로 소개하며, 최종적으로는 <code>compose up</code> 명령만으로 복잡한 구성을 즉시 시작할 수 있는 상태를 목표로 합니다.</li>
+</ul>
+<h3 id="2-kubernetes">2. <strong>Kubernetes</strong></h3>
+<p><strong>Kubernetes</strong> (K8s로도 알려짐)는 컨테이너화된 애플리케이션을 자동으로 배포, 스케일링 및 관리하는 오픈소스 시스템입니다. 애플리케이션을 구성하는 컨테이너들을 논리적인 단위로 그룹화하여 쉽게 관리하고 발견할 수 있도록 합니다.</p>
+<p>
+  <figure>
+    <img src="https://kubernetes.io/images/kubernetes-horizontal-color.png"
+         alt="image"
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    <figcaption>image</figcaption>
+  </figure></p>
+<p><strong>Kubernetes</strong>는 Google에서 15년간 프로덕션 워크로드를 운영한 경험을 기반으로 구축되었으며, 커뮤니티에서 제공한 최상의 아이디어와 방법들이 결합되어 있습니다. 다음은 <strong>Kubernetes</strong>의 주요 특징입니다:</p>
+<ol>
+<li><strong>행성 규모 확장성</strong>: Google은 일주일에 수십억 개의 컨테이너를 운영하게 해준 원칙들에 따라 <strong>Kubernetes</strong>는 운영팀의 규모를 늘리지 않고도 확장될 수 있습니다.</li>
+<li><strong>무한한 유연성</strong>: 지역적인 테스트든 글로벌 기업 운영이든 상관없이 <strong>Kubernetes</strong>의 유연성은 사용자의 복잡한 니즈를 모두 수용할 수 있습니다.</li>
+<li><strong>자가 치유</strong>: 실패한 컨테이너를 재시작하고, 노드가 죽는 경우 컨테이너를 교체하며, 사용자가 정의한 상태 체크에 응답하지 않는 컨테이너를 종료시킵니다.</li>
+<li><strong>스토리지 오케스트레이션</strong>: 로컬 스토리지부터 퍼블릭 클라우드 공급자의 스토리지 시스템까지 다양한 스토리지 시스템을 자동으로 마운트합니다.</li>
+<li><strong>시크릿과 구성 관리</strong>: 사용자의 이미지를 다시 빌드하거나 스택 구성의 시크릿을 노출하지 않고 시크릿과 애플리케이션 구성을 배포하고 업데이트합니다.</li>
+<li><strong>자동 빈 패킹 (bin packing)</strong>: 리소스 요구 사항과 기타 제약 조건에 따라 컨테이너를 자동으로 배치하면서 가용성은 그대로 유지합니다.</li>
+<li><strong>배치 실행</strong>: 배치와 CI 워크로드를 관리할 수 있으며, 실패한 컨테이너를 교체할 수 있습니다.</li>
+</ol>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/docker/" role="button">docker</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-04-06-docker-tutorial-docker-compose-complete-guide/">Docker 강좌 6편. Docker Compose 완벽 가이드</a></h2>
+                  <p>Docker Compose 완벽 가이드</p>
+                  <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-04-06-docker-tutorial-understanding-bind-mount-and-port-publish/">Docker 강좌 5편. 바인드 마운트와 포트 publish</a></h2>
+                  <p>Docker 바인드 마운트와 포트 publish</p>
+                  <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-04-06-docker-volume-usage-and-principles/">Docker 강좌 4편. Docker 볼륨 (Volume) 사용 방법과 원리</a></h2>
+                  <p>Docker 볼륨 (Volume) 사용 방법과 원리</p>
+                  <p>
+  <small>April 6, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

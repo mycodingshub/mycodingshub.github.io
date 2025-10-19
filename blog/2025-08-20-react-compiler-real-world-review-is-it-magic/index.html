@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>리액트 컴파일러, &#39;그냥&#39; 켜기만 하면 정말 빨라질까?</title>
+<meta name="description" content="리액트 컴파일러를 실제 프로젝트에 적용해 본 후기입니다. 간단한 예제에서는 완벽했지만, 실제 코드에서는 예상치 못한 문제들이 있었습니다. 컴파일러를 100% 활용하기 위해 우리가 알아야 할 것들을 살펴봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-20-react-compiler-real-world-review-is-it-magic/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="리액트 컴파일러, &#39;그냥&#39; 켜기만 하면 정말 빨라질까?" />
+<meta property="og:description" content="리액트 컴파일러를 실제 프로젝트에 적용해 본 후기입니다. 간단한 예제에서는 완벽했지만, 실제 코드에서는 예상치 못한 문제들이 있었습니다. 컴파일러를 100% 활용하기 위해 우리가 알아야 할 것들을 살펴봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-20-react-compiler-real-world-review-is-it-magic/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-22T14:06:06Z" />
+<meta property="article:modified_time" content="2025-08-22T14:06:06Z" />
+<meta property="article:tag" content="React" />
+<meta property="article:tag" content="리액트" />
+<meta property="article:tag" content="React Compiler" />
+<meta property="article:tag" content="리액트 컴파일러" />
+<meta property="article:tag" content="memoization" />
+<meta property="article:tag" content="성능 최적화" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="리액트 컴파일러, &#39;그냥&#39; 켜기만 하면 정말 빨라질까?" />
+<meta name="twitter:description" content="리액트 컴파일러를 실제 프로젝트에 적용해 본 후기입니다. 간단한 예제에서는 완벽했지만, 실제 코드에서는 예상치 못한 문제들이 있었습니다. 컴파일러를 100% 활용하기 위해 우리가 알아야 할 것들을 살펴봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"리액트 컴파일러, '그냥' 켜기만 하면 정말 빨라질까?\"",
+  "description": "\"리액트 컴파일러를 실제 프로젝트에 적용해 본 후기입니다. 간단한 예제에서는 완벽했지만, 실제 코드에서는 예상치 못한 문제들이 있었습니다. 컴파일러를 100% 활용하기 위해 우리가 알아야 할 것들을 살펴봅니다.\"",
+  "datePublished": "\"2025-08-22T14:06:06Z\"",
+  "dateModified": "\"2025-08-22T14:06:06Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-20-react-compiler-real-world-review-is-it-magic/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>리액트 컴파일러, &#39;그냥&#39; 켜기만 하면 정말 빨라질까?</h1>
+        <p>
+  <small>August 22, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p><a href="https://www.developerway.com/posts/i-tried-react-compiler">원본 링크</a></p>
+<p>여기 아주 흥미로운 해외 개발자의 실험 후기가 있는데요, 이 글의 핵심만 전체적으로 살펴볼까 합니다.<br /><br />
+리액트 커뮤니티가 몇 년 동안 기다려온 &lsquo;리액트 컴파일러&rsquo;가 드디어 나왔는데요.<br /><br />
+수많은 개발자들이 &lsquo;이제 <code>memo</code>, <code>useMemo</code>, <code>useCallback</code> 같은 메모이제이션의 고통에서 해방될 수 있다&rsquo;며 기대에 부풀어 있죠.<br /><br />
+저 역시 마찬가지였거든요.<br /><br />
+발표자는 과연 그 기대가 현실과 얼마나 일치하는지, 이제 정말 메모이제이션을 잊어도 되는지 직접 확인해 보기로 했습니다.<br /><br /></p>
+<h2 id="리액트-컴파일러가-대체-뭐길래">리액트 컴파일러가 대체 뭐길래?</h2>
+<p>먼저 이 컴파일러가 어떤 문제를 해결하는지 아주 간단하게 짚고 넘어가야 하는데요.<br /><br />
+리액트의 리렌더링은 기본적으로 &lsquo;폭포수&rsquo; 같거든요.<br /><br />
+부모 컴포넌트에서 상태가 바뀌면 그 아래 자식 컴포넌트, 또 그 아래 자식의 자식 컴포넌트까지 줄줄이 전부 다시 그려지는 구조입니다.<br /><br />
+이 과정에 무거운 컴포넌트가 끼어있거나 리렌더링이 너무 잦으면 앱 성능에 문제가 생길 수 있죠.<br /><br />
+이걸 막기 위해 우리가 수동으로 사용했던 게 바로 <code>React.memo</code>, <code>useMemo</code>, <code>useCallback</code> 같은 메모이제이션 도구들입니다.<br /><br />
+하지만 이 도구들을 &lsquo;제대로&rsquo; 쓰는 건 정말 어려운 일이거든요.<br /><br />
+바로 이 지점에서 리액트 컴파일러가 등장합니다.<br /><br />
+이 컴파일러는 빌드 과정에 끼어들어서 우리 코드를 분석한 다음, 알아서 <code>memo</code>, <code>useMemo</code>, <code>useCallback</code>을 적용한 것과 유사한 코드로 바꿔주는 마법 같은 도구예요.<br /><br />
+개발자가 골치 아프게 고민할 필요 없이, 컴파일러가 자동으로 최적화를 해준다는 거죠.<br /><br /></p>
+<h2 id="간단한-예제에서는-정말-마법-같았다">간단한 예제에서는 정말 마법 같았다</h2>
+<p>발표자는 먼저 아주 간단한 예제들로 컴파일러를 테스트해 봤더라고요.<br /><br />
+Next.js 최신 버전을 설치하고 <code>next.config.js</code> 파일에 단 몇 줄만 추가하면 컴파일러가 바로 활성화됩니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">nextConfig</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">experimental</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">reactCompiler</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">nextConfig</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>정말 간단하죠?<br /><br />
+설치 자체는 아주 쉬웠고, 정말 &lsquo;그냥 켜기만 하면&rsquo; 작동했습니다.<br /><br /></p>
+<h3 id="첫-번째-테스트-간단한-상태-변경">첫 번째 테스트 간단한 상태 변경</h3>
+<p>첫 번째 예제는 정말 간단한 케이스인데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SimpleCase1</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isOpen</span><span class="p">,</span> <span class="nx">setIsOpen</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">setIsOpen</span><span class="p">(</span><span class="o">!</span><span class="nx">isOpen</span><span class="p">)}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">toggle</span> <span class="nx">dialog</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">isOpen</span> <span class="o">&amp;&amp;</span> <span class="o">&lt;</span><span class="nx">Dialog</span> <span class="o">/&gt;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">VerySlowComponent</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>버튼을 누를 때마다 <code>isOpen</code> 상태가 바뀌고, 이 때문에 상관도 없는 <code>VerySlowComponent</code>가 계속 리렌더링되는 상황입니다.<br /><br />
+원래라면 <code>React.memo(VerySlowComponent)</code>로 감싸줘야 해결되죠.<br /><br />
+하지만 컴파일러를 켜니, 아무것도 안 해도 <code>VerySlowComponent</code>가 더 이상 리렌더링되지 않았습니다.<br /><br />
+마법이 일어난 거죠.<br /><br /></p>
+<h3 id="두-번째-테스트-props가-있는-컴포넌트">두 번째 테스트 props가 있는 컴포넌트</h3>
+<p>이번엔 조금 더 복잡하게 <code>VerySlowComponent</code>에 함수와 배열을 props로 넘겨줬습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SimpleCase2</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isOpen</span><span class="p">,</span> <span class="nx">setIsOpen</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">onSubmit</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[{</span> <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;bla&#39;</span> <span class="p">}];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">VerySlowComponent</span> <span class="nx">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">onSubmit</span><span class="p">}</span> <span class="nx">data</span><span class="o">=</span><span class="p">{</span><span class="nx">data</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이걸 수동으로 최적화하려면 <code>onSubmit</code>은 <code>useCallback</code>으로, <code>data</code> 배열은 <code>useMemo</code>로 감싸야만 하는데요.<br /><br />
+컴파일러는 이것마저도 알아서 처리해 줬습니다.<br /><br />
+정말 아무것도 할 필요가 없었죠.<br /><br /></p>
+<h3 id="세-번째-테스트-children을-넘기는-경우">세 번째 테스트 children을 넘기는 경우</h3>
+<p>마지막 테스트는 웬만한 개발자들도 헷갈려 하는, 컴포넌트를 <code>children</code>으로 넘기는 경우인데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">SimpleCase3</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isOpen</span><span class="p">,</span> <span class="nx">setIsOpen</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">VerySlowComponent</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">SomeOtherComponent</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/VerySlowComponent&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 경우 <code>VerySlowComponent</code>를 최적화하려면 <code>SomeOtherComponent</code>를 <code>React.memo</code>로 감싸는 게 아니라, <code>&lt;SomeOtherComponent /&gt;</code> JSX 요소 자체를 <code>useMemo</code>로 감싸야 합니다.<br /><br />
+정말 까다로운 패턴이죠.<br /><br />
+놀랍게도 리액트 컴파일러는 이것마저 완벽하게 처리하더라고요.<br /><br />
+여기까지만 보면 정말 &lsquo;혁명&rsquo;이라고 부를 만했습니다.<br /><br /></p>
+<h2 id="하지만-현실은-냉혹했다-실제-코드-테스트">하지만 현실은 냉혹했다 실제 코드 테스트</h2>
+<p>문제는 실제 프로젝트는 이렇게 간단하지 않다는 점이죠.<br /><br />
+발표자는 각기 다른 세 개의 실제 앱에 컴파일러를 적용해 봤습니다.<br /><br />
+결과는 충격적이었는데요.<br /><br />
+첫 번째 앱(오래되고 큰 앱)에서는 눈에 띄는 불필요한 리렌더링 10개 중 고작 2개만 해결됐습니다.<br /><br />
+두 번째 앱(비교적 최신 앱)에서도 10개 중 2개만 해결됐죠.<br /><br />
+가장 충격적인 건 세 번째 앱(발표자가 직접 만든 작고 단순한 앱)이었는데요.<br /><br />
+8개의 리렌더링 문제 중, 컴파일러가 해결한 건 단 하나뿐이었습니다.<br /><br />
+딱 하나요!<br /><br />
+간단한 예제에서의 완벽한 모습과는 너무나 다른 결과였죠.<br /><br /></p>
+<h2 id="무엇이-문제였을까-직접-파헤쳐-보기">무엇이 문제였을까 직접 파헤쳐 보기</h2>
+<p>발표자는 포기하지 않고 세 번째 앱의 한 페이지를 따로 떼어내서 무엇이 문제인지 파고들기 시작했습니다.<br /><br />
+UI는 간단한데요.<br /><br />
+국가 목록이 담긴 테이블, 각 행을 삭제하는 버튼, 그리고 새 국가를 추가하는 입력창으로 구성되어 있죠.<br /><br />
+문제는 입력창에 타이핑을 하든, 삭제 버튼을 누르든, 추가 버튼을 누르든 모든 인터랙션에서 테이블 전체가 리렌더링된다는 것이었습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">Countries</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 입력창 상태
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">setValue</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// react-query로 국가 목록 가져오기
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">countries</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(...);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// react-query로 국가 삭제/추가 뮤테이션
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">deleteCountryMutation</span> <span class="o">=</span> <span class="nx">useMutation</span><span class="p">(...);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">addCountryMutation</span> <span class="o">=</span> <span class="nx">useMutation</span><span class="p">(...);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 삭제 버튼 콜백
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">onDelete</span> <span class="o">=</span> <span class="p">(</span><span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">deleteCountryMutation</span><span class="p">.</span><span class="nx">mutate</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// ... (JSX 렌더링 부분)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>발표자는 컴파일러가 왜 실패했는지 알아내기 위해, 나라면 어떻게 &lsquo;수동으로&rsquo; 최적화했을지 역추적하는 방식을 사용했습니다.<br /><br /></p>
+<h3 id="원인-1-react-query의-함정">원인 1 react-query의 함정</h3>
+<p>가장 먼저 &lsquo;입력창 타이핑&rsquo; 시 발생하는 리렌더링을 잡으려고 시도했는데요.<br /><br />
+테이블 내용을 <code>useMemo</code>로 감싸보니, 이 부분이 <code>countries</code> 데이터와 <code>onDelete</code> 함수에 의존하고 있다는 걸 알 수 있었습니다.<br /><br />
+<code>countries</code>는 react-query가 캐싱해주니 안정적일 텐데, 그럼 문제는 <code>onDelete</code> 함수라는 거죠.<br /><br />
+<code>onDelete</code> 함수는 <code>deleteCountryMutation</code> 객체를 사용하는데요.<br /><br />
+발표자는 처음에 이 <code>deleteCountryMutation</code> 객체가 안정적일 거라고 가정했습니다.<br /><br />
+하지만 react-query의 소스 코드를 까보니, <code>useMutation</code> 훅은 렌더링될 때마다 &lsquo;새로운&rsquo; 객체를 반환하고 있었던 겁니다!<br /><br />
+객체 안에 있는 <code>mutate</code> 함수 자체는 메모이제이션 되어 있었지만, 객체 자체가 매번 새로 생성되니 의존성 배열이 항상 바뀐다고 판단해 버린 거죠.<br /><br />
+이게 바로 컴파일러가 최적화에 실패한 첫 번째 원인이었습니다.<br /><br />
+해결책은 간단했는데요.<br /><br />
+<code>useMutation</code>에서 반환된 객체 전체가 아닌, 메모이제이션 된 <code>mutate</code> 함수만 직접 꺼내서 의존성으로 사용하도록 코드를 수정하는 것이었습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 수정 전
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">deleteCountryMutation</span> <span class="o">=</span> <span class="nx">useMutation</span><span class="p">(...);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">onDelete</span> <span class="o">=</span> <span class="nx">useCallback</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="nx">deleteCountryMutation</span><span class="p">.</span><span class="nx">mutate</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">deleteCountryMutation</span><span class="p">],</span> <span class="c1">// 매번 새로운 객체라 실패!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 수정 후
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="p">{</span> <span class="nx">mutate</span><span class="o">:</span> <span class="nx">deleteCountry</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useMutation</span><span class="p">(...);</span> <span class="c1">// mutate 함수만 추출
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">onDelete</span> <span class="o">=</span> <span class="nx">useCallback</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="p">(</span><span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="nx">deleteCountry</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">deleteCountry</span><span class="p">],</span> <span class="c1">// 메모이제이션 된 함수라 성공!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드를 적용하고 수동 메모이제이션을 전부 지우자, 마법처럼 컴파일러가 &lsquo;타이핑&rsquo; 시의 리렌더링을 제대로 잡아주기 시작했습니다!<br /><br /></p>
+<h3 id="원인-2-컴포넌트-구조의-문제">원인 2 컴포넌트 구조의 문제</h3>
+<p>하지만 여전히 국가를 &lsquo;추가&rsquo;하거나 &lsquo;삭제&rsquo;할 때의 리렌더링은 남아있었는데요.<br /><br />
+이 문제의 원인은 두 가지였습니다.<br /><br />
+첫째, <code>.map()</code>으로 리스트를 렌더링할 때 <code>key</code> prop으로 배열의 <code>index</code>를 사용하고 있었습니다.<br /><br />
+<code>index</code>를 key로 쓰면 리스트의 순서가 바뀔 때마다 모든 항목이 리렌더링되므로, <code>name</code> 같은 고유값으로 바꿔줘야 했죠.<br /><br />
+둘째, 테이블의 각 행(<code>TableRow</code>)과 그 내용이 모두 <code>Countries</code> 컴포넌트 안에서 직접 렌더링되고 있었습니다.<br /><br />
+이렇게 하면 각 행을 개별적으로 메모이제이션하기가 불가능하거든요.<br /><br />
+해결책은 테이블 행 부분을 별도의 <code>CountryRow</code> 컴포넌트로 추출하는 것이었습니다.<br /><br />
+이렇게 컴포넌트를 분리하고 고유한 <code>key</code>를 사용하도록 구조를 바꾸자, 컴파일러가 즉시 알아채고 추가/삭제 시의 불필요한 리렌더링을 막아주더라고요.<br /><br /></p>
+<h2 id="그래서-결론은">그래서 결론은?</h2>
+<p>리액트 컴파일러는 간단한 케이스에서는 정말 놀라운 성능을 보여주는 게 맞습니다.<br /><br />
+하지만 실제 복잡한 코드에서는 &lsquo;그냥 켜기만&rsquo; 해서는 기대만큼의 효과를 보기 어려웠다는 게 이번 실험의 핵심 결론인데요.<br /><br />
+컴파일러가 모든 것을 알아서 해줄 거라는 기대는 아직은 시기상조라는 거죠.<br /><br />
+그럼 컴파일러는 쓸모가 없는 걸까요?<br /><br />
+절대 아닙니다!<br /><br />
+우리가 컴파일러가 &lsquo;좋아하는&rsquo; 방식으로 코드를 조금만 다듬어주면, 그제야 컴파일러는 자신의 잠재력을 100% 발휘하기 시작합니다.<br /><br />
+결국 우리는 <code>memo</code>, <code>useMemo</code>, <code>useCallback</code>을 잊기는커녕, 오히려 그 원리를 더 깊이 이해해야만 컴파일러를 제대로 활용할 수 있다는 아이러니한 결론에 도달하게 되는 거죠.<br /><br />
+앞으로 많은 개발자들이 컴파일러를 켜고, 리액트 개발자 도구에 뜨는 &lsquo;memo ✨&rsquo; 표시를 보며 안도감을 느낄 겁니다.<br /><br />
+대부분의 사소한 리렌더링은 무시되겠죠.<br /><br />
+하지만 정말 성능에 영향을 미치는 심각한 리렌더링 문제가 발생했을 때, 우리는 오늘 살펴본 것처럼 컴파일러를 &lsquo;돕기 위해&rsquo; 기꺼이 코드의 구조를 바꾸고 의존성을 파헤칠 준비가 되어 있어야 할 겁니다.<br /><br />
+리액트 컴파일러는 마법의 지팡이가 아니라, 우리가 더 잘 휘둘러야 하는 강력한 &lsquo;도구&rsquo;인 셈이죠.<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">React</a>
+        <a class="btn btn-light" href="/tags/%EB%A6%AC%EC%95%A1%ED%8A%B8/" role="button">리액트</a>
+        <a class="btn btn-light" href="/tags/react-compiler/" role="button">React Compiler</a>
+        <a class="btn btn-light" href="/tags/%EB%A6%AC%EC%95%A1%ED%8A%B8-%EC%BB%B4%ED%8C%8C%EC%9D%BC%EB%9F%AC/" role="button">리액트 컴파일러</a>
+        <a class="btn btn-light" href="/tags/memoization/" role="button">memoization</a>
+        <a class="btn btn-light" href="/tags/%EC%84%B1%EB%8A%A5-%EC%B5%9C%EC%A0%81%ED%99%94/" role="button">성능 최적화</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-rari-a-react-framework-4-x-faster-than-nextjs-with-rust/">Next.js보다 4배 빠른 React 프레임워크가 등장했습니다</a></h2>
+                  <p>거의 25년간 웹 개발을 해온 베테랑 개발자가 Next.js보다 4배 빠른 React 프레임워크 Rari를 공개했습니다. Rust 런타임을 기반으로 한 Rari의 경이로운 성능과 그 비밀을 파헤쳐 봅니다.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-react-suspense-avoiding-waterfalls-in-data-fetching/">React Suspense, 잘못 쓰면 폭포수처럼 느려집니다 (워터폴 피하는 법)</a></h2>
+                  <p>React의 Suspense는 비동기 UI를 위한 강력한 도구지만, 자칫하면 데이터 로딩이 순차적으로 지연되는 워터폴 현상을 유발할 수 있습니다. 중첩된 Suspense와 병렬 Suspense의 차이점을 이해하고, 워터폴을 피하는 세 가지 실전 패턴을 알아봅니다.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-zustand-vs-context-api-rerender-optimization/">Context API의 리렌더링 지옥, Zustand가 구원해드립니다</a></h2>
+                  <p>리액트의 Context API를 사용하다 불필요한 리렌더링 문제로 골머리를 앓고 계신가요? Zustand가 어떻게 셀렉터 하나만으로 이 문제를 우아하게 해결하고, 코드까지 간결하게 만들어주는지 그 비법을 공개합니다.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

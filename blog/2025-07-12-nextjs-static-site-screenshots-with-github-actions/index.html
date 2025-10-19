@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>GitHub Actions로 Next.js 정적 사이트 스크린샷 찍기 (미리보기 배포 없이 리뷰하기)</title>
+<meta name="description" content="Vercel의 미리보기 배포 기능이 없으신가요? GitHub Actions와 Puppeteer를 활용하여, 정적으로 내보낸 Next.js 사이트의 모든 페이지 스크린샷을 찍어 Pull Request에서 시각적으로 리뷰하는 방법을 알아봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-07-12-nextjs-static-site-screenshots-with-github-actions/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="GitHub Actions로 Next.js 정적 사이트 스크린샷 찍기 (미리보기 배포 없이 리뷰하기)" />
+<meta property="og:description" content="Vercel의 미리보기 배포 기능이 없으신가요? GitHub Actions와 Puppeteer를 활용하여, 정적으로 내보낸 Next.js 사이트의 모든 페이지 스크린샷을 찍어 Pull Request에서 시각적으로 리뷰하는 방법을 알아봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-07-12-nextjs-static-site-screenshots-with-github-actions/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-07-12T10:27:05Z" />
+<meta property="article:modified_time" content="2025-07-12T10:27:05Z" />
+<meta property="article:tag" content="GitHub Actions" />
+<meta property="article:tag" content="Next.js" />
+<meta property="article:tag" content="Puppeteer" />
+<meta property="article:tag" content="정적 내보내기" />
+<meta property="article:tag" content="스크린샷 테스트" />
+<meta property="article:tag" content="CI/CD" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="GitHub Actions로 Next.js 정적 사이트 스크린샷 찍기 (미리보기 배포 없이 리뷰하기)" />
+<meta name="twitter:description" content="Vercel의 미리보기 배포 기능이 없으신가요? GitHub Actions와 Puppeteer를 활용하여, 정적으로 내보낸 Next.js 사이트의 모든 페이지 스크린샷을 찍어 Pull Request에서 시각적으로 리뷰하는 방법을 알아봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"GitHub Actions로 Next.js 정적 사이트 스크린샷 찍기 (미리보기 배포 없이 리뷰하기)\"",
+  "description": "\"Vercel의 미리보기 배포 기능이 없으신가요? GitHub Actions와 Puppeteer를 활용하여, 정적으로 내보낸 Next.js 사이트의 모든 페이지 스크린샷을 찍어 Pull Request에서 시각적으로 리뷰하는 방법을 알아봅니다.\"",
+  "datePublished": "\"2025-07-12T10:27:05Z\"",
+  "dateModified": "\"2025-07-12T10:27:05Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-07-12-nextjs-static-site-screenshots-with-github-actions/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>GitHub Actions로 Next.js 정적 사이트 스크린샷 찍기 (미리보기 배포 없이 리뷰하기)</h1>
+        <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>저희 회사의 웹사이트는 GitHub Pages에 호스팅되는, &lsquo;정적으로 내보낸(statically exported)&rsquo; Next.js 앱입니다.</p>
+<p>저희는 여전히 Pull Request를 만들고 코드를 리뷰하는 개발 문화를 가지고 있지만, Vercel이나 Netlify를 사용할 때처럼 편리한 &lsquo;미리보기 배포&rsquo; 기능의 이점을 누릴 수는 없었습니다.</p>
+<p>하지만 Pull Request를 머지하기 전에 웹사이트가 어떻게 보일지 시각적으로 확인하고 싶은 욕구는 여전했죠.</p>
+<p>그래서 저는 웹사이트의 스크린샷을 찍는 GitHub Actions 워크플로우를 추가했습니다.</p>
+<p>이것은 모든 Pull Request마다 실행되는 간단한 워크플로우입니다.</p>
+<h2 id="해결책의-핵심-스크린샷-스크립트">해결책의 핵심: 스크린샷 스크립트</h2>
+<p>가장 먼저 필요한 것은 Next.js 앱이 빌드된 후에 모든 페이지를 찾아내고, &lsquo;Puppeteer&rsquo;를 사용해 각 페이지의 스크린샷을 찍는 스크립트입니다.</p>
+<p>Puppeteer는 헤드리스(headless) Chrome 브라우저를 제어할 수 있게 해주는 Node.js 라이브러리입니다.</p>
+<p>마치 로봇이 우리 대신 브라우저를 열고 웹사이트를 방문하여 사진을 찍어주는 것과 같죠.</p>
+<h3 id="take-screenshotsjs-파일-분석">&rsquo;take-screenshots.js&rsquo; 파일 분석</h3>
+<p>아래는 전체 스크립트입니다.</p>
+<p>이 코드를 프로젝트의 <code>.github/scripts/take-screenshots.js</code> 경로에 저장하세요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// .github/scripts/take-screenshots.js
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">puppeteer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&#34;puppeteer&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&#34;fs&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&#34;path&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">OUT_DIR</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="s2">&#34;screenshots&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SERVER_URL</span> <span class="o">=</span> <span class="s2">&#34;http://localhost:3000&#34;</span><span class="p">;</span> <span class="c1">// 파일 경로 대신 서버 URL 사용
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">SITE_DIR</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span> <span class="s2">&#34;out&#34;</span><span class="p">);</span> <span class="c1">// Next.js 정적 내보내기 디렉토리
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 스크린샷 디렉토리가 없으면 생성
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">OUT_DIR</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">fs</span><span class="p">.</span><span class="nx">mkdirSync</span><span class="p">(</span><span class="nx">OUT_DIR</span><span class="p">,</span> <span class="p">{</span> <span class="nx">recursive</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 딜레이를 위한 헬퍼 함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">delay</span> <span class="o">=</span> <span class="p">(</span><span class="nx">ms</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">ms</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Next.js 내보내기 디렉토리에서 모든 HTML 페이지를 찾는 함수 (개선됨)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">function</span> <span class="nx">findAllPages</span><span class="p">(</span><span class="nx">dir</span><span class="p">,</span> <span class="nx">baseDir</span> <span class="o">=</span> <span class="nx">dir</span><span class="p">,</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">files</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span><span class="p">(</span><span class="nx">dir</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">file</span> <span class="k">of</span> <span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">fullPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">dir</span><span class="p">,</span> <span class="nx">file</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">stat</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">statSync</span><span class="p">(</span><span class="nx">fullPath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">stat</span><span class="p">.</span><span class="nx">isDirectory</span><span class="p">())</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 재귀적으로 디렉토리 탐색
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">findAllPages</span><span class="p">(</span><span class="nx">fullPath</span><span class="p">,</span> <span class="nx">baseDir</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&#34;.html&#34;</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// HTML 파일을 찾음, 이것이 페이지임
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">relativePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">relative</span><span class="p">(</span><span class="nx">baseDir</span><span class="p">,</span> <span class="nx">dir</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">pagePath</span> <span class="o">=</span> <span class="nx">relativePath</span>
+</span></span><span class="line"><span class="cl">        <span class="o">?</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">relativePath</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">file</span> <span class="o">===</span> <span class="s2">&#34;index.html&#34;</span> <span class="o">?</span> <span class="s2">&#34;&#34;</span> <span class="o">:</span> <span class="nx">file</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&#34;.html&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="nx">file</span> <span class="o">===</span> <span class="s2">&#34;index.html&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">?</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">:</span> <span class="nx">file</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&#34;.html&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 중복 경로 방지 (예: /index.html 과 /)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">pagePath</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">pagePath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 지연 로딩 이미지를 불러오기 위해 페이지를 스크롤하는 함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">async</span> <span class="kd">function</span> <span class="nx">autoScroll</span><span class="p">(</span><span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nx">totalHeight</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">distance</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">timer</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">scrollHeight</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">scrollHeight</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">window</span><span class="p">.</span><span class="nx">scrollBy</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">distance</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">totalHeight</span> <span class="o">+=</span> <span class="nx">distance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">totalHeight</span> <span class="o">&gt;=</span> <span class="nx">scrollHeight</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">clearInterval</span><span class="p">(</span><span class="nx">timer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="nb">window</span><span class="p">.</span><span class="nx">scrollTo</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// 다시 맨 위로 스크롤
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 모든 이미지를 강제로 로드하는 함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">async</span> <span class="kd">function</span> <span class="nx">forceImagesLoad</span><span class="p">(</span><span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 모든 이미지 요소를 찾음
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">images</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s2">&#34;img&#34;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 모든 이미지의 loading 속성을 &#39;eager&#39;로 설정하여 강제로 로드
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">images</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">img</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">img</span><span class="p">.</span><span class="nx">loading</span> <span class="o">=</span> <span class="s2">&#34;eager&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 지연 로딩 라이브러리에서 흔히 사용하는 data-src 속성이 있다면 src로 변경
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">dataset</span><span class="p">.</span><span class="nx">src</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">img</span><span class="p">.</span><span class="nx">dataset</span><span class="p">.</span><span class="nx">src</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 모든 이미지 로딩을 기다림
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">await</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">images</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">img</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">complete</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">img</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">img</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">;</span> <span class="c1">// 에러 발생 시에도 중단되지 않도록 resolve 호출
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="kr">async</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;스크린샷 프로세스를 시작합니다...&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// GitHub Actions 환경을 위한 --no-sandbox 플래그와 함께 실행
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">browser</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">puppeteer</span><span class="p">.</span><span class="nx">launch</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">args</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;--no-sandbox&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;--disable-setuid-sandbox&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;--disable-animations&#34;</span><span class="p">,</span> <span class="c1">// CSS 애니메이션 비활성화
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="s2">&#34;--disable-extensions&#34;</span> <span class="c1">// 방해될 수 있는 확장 프로그램 비활성화
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">defaultViewport</span><span class="o">:</span> <span class="p">{</span> <span class="nx">width</span><span class="o">:</span> <span class="mi">1280</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="mi">800</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">page</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">newPage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">emulateMediaFeatures</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;prefers-reduced-motion&#34;</span><span class="p">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s2">&#34;reduce&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 내보내기 디렉토리에서 모든 페이지 찾기
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">SITE_DIR</span><span class="si">}</span><span class="sb">에서 페이지를 찾습니다...`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">pages</span> <span class="o">=</span> <span class="nx">findAllPages</span><span class="p">(</span><span class="nx">SITE_DIR</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">pages</span><span class="p">.</span><span class="nx">length</span><span class="si">}</span><span class="sb">개의 페이지를 찾았습니다: </span><span class="si">${</span><span class="nx">pages</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&#34;, &#34;</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 홈페이지가 목록에 없으면 추가
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pages</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pages</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">pagePath</span> <span class="k">of</span> <span class="nx">pages</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 서버용 URL 생성
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">pageUrl</span> <span class="o">=</span> <span class="nx">pagePath</span> <span class="o">?</span> <span class="sb">`</span><span class="si">${</span><span class="nx">SERVER_URL</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">pagePath</span><span class="si">}</span><span class="sb">`</span> <span class="o">:</span> <span class="nx">SERVER_URL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 스크린샷을 위한 안전한 파일 이름 생성
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">pageName</span> <span class="o">=</span> <span class="nx">pagePath</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\//g</span><span class="p">,</span> <span class="s2">&#34;-&#34;</span><span class="p">)</span> <span class="o">||</span> <span class="s2">&#34;home&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`페이지 처리 중: </span><span class="si">${</span><span class="nx">pageName</span><span class="si">}</span><span class="sb"> (</span><span class="si">${</span><span class="nx">pageUrl</span><span class="si">}</span><span class="sb">)`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 로컬 서버의 페이지로 이동
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">pageUrl</span><span class="si">}</span><span class="sb">로 이동 중...`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">await</span> <span class="nx">page</span><span class="p">.</span><span class="kr">goto</span><span class="p">(</span><span class="nx">pageUrl</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">waitUntil</span><span class="o">:</span> <span class="s2">&#34;networkidle0&#34;</span><span class="p">,</span> <span class="c1">// 네트워크 활동이 없을 때까지 기다림
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">timeout</span><span class="o">:</span> <span class="mi">30000</span> <span class="c1">// 타임아웃을 30초로 늘림
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 페이지를 스크롤하여 지연 로딩 콘텐츠 불러오기
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`지연 로딩 콘텐츠를 위해 페이지 스크롤 중...`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">await</span> <span class="nx">autoScroll</span><span class="p">(</span><span class="nx">page</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 모든 이미지를 강제로 로드
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`모든 이미지 강제 로딩 중...`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">await</span> <span class="nx">forceImagesLoad</span><span class="p">(</span><span class="nx">page</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 이미지가 로드될 추가 시간 확보
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`모든 콘텐츠가 로드되기를 기다리는 중...`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">await</span> <span class="nx">delay</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// 스크린샷 찍기
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">screenshotPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">OUT_DIR</span><span class="p">,</span> <span class="sb">`</span><span class="si">${</span><span class="nx">pageName</span><span class="si">}</span><span class="sb">.png`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`스크린샷 찍는 중: </span><span class="si">${</span><span class="nx">screenshotPath</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">await</span> <span class="nx">page</span><span class="p">.</span><span class="nx">screenshot</span><span class="p">({</span> <span class="nx">path</span><span class="o">:</span> <span class="nx">screenshotPath</span><span class="p">,</span> <span class="nx">fullPage</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">pageName</span><span class="si">}</span><span class="sb">의 스크린샷이 저장되었습니다.`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">pageName</span><span class="si">}</span><span class="sb">의 스크린샷 저장 중 에러 발생:`</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">browser</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;스크린샷 프로세스가 완료되었습니다.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">})();</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 스크립트에서 특히 주목할 만한 부분은 &lsquo;autoScroll&rsquo;과 &lsquo;forceImagesLoad&rsquo; 함수입니다.</p>
+<p>요즘 웹사이트는 성능을 위해 사용자가 스크롤해야만 보이는 이미지를 나중에 로드(&lsquo;지연 로딩, lazy loading&rsquo;)하는 경우가 많습니다.</p>
+<p>Puppeteer는 페이지가 열리자마자 바로 스크린샷을 찍기 때문에, 이 함수들이 없다면 스크린샷의 많은 이미지들이 보이지 않거나 깨져서 나올 것입니다.</p>
+<p>또한, &lsquo;Framer Motion&rsquo; 같은 라이브러리로 애니메이션을 사용한다면, 스크립트에서처럼 애니메이션을 비활성화하거나, 컴포넌트 자체에서 뷰포트 설정을 조정해 주는 것이 좋습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-jsx" data-lang="jsx"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">motion.div</span>
+</span></span><span class="line"><span class="cl">  <span class="na">viewport</span><span class="o">=</span><span class="p">{{</span> <span class="nx">once</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">amount</span><span class="o">:</span> <span class="mf">0.3</span> <span class="p">}}</span> <span class="err">//</span> <span class="na">애니메이션이</span> <span class="na">한</span> <span class="na">번만</span> <span class="na">실행되도록</span> <span class="na">설정</span>
+</span></span><span class="line"><span class="cl">  <span class="na">initial</span><span class="o">=</span><span class="p">{{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">20</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">  <span class="na">whileInView</span><span class="o">=</span><span class="p">{{</span> <span class="nx">opacity</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">0</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">  <span class="na">transition</span><span class="o">=</span><span class="p">{{</span> <span class="nx">delay</span><span class="o">:</span> <span class="mf">0.2</span><span class="p">,</span> <span class="nx">duration</span><span class="o">:</span> <span class="mf">0.6</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl"><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">motion.div</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="워크플로우-모든-것을-하나로-묶기">워크플로우: 모든 것을 하나로 묶기</h2>
+<p>이제 이 스크립트를 실행할 GitHub Actions 워크플로우를 설정할 차례입니다.</p>
+<p>프로젝트 루트의 <code>.github/workflows/pr.yml</code> 경로에 아래 코드를 작성하세요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># .github/workflows/pr.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">PR</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">workflow_dispatch</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">types</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">opened, synchronize, reopened]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">main</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">jobs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">build</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Cancel Previous Runs</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">styfle/cancel-workflow-action@0.12.1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Checkout repository</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v4</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">oven-sh/setup-bun@v2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Install dependencies</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">bun install</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Install Puppeteer and serve</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">bun install puppeteer serve</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Build and export</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">bun run build</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Start static server and take screenshots</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">screenshots</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">          # 백그라운드에서 서버 시작
+</span></span></span><span class="line"><span class="cl"><span class="sd">          npx serve out -p 3000 &amp;
+</span></span></span><span class="line"><span class="cl"><span class="sd">          # 서버가 시작될 때까지 더 길게 대기
+</span></span></span><span class="line"><span class="cl"><span class="sd">          sleep 10
+</span></span></span><span class="line"><span class="cl"><span class="sd">          # 스크린샷 찍기
+</span></span></span><span class="line"><span class="cl"><span class="sd">          node .github/scripts/take-screenshots.js
+</span></span></span><span class="line"><span class="cl"><span class="sd">          # 서버 종료
+</span></span></span><span class="line"><span class="cl"><span class="sd">          kill $(lsof -t -i:3000)
+</span></span></span><span class="line"><span class="cl"><span class="sd">          echo &#34;screenshot_path=screenshots&#34; &gt;&gt; $GITHUB_OUTPUT</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Upload screenshots as artifacts</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/upload-artifact@v4</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">preview-screenshots</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">screenshots/</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 워크플로우의 핵심은 &lsquo;Start static server and take screenshots&rsquo; 단계입니다.</p>
+<ul>
+<li>
+<p><code>npx serve out -p 3000 &amp;</code>: Next.js가 빌드한 정적 파일이 있는 <code>out</code> 폴더를 3000번 포트로 서빙하는 웹 서버를 실행합니다.</p>
+<p>뒤에 붙은 <code>&amp;</code>는 이 명령을 백그라운드에서 실행하라는 의미입니다.</p>
+</li>
+<li>
+<p><code>sleep 10</code>: 서버가 완전히 시작될 때까지 10초간 기다립니다.</p>
+</li>
+<li>
+<p><code>node ...</code>: 우리가 만든 스크린샷 스크립트를 실행합니다.</p>
+</li>
+<li>
+<p><code>kill ...</code>: 스크립트 실행이 끝나면, 백그라운드에서 돌고 있던 서버 프로세스를 찾아 종료시킵니다.</p>
+</li>
+<li>
+<p><code>actions/upload-artifact</code>: 마지막으로, 생성된 <code>screenshots</code> 폴더를 &lsquo;아티팩트(artifact)&lsquo;로 업로드합니다.</p>
+</li>
+</ul>
+<h2 id="결과-확인하기">결과 확인하기</h2>
+<p>이제 <code>main</code> 브랜치로 Pull Request를 생성하면, 이 워크플로우가 자동으로 실행됩니다.</p>
+<p>작업이 완료된 후, 해당 PR의 GitHub Actions 실행 결과 페이지로 가보세요.</p>
+<p>&lsquo;Artifacts&rsquo; 섹션에 &lsquo;preview-screenshots&rsquo;라는 이름으로 업로드된 zip 파일을 찾을 수 있을 것입니다.</p>
+<p>이 파일을 다운로드하여 압축을 풀면, 변경 사항이 적용된 웹사이트의 모든 페이지 스크린샷을 직접 눈으로 확인할 수 있습니다.</p>
+<p>이제 더 이상 코드만 보고 UI 변경을 상상하지 않아도 됩니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/github-actions/" role="button">GitHub Actions</a>
+        <a class="btn btn-light" href="/tags/next.js/" role="button">Next.js</a>
+        <a class="btn btn-light" href="/tags/puppeteer/" role="button">Puppeteer</a>
+        <a class="btn btn-light" href="/tags/%EC%A0%95%EC%A0%81-%EB%82%B4%EB%B3%B4%EB%82%B4%EA%B8%B0/" role="button">정적 내보내기</a>
+        <a class="btn btn-light" href="/tags/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7-%ED%85%8C%EC%8A%A4%ED%8A%B8/" role="button">스크린샷 테스트</a>
+        <a class="btn btn-light" href="/tags/ci/cd/" role="button">CI/CD</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-18-ultimate-guide-to-ci-pipeline-optimization-patterns/">NDC Oslo 2025 - 빌드 파이프라인이 느리고 답답한 진짜 이유 (그리고 해결법)</a></h2>
+                  <p>개발자의 삶을 좀먹는 느리고 불안정한 CI/CD 파이프라인, 이제 그만 참아도 됩니다. 해외 유명 강연을 통해 생산성을 폭발시키는 8가지 파이프라인 최적화 패턴을 알아봅니다.</p>
+                  <p>
+  <small>August 20, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-09-15-nextjs-server-actions-vs-route-handlers/">Next.js 서버 액션과 루트 핸들러 아직도 헷갈리시나요</a></h2>
+                  <p>Next.js의 두 가지 핵심 서버 통신 방식인 서버 액션과 루트 핸들러의 차이점을 명확히 짚어보고, 언제 무엇을 사용해야 하는지에 대한 완벽한 가이드를 제시합니다.</p>
+                  <p>
+  <small>September 16, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-rari-a-react-framework-4-x-faster-than-nextjs-with-rust/">Next.js보다 4배 빠른 React 프레임워크가 등장했습니다</a></h2>
+                  <p>거의 25년간 웹 개발을 해온 베테랑 개발자가 Next.js보다 4배 빠른 React 프레임워크 Rari를 공개했습니다. Rust 런타임을 기반으로 한 Rari의 경이로운 성능과 그 비밀을 파헤쳐 봅니다.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

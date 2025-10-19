@@ -1,0 +1,1279 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth</title>
+<meta name="description" content="Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth" />
+<meta property="og:description" content="Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-08-04T00:53:52Z" />
+<meta property="article:modified_time" content="2024-08-04T00:53:52Z" />
+<meta property="article:tag" content="Cloudflare" />
+<meta property="article:tag" content="Hono" />
+<meta property="article:tag" content="Lucia" />
+<meta property="article:tag" content="Drizzle orm" />
+<meta property="article:tag" content="D1 DB" />
+<meta property="article:tag" content="Naver ID Login" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth" />
+<meta name="twitter:description" content="Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth\"",
+  "description": "\"Lucia Auth는 사용하고 arctic 패키지는 사용하지 않고 Naver ID 로그인을 구현해 봤습니다.\"",
+  "datePublished": "\"2024-08-04T00:53:52Z\"",
+  "dateModified": "\"2024-08-04T00:53:52Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth</h1>
+        <p>
+  <small>August 4, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간에는 GitHub ID, Kakao ID를 이용해서 로그인을 구현해 봤는데요.</p>
+<p>Lucia Auth와 함께 arctic 패키지가 아주 쉽게 구현해 줄 수 있어서 고마웠는데요.</p>
+<p>네이버 로그인은 arctic에는 없습니다.</p>
+<p>대신 라인(Line) 로그인이 있죠.</p>
+<p>아마 라인 로그인과 네이버 로그인은 다른 서버를 쓸 거 같은데요.</p>
+<p>오늘은 arctic 패키지 없이 수작업으로 네이버 로그인을 구현해 보겠습니다.</p>
+<p>예전에 썼던 <a href="https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login">네이버 로그인 구현 강의</a>에서 Lucia Auth를 이용한 세션 저장만 추가하는 꼴입니다.</p>
+<p>참고로 로그인 구현하기 시리즈 전체 강좌 리스트입니다.</p>
+<ul>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login">Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login">Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login">Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login">Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db">Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login">Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</a></p>
+</li>
+</ul>
+<hr>
+<h2 id="템플릿-계속-유지">템플릿 계속 유지</h2>
+<p>기존에 GitHub ID, Kakao ID 로그인에 썼던 Hono 웹 애플리케이션 템플릿을 그대로 사용할 예정입니다.</p>
+<p>기존 코드의 구조가 &lsquo;/admin&rsquo; 라우팅이 대시보드가 되었고, 그 밑에 &lsquo;/admin/login&rsquo; 라우팅으로 가면 여러가지 로그인 옵션이 보이는 화면이 보이고, 로그인 방법을 클릭하면 &ldquo;/admin/login/naver&rdquo;, &ldquo;/admin/login/kakao&rdquo;, &ldquo;/admin/login/github&quot;로 이동합니다.</p>
+<p>그러면 먼저, &ldquo;/admin/login/naver&rdquo; 라우팅을 추가해야겠죠.</p>
+<p>DB 구조는 지난 시간에 맞춤으로 설정해서 네이버 로그인도 적용될 수 있습니다.</p>
+<p>그래서 아래와 같이 하면 쉽게 될거 같은데요. 아닙니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login/naver&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">naver</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Naver</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_REDIRECT_URI</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">generateState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">naver</span><span class="p">.</span><span class="nx">createAuthorizationURL</span><span class="p">(</span><span class="nx">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;naver_oauth_state&#34;</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;Lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// console.log(url);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="nx">url</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 쉽게 구현할 수 있으면 좋으련만 arctic 패키지가 Naver를 지원하지 않아서 수작업으로 해야합니다.</p>
+<p>먼저, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, NAVER_REDIRECT_URI를 설정해야 합니다.</p>
+<p><a href="https://developers.naver.com/apps/">네이버 개발자 센터 애플리케이션 대시보드</a>로 가서 아래와 같이 수정합시다.</p>
+<p>기존에 만들었던 앱이 아래와 같이 보일겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiTfYCXFrhY97u8l08w0neGH2q_Mv0Sw-BzPui4n5sdmPvD8HGx7d9SJuS7pKHrGrkyvgFQOaoIkdzq7mQ6eimeH4hhDXA0wiimdqU5i84QXBPHEOtePfQwnD0q3OD3OmtaBBQvOSNGuhDasAjqzfFJm7f0VZhBIfR7PwYI6AJ019HEi1v10p5SXPbR8Jo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>NAVER_CLIENT_ID, NAVER_CLIENT_SECRET는 위 그림에서 구할 수 있습니다.</p>
+<p>NAVER_REDIRECT_URI는 아래와 같이 다시 세팅해야 합니다.</p>
+<p>메뉴에서 &ldquo;API 설정&quot;을 클릭 후 화면을 내리면 중간에 아래와 같이 Callback URL을 추가하는 부분이 나옵니다.</p>
+<p><code>http://localhost:5173/admin/login/naver/callback</code></p>
+<p>위와 같이 설정하고 맨 밑에 있는 &ldquo;수정&rdquo; 버튼을 꼭 눌러주시기 바랍니다.</p>
+<p>지금까지 구한 API 설정값을 각각 wrangler.toml 파일과, .dev.vars 파일에 넣으면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">vars</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">GITHUB_CLIENT_ID</span><span class="p">=</span><span class="s2">&#34;I~~~~~~~~~~~~~`9e8&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">KAKAO_CLIENT_ID</span><span class="p">=</span><span class="s2">&#34;8~~~~~~~~~~~~~~~~``69&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">KAKAO_REDIRECT_URI</span><span class="p">=</span><span class="s2">&#34;http://localhost:5173/admin/login/kakao/callback&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">NAVER_CLIENT_ID</span><span class="p">=</span><span class="s2">&#34;D~~~~~~~~~~~~~~~~S&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">NAVER_REDIRECT_URI</span><span class="p">=</span><span class="s2">&#34;http://localhost:5173/admin/login/naver/callback&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>.dev.vars 파일</code></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">GITHUB_CLIENT_SECRET</span><span class="o">=</span>92b~~~~~~~~~~~~~~~~~321
+</span></span><span class="line"><span class="cl"><span class="nv">KAKAO_CLIENT_SECRET</span><span class="o">=</span>qU~~~~~~~~~~~~~~~~~~qF9
+</span></span><span class="line"><span class="cl"><span class="nv">NAVER_CLIENT_SECRET</span><span class="o">=</span>l~~~~~~~~~~~~~2Ch</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 admin.tsx 파일의 맨 윗부분에 Bindings 부분을 아래와 같이 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Bindings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">DB</span>: <span class="kt">D1Database</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">GITHUB_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">GITHUB_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_REDIRECT_URI</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NAVER_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NAVER_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NAVER_REDIRECT_URI</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="naver-auth-endpoint-구현하기">Naver Auth Endpoint 구현하기</h2>
+<p>기존에 수작업으로 했던 코드를 가져와서 현재 상황에 맞게 고치면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login/naver&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">AUTH_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://nid.naver.com/oauth2.0/authorize&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">generateState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">c.env.NAVER_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">response_type</span><span class="o">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirect_uri</span>: <span class="kt">c.env.NAVER_REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">state</span>: <span class="kt">state</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;naver_oauth_state&#34;</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;Lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">AUTH_ENDPOINT</span><span class="si">}</span><span class="sb">?</span><span class="si">${</span><span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 네이버 AUTH_ENDPOINT를 위와 같이 지정했고, params을 OAuth 2.0에 맞게 지정했습니다.</p>
+<p>그리고 state 값은 arctic에서 제공하는 generateState() 함수를 이용했습니다.</p>
+<p>그리고 &ldquo;naver_oauth_state&rdquo; 값을 쿠키값으로 저장시켜 놓았습니다.</p>
+<p>마지막으로 해당 네이버 AUTH_ENDPOINT로 우리가 만든 params 값을 URLSearchParams 객체로 구현하여 최종적으로 redirect 시키면 되는겁니다.</p>
+<p>이제 앱을 실행시켜야 하는데, UI 부분에서 Naver 로그인 부분을 추가시킵시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/github&#34;</span><span class="p">&gt;</span><span class="nx">GitHub</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/kakao&#34;</span><span class="p">&gt;</span><span class="nx">Kakao</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/naver&#34;</span><span class="p">&gt;</span><span class="nx">Naver</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 A 태그를 추가했습니다.</p>
+<p>개발 서버를 돌려보고 &ldquo;/admin/login&rdquo; 주소로 이동하면 아래와 같이 보일겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjX35oe2hi2ngpJzu57XLh8ly5IbFvNnu2scPQmfrseeHB_XVddHSNqp3joi5qkU3MjMMZsO6sikIN1_HmHrw8xdh0WhbU5d9zrgysFIRgPiviM_2aIy2GyXDlxW8HdEOIhM_mu6IOPUI6EA8w4sKGOuA-r4gEn8hlIrHULvQVasHhaZgFYyu4_H3AYcJc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 &ldquo;Naver ID Login&quot;을 클릭하면 아래 그림과 같이 익숙한 네이버 로그인 화면이 나올겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj5etqM7rkQXzKfPY8ofO6d9ae_Hh0pyArzwGzK_x_-SIqESRnIBNoPFOh-0R0jiZ0iWe3Kp3npuYPRCrV-7XDbEcM0TxUQK9XBbT-5b4wU6qau_LCGRO-w7UOkWdWWVP_sRI1Eb2ja1YKB9iOxmP1shL2pc63zGYGBbvLs42wcNuTv__5Ae7Pqt-lRjh0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 화면에서 네이버에 로그인하면 아래와 같이 브라우저에 &ldquo;404 Not Found&quot;에러가 뜰건데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhhBfMHFAL2grW_c6-JBtJvFgn7UCAt_dWdBYSI0Mq30Tsm70xtXUTDPe9A3uIjwH4446dc6QjnAohbFGej8PjmnPX2yhyWn6JaR9uGjxf_YfknxSqUP9eqz0MBhO8fja6j1tuBRAtd63SHD_KoDMClb5uuX7Dk6rex2kc7535X-jvQZEjZFbI2UaSWbeE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제는 이 화면이 에러 화면이 아니구나 판단되실 겁니다.</p>
+<p>브라우저 주소에 콜백주소가 알맞게 세팅되어 있고, &lsquo;code&rsquo;, &lsquo;state&rsquo;값이 제대로 리턴되어 있으니 말이죠.</p>
+<p>이제 콜백 라우팅을 구현해야 합니다.</p>
+<p>&lsquo;/admin/login/naver/callback&rsquo; 라우팅을 구현해야 합니다.</p>
+<p>예전에 썼던 코드에서 참고할 거는 액세스 토큰을 가져오는 것과, User Info(유저 정보)를 가져오는 것 두개를 참고하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">TokenResponse</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">access_token</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expires_in</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">token_type</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">scope</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refresh_token?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/login/naver/callback&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;query&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">TOKEN_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://nid.naver.com/oauth2.0/token&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">state</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;query&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">storedState</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">).</span><span class="nx">naver_oauth_state</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span> <span class="o">||</span> <span class="o">!</span><span class="nx">state</span> <span class="o">||</span> <span class="o">!</span><span class="nx">storedState</span> <span class="o">||</span> <span class="nx">state</span> <span class="o">!==</span> <span class="nx">storedState</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;code, state 값이 틀립니다.&#34;</span> <span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">client_id</span>: <span class="kt">c.env.NAVER_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">client_secret</span>: <span class="kt">c.env.NAVER_CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">grant_type</span><span class="o">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">redirect_uri</span>: <span class="kt">c.env.NAVER_REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">state</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">response</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">TOKEN_ENDPOINT</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/x-www-form-urlencoded&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">body</span>: <span class="kt">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">errorResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">data</span>: <span class="kt">TokenResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">access_token</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">access_token</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//   console.log(`ACCESS_TOKEN is : ${access_token}`);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">userInfoResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;https://openapi.naver.com/v1/nid/me&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">access_token</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">errorResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">userInfoResponseJSON</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">userInfo</span> <span class="o">=</span> <span class="nx">userInfoResponseJSON</span><span class="p">.</span><span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//   console.log(userInfo); // 사용자 정보 출력
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_oauth_id</span> <span class="o">=</span> <span class="nx">userInfo</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_username</span> <span class="o">=</span> <span class="nx">userInfo</span><span class="p">.</span><span class="nx">nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_profile_image</span> <span class="o">=</span> <span class="nx">userInfo</span><span class="p">.</span><span class="nx">profile_image</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">//   console.log(returned_oauth_id);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//   console.log(returned_username);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//   console.log(returned_profile_image);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">existingUser</span>: <span class="kt">SelectUser</span><span class="p">[]</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">oauth_id</span><span class="p">,</span> <span class="nx">returned_oauth_id</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;existingUser...&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(existingUser);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(&#34;print Session....&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">existingUser</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(session);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">values</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">oauth_id</span>: <span class="kt">returned_oauth_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">username</span>: <span class="kt">returned_username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">profile_image</span>: <span class="kt">returned_profile_image</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">returning</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">OAuth2RequestError</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s2">&#34;bad_verification_code&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// invalid code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 개발 서버에서 네이버 로그인을 해보면 잘 될겁니다.</p>
+<p>아래와 같이 로그인 됐다고 나오네요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiLaCdpqsMgTgawvzw3jYpbLpnBcP78TZWl4rRXE6MCazfZfWZ0CZ9D9nBRMoGl5IaMZwBmJBOLUJ1ryWpuvsZv5fkI9WzCpqW8GJgb42dzXhLKZL3wO7u9iTYP80BjSpXFWPoyaAWPFZiO6f7u6d924Jhl0nKBjvPpGPaYJxRjtBgVSXFgPA_u0fj1pR8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 크롬 개발창의 애플리케이션 부분으로 가면 아래와 같이 세션 쿠키와 naver_oauth_state 쿠키값이 잘 저장되어 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjwwS4G4ezJb1QlwvFhj5IrS5MOJ0-WVXFIfF5bH_azyAn2pLUEefIqwf6-8_-tCHTSNzp2zErKBi50baACKKlZ9txGMibFdPj8-1EsJ4KuUc3vDbvkILDo0aMplJVBWiBubABpZzYyT1ff_OD2VcYybEzbAM7g-fcykoZg-QvMAFnJLwJtAjXc5hEkqXE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>로그아웃도 기존과 동일해서 그냥 버튼을 눌러도 로그아웃이 작동될겁니다.</p>
+<p>지금까지의 전체 코드를 길게 아래와 같이 보여드리겠습니다.</p>
+<p>&lsquo;admin.tsx&rsquo; 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Hono</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">renderer</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./renderer&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Session</span><span class="p">,</span> <span class="nx">User</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">csrf</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/csrf&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">generateState</span><span class="p">,</span> <span class="nx">GitHub</span><span class="p">,</span> <span class="nx">Kakao</span><span class="p">,</span> <span class="nx">OAuth2RequestError</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;arctic&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">deleteCookie</span><span class="p">,</span> <span class="nx">getCookie</span><span class="p">,</span> <span class="nx">setCookie</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;hono/cookie&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">zValidator</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@hono/zod-validator&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">z</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;zod&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">SelectUser</span><span class="p">,</span> <span class="nx">usersTable</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">eq</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">initializeLucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./db/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">authMiddleware</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./middleware&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Bindings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">DB</span>: <span class="kt">D1Database</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">GITHUB_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">GITHUB_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">KAKAO_REDIRECT_URI</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NAVER_CLIENT_ID</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NAVER_CLIENT_SECRET</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NAVER_REDIRECT_URI</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Variables</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">user</span>: <span class="kt">User</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">session</span>: <span class="kt">Session</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">TokenResponse</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">access_token</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expires_in</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">token_type</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">scope</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refresh_token?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">admin</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hono</span><span class="o">&lt;</span><span class="p">{</span> <span class="nx">Bindings</span>: <span class="kt">Bindings</span><span class="p">;</span> <span class="nx">Variables</span>: <span class="kt">Variables</span> <span class="p">}</span><span class="o">&gt;</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">csrf</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">renderer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s2">&#34;*&#34;</span><span class="p">,</span> <span class="nx">authMiddleware</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">You</span> <span class="nx">are</span> <span class="nx">logged</span> <span class="k">in</span> <span class="kr">as</span> <span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="p">}&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&#34;POST&#34;</span> <span class="na">action</span><span class="o">=</span><span class="s">&#34;/admin/logout&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span><span class="nx">logout</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">This</span> <span class="k">is</span> <span class="nx">Admin</span> <span class="nx">Page</span><span class="o">!</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login&#34;</span><span class="p">&gt;</span><span class="nx">Go</span> <span class="nx">to</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">&#34;/logout&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;session&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">invalidateSession</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">cookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createBlankSessionCookie</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span> <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">deleteCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;github_oauth_state&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;user&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/github&#34;</span><span class="p">&gt;</span><span class="nx">GitHub</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/kakao&#34;</span><span class="p">&gt;</span><span class="nx">Kakao</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin/login/naver&#34;</span><span class="p">&gt;</span><span class="nx">Naver</span> <span class="nx">ID</span> <span class="nx">Login</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login/github&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">github</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GitHub</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GITHUB_CLIENT_ID</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GITHUB_CLIENT_SECRET</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">generateState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">github</span><span class="p">.</span><span class="nx">createAuthorizationURL</span><span class="p">(</span><span class="nx">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;github_oauth_state&#34;</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;Lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// console.log(url);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="nx">url</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login/kakao&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">kakao</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Kakao</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_REDIRECT_URI</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">generateState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">createAuthorizationURL</span><span class="p">(</span><span class="nx">state</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;kakao_oauth_state&#34;</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;Lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// console.log(url);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="nx">url</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;/login/naver&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">AUTH_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://nid.naver.com/oauth2.0/authorize&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">state</span> <span class="o">=</span> <span class="nx">generateState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">client_id</span>: <span class="kt">c.env.NAVER_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">response_type</span><span class="o">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirect_uri</span>: <span class="kt">c.env.NAVER_REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">state</span>: <span class="kt">state</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">setCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">,</span> <span class="s2">&#34;naver_oauth_state&#34;</span><span class="p">,</span> <span class="nx">state</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secure</span>: <span class="kt">process.env.NODE_ENV</span> <span class="o">===</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">maxAge</span>: <span class="kt">60</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sameSite</span><span class="o">:</span> <span class="s2">&#34;Lax&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">AUTH_ENDPOINT</span><span class="si">}</span><span class="sb">?</span><span class="si">${</span><span class="k">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/login/github/callback&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;query&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">github</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GitHub</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GITHUB_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GITHUB_CLIENT_SECRET</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">state</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;query&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">storedState</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">).</span><span class="nx">github_oauth_state</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span> <span class="o">||</span> <span class="o">!</span><span class="nx">state</span> <span class="o">||</span> <span class="o">!</span><span class="nx">storedState</span> <span class="o">||</span> <span class="nx">state</span> <span class="o">!==</span> <span class="nx">storedState</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">github</span><span class="p">.</span><span class="nx">validateAuthorizationCode</span><span class="p">(</span><span class="nx">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(tokens);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">githubUserResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="s2">&#34;https://api.github.com/user&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">tokens</span><span class="p">.</span><span class="nx">accessToken</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">githubUser</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">githubUserResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_oauth_id</span> <span class="o">=</span> <span class="nx">githubUser</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_username</span> <span class="o">=</span> <span class="nx">githubUser</span><span class="p">.</span><span class="nx">login</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_profile_image</span> <span class="o">=</span> <span class="nx">githubUser</span><span class="p">.</span><span class="nx">avatar_url</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">existingUser</span>: <span class="kt">SelectUser</span><span class="p">[]</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">oauth_id</span><span class="p">,</span> <span class="nx">returned_oauth_id</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;existingUser...&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(existingUser);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(&#34;print Session....&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">existingUser</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(session);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">values</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">oauth_id</span>: <span class="kt">returned_oauth_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">username</span>: <span class="kt">returned_username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">profile_image</span>: <span class="kt">returned_profile_image</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">returning</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;after insert&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(user);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">OAuth2RequestError</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s2">&#34;bad_verification_code&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// invalid code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/login/kakao/callback&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;query&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">kakao</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Kakao</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">KAKAO_REDIRECT_URI</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">state</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;query&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">storedState</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">).</span><span class="nx">kakao_oauth_state</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span> <span class="o">||</span> <span class="o">!</span><span class="nx">state</span> <span class="o">||</span> <span class="o">!</span><span class="nx">storedState</span> <span class="o">||</span> <span class="nx">state</span> <span class="o">!==</span> <span class="nx">storedState</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakao</span><span class="p">.</span><span class="nx">validateAuthorizationCode</span><span class="p">(</span><span class="nx">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(tokens);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">kakaoUserResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;https://kapi.kakao.com/v2/user/me&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">tokens</span><span class="p">.</span><span class="nx">accessToken</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">kakaoUser</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">kakaoUserResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">//kakaoUser.id가 number라서 toString()으로 string 타입으로 변경해야 함.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">returned_oauth_id</span> <span class="o">=</span> <span class="nx">kakaoUser</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_username</span> <span class="o">=</span> <span class="nx">kakaoUser</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_profile_image</span> <span class="o">=</span> <span class="nx">kakaoUser</span><span class="p">.</span><span class="nx">properties</span><span class="p">.</span><span class="nx">profile_image</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(returned_oauth_id);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(returned_username);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(returned_profile_image);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">existingUser</span>: <span class="kt">SelectUser</span><span class="p">[]</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">oauth_id</span><span class="p">,</span> <span class="nx">returned_oauth_id</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;existingUser...&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(existingUser);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(&#34;print Session....&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">existingUser</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(session);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">values</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">oauth_id</span>: <span class="kt">returned_oauth_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">username</span>: <span class="kt">returned_username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">profile_image</span>: <span class="kt">returned_profile_image</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">returning</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">OAuth2RequestError</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s2">&#34;bad_verification_code&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// invalid code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">admin</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;/login/naver/callback&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">zValidator</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;query&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">z.string</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">async</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">TOKEN_ENDPOINT</span> <span class="o">=</span> <span class="s2">&#34;https://nid.naver.com/oauth2.0/token&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">c</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">state</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">req</span><span class="p">.</span><span class="nx">valid</span><span class="p">(</span><span class="s2">&#34;query&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">storedState</span> <span class="o">=</span> <span class="nx">getCookie</span><span class="p">(</span><span class="nx">c</span><span class="p">).</span><span class="nx">naver_oauth_state</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">code</span> <span class="o">||</span> <span class="o">!</span><span class="nx">state</span> <span class="o">||</span> <span class="o">!</span><span class="nx">storedState</span> <span class="o">||</span> <span class="nx">state</span> <span class="o">!==</span> <span class="nx">storedState</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;code, state 값이 틀립니다.&#34;</span> <span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">client_id</span>: <span class="kt">c.env.NAVER_CLIENT_ID</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">client_secret</span>: <span class="kt">c.env.NAVER_CLIENT_SECRET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">grant_type</span><span class="o">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">code</span>: <span class="kt">code</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">redirect_uri</span>: <span class="kt">c.env.NAVER_REDIRECT_URI</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">state</span>: <span class="kt">state</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">response</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">TOKEN_ENDPOINT</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/x-www-form-urlencoded&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">body</span>: <span class="kt">new</span> <span class="nx">URLSearchParams</span><span class="p">(</span><span class="nx">params</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">errorResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">data</span>: <span class="kt">TokenResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">access_token</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">access_token</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(`ACCESS_TOKEN is : ${access_token}`);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">userInfoResponse</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;https://openapi.naver.com/v1/nid/me&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Authorization</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="nx">access_token</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">errorResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">errorResponse</span><span class="p">,</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">status</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">userInfoResponseJSON</span>: <span class="kt">any</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userInfoResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">userInfo</span> <span class="o">=</span> <span class="nx">userInfoResponseJSON</span><span class="p">.</span><span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(userInfo); // 사용자 정보 출력
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_oauth_id</span> <span class="o">=</span> <span class="nx">userInfo</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_username</span> <span class="o">=</span> <span class="nx">userInfo</span><span class="p">.</span><span class="nx">nickname</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">returned_profile_image</span> <span class="o">=</span> <span class="nx">userInfo</span><span class="p">.</span><span class="nx">profile_image</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(returned_oauth_id);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(returned_username);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(returned_profile_image);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">existingUser</span>: <span class="kt">SelectUser</span><span class="p">[]</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">oauth_id</span><span class="p">,</span> <span class="nx">returned_oauth_id</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// console.log(&#34;existingUser...&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// console.log(existingUser);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(&#34;print Session....&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">existingUser</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// console.log(session);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">values</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">oauth_id</span>: <span class="kt">returned_oauth_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">username</span>: <span class="kt">returned_username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">profile_image</span>: <span class="kt">returned_profile_image</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="nx">returning</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">c</span><span class="p">.</span><span class="nx">header</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Set-Cookie&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">serialize</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span> <span class="nx">append</span>: <span class="kt">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/admin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span> <span class="k">instanceof</span> <span class="nx">OAuth2RequestError</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">===</span> <span class="s2">&#34;bad_verification_code&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// invalid code
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">400</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">c</span><span class="p">.</span><span class="nx">body</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">admin</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">Cloudflare</a>
+        <a class="btn btn-light" href="/tags/hono/" role="button">Hono</a>
+        <a class="btn btn-light" href="/tags/lucia/" role="button">Lucia</a>
+        <a class="btn btn-light" href="/tags/drizzle-orm/" role="button">Drizzle orm</a>
+        <a class="btn btn-light" href="/tags/d1-db/" role="button">D1 DB</a>
+        <a class="btn btn-light" href="/tags/naver-id-login/" role="button">Naver ID Login</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login/">Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</a></h2>
+                  <p>Lucia Auth와 arctic 패키지를 이용해서 Kakao ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db/">Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기</a></h2>
+                  <p>Lucia Auth와 arctic 패키지를 이용해서 GitHub ID 로그인을 구현해 봤습니다.</p>
+                  <p>
+  <small>August 3, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login/">Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현</a></h2>
+                  <p>Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현 및 Lucia를 이용한 세션 저장까지 시도해 봅니다.</p>
+                  <p>
+  <small>August 1, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

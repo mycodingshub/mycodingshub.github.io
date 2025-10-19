@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Git은 대체 어떻게 파일을 관리하는 걸까</title>
+<meta name="description" content="매일 사용하는 git commit, 그 뒤에선 무슨 일이 벌어질까요? Git의 핵심인 Blob, Tree, Commit 객체의 비밀을 파헤치고, Ruby로 직접 미니 Git을 만들어보며 콘텐츠 기반 파일 시스템의 천재성을 파헤쳐 봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-16-how-git-manages-files-internals/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Git은 대체 어떻게 파일을 관리하는 걸까" />
+<meta property="og:description" content="매일 사용하는 git commit, 그 뒤에선 무슨 일이 벌어질까요? Git의 핵심인 Blob, Tree, Commit 객체의 비밀을 파헤치고, Ruby로 직접 미니 Git을 만들어보며 콘텐츠 기반 파일 시스템의 천재성을 파헤쳐 봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-16-how-git-manages-files-internals/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-17T05:56:41Z" />
+<meta property="article:modified_time" content="2025-08-17T05:56:41Z" />
+<meta property="article:tag" content="Git" />
+<meta property="article:tag" content="Git Internals" />
+<meta property="article:tag" content="Blob" />
+<meta property="article:tag" content="Tree" />
+<meta property="article:tag" content="Commit" />
+<meta property="article:tag" content="버전 관리" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Git은 대체 어떻게 파일을 관리하는 걸까" />
+<meta name="twitter:description" content="매일 사용하는 git commit, 그 뒤에선 무슨 일이 벌어질까요? Git의 핵심인 Blob, Tree, Commit 객체의 비밀을 파헤치고, Ruby로 직접 미니 Git을 만들어보며 콘텐츠 기반 파일 시스템의 천재성을 파헤쳐 봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Git은 대체 어떻게 파일을 관리하는 걸까\"",
+  "description": "\"매일 사용하는 git commit, 그 뒤에선 무슨 일이 벌어질까요? Git의 핵심인 Blob, Tree, Commit 객체의 비밀을 파헤치고, Ruby로 직접 미니 Git을 만들어보며 콘텐츠 기반 파일 시스템의 천재성을 파헤쳐 봅니다.\"",
+  "datePublished": "\"2025-08-17T05:56:41Z\"",
+  "dateModified": "\"2025-08-17T05:56:41Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-16-how-git-manages-files-internals/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Git은 대체 어떻게 파일을 관리하는 걸까</h1>
+        <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>개발자라면 하루에도 몇 번씩 <code>git add</code>, <code>git commit</code>, <code>git push</code> 같은 명령어들을 사용하는데요.<br /><br />
+마치 공기처럼 자연스럽게 우리 개발 생활의 일부가 되어버렸죠.<br /><br />
+그런데 혹시 생각해 보셨나요?<br /><br />
+우리가 <code>git commit -m &quot;버그 수정&quot;</code>이라는 마법의 주문을 외울 때, Git의 내부에서는 과연 어떤 일이 벌어지고 있는 걸까요?<br /><br />
+오늘은 매일 쓰지만 사실은 잘 몰랐던 Git의 속살, 그중에서도 파일을 관리하는 아주 근본적인 원리를 Ruby로 직접 구현까지 해보면서 속 시원하게 파헤쳐 보려고 합니다.<br /><br /></p>
+<h2 id="git의-핵심-철학-콘텐츠-기반-주소-지정">Git의 핵심 철학, 콘텐츠 기반 주소 지정</h2>
+<p>Git의 내부를 이해하기 위해 가장 먼저 알아야 할 개념이 바로 &lsquo;Content-Addressable Filesystem&rsquo;, 우리말로는 &lsquo;콘텐츠 기반 주소 지정 파일 시스템&rsquo;인데요.<br /><br />
+이름이 좀 어렵지만, 사실 원리는 아주 간단합니다.<br /><br />
+우리가 평소에 쓰는 컴퓨터의 파일 시스템은 &lsquo;위치 기반&rsquo;이거든요.<br /><br />
+<code>C:\Users\Documents\report.docx</code> 처럼 파일의 &lsquo;위치&rsquo;(경로)를 통해 파일을 찾아가죠.<br /><br />
+하지만 Git은 완전히 다른 방식을 사용하는데요.<br /><br />
+파일의 &lsquo;위치&rsquo;가 아니라 파일의 &lsquo;내용&rsquo; 그 자체를 가지고 주소를 만듭니다.<br /><br />
+파일의 내용물을 SHA-1이라는 알고리즘으로 해싱해서, 세상에 단 하나뿐인 고유한 40자리 해시 값을 만들어내거든요.<br /><br />
+그리고 이 해시 값을 &lsquo;키&rsquo;로 사용해서 파일의 내용을 &lsquo;값&rsquo;으로 저장하는, 거대한 Key-Value 저장소처럼 동작하는 겁니다.<br /><br />
+이렇게 하면 파일 이름이 같아도 내용이 다르면 다른 객체로 저장되고, 반대로 파일 이름이 달라도 내용이 똑같으면 같은 객체를 재사용하게 되죠.<br /><br />
+데이터 중복을 피하고 무결성을 보장하는 아주 천재적인 방식입니다.<br /><br /></p>
+<h2 id="모든-것의-시작-blob-객체">모든 것의 시작, Blob 객체</h2>
+<p>자, 그럼 <code>git init</code>으로 새로운 저장소를 만들고, 파일 하나를 추가하는 것부터 시작해 보죠.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s2">&#34;Hello, World&#34;</span> &gt; hello.txt</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 파일을 Git이 어떻게 인식하는지 <code>git hash-object</code>라는 명령어로 확인해 볼 수 있는데요.<br /><br />
+이 명령어는 파일 내용을 해시값으로 바꿔주는 역할을 합니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git hash-object -w hello.txt
+</span></span><span class="line"><span class="cl">3fa0d4b98289a95a7cd3a45c9545e622718f8d2b</span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>-w</code> 옵션을 붙이면, 이 해시를 이름으로 하는 객체를 <code>.git/objects</code> 디렉토리에 실제로 저장까지 해주죠.<br /><br />
+가서 확인해보면 해시의 앞 두 글자인 <code>3f</code>라는 디렉토리 안에 나머지 38자리 이름의 파일이 생성된 것을 볼 수 있을 거예요.<br /><br />
+이 파일이 바로 Git의 가장 기본적인 데이터 단위인 &lsquo;Blob&rsquo; 객체입니다.<br /><br />
+Blob은 &lsquo;Binary Large Object&rsquo;의 약자로, 파일의 내용물 데이터를 압축해서 그대로 담고 있는 &lsquo;스냅샷&rsquo;이라고 생각하면 되죠.<br /><br />
+<code>git cat-file</code> 명령어로 이 객체의 정체를 확인할 수 있습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># -t 옵션으로 타입을 확인</span>
+</span></span><span class="line"><span class="cl">$ git cat-file -t 3fa0d4b98289a95a7cd3a45c9545e622718f8d2b
+</span></span><span class="line"><span class="cl">blob
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># -p 옵션으로 내용(pretty-print)을 확인</span>
+</span></span><span class="line"><span class="cl">$ git cat-file -p 3fa0d4b98289a95a7cd3a45c9545e622718f8d2b
+</span></span><span class="line"><span class="cl">Hello, World</span></span></code></pre></div>
+  </figure>
+</div>
+<p>자, 그럼 우리도 직접 이 Blob 객체를 만드는 코드를 Ruby로 한번 짜볼까요?<br /><br />
+Git 객체는 <code>&lt;타입&gt; &lt;콘텐츠 크기&gt;\0&lt;콘텐츠&gt;</code> 형식의 헤더를 내용 앞에 붙여서 만들거든요.<br /><br />
+이 전체 데이터를 SHA-1으로 해싱해서 키를 만들고, zlib으로 압축해서 파일로 저장하면 됩니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="line"><span class="cl"><span class="nb">require</span> <span class="s1">&#39;digest/sha1&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">require</span> <span class="s1">&#39;zlib&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">require</span> <span class="s1">&#39;fileutils&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">BlobObject</span>
+</span></span><span class="line"><span class="cl">  <span class="kp">attr_reader</span> <span class="ss">:content</span><span class="p">,</span> <span class="ss">:sha</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="no">GIT_DIR</span> <span class="o">=</span> <span class="s1">&#39;.test_git&#39;</span> <span class="c1"># 실제 .git을 건드리지 않기 위해</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="vi">@content</span> <span class="o">=</span> <span class="n">content</span>
+</span></span><span class="line"><span class="cl">    <span class="vi">@sha</span> <span class="o">=</span> <span class="n">calc_sha</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">def</span> <span class="nf">write_to_objects</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">GIT_DIR</span><span class="p">,</span> <span class="s1">&#39;objects&#39;</span><span class="p">,</span> <span class="vi">@sha</span><span class="o">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">path</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir</span><span class="p">,</span> <span class="vi">@sha</span><span class="o">[</span><span class="mi">2</span><span class="o">..]</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="no">FileUtils</span><span class="o">.</span><span class="n">mkdir_p</span><span class="p">(</span><span class="n">dir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</span></span><span class="line"><span class="cl">      <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="no">Zlib</span><span class="o">::</span><span class="no">Deflate</span><span class="o">.</span><span class="n">deflate</span><span class="p">(</span><span class="n">git_object_data</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kp">private</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">def</span> <span class="nf">calc_sha</span>
+</span></span><span class="line"><span class="cl">    <span class="no">Digest</span><span class="o">::</span><span class="no">SHA1</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">git_object_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">def</span> <span class="nf">git_object_data</span>
+</span></span><span class="line"><span class="cl">    <span class="n">header</span> <span class="o">=</span> <span class="s2">&#34;blob </span><span class="si">#{</span><span class="vi">@content</span><span class="o">.</span><span class="n">bytesize</span><span class="si">}</span><span class="se">\0</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">header</span> <span class="o">+</span> <span class="vi">@content</span>
+</span></span><span class="line"><span class="cl">  <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 이 클래스를 사용하면 우리도 Git처럼 Blob 객체를 직접 만들 수 있게 된 겁니다.<br /><br /></p>
+<h2 id="구조를-담는-그릇-tree-객체">구조를 담는 그릇, Tree 객체</h2>
+<p>그런데 Blob 객체만으로는 뭔가 부족하다는 느낌이 들지 않나요?<br /><br />
+맞습니다.<br /><br />
+Blob은 파일의 &lsquo;내용물&rsquo;만 저장할 뿐, 파일의 &lsquo;이름&rsquo;이나 어떤 디렉토리에 들어있는지와 같은 &lsquo;구조적인 정보&rsquo;는 전혀 모르거든요.<br /><br />
+이 문제를 해결하기 위해 등장하는 것이 바로 &lsquo;Tree&rsquo; 객체입니다.<br /><br />
+Tree 객체는 이름 그대로 디렉토리 구조를 담는 역할을 하는데요.<br /><br />
+자신이 포함하는 파일(Blob)이나 하위 디렉토리(다른 Tree)의 목록을 가지고 있죠.<br /><br />
+목록에는 각 항목의 파일 모드, 타입, 해시값, 그리고 파일명이 저장됩니다.<br /><br />
+<code>git add</code> 명령어로 파일을 스테이징하고 <code>git write-tree</code>를 실행하면, 현재 스테이징 영역의 상태를 바탕으로 Tree 객체가 생성되는데요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git add hello.txt
+</span></span><span class="line"><span class="cl">$ git write-tree
+</span></span><span class="line"><span class="cl">8481e2030a0f0a0d7af594e8ec5b278989877b62</span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+이 새로운 해시값의 정체를 한번 확인해 보죠.<br /><br />
+```bash
+$ git cat-file -t 8481e2030a0f0a0d7af594e8ec5b278989877b62
+tree
+<p>$ git cat-file -p 8481e2030a0f0a0d7af594e8ec5b278989877b62
+100644 blob 3fa0d4b98289a95a7cd3a45c9545e622718f8d2b    hello.txt</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>
+보이시나요?&lt;br /&gt;&lt;br /&gt;
+이 Tree 객체는 `hello.txt`라는 이름을 가진 `blob` 객체(`3fa...`)를 가리키고 있다는 정보를 담고 있습니다.&lt;br /&gt;&lt;br /&gt;
+이제 파일의 내용(Blob)과 이름/구조(Tree)가 연결된 거죠.&lt;br /&gt;&lt;br /&gt;
+Tree 객체도 한번 직접 구현해 볼까요?&lt;br /&gt;&lt;br /&gt;
+여러 개의 엔트리(Blob이나 다른 Tree)를 받아서 정해진 형식으로 묶고, 전체를 &#39;tree&#39; 타입의 Git 객체로 만드는 과정은 Blob 때와 거의 비슷합니다.&lt;br /&gt;&lt;br /&gt;
+```ruby
+class TreeObject
+  # ... (초기화 및 파일 쓰기 로직은 Blob과 유사)
+
+  def initialize
+    @entries = []
+  end
+
+  def add_blob(name, sha, mode = &#39;100644&#39;)
+    @entries &lt;&lt; Entry.new(mode, name, sha)
+    @entries.sort_by!(&amp;:name) # Git은 파일명 순으로 정렬
+  end
+
+  private
+
+  def git_object_data
+    # 엔트리들을 바이너리 형식으로 변환하여 합친다
+    content = @entries.map(&amp;:to_s).join
+    @sha = Digest::SHA1.hexdigest(&#34;tree #{content.bytesize}\0#{content}&#34;)
+    &#34;tree #{content.bytesize}\0#{content}&#34;
+  end
+
+  class Entry
+    attr_reader :mode, :name, :sha
+    # ...
+    def to_s
+      # 해시는 20바이트 바이너리로 변환
+      &#34;#{mode} #{name}\0#{[sha].pack(&#39;H*&#39;)}&#34;
+    end
+  end
+end</code></pre>
+  </figure>
+</div>
+<p>이제 우리는 파일 시스템의 특정 상태를 완벽하게 표현할 수 있게 됐습니다.<br /><br /></p>
+<p>자, 파일의 내용(Blob)과 구조(Tree)를 모두 저장할 수 있게 됐는데요.<br /><br />
+아직 버전 관리 시스템의 가장 중요한 한 조각이 빠져있죠.<br /><br />
+바로 &lsquo;누가&rsquo;, &lsquo;언제&rsquo;, &lsquo;왜&rsquo; 변경했는지에 대한 &lsquo;역사&rsquo; 정보입니다.<br /><br />
+이 마지막 퍼즐 조각이 바로 &lsquo;Commit&rsquo; 객체입니다.<br /><br />
+Commit 객체는 특정 시점의 프로젝트 상태(Tree)에 대한 포인터와 함께, 작성자(author), 커밋한 사람(committer), 그리고 가장 중요한 커밋 메시지를 담고 있거든요.<br /><br />
+그리고 이전 커밋(parent commit)의 해시값도 가지고 있어서, 마치 연결 리스트처럼 커밋들이 시간 순서대로 쭉 이어지게 만들어 줍니다.<br /><br />
+이것이 바로 우리가 아는 Git의 &lsquo;커밋 히스토리&rsquo;의 본질이죠.<br /><br />
+<code>git commit-tree</code> 명령어를 사용하면 특정 Tree를 가리키는 Commit 객체를 수동으로 만들 수 있습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nb">echo</span> <span class="s1">&#39;first commit&#39;</span> <span class="p">|</span> git commit-tree 8481e2030a0f0a0d7af594e8ec5b278989877b62
+</span></span><span class="line"><span class="cl">01fd440b5c3c8377cfb1b44a1fba96ad42d14040</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 커밋 객체의 내용을 들여다보면 익숙한 정보들이 보일 거예요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git cat-file -p 01fd440b5c3c8377cfb1b44a1fba96ad42d14040
+</span></span><span class="line"><span class="cl">tree 8481e2030a0f0a0d7af594e8ec5b278989877b62
+</span></span><span class="line"><span class="cl">author Your Name &lt;you@example.com&gt; <span class="m">1660000000</span> +0900
+</span></span><span class="line"><span class="cl">committer Your Name &lt;you@example.com&gt; <span class="m">1660000000</span> +0900
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">first commit</span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리가 <code>git commit</code> 명령어를 실행하면, 내부적으로는 바로 이 과정, 즉 스테이징된 내용으로 Tree 객체를 만들고, 그 Tree를 가리키는 Commit 객체를 만드는 작업이 자동으로 일어나는 겁니다.<br /><br />
+Commit 객체 구현도 이전 객체들과 크게 다르지 않은데요.<br /><br />
+Tree 해시, 부모 커밋 해시, 작성자 정보, 커밋 메시지를 정해진 형식으로 합쳐서 &lsquo;commit&rsquo; 타입의 Git 객체를 만들면 되죠.<br /><br /></p>
+<h2 id="미니-git-직접-돌려보기">미니 Git, 직접 돌려보기</h2>
+<p>지금까지 만든 Blob, Tree, Commit 객체 클래스를 모두 합쳐서, <code>git init</code>부터 첫 커밋까지의 과정을 흉내 내는 스크립트를 만들어 볼까요?<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ruby" data-lang="ruby"><span class="line"><span class="cl"><span class="c1"># Blob 생성</span>
+</span></span><span class="line"><span class="cl"><span class="n">blob</span> <span class="o">=</span> <span class="no">BlobObject</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&#34;Hello, World</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">blob</span><span class="o">.</span><span class="n">write_to_objects</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Tree 생성</span>
+</span></span><span class="line"><span class="cl"><span class="n">root_tree</span> <span class="o">=</span> <span class="no">TreeObject</span><span class="o">.</span><span class="n">new</span>
+</span></span><span class="line"><span class="cl"><span class="n">root_tree</span><span class="o">.</span><span class="n">add_blob</span><span class="p">(</span><span class="s1">&#39;hello.txt&#39;</span><span class="p">,</span> <span class="n">blob</span><span class="o">.</span><span class="n">sha</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">root_tree</span><span class="o">.</span><span class="n">write_to_objects</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Commit 생성</span>
+</span></span><span class="line"><span class="cl"><span class="n">author</span> <span class="o">=</span> <span class="p">{</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Nakasaka&#39;</span><span class="p">,</span> <span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;nakasaka@example.com&#39;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">first_commit</span> <span class="o">=</span> <span class="no">CommitObject</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="ss">tree_sha</span><span class="p">:</span> <span class="n">root_tree</span><span class="o">.</span><span class="n">sha</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="ss">author</span><span class="p">:</span> <span class="n">author</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="ss">message</span><span class="p">:</span> <span class="s1">&#39;Initial commit&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">first_commit</span><span class="o">.</span><span class="n">write_to_objects</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># git log가 인식할 수 있도록 HEAD와 ref 설정</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ... (HEAD 파일과 refs/heads/main 파일에 커밋 해시를 써주는 작업)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 스크립트를 실행하고 나서, 우리가 만든 <code>.test_git</code> 디렉토리를 대상으로 진짜 <code>git</code> 명령어를 한번 실행해 볼까요?<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ git --git-dir<span class="o">=</span>.test_git log
+</span></span><span class="line"><span class="cl">commit 6ac8e4fd1cd5a80e2ef872dd1b25ff7626b7657c <span class="o">(</span>HEAD -&gt; main<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: Nakasaka &lt;nakasaka@example.com&gt;
+</span></span><span class="line"><span class="cl">Date:   ...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    Initial commit</span></span></code></pre></div>
+  </figure>
+</div>
+<p>정말 놀랍지 않나요?<br /><br />
+우리가 Ruby로 한땀한땀 만든 객체들을 진짜 Git이 완벽하게 하나의 커밋으로 인식하고 있습니다.<br /><br /></p>
+<h2 id="마치며">마치며</h2>
+<p>오늘 우리는 Git의 심장부를 들여다봤는데요.<br /><br /></p>
+<ul>
+<li><strong>Blob</strong>: 파일의 내용물을 담는 스냅샷<br /></li>
+<li><strong>Tree</strong>: 파일 이름과 디렉토리 구조를 담는 목록<br />- <strong>Commit</strong>: Tree와 역사를 연결하는 시간의 기록<br /><br />
+이 세 가지 객체가 서로를 가리키며 겹겹이 쌓이는 아주 단순하면서도 강력한 구조가 바로 Git의 모든 것을 가능하게 하는 비밀이었던 겁니다.<br /><br />
+리누스 토발즈가 단 10일 만에 이 시스템의 초기 버전을 만들었다는 사실을 생각하면, 그의 천재성에 다시 한번 감탄하게 되네요.<br /><br />
+이제 여러분이 <code>git commit</code> 명령어를 칠 때마다, 여러분의 코드 뒤에서 조용히 움직이는 이 세 명의 주인공들을 떠올리게 될 거예요.<br /><br /></li>
+</ul>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code></code></pre>
+  </figure>
+</div>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/git/" role="button">Git</a>
+        <a class="btn btn-light" href="/tags/git-internals/" role="button">Git Internals</a>
+        <a class="btn btn-light" href="/tags/blob/" role="button">Blob</a>
+        <a class="btn btn-light" href="/tags/tree/" role="button">Tree</a>
+        <a class="btn btn-light" href="/tags/commit/" role="button">Commit</a>
+        <a class="btn btn-light" href="/tags/%EB%B2%84%EC%A0%84-%EA%B4%80%EB%A6%AC/" role="button">버전 관리</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-15-jujutsu-advanced-workflow-for-git-experts/">Jujutsu 실전 워크플로우 - Git 고인물도 놀라는 5가지 고급 기술</a></h2>
+                  <p>커밋 쪼개기, 합치기, 순서 변경, 폐기까지. Git의 복잡한 git rebase -i 작업을 대체하는 Jujutsu의 강력한 명령어들을 알아봅니다. 더 이상 역사를 두려워하지 않고 자유자재로 편집하는 방법을 배워보세요.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-15-jujutsu-tutorial-for-git-users/">Git, 이제 안녕? Jujutsu(jj) 첫걸음 튜토리얼 (Git 전문가를 위한 새로운 관점)</a></h2>
+                  <p>더 이상 git add와 commit에 얽매이지 마세요. 모든 변경사항이 자동으로 커밋되고, jj undo 한 방에 모든 실수를 되돌릴 수 있는 새로운 버전 관리 도구, Jujutsu의 기본 사용법과 철학을 알아봅니다.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-08-how-to-use-git-properly-expert-tips-and-secret-configs/">Git, 아직도 기본 설정으로 쓰십니까? 전문가의 비밀 설정 팁 대방출</a></h2>
+                  <p>매일 사용하는 Git, 하지만 여전히 어렵게만 느껴진다면? Git 전문가의 강연을 통해 커스터마이징, 고급 검색, 충돌 해결 등 생산성을 극대화하는 비밀 설정과 팁을 알아봅니다.</p>
+                  <p>
+  <small>July 9, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

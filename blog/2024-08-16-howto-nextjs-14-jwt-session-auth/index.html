@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 14 App Router로 JWT 기반 세션 인증 구현하기</title>
+<meta name="description" content="이 튜토리얼에서는 Next.js 14의 App Router를 사용해 써드파티 라이브러리 없이 JWT 기반의 세션 인증을 구현하는 방법을 다룹니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-08-16-howto-nextjs-14-jwt-session-auth/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 14 App Router로 JWT 기반 세션 인증 구현하기" />
+<meta property="og:description" content="이 튜토리얼에서는 Next.js 14의 App Router를 사용해 써드파티 라이브러리 없이 JWT 기반의 세션 인증을 구현하는 방법을 다룹니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-08-16-howto-nextjs-14-jwt-session-auth/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-08-16T02:29:22Z" />
+<meta property="article:modified_time" content="2024-08-16T02:29:22Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="session" />
+<meta property="article:tag" content="auth" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 14 App Router로 JWT 기반 세션 인증 구현하기" />
+<meta name="twitter:description" content="이 튜토리얼에서는 Next.js 14의 App Router를 사용해 써드파티 라이브러리 없이 JWT 기반의 세션 인증을 구현하는 방법을 다룹니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 14 App Router로 JWT 기반 세션 인증 구현하기\"",
+  "description": "\"이 튜토리얼에서는 Next.js 14의 App Router를 사용해 써드파티 라이브러리 없이 JWT 기반의 세션 인증을 구현하는 방법을 다룹니다.\"",
+  "datePublished": "\"2024-08-16T02:29:22Z\"",
+  "dateModified": "\"2024-08-16T02:29:22Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-08-16-howto-nextjs-14-jwt-session-auth/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 14 App Router로 JWT 기반 세션 인증 구현하기</h1>
+        <p>
+  <small>August 16, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간까지 계속 이어져 온 로그인 세션 구현을 Next.js의 App Router로 다른 제3의 라이브러리 도움없이 밑바닥에서 구현해 보겠습니다.</p>
+<p>참고로 로그인 구현하기 시리즈 전체 강좌 리스트입니다.</p>
+<ul>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-24-cloudflare-hono-oauth-naver-login">Cloudflare, Hono에서 OAuth를 이용해서 네이버 아이디로 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-21-cloudflare-hono-google-login">Cloudflare에서 Hono와 Google OAuth를 이용해서 Login 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-07-27-cloudflare-hono-oauth-kakao-login">Cloudflare, Hono, OAuth, Kakao Login(카카오 로그인)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-01-cloudflare-hono-d-1-lucia-drizzle-login">Cloudflare, D1 DB, Hono, Lucia, Drizzle ORM을 이용한 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-github-id-login-with-d-1-db">Cloudflare, Hono에서 Lucia Auth를 이용해서 GitHub ID로 로그인 구현하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-03-cloudflare-hono-lucia-auth-drizzle-kakao-login">Hono, Lucia Auth를 이용해서 Kakao ID로 로그인 구현하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-04-cloudflare-hono-lucia-auth-naver-login">네이버 아이디 로그인 구현하기 - Cloudflare, Hono, Lucia Auth</a></p>
+</li>
+</ul>
+<hr>
+<p>빈 프로젝트를 아래와 같이 작성합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm create cloudflare@latest my-next-app -- --framework<span class="o">=</span>next
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">bun create cloudflare@latest my-next-app</span></span></code></pre></div>
+  </figure>
+</div>
+<p>나중에 Cloudflare의 D1 DB를 이용한 유저 정보 저장과 로그인을 구현하기 위해 Cloudflare pages를 이용할 생각입니다.</p>
+<p>이제 화면 끝에 보시면 아래와 같이 나오는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">┬ Waiting <span class="k">for</span> DNS to propagate <span class="o">(</span>25s<span class="o">)</span>  ..</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나오면 거의 끝난건데, Cloudflare 엣지에 등록하는 거라 시간이 오래걸린다.</p>
+<p>여기서 그냥 Ctrl + C로 끝내버려도 상관없습니다.</p>
+<hr>
+<p>전체적인 코드의 형태를 인증 튜토리얼에 맞게 간소화 시킬 예정입니다.</p>
+<p>그래서 page.tsx 파일만 아래와 같이 정리해서 로그인 form과 버튼만 남겨 놓겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getSession</span><span class="p">,</span> <span class="nx">login</span><span class="p">,</span> <span class="nx">logout</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/lib&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">redirect</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/navigation&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">Home() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getSession</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">section</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">form</span>
+</span></span><span class="line"><span class="cl">        <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="kr">async</span> <span class="p">(</span><span class="nx">formData</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;use server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="k">await</span> <span class="nx">login</span><span class="p">(</span><span class="nx">formData</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">          <span class="na">className</span><span class="o">=</span><span class="s">&#34;border&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Login</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">form</span>
+</span></span><span class="line"><span class="cl">        <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;use server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">          <span class="k">await</span> <span class="nx">logout</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;border&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Logout</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>전체적인 UI는 간단합니다.</p>
+<p>위 코드는 Next.js의 Form 액션을 사용한 코드이고, 이제 login, logout 함수만 작성하면 됩니다.</p>
+<p>Auth 관련 라이브러리는 src 폴더 밑의 lib.ts 파일에 다 모아놓도록 하겠습니다.</p>
+<p>먼저, 로그인 함수를 구현해야 하는데요.</p>
+<p>로그인 함수는 유저 이메일과 패스워드가 맞는지 체크해서 맞다면 세션정보를 만들고, 그 세션정보를 쿠키에 저장하는 역할을 하는 함수입니다.</p>
+<p><code>src/lib.ts</code></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/headers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">login</span><span class="p">(</span><span class="nx">formData</span>: <span class="kt">FormData</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Verify credentials &amp;&amp; get the user
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`email : </span><span class="si">${</span><span class="nx">email</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Create the session
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">expires</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span> <span class="c1">// 10초후 세션 만료
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">encrypt</span><span class="p">({</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">expires</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Save the session in a cookie
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">cookies</span><span class="p">().</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;nextjs-session-test&#34;</span><span class="p">,</span> <span class="nx">session</span><span class="p">,</span> <span class="p">{</span> <span class="nx">expires</span><span class="p">,</span> <span class="nx">httpOnly</span>: <span class="kt">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>오늘은 유저로그인 테스트에만 집중하기 위해서 패스워드 부분은 빼고 이메일 입력시 세션 생성 및 쿠키저장에 집중하도록 하겠습니다.</p>
+<p>다음시간에 Cloudflare D1 DB, Drizzle ORM을 이용해서 패스워드 방식의 유저 가입, 그리고 로그인, 로그아웃 구현까지 확장해 볼 예정입니다.</p>
+<p>로그인 코드를 잘 보시면 일단 유저가 입력한 이메일을 <code>formData.get(&quot;email&quot;)</code>이란 함수로 얻어오는데요.</p>
+<p>UI 부분에서 input 태그의 name 값이 &ldquo;email&quot;인 데이터를 가져옵니다.</p>
+<p>패스워드가 맞다고 치고(다음시간에 구현), 이제 유저 정보를 쿠키에 저장하기 위한 세션을 만들어야 하는데요.</p>
+<p>자체 구현한 encrypt 함수를 사용했습니다.</p>
+<p>이제 encrypt 함수를 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">jwtVerify</span><span class="p">,</span> <span class="nx">SignJWT</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;jose&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/headers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">secretKey</span> <span class="o">=</span> <span class="s2">&#34;my-secret-key-in-a-tutorial&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">key</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TextEncoder</span><span class="p">().</span><span class="nx">encode</span><span class="p">(</span><span class="nx">secretKey</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">encrypt</span><span class="p">(</span><span class="nx">payload</span>: <span class="kt">any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">await</span> <span class="k">new</span> <span class="nx">SignJWT</span><span class="p">(</span><span class="nx">payload</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">setProtectedHeader</span><span class="p">({</span> <span class="nx">alg</span><span class="o">:</span> <span class="s2">&#34;HS256&#34;</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">setIssuedAt</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">setExpirationTime</span><span class="p">(</span><span class="s2">&#34;10 sec from now&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">sign</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>jwt를 이용해서 세션을 암호화할 겁니다.</p>
+<p>요즘 잘 나가는 &ldquo;jose&rdquo; 패키지를 설치해서 사용할 건데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i jose</span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;jose&rsquo; 패키지의 SignJWT 메서드를 이용해서 세션을 암호화할 겁니다.</p>
+<p>JWT 알고리즘은 &lsquo;HS256&rsquo;을 사용했구요.</p>
+<p>그러면 encrypt 함수의 payload 값이 뭔지 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">{</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">expires</span> <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>바로 위와 같이 객체인데요, email값과 expires 값입니다.</p>
+<p>JS 축약기능때문에 위와 같이 해도 됩니다.</p>
+<p>원래는 아래와 같은거죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="p">{</span> <span class="nx">email</span> : <span class="kt">email</span><span class="p">,</span> <span class="nx">expires</span>: <span class="kt">expires</span> <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Next.js에서 제공하는 cookies() 함수를 먼저 자세히 알아보겠습니다.</p>
+<hr>
+<h2 id="cookiesset">cookies.set()</h2>
+<p>Next.js에서 <code>cookies()</code> 함수는 서버 컴포넌트에서 쿠키를 설정하거나 읽을 때 사용됩니다. 이 함수는 Next.js의 최신 버전에서 서버 컴포넌트 내에서 쿠키를 간편하게 조작할 수 있도록 도와줍니다.</p>
+<p><code>cookies().set()</code> 메서드는 쿠키를 설정하는 기능을 제공합니다. 코드를 분석하면서 주요 요소를 설명해 드리겠습니다:</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">cookies</span><span class="p">().</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;nextjs-session-test&#34;</span><span class="p">,</span> <span class="nx">session</span><span class="p">,</span> <span class="p">{</span> <span class="nx">expires</span><span class="p">,</span> <span class="nx">httpOnly</span><span class="o">:</span> <span class="kc">true</span> <span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="1-cookies">1. <strong><code>cookies()</code> 함수</strong></h3>
+<ul>
+<li><code>cookies()</code> 함수는 Next.js 서버 컴포넌트 내에서 현재 요청과 관련된 쿠키를 관리하기 위한 객체를 반환합니다.</li>
+<li>이 객체를 사용하면 현재 요청에 대한 쿠키를 읽거나 설정할 수 있습니다.</li>
+</ul>
+<h3 id="2-set">2. <strong><code>.set()</code> 메서드</strong></h3>
+<ul>
+<li><code>cookies().set(name, value, options)</code> 형태로 사용됩니다.</li>
+<li><code>name</code>: 설정할 쿠키의 이름입니다. 여기서는 <code>&quot;nextjs-session-test&quot;</code>라는 이름으로 쿠키를 설정합니다.</li>
+<li><code>value</code>: 쿠키에 저장할 값입니다. 이 예제에서는 <code>session</code> 변수가 쿠키의 값으로 설정됩니다.</li>
+<li><code>options</code>: 쿠키에 대한 설정 옵션을 객체 형태로 전달합니다.</li>
+</ul>
+<h3 id="3-옵션-객체-">3. <strong>옵션 객체 (<code>options</code>)</strong></h3>
+<p>옵션 객체에는 여러 가지 쿠키 설정 옵션이 포함될 수 있으며, 이 예제에서는 다음과 같은 옵션이 사용되었습니다:</p>
+<ul>
+<li>
+<p><strong><code>expires</code></strong>: 쿠키의 만료 날짜를 지정합니다. <code>expires</code>는 <code>Date</code> 객체로 설정되며, 지정된 시간에 쿠키가 만료됩니다. 위의 예제에서 <code>expires</code>는 10초 후로 설정되었기 때문에, 이 쿠키는 10초 후에 만료됩니다.</p>
+</li>
+<li>
+<p><strong><code>httpOnly: true</code></strong>: 이 옵션을 사용하면 클라이언트 측 JavaScript에서 쿠키에 접근할 수 없도록 설정됩니다. 이를 통해 보안이 강화됩니다. 예를 들어, XSS(교차 사이트 스크립팅) 공격으로부터 쿠키를 보호할 수 있습니다.</p>
+</li>
+</ul>
+<h3 id="4-사용-예시">4. <strong>사용 예시</strong></h3>
+<p>이 코드의 전체적인 의미는, <code>&quot;nextjs-session-test&quot;</code>라는 이름의 쿠키를 현재 요청에 대해 설정하고, 그 값으로 <code>session</code> 변수를 저장한다는 것입니다. 또한, 이 쿠키는 클라이언트 측에서 접근할 수 없고(<code>httpOnly: true</code>), 설정된 시간이 지나면(10초 후) 자동으로 만료됩니다.</p>
+<hr>
+<p>그러면 세션에 저장되는 JWT 값과 쿠키값을 살펴보겠습니다.</p>
+<p>개발 서버를 돌리고 적당한 이메일을 넣고 로그인 버튼을 누르면 아래와 같이 터미널창에 표시될겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhxJrvsx7-dfcBz1JE7O-Jb6R4enAwjvZVKeWa52neV3O8bDoKonODFs9rU-JG103AnJGhcCo7TVhGNbKa9NcGRnN3VNG0BpqyaDKQyINiXydk0Fq1EiQzEOJ-8uAVvsto7h8D3fI5M8n9HYyb20qt1E0tmlL4xZlo0EJiAuQkA2crxX5JSzVDbp3tOnEU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgVKAI7q1DfmHrxA1z1Pk5IWf7TU9J6YKwInfHlAOcfufIea-Rof8i2VpSVHIEtGAiNSw3q7DAIJo6s8qAjxj3wVRq4bgWHrOwK8bOmTvXM8Js_1qZ4EpDpA0gBFmSarL1sYRf1HRsT-L_ujuZnpQ8QRWvF7bUxp-XWVgcR5oNfOksuELPXeDNzZcuIya0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">email : test@test.com
+</span></span><span class="line"><span class="cl">eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJleHBpcmVzIjoiMjAyNC0wOC0xNlQwMjowNDoxNy4wOTRaIiwiaWF0IjoxNzIzNzczODQ3LCJleHAiOjE3MjM3NzM4NTd9.0eH6JBSYpe0s-saGwX1VltgS96u8ju7xrzTikmG8-O8</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 나오는데요.</p>
+<p>터미널창에 뜬 세션 정보는 JWT입니다.</p>
+<p>이 값을 한번 확인해 볼까요?</p>
+<p>아래 홈페이지로 가서 붙혀넣기 해보시면 됩니다.</p>
+<p><a href="https://jwt.io/">jwt.io/</a></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi04EmioPf_WvtFzv2-sx0PyyIy2yfOVcfqed6Tedxzbq-YyKf46B2hqeutKmqBF01Gv5gU4Bw43IfMj1dc3tXZLNiVPuMN5gkWukxXqy1BsoL9EWgnxiD-VHOdZes4jdwZ0zbWp_v3Cs_OshV12EtUXzMz4W0huNXyQQRjxX3u2LmGVdZSUfjh-ctfJDw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 JWT 디코드 값에 우리가 입력한 이메일값이 잘 보입니다.</p>
+<p>그러면 로그인 후에 pages.tsx 파일에서 보면 세션을 화면에 보여주는 코드가 있는데요.</p>
+<p>바로 getSession() 함수입니다.</p>
+<p>이 함수로 &rsquo;lib.ts&rsquo; 파일에 구현해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">getSession() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">cookies</span><span class="p">().</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;nextjs-session-test&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">)</span> <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">await</span> <span class="nx">decrypt</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 아주 간단한데요.</p>
+<p>Next.js에서 제공해 주는 cookies 함수의 get 메서드로 우리가 저장한 쿠키값을 가져오는 겁니다.</p>
+<p>그리고 쿠키값을 decrypt 함수를 통해 디코드해서 리턴해 줍니다.</p>
+<p>decrypt 함수를 구현해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">decrypt</span><span class="p">(</span><span class="nx">input</span>: <span class="kt">string</span><span class="p">)</span><span class="o">:</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">any</span><span class="p">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">payload</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">jwtVerify</span><span class="p">(</span><span class="nx">input</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">algorithms</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;HS256&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">payload</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>역시나 &lsquo;jose&rsquo; 패키지읭 jwtVerify 함수를 사용했습니다.</p>
+<p>이제 메인 화면에 쿠키에서 저장한 후 불러온 세션값이 보이는거죠.</p>
+<p>이제 로그아웃 함수만 구현하면 됩니다.</p>
+<p>다시 &rsquo;lib.ts&rsquo; 파일에 작성해 보겠습니다.</p>
+<p>로그아웃은 세션 쿠키를 삭제하면 되는건데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">logout() {</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Delete the session
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">cookies</span><span class="p">().</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;nextjs-session-test&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">expires</span>: <span class="kt">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>역시나 Next.js 에서 제공해 주는 cookies 함수의 set 메서드로 우리가 사용하는 세션 이름에 해당하는 세션을 빈칸으로 지정해 주면 됩니다.</p>
+<p>당연히 expires는 0으로 지정해주고요.</p>
+<p>이제 브라우저에서 로그아웃 버튼을 누르면 로그아웃 될겁니다.</p>
+<hr>
+<h2 id="세션-연장하기">세션 연장하기</h2>
+<p>쿠키값의 세션 만료시간을 10초로 뒀는데요.</p>
+<p>너무 짧습니다.</p>
+<p>그래서 보통 일주일, 열흘로 시간을 지정해서 쓰는데요.</p>
+<p>여기서는 미들웨어 테스트를 위해 10초로 지정했습니다.</p>
+<p>사용자가 홈페이지를 계속 사용한다면 로그인이 유지되도록 해야하는데요.</p>
+<p>그래서 미들웨어에서 계속 세션 만료시간을 업데이트해주는 코드를 작성해 보겠습니다.</p>
+<p>그러면 유저가 10초동안 아무런 작업도 하지 않으면 로그아웃되는거고, 계속 여기 저기 돌아다니게 되면 로그인이 유지되는 로직입니다.</p>
+<p>Next.js의 미들웨어는 middleware.ts 파일을 최상위 폴더에 두면 되는데요.</p>
+<p>우리의 경우 src 폴더에 두면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">updateSession</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./lib&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">await</span> <span class="nx">updateSession</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드의 미들웨어는 단순히 &rsquo;lib.ts&rsquo; 파일에서 updateSession 함수만 실행시키고 있습니다.</p>
+<p>이제 updateSession 함수를 &rsquo;lib.ts&rsquo; 파일에 구현해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextRequest</span><span class="p">,</span> <span class="nx">NextResponse</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">updateSession</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;nextjs-session-test&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 세션 연장
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">parsed</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">decrypt</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">parsed</span><span class="p">.</span><span class="nx">expires</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">res</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">set</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;nextjs-session-test&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span>: <span class="kt">await</span> <span class="nx">encrypt</span><span class="p">(</span><span class="nx">parsed</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">httpOnly</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">expires</span>: <span class="kt">parsed.expires</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">res</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드의 로직은 간단합니다.</p>
+<p>현재 세션의 expires 값을 현재 기준 10초 연장해서 다시 쿠키로 저장하는 코드입니다.</p>
+<p>이제 완료됐으니 다시 테스트해보시면 여기 저기 클릭했으면 즉, Next.js에 Request를 보냈으면 미들웨어가 작동해서 세션이 10초 연장될겁니다.</p>
+<p>10초 연장되면 로그아웃이 되지 않는거죠.</p>
+<p>테스트를 위해 새로고침을 계속 해보시면 화면의 expires 시간값이 계속 현재 기준의 시간으로 변하는 걸 볼 수 있습니다.</p>
+<hr>
+<h2 id="맺음말">맺음말</h2>
+<p>지금까지 Next.js의 로그인 세션에 대해 NextAuth 도움없이 구현해 봤는데요.</p>
+<p>다음 시간에는 Cloudflare D1 DB를 이용해서 실제 유저 가입과 로그인 구현에 도전해 보겠습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/session/" role="button">session</a>
+        <a class="btn btn-light" href="/tags/auth/" role="button">auth</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-25-tutorial-react-router-v-7-user-auth/">React Router V7 유저 Auth(로그인) 구현하기</a></h2>
+                  <p>Remix V3인 React Router V7을 이용해서 가장 기본적인 유저 Auth 즉, 로그인(로그아웃)을 구현해 보겠습니다.</p>
+                  <p>
+  <small>December 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-19-nextjs-supabase-tutorial-8-send-otp-number-and-login-with-otp/">Next.js 15, Supabase 강좌 8편. 이메일로 OTP를 보내서 로그인 구현하기</a></h2>
+                  <p>Next.js와 Supabase를 이용해서 이메일로 OTP 숫자를 보내서 로그인하는 방법을 구현해 봅시다.</p>
+                  <p>
+  <small>January 19, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

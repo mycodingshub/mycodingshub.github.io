@@ -1,0 +1,881 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>NextAuth 사용법 3편 - Login, Logout 구현하기</title>
+<meta name="description" content="NextAuth 사용법 3편 - Login, Logout 구현하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-06-03-nextauth-nextjs-signin-signout-howto/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="NextAuth 사용법 3편 - Login, Logout 구현하기" />
+<meta property="og:description" content="NextAuth 사용법 3편 - Login, Logout 구현하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-06-03-nextauth-nextjs-signin-signout-howto/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-06-03T02:07:16Z" />
+<meta property="article:modified_time" content="2023-06-03T02:07:16Z" />
+<meta property="article:tag" content="nextauth" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="login" />
+<meta property="article:tag" content="logout" />
+<meta property="article:tag" content="signin" />
+<meta property="article:tag" content="signout" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="NextAuth 사용법 3편 - Login, Logout 구현하기" />
+<meta name="twitter:description" content="NextAuth 사용법 3편 - Login, Logout 구현하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"NextAuth 사용법 3편 - Login, Logout 구현하기\"",
+  "description": "\"NextAuth 사용법 3편 - Login, Logout 구현하기\"",
+  "datePublished": "\"2023-06-03T02:07:16Z\"",
+  "dateModified": "\"2023-06-03T02:07:16Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-06-03-nextauth-nextjs-signin-signout-howto/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>NextAuth 사용법 3편 - Login, Logout 구현하기</h1>
+        <p>
+  <small>June 3, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>NextAuth 사용법 3번째 시간입니다.</p>
+<p>지난 시간에는 Prisma 세팅을 끝냈었죠?</p>
+<p>이번에는 본격적인 풀 스택 로그인에 대해 알아보겠습니다.</p>
+<hr>
+<h2 id="nextjs-api-로직-만들기">Next.js API 로직 만들기</h2>
+<p>우리가 만드는 Next.js 앱에서 내부 API 호출을 이용하려면 Next.js에서 제공하는 API 기능을 이용하면 됩니다.</p>
+<p>app/api 폴더 밑에 우리가 원하는 API를 만들 수 있습니다.</p>
+<p>로그인하기 위해서는 사용자가 DB에 있어야 하니까 먼저 가입하기(SignUp) 로직을 만들어 보도록 하겠습니다.</p>
+<p>app/api 폴더 밑에 user 폴더를 만들고, 그 밑에 route.ts 파일을 만듭시다.</p>
+<p>Next.js 13 버전의 규칙상 API 파일은 route.js 이름이어야 합니다.</p>
+<p>결론적으로 &ldquo;https://localhost:3000/api/user&rdquo; 이 주소가 바로 우리가 만들려고 하는 가입하기(SignUp) API 주소가 됩니다.</p>
+<p>이제 코드를 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/user/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">prisma</span> <span class="nx">from</span> <span class="s1">&#39;@/app/lib/prisma&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">RequestBody</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">password</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">POST</span><span class="p">(</span><span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">body</span><span class="o">:</span> <span class="nx">RequestBody</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">name</span><span class="o">:</span> <span class="nx">body</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span><span class="o">:</span> <span class="nx">body</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span><span class="o">:</span> <span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">password</span><span class="p">,</span> <span class="p">...</span><span class="nx">result</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">user</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">result</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>POST method를 사용하는 전형적인 API인데요.</p>
+<p>prisma를 예전 시간에 만든 lib/prisma 객체에서 가져오고 있습니다.</p>
+<p>우리가 POST 방식으로 받으려는 건 바로 body 부분인데요.</p>
+<p>request.json() 형식으로 body 부분을 추출할 수 있습니다.</p>
+<p>그러고 prisma.user.create 명령어로 prisma를 이용해서 DB에 User 테이블에 데이터를 넣습니다.</p>
+<p>prisma.user.create는 성공하면 방금 만들었던 객체를 반환하는데요.</p>
+<p>그걸 user에 저장했습니다. 그러고 나서 user 객체에서 password 부분을 제외하고 나머지 부분만 최종적으로 Response 해주는 로직인데요.</p>
+<p>여기서 우리가 하면 안 되는 게 있습니다.</p>
+<p>바로 password를 그냥 그대로 저장했는데요.</p>
+<p>사용자의 password를 그냥 저장하는 거는 상당히 위험합니다.</p>
+<p>그래서 사용하는 방식이 해시를 이용해서 암호화하는 건데요.</p>
+<p>자바스크립트에서는 bcrypt 패키지가 가장 많이 쓰입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install bcrypt</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 코드를 다시 바꿔 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/user/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">prisma</span> <span class="nx">from</span> <span class="s1">&#39;@/app/lib/prisma&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="nx">as</span> <span class="nx">bcrypt</span> <span class="nx">from</span> <span class="s1">&#39;bcrypt&#39;</span> <span class="c1">// 바뀐 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">RequestBody</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">password</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">POST</span><span class="p">(</span><span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">body</span><span class="o">:</span> <span class="nx">RequestBody</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">name</span><span class="o">:</span> <span class="nx">body</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span><span class="o">:</span> <span class="nx">body</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span><span class="o">:</span> <span class="kr">await</span> <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="c1">// 바뀐 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">password</span><span class="p">,</span> <span class="p">...</span><span class="nx">result</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">user</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">result</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>prisma를 이용해서 password를 저장할 때 bcrypt.hash를 이용해서 password를 암호화해서 저장했습니다.</p>
+<p>이제 이 API를 테스트해 볼까요?</p>
+<p>개발 서버(npm run dev)는 계속 돌리고 있다고 가정하고, POSTMAN이나 Insomnia 같은 API 테스트 툴을 열어서 테스트해 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgWso5l25bYANeQ8-3Km0zMndiIJKxTSTJasXqIDjCucnWClCikZM880AfKvZTZOSiX38yMLUiWr-m3I3Dk34aXGpw02UMvfeCum9KagRJZmieolv90nx8aKpbahZqz445UYuYlvyJBH7YsxXautQ_P97M_wstGEr977r3jBZ2FZFfYmTgT3dh73cAK"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Insomnia에서 POST 방식으로 가입 로직을 실행시켰습니다.</p>
+<p>당연히 API 주소는 &lsquo;http://localhost:3000/api/user&rsquo;입니다.</p>
+<p>JSON 형태로 DB 저장에 필요한 name, email, password를 전달했습니다.</p>
+<p>성공하면 그림의 오른쪽처럼 password를 제외한 user 정보가 리턴됩니다.</p>
+<p>잘 작동하고 있네요.</p>
+<p>그럼 Prisma DB에는 어떻게 저장되었을까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgxQEC5LS7Cc0xLGAbEf_6jY0zVpkCRbIyclJmgVdv21tYiBsmMOZNqlivgbxipFosc9iTHqpFGZZ7SHiX8VJ4kFk1jL58OYglQq0y8esqjHg3o2URNcW0eFRif5omNZLvrXrlxMuQpLwRvEyhuKNiAOKteLBYWjI9dVdiVHkj-sfsNB4Iidrz4fHxG"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 password가 이상한 문자열로 해쉬 된 상태로 잘 저장되었네요.</p>
+<p>가입하기(SignUp) 로직은 성공입니다.</p>
+<hr>
+<h2 id="로그인login-signin-로직-만들기">로그인(LogIn, SignIn) 로직 만들기</h2>
+<p>가입하기 API를 만들었으니까 로그인 로직도 만들어 보겠습니다.</p>
+<p>app/api 폴더 밑에 login 폴더를 만들고 그 밑에는 당연히 route.ts 파일을 만듭시다.</p>
+<p>로그인은 영어로 LogIn이라고 쓸 수 도 있습니다.</p>
+<p>근데 NextAuth에서는 SignIn이라고 부르고 있고요.</p>
+<p>로그아웃을 SignOut이라고 부르고 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/login/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">prisma</span> <span class="nx">from</span> <span class="s1">&#39;@/app/lib/prisma&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="nx">as</span> <span class="nx">bcrypt</span> <span class="nx">from</span> <span class="s1">&#39;bcrypt&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">RequestBody</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">username</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">password</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">POST</span><span class="p">(</span><span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">body</span><span class="o">:</span> <span class="nx">RequestBody</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">prisma</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">findFirst</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">where</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">email</span><span class="o">:</span> <span class="nx">body</span><span class="p">.</span><span class="nx">username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">user</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="kr">await</span> <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span> <span class="nx">user</span><span class="p">.</span><span class="nx">password</span><span class="p">)))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">password</span><span class="p">,</span> <span class="p">...</span><span class="nx">userWithoutPass</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">user</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">userWithoutPass</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="kc">null</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>로그인 로직도 POST method를 사용합니다.</p>
+<p>로그인 로직은 HTML의 Form에서 username부분과 password 부분을 불러와 그걸 DB에 있는 username과 password와 비교해서,</p>
+<p>맞으면 user 정보를 리턴하고 틀리면 &rsquo;null&rsquo;을 리턴하는 로직입니다.</p>
+<p>Prisma 부분에서는 findFirst 명령어를 사용했습니다.</p>
+<p>where 부분에 email을 넣으면 해당 이메일에 해당하는 user 정보 중 첫 번째를 찾게 되는데요.</p>
+<p>그러고 user에서 찾아온 password를 HTML 폼에서 넣은 password를 비교하는 로직은 bcrypt.compare 명령어를 사용했습니다.</p>
+<p>이러면 절대 사용자의 password를 알아볼 필요 없이 password가 맞는지 틀렸는지 알 수 있습니다.</p>
+<p>마지막으로 마찬가지로 password 부분만 제외하고 나머지 user 부분만 돌려주고 있습니다.</p>
+<p>이제 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhFil6gj759CA4DEfUHf268BNw19Ij5xL4b-IqBmAnLgKYw8Fxms6lV_dhkbOHtT82HhfSDP4_mbNVkPPwMzUAQIQcJDx33d_YeBA4ig-05sSw1evLPsEVhw-Wv5Il6NvC-SF3LXFk57E_xFg9An8pxLHY3RlLFCPZPQovNetyOeTZJEF3WVW40fUiA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 username과 password를 제대로 입력하면 로그인이 성공하고 있고,</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiQzw-n9JYqGcWsGUM03ntP4Myg4hhePG0FdQD25OejYRpB_SMMfqGbvSy6RoxLUorMB_UybmvtNHAvJpaUq6moT-cCG2hOW8L21CHn-FmD07o8Gto6KgXYkxn1gQ3tBecQrSBIdQlK_zye1Mx9rh4GXOGQzCkqfIaSYLWyGr738Y4BBzJb94aoGEBG"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림처럼 password를 틀리게 입력하면 &rsquo;null&rsquo;이 리턴되고 있습니다.</p>
+<p>우리가 만든 로그인 로직이 아주 잘 작동하고 있네요.</p>
+<hr>
+<h2 id="로그인-api를-nextauth에-적용하기">로그인 API를 NextAuth에 적용하기</h2>
+<p>이제 우리가 만든 로그인 API 로직을 NextAuth에 적용해야 하는데요.</p>
+<p>app/api/auth/[&hellip;nextauth]/route.ts 파일을 다시 열어서 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/api/auth/[...nextauth]/route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">NextAuth</span> <span class="nx">from</span> <span class="s1">&#39;next-auth/next&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">CredentialsProvider</span> <span class="nx">from</span> <span class="s1">&#39;next-auth/providers/credentials&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="nx">NextAuth</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">CredentialsProvider</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// The name to display on the sign in form (e.g. &#34;Sign in with...&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Credentials&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// `credentials` is used to generate a form on the sign in page.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// You can specify which fields should be submitted, by adding keys to the `credentials` object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// e.g. domain, username, password, 2FA token, etc.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// You can pass any HTML attribute to the &lt;input&gt; tag through the object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">credentials</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">username</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;이메일&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">placeholder</span><span class="o">:</span> <span class="s1">&#39;이메일 주소 입력 요망&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">password</span><span class="o">:</span> <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;비밀번호&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;password&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">async</span> <span class="nx">authorize</span><span class="p">(</span><span class="nx">credentials</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NEXTAUTH_URL</span><span class="si">}</span><span class="sb">/api/login`</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">username</span><span class="o">:</span> <span class="nx">credentials</span><span class="o">?</span><span class="p">.</span><span class="nx">username</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">password</span><span class="o">:</span> <span class="nx">credentials</span><span class="o">?</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// Any object returned will be saved in `user` property of the JWT
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="k">return</span> <span class="nx">user</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// If you return null then an error will be displayed advising the user to check their details.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="k">return</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="c1">// You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">GET</span><span class="p">,</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">POST</span> <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리가 눈여겨봐야 할 부분은 authorize 함수인데요.</p>
+<p>이 함수에서는 아까 만들었던 로그인 API를 fetch를 실행합니다.</p>
+<p>그리고 실행 결과를 user 객체로 저장하고 그걸 리턴하는데요.</p>
+<p>NextAuth는 여기서 &rsquo;null&rsquo;이 아닌 걸 리턴하게 되면 로그인이 되었다고 보는 겁니다.</p>
+<p>그럼 실제로 Next.js 앱에서 로그인을 수행해 볼까요?</p>
+<p>여기서 필요한 게 바로 로그인 버튼인데요.</p>
+<p>한번 만들어 볼까요?</p>
+<p>app/components 폴더를 만들고 그 밑에 SignInButton.tsx 파일을 만듭시다.</p>
+<p>만드는 김에 로그아웃 버튼도 옆에다 만들어 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/components/SignInButton.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;use client&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">signIn</span><span class="p">,</span> <span class="nx">signOut</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;next-auth/react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">SignInButton</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;space-x-10&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;rounded-xl border bg-yellow-300 px-12 py-4&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">signIn</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">LogIn</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;rounded-xl border bg-red-300 px-12 py-4&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">signOut</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Log</span> <span class="nx">Out</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">SignInButton</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>첫 번째 줄부터 이상하죠.</p>
+<p>왜냐하면, NextAuth는 Client 사이드 로직이라 별도 컴포넌트를 만들고 그 컴포넌트에는 &lsquo;use client&rsquo;라고 명시해야 합니다.</p>
+<p>바로 Next.js 13 버전의 특징인 컴포넌트 전체가 서버 사이드 컴포넌트라는 거죠.</p>
+<p>이제 이걸 app/page.tsx 파일에 넣어 보도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">SignInButton</span> <span class="nx">from</span> <span class="s2">&#34;./components/SignInButton&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex min-h-screen flex-col items-center justify-between p-24&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;text-4xl font-semibold&#34;</span><span class="o">&gt;</span><span class="nx">NextAuth</span> <span class="nx">Tutorial</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">SignInButton</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgtAdNZQIDPSY2KH65uWG9rOdrHnm2i_9U4x8TPh9cLJUtbbCw5FYGuo65VxvH3emmEwIHwqgnKb4jDb8wT3yaP1zWTF8kNKTY6lTulXD6ToNW1bi6Eyl8yz8N2UCA_5Y-JoZYE-NDDcor7nQEmXA1IOzoeipyYV1ah40ph8q5xklVKtoUDgkLiRPai"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>로그인 버튼과 로그아웃 버튼이 나란히 잘 보이네요.</p>
+<p>NextAuth에서는 signIn 버튼과 signOut 함수를 제공해 주는데요.</p>
+<p>signIn 함수를 호출하면 [&hellip;nextauth]/route.ts 파일에 있는 authorize 함수가 작동하게 됩니다.</p>
+<p>signOut 함수는 단순하게 로그아웃시키는 함수고요.</p>
+<p>버튼을 클릭해 볼까요?</p>
+<p>그럼 NextAuth가 제공해 주는 Login Form이 나오고 로그인 로직이 성공하면 다시 원래 클릭했던 페이지로 돌아옵니다.</p>
+<p>그럼, 로그인이 성공했는지 안 성공했는지 알 수 있는 방법이 없나요?</p>
+<p>NextAuth에서는 그걸 세션(session)이란 방식으로 제공해 줍니다.</p>
+<p>session은 브라우저의 쿠키에 저장되는데요.</p>
+<p>NextAuth 자체가 클라이언트 사이드 세션인 겁니다.</p>
+<hr>
+<h2 id="nextjs-앱-전체에-nextauth-세션-적용하기">Next.js 앱 전체에 NextAuth 세션 적용하기</h2>
+<p>초장기 React 공부할 때 배운 HighOrder Componet라는 걸 여기서 쓸 건데요.</p>
+<p>NextAuth에서는 그걸 SessionProvider라고 합니다.</p>
+<p>이제 이걸 app/layout.tsx 파일에 적용해 볼까요?</p>
+<p>먼저, app/components 폴더에 Providers.tsx 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/components/Providers.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">SessionProvider</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next-auth/react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">ReactNode</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Props</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="o">:</span> <span class="nx">ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Providers</span><span class="p">({</span> <span class="nx">children</span> <span class="p">}</span><span class="o">:</span> <span class="nx">Props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">SessionProvider</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/SessionProvider&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">Providers</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그러고 이걸 다시 layout.tsx 파일에 적용해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/layout.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Providers</span> <span class="nx">from</span> <span class="s2">&#34;./components/Providers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="s2">&#34;./globals.css&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Inter</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next/font/google&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">inter</span> <span class="o">=</span> <span class="nx">Inter</span><span class="p">({</span> <span class="nx">subsets</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;latin&#34;</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">metadata</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;Create Next App&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">description</span><span class="o">:</span> <span class="s2">&#34;Generated by create next app&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;en&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">body</span> <span class="nx">className</span><span class="o">=</span><span class="p">{</span><span class="nx">inter</span><span class="p">.</span><span class="nx">className</span><span class="p">}</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">Providers</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/Providers&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/html&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 NextAuth의 SessionProvider를 쓸 준비가 되었습니다.</p>
+<hr>
+<h2 id="signin-버튼-바꾸기">SignIn 버튼 바꾸기</h2>
+<p>로그인이 되었다면 로그인 버튼 말고 로그아웃 버튼이 보여야 하고,</p>
+<p>로그아웃된 상태면 로그인 버튼이 보여야 하는 게 정상이잖아요.</p>
+<p>이걸 구현해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">//app/components/SignInButton.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">signIn</span><span class="p">,</span> <span class="nx">signOut</span><span class="p">,</span> <span class="nx">useSession</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next-auth/react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">SignInButton</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">session</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useSession</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">session</span> <span class="o">&amp;&amp;</span> <span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;px-12 py-4 border rounded-xl bg-red-300&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">signOut</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">session</span><span class="p">.</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span><span class="nx">님</span> <span class="nx">Log</span> <span class="nx">Out</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;px-12 py-4 border rounded-xl bg-yellow-300&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">signIn</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">LogIn</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">SignInButton</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>NextAuth는 클라이언트에서 사용할 수 있는 useSession 훅을 제공해 줍니다.</p>
+<p>useSession훅은 data 값을 리턴해주는데요.</p>
+<p>잠깐, 우리는 <code>{data: session}</code>이라고 적으면 ES6 문법에 의해 그 이름을 session이라고 바꿀 수 있습니다.</p>
+<p>그러고 session이 있을 때는 로그아웃 버튼을 보여주고,</p>
+<p>session이 없을 때는 로그인 버튼을 불러주게끔 UI 로직을 변경했습니다.</p>
+<p>결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj96HHJIg78vQ6FyMneH6ys41MUnSatmcC8eX7xTYr3rphBldRkZLUu2mzDICjo_DEPiJrNjtN1bbIsvJ6FBk4h3vfAvXNuawMOvk-ghDaLOVnC_04n02KwT6VEJVZb-crHGcQ9lMjCbk8u11dTZ1a6agqSYQuM2orhNGBO9NkeeD-BYUGHhHiZ0jdi"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhgqWYVuISOW-hGNk4ofd_yzCrNKOB5L3VNtQi50o_jpOrptTfUEBy6Wnu7ohO67PNECM6Ds_7jPoMf08Va9NNdvaaXCuevLDcNul8bk9y0KUJLzYNM-cO1OXupXf-Q6O-uip_3CkxcRCeHGCJis9Hl4tL-ofTvPfuGBifbdFK3vKpAv-ZCwJR8IS6Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 실제 로그인, 로그아웃해 보면 조금은 화면 전환이 느리면서 로그인, 로그아웃 버튼이 번갈아 보일 겁니다.</p>
+<hr>
+<p>지금까지 NextAuth를 이용해서 3편에 걸쳐 유저네임과 패스워드로 로그인하는 방법에 대해 알아봤는데요.</p>
+<p>정말 간단하게 구현할 수 있어 좋았습니다.</p>
+<p>그래서 NextAuth가 가장 유명한 게 아닐까요?</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/nextauth/" role="button">nextauth</a>
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/login/" role="button">login</a>
+        <a class="btn btn-light" href="/tags/logout/" role="button">logout</a>
+        <a class="btn btn-light" href="/tags/signin/" role="button">signin</a>
+        <a class="btn btn-light" href="/tags/signout/" role="button">signout</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-07-how-to-nextjs-nextauth-custom-login-page/">NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</a></h2>
+                  <p>NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</p>
+                  <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-08-how-to-nextjs-nextauth-naver-login/">NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</a></h2>
+                  <p>NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</p>
+                  <p>
+  <small>June 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>2&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-07-how-to-nextjs-nextauth-with-kakao-login/">NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</a></h2>
+                  <p>NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</p>
+                  <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

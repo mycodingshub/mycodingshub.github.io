@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 라우트 핸들러의 Prop Drilling, &#39;Node.js의 React Context&#39;로 해결하기</title>
+<meta name="description" content="서버 사이드 함수에서 반복되는 매개변수 전달, 즉 &lsquo;prop drilling&rsquo;의 고통을 Node.js의 Async Local Storage로 해결하는 방법을 알아봅니다. React Context처럼 동작하는 이 강력한 기능을 마스터해 보세요." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-07-13-solving-prop-drilling-in-nextjs-with-async-local-storage/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 라우트 핸들러의 Prop Drilling, &#39;Node.js의 React Context&#39;로 해결하기" />
+<meta property="og:description" content="서버 사이드 함수에서 반복되는 매개변수 전달, 즉 &lsquo;prop drilling&rsquo;의 고통을 Node.js의 Async Local Storage로 해결하는 방법을 알아봅니다. React Context처럼 동작하는 이 강력한 기능을 마스터해 보세요." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-07-13-solving-prop-drilling-in-nextjs-with-async-local-storage/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-07-12T10:32:04Z" />
+<meta property="article:modified_time" content="2025-07-12T10:32:04Z" />
+<meta property="article:tag" content="Async Local Storage" />
+<meta property="article:tag" content="Next.js" />
+<meta property="article:tag" content="prop drilling" />
+<meta property="article:tag" content="Node.js" />
+<meta property="article:tag" content="Route Handler" />
+<meta property="article:tag" content="상태 관리" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 라우트 핸들러의 Prop Drilling, &#39;Node.js의 React Context&#39;로 해결하기" />
+<meta name="twitter:description" content="서버 사이드 함수에서 반복되는 매개변수 전달, 즉 &lsquo;prop drilling&rsquo;의 고통을 Node.js의 Async Local Storage로 해결하는 방법을 알아봅니다. React Context처럼 동작하는 이 강력한 기능을 마스터해 보세요." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 라우트 핸들러의 Prop Drilling, 'Node.js의 React Context'로 해결하기\"",
+  "description": "\"서버 사이드 함수에서 반복되는 매개변수 전달, 즉 \\u0026lsquo;prop drilling\\u0026rsquo;의 고통을 Node.js의 Async Local Storage로 해결하는 방법을 알아봅니다. React Context처럼 동작하는 이 강력한 기능을 마스터해 보세요.\"",
+  "datePublished": "\"2025-07-12T10:32:04Z\"",
+  "dateModified": "\"2025-07-12T10:32:04Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-07-13-solving-prop-drilling-in-nextjs-with-async-local-storage/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 라우트 핸들러의 Prop Drilling, &#39;Node.js의 React Context&#39;로 해결하기</h1>
+        <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>비공개 API 엔드포인트를 만들 때, 핸들러는 다른 작업을 수행하기 전에 요청이 인증된 사용자로부터 왔는지 확인해야 합니다.<br /><br />
+보통 요청을 확인하는 함수는 요청이 인증된 경우 &lsquo;사용자(user)&rsquo; 객체를 반환하고, 이 사용자 객체는 핸들러 내의 다른 함수들에서 사용될 수 있습니다.<br /><br />
+그런데 핸들러 안에 여러 함수가 중첩되어 있다면 어떨까요?<br /><br />
+각 함수에 이 &lsquo;user&rsquo; 객체를 매개변수로 계속해서 전달해야 합니다.<br /><br />
+심지어 중간에 있는 함수는 이 객체를 직접 사용하지 않고, 단지 하위 함수에 전달하기 위해 매개변수로 받기만 하는 경우도 생깁니다.<br /><br />
+우리가 React에서 흔히 겪는 &lsquo;prop drilling&rsquo; 문제가 서버 사이드 코드에서도 똑같이 발생하는 것이죠.<br /><br />
+하나의 객체만으로도 이렇게 번거로운데, 여러 객체를 전달해야 한다면 코드는 금세 지저분해질 것입니다.<br /><br />
+바로 이때 &lsquo;Async Local Storage&rsquo;가 구원투수처럼 등장합니다.<br /><br />
+이것은 마치 &lsquo;Node.js 함수들을 위한 React Context&rsquo;와도 같습니다.<br /><br />
+동일한 실행 컨텍스트 내의 모든 함수, 콜백, 프로미스 체인에서 접근할 수 있는 &lsquo;저장소&rsquo;에 데이터를 보관할 수 있게 해줍니다.<br /><br /></p>
+<h2 id="async-local-storage-사용법">Async Local Storage 사용법<br /></h2>
+<p>사용법은 비교적 간단합니다.<br /><br />
+먼저, 새로운 &lsquo;Async Local Storage&rsquo; 인스턴스를 생성하는 것부터 시작합니다.<br /><br /></p>
+<h3 id="1단계-컨텍스트-생성하기">1단계: 컨텍스트 생성하기<br /></h3>
+<p><code>user</code> 객체를 저장할 컨텍스트를 만들어 보겠습니다.<br /><br />
+<code>user-context.ts</code> 같은 파일을 만들어 관리하는 것이 좋습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// user-context.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">AsyncLocalStorage</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;async_hooks&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">User</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./auth&#39;</span> <span class="c1">// User 타입은 별도로 정의되어 있다고 가정합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// &#39;user&#39; 객체를 담을 저장소의 타입을 지정하여 새 인스턴스를 생성합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">userContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AsyncLocalStorage</span><span class="o">&lt;</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">user</span>: <span class="kt">User</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">&gt;</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 컨텍스트 저장소에서 값을 가져오는 헬퍼 함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">getUserContext</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">store</span> <span class="o">=</span> <span class="nx">userContext</span><span class="p">.</span><span class="nx">getStore</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">store</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 컨텍스트가 없는 상태에서 호출되면 에러를 발생시켜 실수를 방지합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;User context not found. The calling function must be wrapped in a userContext.run() block.&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">store</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 <code>getUserContext</code>라는 헬퍼 함수를 만든 것이 중요합니다.<br /><br />
+이 함수는 단순히 저장소의 값을 가져오는 것을 넘어, 만약 값이 없을 경우(즉, 컨텍스트 외부에서 호출된 경우) 명확한 에러를 발생시켜 개발자의 실수를 조기에 발견할 수 있도록 도와줍니다.<br /><br /></p>
+<h3 id="2단계-컨텍스트-실행하기">2단계: 컨텍스트 실행하기<br /></h3>
+<p>이제 Next.js 라우트 핸들러에서 이 컨텍스트를 사용해 보겠습니다.<br /><br />
+핵심은 <code>userContext.run()</code> 블록으로 사용자 객체에 접근해야 하는 함수들을 감싸주는 것입니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// route.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">auth</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./auth&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getProfile</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./get-profile&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">userContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./user-context&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">GET</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 1. 먼저 인증을 통해 로그인한 사용자 정보를 가져옵니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">loggedInUser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">auth</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 2. userContext.run()을 사용하여 컨텍스트를 설정하고 함수를 실행합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">userContext</span><span class="p">.</span><span class="nx">run</span><span class="p">({</span> <span class="nx">user</span>: <span class="kt">loggedInUser</span> <span class="p">},</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 이 콜백 함수 내부에서 호출되는 모든 함수는 &#39;loggedInUser&#39;에 접근할 수 있습니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">getProfile</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Response</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>userContext.run()</code>의 첫 번째 인자로 우리가 저장하고 싶은 값(<code>{ user: loggedInUser }</code>)을 전달하고, 두 번째 인자로 실행할 함수를 전달합니다.<br /><br />
+이제 <code>getProfile()</code> 함수와 그 안에서 호출되는 모든 하위 함수들은 매개변수 없이도 <code>loggedInUser</code> 정보에 접근할 수 있는 &lsquo;마법의 통로&rsquo;를 갖게 되었습니다.<br /><br /></p>
+<h3 id="3단계-컨텍스트에서-값-사용하기">3단계: 컨텍스트에서 값 사용하기<br /></h3>
+<p>이제 <code>getProfile</code> 함수와, 그 안에서 호출되는 <code>getTransactions</code> 함수가 어떻게 사용자 객체에 접근하는지 살펴보겠습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// get-profile.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">getTransactions</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./get-transactions&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getUserContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./user-context&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">Profile</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span>: <span class="kt">string</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">getProfile</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 매개변수로 user를 받지 않고, 컨텍스트에서 직접 가져옵니다!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="p">{</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">getUserContext</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">id</span><span class="o">:</span> <span class="sb">`</span><span class="si">${</span><span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">-profile`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span>: <span class="kt">user.name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span>: <span class="kt">user.email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">transactions</span>: <span class="kt">await</span> <span class="nx">getTransactions</span><span class="p">(),</span> <span class="c1">// getTransactions에도 user를 넘겨줄 필요가 없습니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// get-transactions.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">getUserContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./user-context&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">Transaction</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">amount</span>: <span class="kt">number</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">date</span>: <span class="kt">string</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">getTransactions</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 이 함수 역시 매개변수 없이 컨텍스트에서 user 정보를 가져옵니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="p">{</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">getUserContext</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// user.id를 사용해 데이터베이스에서 거래 내역을 조회합니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">return</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">amount</span>: <span class="kt">100</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">date</span><span class="o">:</span> <span class="s1">&#39;2021-01-01&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>보시다시피, <code>getProfile</code>과 <code>getTransactions</code> 함수의 매개변수 목록이 아주 깔끔해졌습니다.<br /><br />
+더 이상 중간 다리 역할을 하는 불필요한 매개변수 전달이 사라졌고, 각 함수는 자신이 직접 필요로 하는 정보만 컨텍스트로부터 능동적으로 가져옵니다.<br /><br />
+이는 코드의 가독성과 유지보수성을 극적으로 향상시킵니다.<br /><br /></p>
+<h2 id="아쉬운-점-컴파일-타임-에러-체크의-부재">아쉬운 점: 컴파일 타임 에러 체크의 부재<br /></h2>
+<p>이 접근 방식은 정말 마음에 듭니다.<br /><br />
+하지만 한 가지 아쉬운 점은, 개발자가 실수로 <code>userContext.run()</code> 블록으로 감싸는 것을 잊었을 때 이를 잡아줄 린터(linter)가 없다는 것입니다.<br /><br />
+물론 우리가 만든 <code>getUserContext</code> 헬퍼 함수 덕분에 런타임에는 에러가 발생하여 문제를 인지할 수 있지만, 만약 컴파일 타임에 이 실수를 잡을 수 있다면 훨씬 더 좋을 것입니다.<br /><br /></p>
+<h2 id="결론">결론<br /></h2>
+<p>&lsquo;Async Local Storage&rsquo;는 서버 사이드 코드, 특히 비동기 작업이 많은 Node.js 환경에서 &lsquo;prop drilling&rsquo;이라는 고질적인 문제를 해결하는 매우 강력하고 우아한 해결책입니다.<br /><br />
+React 개발자라면 &lsquo;서버용 Context API&rsquo;라고 생각하면 그 개념을 쉽게 이해할 수 있을 것입니다.<br /><br />
+함수의 인자가 너무 많아져 코드 파악이 어려워지고 있다면, 이 패턴을 도입하여 코드의 복잡도를 낮추고 가독성을 높여보는 것은 어떨까요.<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/async-local-storage/" role="button">Async Local Storage</a>
+        <a class="btn btn-light" href="/tags/next.js/" role="button">Next.js</a>
+        <a class="btn btn-light" href="/tags/prop-drilling/" role="button">prop drilling</a>
+        <a class="btn btn-light" href="/tags/node.js/" role="button">Node.js</a>
+        <a class="btn btn-light" href="/tags/route-handler/" role="button">Route Handler</a>
+        <a class="btn btn-light" href="/tags/%EC%83%81%ED%83%9C-%EA%B4%80%EB%A6%AC/" role="button">상태 관리</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-13-nesting-multiple-async-local-storage/">다중 Async Local Storage - React Context처럼 중첩하기</a></h2>
+                  <p>단일 컨텍스트를 넘어, 여러 개의 Async Local Storage를 중첩하여 사용하는 방법을 알아봅니다. 재귀 함수를 이용한 영리한 트릭으로, 서버 사이드 코드의 모듈성을 극대화하고 prop drilling을 완벽하게 해결해 보세요.</p>
+                  <p>
+  <small>July 12, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-09-15-nextjs-server-actions-vs-route-handlers/">Next.js 서버 액션과 루트 핸들러 아직도 헷갈리시나요</a></h2>
+                  <p>Next.js의 두 가지 핵심 서버 통신 방식인 서버 액션과 루트 핸들러의 차이점을 명확히 짚어보고, 언제 무엇을 사용해야 하는지에 대한 완벽한 가이드를 제시합니다.</p>
+                  <p>
+  <small>September 16, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-09-05-tanstack-db-the-future-of-state-management/">TanStack DB 완벽 가이드 상태 관리의 새로운 패러다임</a></h2>
+                  <p>TanStack DB는 프론트엔드에 데이터베이스를 가져와 상태 관리와 데이터 동기화를 통합하는 새로운 라이브러리입니다. 자동 낙관적 업데이트와 유연한 백엔드 연동을 통해 개발 경험을 혁신하는 방법을 알아봅니다.</p>
+                  <p>
+  <small>September 7, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

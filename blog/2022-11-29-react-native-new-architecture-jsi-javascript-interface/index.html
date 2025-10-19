@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기</title>
+<meta name="description" content="React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2022-11-29-react-native-new-architecture-jsi-javascript-interface/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기" />
+<meta property="og:description" content="React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2022-11-29-react-native-new-architecture-jsi-javascript-interface/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2022-11-29T10:52:32Z" />
+<meta property="article:modified_time" content="2022-11-29T10:52:32Z" />
+<meta property="article:tag" content="react native" />
+<meta property="article:tag" content="jsi" />
+<meta property="article:tag" content="javascript interface" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기" />
+<meta name="twitter:description" content="React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기\"",
+  "description": "\"React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기\"",
+  "datePublished": "\"2022-11-29T10:52:32Z\"",
+  "dateModified": "\"2022-11-29T10:52:32Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2022-11-29-react-native-new-architecture-jsi-javascript-interface/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Native 새 아키텍처인 JSI (Javascript Interface) 알아보기</h1>
+        <p>
+  <small>November 29, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhIR6Ds9AwqnVjp9U4jMAPLiWJkC10EtQCOjLP12pKsUHDVJgI7QP2UAmrVhdReDK5489C0zIOrQRw_F5ehf7K8uCYi2PSNPcoPSfUqVp9HBAZsqdmPGaspyrShgFtvDGUTRcyD4pZ-1hJNsxgLgBzF9IquH2ISTs4ErfwUvQ09TvreWBrSe-5F9HKJ=w640-h420"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>안녕하세요?</p>
+<p>오늘은 React Native가 새로운 변신을 꾀하고 있는 New Architecture인 JSI (Javascript Interface)에 대해 잠깐이나마 알아보려고 합니다.</p>
+<p>리액트 네이티브는 크로스 플랫폼, OTA 업데이트, 라이브 리 로드(Reload) 등 여러 가지 좋은 점을 다 가지고 있는데 한 가지 단점이 앱 성능에서 큰 발목을 잡고 있는데요.</p>
+<p>바로 자바스크립트와 네이티브 모듈 간 통신에 있어 브리지(Bridge)에서 과부하가 자주 걸린다는 겁니다.</p>
+<p>리액트 네이티브 코드에 모듈을 추가 확장할수록 더 과부하가 생기는데요.</p>
+<p>왜냐하면 브리지의 특성상 어쩔 수 없는 현상입니다.</p>
+<p>그럼 리액트 네이티브 아키텍처가 어떻게 구성되어서 이런 단점이 생기는지 간단히 살펴보겠습니다.</p>
+<p>먼저, 예전의 리액트 네이티브는 세 개의 쓰레드로 구성됩니다.</p>
+<ol>
+<li>
+<p>UI thread</p>
+</li>
+<li>
+<p>Shadow thread</p>
+</li>
+<li>
+<p>JS thread</p>
+</li>
+</ol>
+<p>첫 번째, UI 쓰레드는 메인 애플리케이션으로 안드로이드와 IOS에서 View를 렌더링 하는 쓰레드입니다.</p>
+<p>두 번째, Shadow 쓰레드는 백그라운드 쓰레드로 렌더링 하기 전에 Yoga 패키지를 이용하여 각 요소의 레이아웃을 계산하는 쓰레드입니다.</p>
+<p>세 번째, JS 쓰레드는 말 그대로 리액트 네이티브 로직을 담당하는 쓰레드로, 최종적으로 번들링 된 자바스크립트 코드를 실행하는 쓰레드입니다.</p>
+<p>이 세 개의 쓰레드간 통신은 직접적으로 이루어지지 않고 브리지(Bridge)를 통해 이루어지는데, 이 브리지를 통할 때 데이터가 JSON 형태로 이동되는데, 시리얼라이제이션(serialisation)과 디시리얼라이제이션(deserialisation) 같은 다소 무거운 작업을 통해 이루어집니다.</p>
+<p>브리지를 통한 JSON 형태의 데이터 전송은 불필요한 데이터 카피가 발생하고 비동기식으로 작업이 이루어져서 브리지가 혼잡해지는 걸 극복할 수 없는 치명적인 단점이 있습니다.</p>
+<p>또, 데이터 처리에 있어 강력한 타이핑(typing)을 쓰는 게 아니라 느슨한 타이핑을 써 문제가 발생할 수도 있고요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgC2FFiJGm7E-NAt7myhmbSCn2L1Tdc7Nkm15cRU8ClPbGvFRt3Qw2QI0Cp9adEspUncJdmiSj-4kSj9fH52mU0LnA4OiY8z_PNZncvt2GlSp4ts5Jx5JtgMi1SxxBCFSCeMQTnluIwI45WrM1hDtiHuNNWAhX6Z9AdjAmtub4n0CxSQwADGs1BfA9K=w640-h356"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림은 예전 아키텍처의 구성도입니다.</p>
+<p>결론적으로 현재의 리액트 네이티브 아키텍처의 문제점은,</p>
+<ol>
+<li>
+<p>자바스크립트와 네이티브 쪽이 서로 직접 연결될 수 없고, 또 비동기식 JSON 메시지에 의존하고 있습니다.</p>
+</li>
+<li>
+<p>모듈이 앱 첫 실행에 모두 로드되는데 이건 앱의 초기 구동 성능에 악영향을 끼칩니다.</p>
+</li>
+<li>
+<p>유저의 터치에 대한 반응이 우선순위를 두고 처리되지 않고 진행되어 느립니다.</p>
+</li>
+<li>
+<p>브리지가 시리얼라이제이션 돼서 느립니다.</p>
+</li>
+<li>
+<p>UI 요소에 디렉트로 JS 쓰레드가 접근할 수 없습니다.</p>
+</li>
+</ol>
+<hr />
+### 리액트 네이티브의 새 아키텍처 : JSI (Javascript Interface)
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiGDyz_r4EjylNwXZ6OdL3Bg1rhZJDm__g2BtpXUi-93ofOsBtcNb0caFGyNO_7xGsrz2ImVpiW6doZWxO22UfhG124mt2iWRJ8j-ecyVJM22HGoLNo21QUxRj7j5P46iq5TBU966FBOUWz81OqQMI18qp0joxe080_dwNz9qW70cUlQerDyqe-Fi1P=w640-h316"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>리액트 네이티브 개발팀이 새로운 아키텍처를 도입하고 있는데요.</p>
+<p>바로 JSI (JavaScript Interface)입니다.</p>
+<p>이게 어떤 건지 살펴볼까요?</p>
+<p>JSI가 가져온 가장 큰 변화는 자바스크립트와 네이티브 파트가 직접 상호 작용한다는 점입니다.</p>
+<p>즉, JS와 C++ 간에 인터페이스를 이용해서 상호 간 직접 커뮤니케이션한다는 얘기인데요.</p>
+<p>자바스크립트는 호스트 쪽 객체의 레퍼런스를 직접 가질 수 있고 호스트 쪽 메소드도 직접 호출할 수 있습니다.</p>
+<p>결론적으로 네이티브 쪽 객체를 자바스크립트 콘텍스트 안에서 사용할 수 있다는 점인데요.</p>
+<p>기존 아키텍처의 가장 큰 병목 지점이었던 게 바로 JSI로 인해 해결이 되었습니다.</p>
+<p>그리고 JSI가 상호 작용하는 네이티브 쪽은 두 가지가 있는데요.</p>
+<p>Fabric과 Turbo Modules가 있습니다.</p>
+<p>먼저, Fabric에 대해 알아보자면,</p>
+<p>Fabric는 페이스북이 C++ 언어를 이용해서 새로 만든 렌더링 시스템인데요.</p>
+<p>기존 렌더링 시스템과는 다르게 UI 매니저가 직접 Shadow Tree를 C++안에서 만들 수 있습니다.</p>
+<p>그래서 예전보다 조금은 빨라졌고요,</p>
+<p>그리고 동기식 작업과 쓰레드 세이프 방식으로 자바스크립트가 렌더러(C++)를 실행시킬 수 있습니다.</p>
+<p>JSI를 통해 자바스크립트 변수를 직접 호출할 수 있어 예전 브리지의 데이터 시리얼라이제이션이 훨씬 줄어드는 효과가 있고,</p>
+<p>또, 유저 행동에 우선순위를 두어 대응할 수 있습니다.</p>
+<p>두 번째, Turbo Modules는 레이지(lazy) 로드가 핵심인데요.</p>
+<p>예전에는 네이티브 모듈에 대한 레퍼런스가 없어 모듈을 첫 실행에 무조건 다 로드했었는데요,</p>
+<p>Turbo Modules를 사용하면 필요할 때 로드할 수 있어 전체적인 앱 반응 속도가 상당히 빨라집니다.</p>
+<p>그러면 JSI를 가능케 하는 로직이 뭘 까요?</p>
+<p>바로 페이스북 팀이 만든 Codegen 인데요.</p>
+<p>Codegen이 자바스크립트와 네이티브 사이드 쪽의 타입 체커를 자동으로 해줍니다.</p>
+<p>자바스크립트에서 타입을 정확히 지정하면 Codegen에 의해 타입 체커가 되면서 Fabric과 Turbo Modules쪽으로 메시지를 전달하는데,</p>
+<p>이때 Codegen 타입 체커에 의해 정확한 타입이 전달됩니다.</p>
+<p>그래서 새 아키텍처에서는 자바스크립트 코드에서 any 타입을 쓸 수 없습니다.</p>
+<p>결론적으로 JSI의 장점은</p>
+<ol>
+<li>
+<p>자바스크립트 코드가 네이티브 UI 요소의 레퍼런스를 가질 수 있고 메소드도 직접 호출할 수 있음.</p>
+</li>
+<li>
+<p>네이티브 코드에 직접 바인딩 되어 속도가 향상됨.</p>
+</li>
+<li>
+<p>JavaScript Core 엔진 말고 다른 엔진도 사용 가능, 실제 Hermes 엔진을 사용하고 있음.</p>
+</li>
+<li>
+<p>네이티브 모듈을 처음에 모두 다 로드하지 않고 필요할 때 로드하는 방식.</p>
+</li>
+<li>
+<p>정적 타입 체킹으로 자바스크립트와 네이티브 코드 간 호환성 강화.</p>
+</li>
+</ol>
+<p>결론적으로 JSI는 아직은 실험단계이지만 안정화되고 나면 리액트 네이티브의 속도가 비약적으로 빨라질 것으로 예상됩니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react-native/" role="button">react native</a>
+        <a class="btn btn-light" href="/tags/jsi/" role="button">jsi</a>
+        <a class="btn btn-light" href="/tags/javascript-interface/" role="button">javascript interface</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-13-react-native-12-react-navigation-guide-drawer-tab-navigation/">리액트 네이티브 강좌. 12편 - 드로어, 탭 네비게이션 그리고 중첩 네비게이션 마스터하기</a></h2>
+                  <p>React Navigation 라이브러리를 사용하여 드로어 및 탭 네비게이션을 구현하는 방법을 자세히 설명합니다. 초심자도 따라 하기 쉬운 단계별 설정부터 고급 옵션 활용까지, UI/UX를 향상시키는 다양한 팁을 제공합니다.</p>
+                  <p>
+  <small>July 13, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-13-react-native-11-stack-navigation/">리액트 네이티브 강좌. 11편 - 스택 네비게이션과 화면 간 데이터 관리</a></h2>
+                  <p>React Navigation에서 스택 네비게이션을 설정하고, 화면 간 데이터 전송 및 옵션 커스터마이징 방법을 다룹니다. navigation prop과 useNavigation Hook 사용법, 화면 간 데이터 주고받기, 그리고 네비게이터 옵션을 다이나믹하게 변경하는 방법을 배워봅시다.</p>
+                  <p>
+  <small>July 13, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>15&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-01-react-native-10-networking-data-fetching-load-state-error-handling-data-post/">리액트 네이티브 강좌. 10편 - Networking 다루기, 데이터 fetching, loading state, error handling</a></h2>
+                  <p>리액트 네이티브 앱에서의 네트워킹 기법을 다룹니다. JSON 데이터를 활용하여 앱에 데이터를 불러오고, 효과적인 에러 처리를 통해 안정성을 높이는 방법을 배워보세요.</p>
+                  <p>
+  <small>July 1, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>17&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

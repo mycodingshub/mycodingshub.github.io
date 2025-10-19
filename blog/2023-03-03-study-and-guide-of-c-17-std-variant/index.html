@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>C&#43;&#43;17 std::variant 알아보기</title>
+<meta name="description" content="c&#43;&#43;, c&#43;&#43;17, std::variant" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-03-03-study-and-guide-of-c-17-std-variant/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="C&#43;&#43;17 std::variant 알아보기" />
+<meta property="og:description" content="c&#43;&#43;, c&#43;&#43;17, std::variant" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-03-03-study-and-guide-of-c-17-std-variant/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-03-03T11:11:44Z" />
+<meta property="article:modified_time" content="2023-03-03T11:11:44Z" />
+<meta property="article:tag" content="c&#43;&#43;" />
+<meta property="article:tag" content="c&#43;&#43;17" />
+<meta property="article:tag" content="std::variant" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="C&#43;&#43;17 std::variant 알아보기" />
+<meta name="twitter:description" content="c&#43;&#43;, c&#43;&#43;17, std::variant" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"C++17 std::variant 알아보기\"",
+  "description": "\"c++, c++17, std::variant\"",
+  "datePublished": "\"2023-03-03T11:11:44Z\"",
+  "dateModified": "\"2023-03-03T11:11:44Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-03-03-study-and-guide-of-c-17-std-variant/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>C&#43;&#43;17 std::variant 알아보기</h1>
+        <p>
+  <small>March 3, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Nodejs 로 웹 프로그래밍을 주로 하면서 간혹 C++도 공부하고 있는데요.</p>
+<p>오늘은 C++17에 소개된 std::variant에 대해 알아보겠습니다.</p>
+<p>std::variant는 C++17에서 추가된 표준 라이브러리인 컨테이너 클래스 중 하나입니다.</p>
+<p>std::variant는 다른 언어에서 많이 사용되는 유니온(union)과 비슷한 기능을 제공하는데요.</p>
+<p>하지만 std::variant는 유니온(union) 보다 더 안전하고 유연한 방식입니다.</p>
+<p>std::variant는 여러 개의 타입 중 하나를 저장할 수 있으며, 저장된 값에 접근할 때는 타입 체크할 필요가 없습니다.</p>
+<p>즉, 저장된 값이 어떤 타입인지 런타임에 검사할 필요가 없는 거죠.</p>
+<p>대신 값을 가져올 때는 명시적으로 타입을 지정해야 합니다.</p>
+<hr>
+<p>지난 시간에 배운 C++17의 std::any도 하나의 컨테이너에 여러 가지 타입을 담을 수 있었는데요.</p>
+<p>C++에서 그런 방법을 제공하는 게 몇 가지 있습니다.</p>
+<ul>
+<li>
+<p>C 스타일 유니온(union) : 메모리 효율적이지만 단순한 타입에만 적용할 수 있습니다. 복잡한 타입의 경우에는 소멸자(desctuctor)를 직접 호출해야 합니다. 또, 어떤 값을 할당했는지 미리 알아야 합니다.</p>
+</li>
+<li>
+<p>동적 다형성(dynamic polymorphism) : 하나의 종류로 여러 객체가 있을 때 쓰면 좋은 방법입니다. 하지만, 우리가 설계한 타입이 정확히 하나의 인터페이스에만 들어맞지 않을 때 문제가 됩니다.</p>
+</li>
+<li>
+<p>std::any : 매우 유연하지만, 동적 메모리 할당이 필요하기 때문에 성능에 영향을 미칩니다.</p>
+</li>
+</ul>
+<hr>
+<h2 id="문법">문법</h2>
+<p>std::variant는 템플릿 클래스로 선언되며, 선언 방법은 다음과 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">T1</span><span class="p">,</span> <span class="n">T2</span><span class="p">,</span> <span class="n">T3</span><span class="p">,</span> <span class="p">...</span><span class="o">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 T1, T2, T3 등은 std::variant가 저장할 수 있는 타입들입니다.</p>
+<p>예를 들어, <code>std::variant&lt;int, double&gt;</code>은 int나 double 중 하나의 값을 저장할 수 있다는 뜻이죠.</p>
+<hr>
+<h2 id="사용-예제">사용 예제</h2>
+<h3 id="값-저장">값 저장</h3>
+<p>std::variant에 값을 저장하는 예제입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="o">&gt;</span> <span class="n">store</span><span class="p">{</span><span class="mi">123</span><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>store 객체는 int 타입이나 double 타입을 저장할 수 있는 컨테이너인데요.</p>
+<p>위 예제에서는 int 타입인 123이라는 값이 저장되었습니다.</p>
+<h3 id="값-접근">값 접근</h3>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">val</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">store</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>std::get 함수를 사용하여 store 객체에서 double 타입의 값을 가져옵니다.</p>
+<p>위 코드에서는 <code>std::get&lt;double&gt;</code> 함수를 호출했지만, store 객체에 저장된 값이 int인 경우 이 함수를 호출하면 std::bad_variant_access 예외가 발생합니다.</p>
+<p>왜냐하면 값에 접근하기 전에 우리는 값의 타입을 알아야 하기 때문이죠.</p>
+<p>타입이 일치하지 않을 경우를 대비하여, std::get 함수 대신 std::get_if 함수를 사용할 수도 있습니다.</p>
+<p>이 함수는 타입에 맞게 값이 저장된 경우에는 해당 값을 포인터 형태로 반환하고, 타입에 맞지 않을 때는 nullptr를 반환합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">auto</span> <span class="n">doubleVal</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get_if</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">store</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="n">doubleVal</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&#34;storing double:&#34;</span><span class="o">&lt;&lt;</span><span class="err">\</span><span class="o">*</span><span class="n">doubleVal</span><span class="o">&lt;&lt;</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="값의-타입-확인">값의 타입 확인</h3>
+<p>std::variant에 저장된 값의 타입을 확인하려면, std::holds_alternative 함수를 사용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">holds_alternative</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">store</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;storing int:&#34;</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="예제-더-살펴보기">예제 더 살펴보기</h3>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="o">&gt;</span> <span class="n">store</span><span class="p">{</span><span class="mi">123</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="n">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">store</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">catch</span> <span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">bad_variant_access</span><span class="o">&amp;</span> <span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;invalid type!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 std::variant를 사용하여 int와 double 중 하나의 값을 저장하고 있습니다.</p>
+<p>try-catch 블록을 사용해서 예외 체크 해주고 있는데요.</p>
+<p>즉, std::get을 이용해 double 값을 가져오려는데 현재 저장된 값이 int인 경우 std::bad_variant_access 예외가 발생합니다.</p>
+<h3 id="예제-더-살펴보기-2">예제 더 살펴보기 2</h3>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="kt">float</span><span class="p">,</span> <span class="kt">uint8_t</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&gt;</span> <span class="n">store</span><span class="p">{</span><span class="s">&#34;Some txt&#34;</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// get only when type matches
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span><span class="p">(</span><span class="k">auto</span> <span class="n">floatVal</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get_if</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">store</span><span class="p">);</span> <span class="n">floatVal</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&#34;storing float:&#34;</span><span class="o">&lt;&lt;*</span><span class="n">floatVal</span><span class="o">&lt;&lt;</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// check the type of stored value
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">holds_alternative</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">store</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&#34;storing uint8_t:&#34;</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// get zero-based index of a type provided in variant template parameters
+</span></span></span><span class="line"><span class="cl"><span class="c1">// std::string = 0, float = 1, ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="nf">index</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&#34;storing bool:&#34;</span><span class="o">&lt;&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 std::variant를 사용하여 여러 타입을 저장하고 있습니다.</p>
+<p>std::variant가 저장할 수 있는 타입들은 std::string, float, uint8_t, bool 중의 하나인데요.</p>
+<p>첫 번째 예에서는 std::get_if를 사용하여, std::variant가 저장하고 있는 값의 타입이 float인 경우에만 값을 가져옵니다.</p>
+<p>가져온 값은 auto로 선언된 floatVal 변수에 저장되며, 이후에 출력됩니다.</p>
+<p>두 번째 예에서는 std::holds_alternative를 사용하여, std::variant가 저장하고 있는 값의 타입이 uint8_t인지를 확인하고 있습니다.</p>
+<p>std::holds_alternative는 bool 값을 반환합니다.</p>
+<p>세 번째 예에서는 std::variant가 저장하고 있는 값의 타입에 대한 정보를 알아볼 수 있는 index() 함수인데요.</p>
+<p>std::variant에는 여러 타입이 포함될 수 있기 때문에, 각 타입에 대한 인덱스를 가지고 있습니다.</p>
+<p>위의 예를 보면 store.index()를 사용하여 현재 저장된 값의 타입에 대한 인덱스를 가져온 다음, 이를 비교하여 std::get을 사용하여 bool 값을 출력합니다.</p>
+<p>코드를 읽어보면 아시겠지만 std::variant를 사용하면, 여러 타입을 하나의 변수에 저장할 수 있으며, 필요한 타입을 런타임 시에 가져올 수 있습니다.</p>
+<p>또, std::variant가 제공하는 함수들을 이용하여, 저장된 값의 타입을 확인하거나, 특정 타입에 대한 값을 가져올 수 있습니다.</p>
+<p>뭔가 만능 컨테이너 같은데요.</p>
+<h3 id="index-함수">index() 함수</h3>
+<p>위 예제에서 잠깐 나온 index() 함수 얘기인데요.</p>
+<p>아마 index() 함수가 리턴하는 인덱스 값이라는 게 std::variant를 선언할 때 지정했던 타입 순서 그대로 인덱스 값이 형성되는거 같습니다.</p>
+<p>실제로도 맞는 말이고요.</p>
+<p>std::variant를 선언할 때 지정한 타입 순서대로 인덱스 값이 형성됩니다.</p>
+<p>예를 들어 <code>std::variant&lt;int, double, std::string&gt;</code>와 같이 정수, 실수, 문자열을 저장할 수 있는 std::variant를 선언한 경우, 정수가 첫 번째 타입이므로 인덱스 값 0을 갖습니다.</p>
+<p>이후 double이 두 번째 타입이므로 인덱스 값 1을 갖습니다.</p>
+<p>마지막으로 문자열이 세 번째 타입이므로 인덱스 값 2를 갖게 됩니다.</p>
+<p>따라서 std::variant 객체에 대해 index() 함수를 호출하면 현재 저장된 타입이 std::variant를 선언할 때 몇 번째 타입인지를 알 수 있습니다.</p>
+<h3 id="index-함수-예제">index() 함수 예제</h3>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">var</span><span class="p">{</span><span class="mf">10.5</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="k">switch</span><span class="p">(</span><span class="n">var</span><span class="p">.</span><span class="nf">index</span><span class="p">())</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">0</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">var</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">1</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">double</span> <span class="n">value</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">(</span><span class="n">var</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="mi">2</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">value</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">var</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 뭔가 C 같은 코드 같네요. 이제 index() 함수에 대해 이해되셨을 겁니다.</p>
+<p>참고로 std::variant는 스택에 메모리를 할당합니다.</p>
+<hr>
+<h2 id="stdvariant를-사용할-때-주의할-점">std::variant를 사용할 때 주의할 점</h2>
+<p>std::variant를 사용할 때는 몇 가지 주의할 점이 있습니다.</p>
+<p>첫째, std::variant는 C++17에서 도입된 기능이므로, C++17 이전 버전에서는 사용할 수 없습니다.</p>
+<p>둘째, std::variant를 사용하면서 주의해야 할 부분 중 하나는 exception입니다.</p>
+<p>예를 들어, <code>std::get&lt;&gt;</code> 함수를 사용하여 variant 내부에 저장된 값을 가져오려는 경우, 해당 값의 타입과 일치하지 않는 타입을 지정하면 std::bad_variant_access 예외가 발생합니다.</p>
+<p>따라서 예외 처리를 적절히 해주어야 합니다.</p>
+<p>셋째, std::variant는 각각의 값의 소멸자(destructor)를 호출하는 기능을 제공합니다.</p>
+<p>이를 이용하면 값이 소멸되는 시점을 알 수 있으므로 메모리 누수 등의 문제를 방지할 수 있습니다.</p>
+<p>하지만, 이 기능을 사용하면서 주의해야 할 점은 소멸자를 직접 호출해주어야 한다는 것입니다.</p>
+<p>관련 예제입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;variant&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">Foo</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">Foo</span><span class="p">()</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Foo constructed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">~</span><span class="nf">Foo</span><span class="p">()</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Foo destroyed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">Foo</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">v</span> <span class="o">=</span> <span class="nf">Foo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">v</span><span class="p">.</span><span class="n">emplace</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="nf">visit</span><span class="p">([](</span><span class="k">auto</span><span class="o">&amp;&amp;</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">using</span> <span class="n">T</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kt">decay_t</span><span class="o">&lt;</span><span class="nf">decltype</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nf">constexpr</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Foo</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;v contains a Foo</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;v contains an int: &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">arg</span> <span class="o">&lt;&lt;</span> <span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span> <span class="n">v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Before reset</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">v</span> <span class="o">=</span> <span class="nf">Foo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;After reset</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 std::variant를 사용하는 예제 코드인데요.</p>
+<p>위 코드에서는 int와 Foo를 저장할 수 있는 std::variant를 만들었습니다.</p>
+<p>Foo는 생성자와 소멸자가 출력을 하는 간단한 클래스인데요.</p>
+<p>코드를 계속 따라가 보면 변수 v에 Foo 객체를 할당하고, emplace 함수를 사용하여 int를 저장하고 있습니다.</p>
+<p>std::visit를 사용하여 v에 저장된 값을 확인하고 있습니다.</p>
+<p>std::visit는 std::variant에 저장된 값에 대한 동작을 수행할 수 있는 함수입니다.</p>
+<p>람다 함수를 사용하여 std::visit를 호출하고 있습니다.</p>
+<p>람다 함수에서는 std::is_same_v를 사용하여 std::variant에 저장된 타입이 Foo 인지 int인지 확인하고 있습니다.</p>
+<p>마지막으로, v를 Foo 객체로 다시 할당하고 있습니다.</p>
+<p>Foo 객체는 생성자와 소멸자에서 출력을 하는데, 출력 결과를 확인하면 std::variant가 잘 동작하는 것을 확인할 수 있습니다.</p>
+<h4 id="실행결과">실행결과</h4>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  cpp g++ -std<span class="o">=</span>c++17 main.cpp -o main
+</span></span><span class="line"><span class="cl">➜  cpp ./main
+</span></span><span class="line"><span class="cl">Foo constructed
+</span></span><span class="line"><span class="cl">Foo destroyed
+</span></span><span class="line"><span class="cl">Foo destroyed
+</span></span><span class="line"><span class="cl">v contains an int: <span class="m">42</span>
+</span></span><span class="line"><span class="cl">Before reset
+</span></span><span class="line"><span class="cl">Foo constructed
+</span></span><span class="line"><span class="cl">Foo destroyed
+</span></span><span class="line"><span class="cl">After reset
+</span></span><span class="line"><span class="cl">Foo destroyed
+</span></span><span class="line"><span class="cl">➜  cpp</span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="stdvariant의-성능">std::variant의 성능</h2>
+<p>std::variant는 매우 편리하고 유용한 기능이지만, 일부 상황에서는 성능상의 이유로 std::variant를 사용하지 않는 것이 좋다고 합니다.</p>
+<p>예를 들어, std::variant를 사용하는 경우, 값에 대한 접근 시간이 더 느려질 수 있습니다.</p>
+<p>이는 값의 접근 시점에서 std::variant 내부에 저장된 값의 타입을 판별해야 하기 때문입니다.</p>
+<p>또한, std::variant를 사용하는 경우, 일부 메모리를 추가로 사용해야 하므로, 메모리 사용량이 더 늘어날 수 있습니다.</p>
+<p>이런 이유로, 성능이 매우 중요한 프로그램에서는 std::variant를 사용하지 않는 것이 좋습니다.</p>
+<p>하지만, 이런 특별한 경우 아니고는 std::variant를 사용하는 것이 좋습니다.</p>
+<p>특히, 유연성과 안전성 측면에서 std::variant는 매우 우수한 성능을 발휘합니다.</p>
+<hr>
+<h3 id="stdvariant와-stdany의-차이점">std::variant와 std::any의 차이점</h3>
+<p>std::variant 과 유사한 기능을 하는 C++ 표준 라이브러리의 다른 타입으로는 std::any가 있습니다.</p>
+<p>두 타입은 모두 C++17에서 추가되었으며, 동적 타입 시스템을 제공하면서도, 컴파일 타임에서 타입 안정성을 보장합니다.</p>
+<p>하지만 두 타입은 약간의 차이점이 있는데요.</p>
+<h4 id="타입-안정성">타입 안정성</h4>
+<p>std::variant은 생성시점에 컴파일 타임에 어떤 타입을 가질 수 있는지에 대한 정보를 명시하므로, 이를 런 타임에 변경할 수 없습니다.</p>
+<p>즉, 유한한 타입들의 집합에서만 사용할 수 있습니다.</p>
+<p>그러나 std::any는 어떤 타입이든지 컴파일 타임에 알 필요 없이, 런 타임에 유동적으로 값을 저장할 수 있습니다.</p>
+<p>따라서 std::any는 유한한 타입의 집합이 아니라 모든 타입을 다루어야 하는 경우에 유용합니다.</p>
+<h4 id="값-복사-vs-값-참조">값 복사 vs. 값 참조</h4>
+<p>std::variant은 저장된 값의 복사본을 생성합니다.</p>
+<p>그래서 메모리 사용량이 더 많아질 수 있습니다.</p>
+<p>반면 std::any는 저장된 값의 참조를 유지합니다.</p>
+<p>결과적으로 std::any가 더 적은 메모리 사용량을 갖습니다.</p>
+<h4 id="복잡성">복잡성</h4>
+<p>std::variant은 특정 타입에 대한 접근을 보장하기 위해 특정 타입의 인덱스를 사용합니다.</p>
+<p>반면 std::any는 어떤 타입이 저장되었는지 동적으로 판별합니다.</p>
+<p>이는 std::variant가 더 빠르고 간단한 구현을 갖는 것과 대조적입니다.</p>
+<p>따라서, std::variant은 저장할 수 있는 타입의 집합이 작고 런 타임에 변경되지 않는 경우에 적합하며, std::any는 런 타임에 유동적인 타입을 다룰 필요가 있는 경우에 적합합니다.</p>
+<hr>
+<h2 id="예제-stdvariant를-사용하여-command-line-parser-만들기">예제 std::variant를 사용하여 command line parser 만들기</h2>
+<p>아래 코드는 프로그램 실행 시 인자로 -f와 -c를 받아 각각 문자열과 정수값을 Option 구조체에 저장하고, 저장된 값을 출력합니다.</p>
+<p>std::variant를 사용하여 Option 구조체 내부의 값을 타입 안전하게 처리하고 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C" data-lang="C"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;variant&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">Option</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">is_set</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Option</span> <span class="n">file_option</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Option</span> <span class="n">count_option</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">arg</span> <span class="o">==</span> <span class="s">&#34;-f&#34;</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">file_option</span><span class="p">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="o">++</span><span class="n">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">file_option</span><span class="p">.</span><span class="n">is_set</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">arg</span> <span class="o">==</span> <span class="s">&#34;-c&#34;</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">count_option</span><span class="p">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="nf">stoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="o">++</span><span class="n">i</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">count_option</span><span class="p">.</span><span class="n">is_set</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Invalid argument: &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">arg</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">file_option</span><span class="p">.</span><span class="n">is_set</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Please specify a file with -f&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;File: &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">file_option</span><span class="p">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">count_option</span><span class="p">.</span><span class="n">is_set</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;Count: &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">count_option</span><span class="p">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>지금까지 std::variant에 대해 알아봤는데요.</p>
+<p>많은 도움이 되셨으면 합니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/c&#43;&#43;/" role="button">c&#43;&#43;</a>
+        <a class="btn btn-light" href="/tags/c&#43;&#43;17/" role="button">c&#43;&#43;17</a>
+        <a class="btn btn-light" href="/tags/stdvariant/" role="button">std::variant</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-02-14-c-17-std-any-guide/">C&#43;&#43;17 std::any 공부하기</a></h2>
+                  <p>모던 C++ 공부에 있어 중요한 std::any 공부하기</p>
+                  <p>
+  <small>February 14, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

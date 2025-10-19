@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>NextAuth 사용법 1편 - Setup, Credentials</title>
+<meta name="description" content="NextAuth 사용법 1편 - Setup, Credentials" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-05-31-nextjs-nextauth-tutorial-1-setup/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="NextAuth 사용법 1편 - Setup, Credentials" />
+<meta property="og:description" content="NextAuth 사용법 1편 - Setup, Credentials" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-05-31-nextjs-nextauth-tutorial-1-setup/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-05-31T09:29:00Z" />
+<meta property="article:modified_time" content="2023-05-31T09:29:00Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="nextauth" />
+<meta property="article:tag" content="credentials" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="NextAuth 사용법 1편 - Setup, Credentials" />
+<meta name="twitter:description" content="NextAuth 사용법 1편 - Setup, Credentials" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"NextAuth 사용법 1편 - Setup, Credentials\"",
+  "description": "\"NextAuth 사용법 1편 - Setup, Credentials\"",
+  "datePublished": "\"2023-05-31T09:29:00Z\"",
+  "dateModified": "\"2023-05-31T09:29:00Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-05-31-nextjs-nextauth-tutorial-1-setup/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>NextAuth 사용법 1편 - Setup, Credentials</h1>
+        <p>
+  <small>May 31, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>이번에는 예전 티스토리에서 작성했던 NextAuth 관련 글을 새롭게 Next.js 13.4.4 App Router 방식으로 새롭게 쓰려고 합니다.</p>
+<p>먼저, 이메일, 패스워드 방식을 이용한 Credentials Provider를 사용할 예정이고,</p>
+<p>나중에 카카오, 네이버 아이디로 로그인하는 것도 진행해 볼 예정입니다.</p>
+<hr>
+<h2 id="nextjs-템플릿-준비">Next.js 템플릿 준비</h2>
+<p>먼저, create-next-app을 이용해서 Next.js 템플릿을 준비해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx create-next-app@latest next-auth-test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhHLXEwdAvJG-uxEsAzc8vNoaC3-VT3eK1gy7kBh7ebvYaswkV5kLZuiW5UT_AMqGvTaqy9RIneFd4TnSGOugMJUrE-P1z8EDzbqcQnuB39F3I4Wc4TFFlvDdvsvBjd6ShHXeavsfR5fLAoZhb0i4l_CB-GACKgBDXEGFwXtjspETRWx0ShvmQXm88x"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>최신 버전이라 그런지 Typescript와 Tailwind CSS를 기본적으로 설치해 주네요.</p>
+<p>위 그림은 모두 그냥 엔터키로 넘긴 상태입니다.</p>
+<p>이제 next-auth-test 폴더로 들어가 &rsquo;npm run dev&rsquo;로 Next.js 앱을 돌려 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh1ulVG4l_CbquU3HRprlPiAWKpdKQUklyHD7f7N3EVwQ3oI51_XuKDTU9vkSg_poTnS0MZEirRd8BqEanAtaw6Mh0bJNuVd19KFQckwP43UX4IOUeHsG2Hfi9i-uQLooWex_t6UD20WJtHvSqR6UrwngmJDD95zQ9uR-G_qbhbhzjaQ08BCCh-h1lN"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>뭔가 예전 Next.js 템플릿보다 CSS 부분에서 상당한 발전이 있네요.</p>
+<p>원래 프로젝트를 진행하면 템플릿 Next.js 앱에서 필요 없는 부분을 지우고 시작하는데요.</p>
+<p>이번 글의 핵심은 NextAuth 공부기 때문에 그냥 나 두겠습니다.</p>
+<hr>
+<h2 id="nextjs-13-버전의-app-폴더">Next.js 13 버전의 app 폴더</h2>
+<p>Next.js가 버전 13으로 넘어가면서 기존 pages 폴더 방식에서 app 폴더 방식으로 넘어갔는데요.</p>
+<p>Next.js에서는 App Router라고 합니다.</p>
+<p>Remix Framework이나 기타 다른 자바스크립트 메타 프레임워크들이 app 폴더를 많이 쓰거든요.</p>
+<p>Next.js도 pages 폴더를 유지시키면서 새로운 기능을 구현하려니까 app 폴더를 이용하기로 했나 봅니다.</p>
+<p>그럼 여기서 잠깐, 제가 예전에 쓴 Next.js 13 버전 살펴보기 글을 읽어 보시는 걸 추천드립니다.</p>
+<p>링크 &ndash;&gt; <a href="https://mycodingshub.github.io/blog/2022-11-14-nextjs-13-first-look-and-layout">Next.js 13 살펴보기 - 폴더 방식 라우팅과 중첩 레이아웃 이해
+</a></p>
+<p>이 글에서 app router 방식에 대해 잘 설명하고 있으니 참고 바랍니다.</p>
+<hr>
+<h2 id="apppagetsx-파일-손보기">app/page.tsx 파일 손보기</h2>
+<p>Next.js 앱의 시작 포인트가 바로 app/page.tsx 파일인데요.</p>
+<p>다음과 같이 간단하게 수정합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;flex min-h-screen flex-col items-center justify-between p-24&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;text-4xl font-semibold&#39;</span><span class="o">&gt;</span><span class="nx">NextAuth</span> <span class="nx">Tutorial</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgRZWBCJW5_w90ojAvd46uk6BpfmY6D5PMpdRElve1inJ0cMCrSE6jz0AP5o5qvrtxKR5pSzOh0fXqVINyLAfa92_9YZmPAQylXHMZFHZNUDoaxSKt_I7FSQoxGxh7Y0Qck9jwEOT9YQzlIwlebR58b8Fth14H1rXJnY6uqc9TgUOD1mPKaAGkrwMQl"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 깔끔한 로고가 보이네요.</p>
+<hr>
+<h2 id="nextauthjs-설치하기">NextAuth.js 설치하기</h2>
+<p>NextAuth.js 설치는 간단히 아래와 같이 하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  next-auth-test git:<span class="o">(</span>main<span class="o">)</span> ✗ npm i next-auth
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">added <span class="m">12</span> packages, and audited <span class="m">365</span> packages in 5s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">140</span> packages are looking <span class="k">for</span> funding
+</span></span><span class="line"><span class="cl">  run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">found <span class="m">0</span> vulnerabilities
+</span></span><span class="line"><span class="cl">➜  next-auth-test git:<span class="o">(</span>main<span class="o">)</span> ✗</span></span></code></pre></div>
+  </figure>
+</div>
+<p>설치가 잘 되었네요.</p>
+<p>그럼 NextAuth의 가장 기본이 되는 파일을 작성해야 하는데요.</p>
+<p>그 파일이름은 바로 <code>[...nextauth].js</code> 파일인데요.</p>
+<p>이 파일을 <code>pages/api/auth</code> 폴더 밑에 두면 작동됐습니다.</p>
+<p>그런데 Next.js가 버전 13으로 오면서 App Router에서는 다음과 같이 해야 합니다.</p>
+<p>바로 <code>app/api/auth/[...nextauth]</code>폴더 밑에 <code>route.js</code> 파일로 작성해야 합니다.</p>
+<p>참고로 Next.js 13 버전에서는 파일 이름에 규칙이 있는데요.</p>
+<p>NextAuth 같이 API를 이용하려면 아래 그림과 같이 route.js 파일 이름을 사용해야 합니다.</p>
+<p>타입스크립트를 사용하면 확장자를 .ts로 하면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEim6dSGSPvzhQlZl_bOaPI6AJ6Knp7CThbw9G--g3g_E71XMkmc7nXzmJWpEyNK9luqCPRkhO2TZSCcb7pDV9PxqclMyU8jgdUMEaCPhKZA7N8aByReH-slFjy2BcICuqJofDG6369Zusk0irOol8sPcOf1YpzXN-3E9YWgK3Zv711-8KnQu7jAzhgJ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 위 그림처럼 나중에 GET, POST처럼 대문자로 HTTP 메서드를 실행해야 합니다.</p>
+<p>그럼 Next.js 13의 서버사이드 API는 어디에 위치할까요?</p>
+<p>바로 app/api 폴더입니다.</p>
+<p>이제 app/api/auth/[&hellip;nextauth]/route.ts 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">NextAuth</span> <span class="nx">from</span> <span class="s1">&#39;next-auth/next&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="nx">NextAuth</span><span class="p">({})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">GET</span><span class="p">,</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">POST</span> <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 작성하시면 됩니다.</p>
+<p>여기서 잘 보시면 마지막에 export 문법이 이상한데요.</p>
+<p>이 문법은 ES6 모듈 export 관련 새로운 문법인데요.</p>
+<p>바로 &lsquo;as&rsquo; 문구를 이용해서 export 하는 모듈의 이름을 지정할 수 있습니다.</p>
+<p>이렇게 해야지, 나중에 GET, POST로 핸들러 함수를 실행시킬 수 있습니다.</p>
+<p>왜냐하면 Next.js 13에서는 GET, POST 방식으로 export 하라고 권장하기 때문입니다.</p>
+<p>일단 위와 같이 handler 객체를 GET과 POST로 export 하면 원하는 역할에 맞게 GET으로 import 할 수 있고,</p>
+<p>아니면 POST 방식으로 import 할 수 있게 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">GET</span><span class="p">,</span> <span class="nx">POST</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./path/to/module&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Use the imported functions
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">GET</span><span class="p">()</span> <span class="c1">// Handle GET request
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">POST</span><span class="p">()</span> <span class="c1">// Handle POST request
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="credentials-방식-적용하기">Credentials 방식 적용하기</h2>
+<p>NextAuth가 좋은 점이 무엇이냐 하면 여러 로그인 방식을 지원해 주는데요.</p>
+<p>구글 아이디나, 링크트인 아이디, 페이스북 아이디 등 여러 가지 방식을 지원해 줍니다.</p>
+<p>심지어 카카오나 네이버 아이디도 지원해 줍니다.</p>
+<p>그리고 우리가 이번 글에서 알아볼 Credentials 방식도 지원하는데요.</p>
+<p>이 방식은 이메일과 패스워드 방식으로 사용자가 직접 DB 부분을 컨트롤할 수 있는 방식입니다.</p>
+<p>NextAuth가 지원하는 여러 로그인 방식을 명칭으로는 Provider라고 하는데요.</p>
+<p>일단 NextAuth 정식 홈페이지에서 Credentials Provider 부분을 가져와서 코드에 입히겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">NextAuth</span> <span class="nx">from</span> <span class="s1">&#39;next-auth/next&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">CredentialsProvider</span> <span class="nx">from</span> <span class="s1">&#39;next-auth/providers/credentials&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="nx">NextAuth</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">CredentialsProvider</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// The name to display on the sign in form (e.g. &#34;Sign in with...&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Credentials&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// `credentials` is used to generate a form on the sign in page.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// You can specify which fields should be submitted, by adding keys to the `credentials` object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// e.g. domain, username, password, 2FA token, etc.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// You can pass any HTML attribute to the &lt;input&gt; tag through the object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">credentials</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">username</span><span class="o">:</span> <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;Username&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="nx">placeholder</span><span class="o">:</span> <span class="s1">&#39;jsmith&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">password</span><span class="o">:</span> <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;password&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">async</span> <span class="nx">authorize</span><span class="p">(</span><span class="nx">credentials</span><span class="p">,</span> <span class="nx">req</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Add logic here to look up the user from the credentials supplied
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;J Smith&#39;</span><span class="p">,</span> <span class="nx">email</span><span class="o">:</span> <span class="s1">&#39;jsmith@example.com&#39;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// Any object returned will be saved in `user` property of the JWT
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="k">return</span> <span class="nx">user</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// If you return null then an error will be displayed advising the user to check their details.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="k">return</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="c1">// You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="p">{</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">GET</span><span class="p">,</span> <span class="nx">handler</span> <span class="nx">as</span> <span class="nx">POST</span> <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>providers 항목에 여러 가지를 넣을 수 있는데요.</p>
+<p>위 코드에서는 CredentialsProvider를 넣었습니다.</p>
+<p>CredentialsProvider는 몇 가지 항목으로 이루어진 객체인데요.</p>
+<p>먼저, name 부분이 있고, 두 번째 credentials 부분이 있습니다.</p>
+<p>이 credentials 부분이 바로 로그인 폼(form)의 내용입니다.</p>
+<p>마지막으로 authorize라는 async 함수인데요.</p>
+<p>이 authorize 함수에서 이메일과 패스워드 부분을 체크해서, 맞으면 user 객체를 리턴하고 틀리면 null을 리턴하는 구조입니다.</p>
+<p>이제 실행해 볼까요?</p>
+<p>NextAuth가 좋은 점이 여기까지 작성해도 기본적으로 login 폼을 지원해 줍니다.</p>
+<p>주소를 &lsquo;/api/auth/signin&rsquo;으로 이동해 보십시오.</p>
+<p><em>(실제 앱을 작성할 때는 signin 함수를 호출해서 로그인 폼을 불러오는 방식을 씁니다.)</em></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEikMjqMHtiqzqqc7CihSmjNPMAsJ34SPh-ycgvoXYxUacy8_18rzqtB78Qr6rGHjmH9uBM6yyfWnkkk1r6oIrM855vAlO2gFBhwP05UPttKJao3jw13GZF2o1EeLtl6royIeECysuxfcQhBOwMpGnxOAmpQvy3tp4SbgAJkR0I6D4q9WGmdvblyCb-7"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 NextAuth가 제공해 주는 기본 로그인 폼(form)이 보입니다.</p>
+<p>여기서 기본 제공되는 로그인 폼(form)의 글자를 바꿔 볼까요?</p>
+<p>아까 CredentialsProvider 중에서 credentials 항목을 아래와 같이 한글로 바꿔 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">credentials</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">username</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;이메일&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">:</span> <span class="s2">&#34;text&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">placeholder</span><span class="o">:</span> <span class="s2">&#34;이메일 주소 입력 요망&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">password</span><span class="o">:</span> <span class="p">{</span> <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;비밀번호&#34;</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="s2">&#34;password&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 브라우저를 새로고침 해 보면 아래와 같이 바뀐 걸 볼 수 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjp4n8IN6e7W_Tsxfe0aMtfSWsyfevn7IsRxfD2sd7JMiWrIehgCWdIUbpCatqILq8cEf16MxVL0f1vCv4xkrOtwSel2TjIUHVCYQeWetRSfpZPY_jiCSoaiesmfUrWR0HHNYiB3KSuYqiZM5mcvkDd_7thEwEulz3doPxQpDoPN9auyIDdILkdMO5b"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>여기서 Sign in 버튼을 눌러보면 다시 첫 페이지로 돌아가게 되거나 혹은</p>
+<p><code>~/api/auth/callback/credentials</code> 같은 이상한 주소로 이동하게 되는데요.</p>
+<p>callback/credentials 주소로 돌아가는 이유는 개발서버로 돌리는 포트와 NEXTAUTH_URL 포트가 틀려서 그런 겁니다.</p>
+<p>.env 파일에 NEXTAUTH_URL 부분을 지정해서 주면 됩니다.</p>
+<p>참고로 아래 그림처럼 개발서버 돌릴 때 SECRET 경고가 나오는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhF8efoViAj0RvVaNbqtyGEELqIpEeu4v6_qLU5KlzluBWOzZTOUk7zO-GX2CvbHC1Bd63Q92CHl9VFtI8-W1OM0KehvVy_FQgRIA0DaNe9eRSrliPUHckoJiQfRVuFVpLB7IK2DtRA3H2cOFwzIrTVsIOHJAusadhJn8WxSqgSE1YF8jebf43SLZGZ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이 문제를 해결하려면 .env 파일에 아래와 같이 SECRET 부분을 아무 글자나 넣어주면 됩니다.</p>
+<p>결론적으로 아래와 같이 2개의 NEXTAUTH 관련 상수를 정의하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">NEXTAUTH_SECRET</span><span class="o">=</span><span class="nx">qerkasjhfkauiqeywrhkasjhfksajfh</span>
+</span></span><span class="line"><span class="cl"><span class="nx">NEXTAUTH_URL</span><span class="o">=</span><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:3001
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="authorize-함수-확장하기">authorize 함수 확장하기</h2>
+<p>CredentialsProvider에서 로그인할 때 authorize 함수가 작동된다는 걸 눈치채셨는데요.</p>
+<p>이 부분은 여러분께서 직접 로직을 작성해야 합니다.</p>
+<p>아까 예제로 가지고 왔던 로직은 더미(dummy) 코드인데요.</p>
+<p>실제 authorize 함수 안에서는 DB 부분에서 username을 찾고 비밀번호가 맞는지 체크해서 맞으면 해당 username의 정보를 리턴하는 로직으로 수행됩니다.</p>
+<p>이걸 위해서는 DB 제어 로직도 있어야 하고 비밀번호 hash하는 로직도 있어야 하고, 넣어야 할 게 많은데요.</p>
+<p>다음 시간에, DB 제어 부분 관련 Prisma를 이용해서 알아보겠습니다.</p>
+<p>끝.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/nextauth/" role="button">nextauth</a>
+        <a class="btn btn-light" href="/tags/credentials/" role="button">credentials</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-08-how-to-nextjs-nextauth-naver-login/">NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</a></h2>
+                  <p>NextAuth 사용법 7편 - NextAuth로 네이버 아이디 로그인 만들기</p>
+                  <p>
+  <small>June 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>2&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-07-how-to-nextjs-nextauth-with-kakao-login/">NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</a></h2>
+                  <p>NextAuth 사용법 6편 - NextAuth로 카카오 아이디 로그인 만들기</p>
+                  <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-06-07-how-to-nextjs-nextauth-custom-login-page/">NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</a></h2>
+                  <p>NextAuth 사용법 5편 - 나만의 커스텀 로그인 페이지 만들기</p>
+                  <p>
+  <small>June 7, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

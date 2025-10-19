@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>PocketBase 활용법 1탄. 나만의 pocketbase 서버 만들기 in Fly.io</title>
+<meta name="description" content="Fly.io에 직접 Dockerfile로 pocketbase 서버 구축" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-09-09-build-my-own-pocketbase-server-on-flyio/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="PocketBase 활용법 1탄. 나만의 pocketbase 서버 만들기 in Fly.io" />
+<meta property="og:description" content="Fly.io에 직접 Dockerfile로 pocketbase 서버 구축" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-09-09-build-my-own-pocketbase-server-on-flyio/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-09-09T02:15:59Z" />
+<meta property="article:modified_time" content="2023-09-09T02:15:59Z" />
+<meta property="article:tag" content="pocketbase" />
+<meta property="article:tag" content="fly.io" />
+<meta property="article:tag" content="pb_public" />
+<meta property="article:tag" content="server" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="PocketBase 활용법 1탄. 나만의 pocketbase 서버 만들기 in Fly.io" />
+<meta name="twitter:description" content="Fly.io에 직접 Dockerfile로 pocketbase 서버 구축" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"PocketBase 활용법 1탄. 나만의 pocketbase 서버 만들기 in Fly.io\"",
+  "description": "\"Fly.io에 직접 Dockerfile로 pocketbase 서버 구축\"",
+  "datePublished": "\"2023-09-09T02:15:59Z\"",
+  "dateModified": "\"2023-09-09T02:15:59Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-09-09-build-my-own-pocketbase-server-on-flyio/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>PocketBase 활용법 1탄. 나만의 pocketbase 서버 만들기 in Fly.io</h1>
+        <p>
+  <small>September 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘부터 Pocketbase 강좌를 시작해 보려 합니다.</p>
+<p>** 목차 **</p>
+<ol>
+<li><a href="#1-%eb%b0%b0%ed%8f%ac%eb%a5%bc-%ec%9c%84%ed%95%9c-dockerfile-%eb%a7%8c%eb%93%a4%ea%b8%b0%ec%99%80-flyio%ec%97%90-deploy">배포를 위한 Dockerfile 만들기와 Fly.io에 deploy</a></li>
+<li><a href="#2-db-%ea%b0%95%ec%a0%9c%eb%a1%9c-%ec%b4%88%ea%b8%b0%ed%99%94%ed%95%98%ea%b8%b0-%eb%98%90%eb%8a%94-%ea%b4%80%eb%a6%ac%ec%9e%90-%eb%b9%84%eb%b0%80%eb%b2%88%ed%98%b8%eb%a5%bc-%ec%9e%8a%ec%96%b4%eb%b2%84%eb%a6%b0-%ea%b2%bd%ec%9a%b0">DB 강제로 초기화하기 또는 관리자 비밀번호를 잊어버린 경우</a></li>
+<li><a href="#3-pb_public-%ed%8f%b4%eb%8d%94%ec%97%90-%eb%8c%80%ed%95%b4-%ec%95%8c%ec%95%84%eb%b3%b4%ea%b8%b0">pb_public 폴더에 대해 알아보기</a></li>
+</ol>
+<hr>
+<h2 id="1-배포를-위한-dockerfile-만들기와-flyio에-deploy">1. 배포를 위한 Dockerfile 만들기와 Fly.io에 deploy</h2>
+<p>먼저, 항상 그랬듯이 실제 배포(deploy)부터 해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir mypocketbase
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> mypocketbase</span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 위와 같이 빈 폴더에 Dockerfile을 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">FROM alpine:latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ARG <span class="nv">PB_VERSION</span><span class="o">=</span>0.18.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">RUN apk add --no-cache <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    unzip <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    ca-certificates <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    openssh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># download and unzip PocketBase</span>
+</span></span><span class="line"><span class="cl">ADD https://github.com/pocketbase/pocketbase/releases/download/v<span class="si">${</span><span class="nv">PB_VERSION</span><span class="si">}</span>/pocketbase_<span class="si">${</span><span class="nv">PB_VERSION</span><span class="si">}</span>_linux_amd64.zip /tmp/pb.zip
+</span></span><span class="line"><span class="cl">RUN unzip /tmp/pb.zip -d /pb/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">EXPOSE <span class="m">8080</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># start PocketBase</span>
+</span></span><span class="line"><span class="cl">CMD <span class="o">[</span><span class="s2">&#34;/pb/pocketbase&#34;</span>, <span class="s2">&#34;serve&#34;</span>, <span class="s2">&#34;--http=0.0.0.0:8080&#34;</span><span class="o">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>현대 기준 Pocketbase 버전이 0.18.1이네요.</p>
+<p>그리고 아래와 같이 fly launch라고 fly 앱을 생성합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  mypocketbase&gt; fly launch
+</span></span><span class="line"><span class="cl">Creating app in /Users/cpro95/Codings/Javascript/projects/mypocketbase
+</span></span><span class="line"><span class="cl">Scanning <span class="nb">source</span> code
+</span></span><span class="line"><span class="cl">Detected a Dockerfile app
+</span></span><span class="line"><span class="cl">? Choose an app name <span class="o">(</span>leave blank to generate one<span class="o">)</span>: mypocketbase
+</span></span><span class="line"><span class="cl">automatically selected personal organization: cpro95
+</span></span><span class="line"><span class="cl">Some regions require a paid plan <span class="o">(</span>bom, fra, maa<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">See https://fly.io/plans to <span class="nb">set</span> up a plan.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">? Choose a region <span class="k">for</span> deployment: Tokyo, Japan <span class="o">(</span>nrt<span class="o">)</span>
+</span></span><span class="line"><span class="cl">App will use <span class="s1">&#39;nrt&#39;</span> region as primary
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Created app <span class="s1">&#39;mypocketbase&#39;</span> in organization <span class="s1">&#39;personal&#39;</span>
+</span></span><span class="line"><span class="cl">Admin URL: https://fly.io/apps/mypocketbase
+</span></span><span class="line"><span class="cl">Hostname: mypocketbase.fly.dev
+</span></span><span class="line"><span class="cl">? Would you like to <span class="nb">set</span> up a Postgresql database now? No
+</span></span><span class="line"><span class="cl">? Would you like to <span class="nb">set</span> up an Upstash Redis database now? No
+</span></span><span class="line"><span class="cl">Wrote config file fly.toml
+</span></span><span class="line"><span class="cl">? Would you like to deploy now? No
+</span></span><span class="line"><span class="cl">Validating /Users/cpro95/Codings/Javascript/projects/mypocketbase/fly.toml
+</span></span><span class="line"><span class="cl">Platform: machines
+</span></span><span class="line"><span class="cl">✓ Configuration is valid
+</span></span><span class="line"><span class="cl">Your app is ready! Deploy with <span class="sb">`</span>flyctl deploy<span class="sb">`</span>  <span class="c1"># 여기서 N을 눌러 아직은 배포하지 마세요.</span>
+</span></span><span class="line"><span class="cl">➜  mypocketbase&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 fly.toml 파일을 조금 손보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <pre tabindex="0"><code>app = &#34;mypocketbase&#34;
+primary_region = &#34;nrt&#34;
+
+# optional if you want to change the PocketBase version
+[build.args]
+  PB_VERSION=&#34;0.18.1&#34;
+
+[mounts]
+  destination = &#34;/pb/pb_data&#34;
+  source = &#34;pb_data&#34;
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false  # 변경한 부분
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = [&#34;app&#34;]
+  [http_service.concurrency]
+    type = &#34;requests&#34;
+    soft_limit = 500
+    hard_limit = 550</code></pre>
+  </figure>
+</div>
+<p>build.args로 PB_VERSION을 지정하고요.</p>
+<p>그리고 mounts라고 해서 pocketbase가 생성될 디스크를 지정했습니다.</p>
+<p>pb_data가 이제 해당 디스크의 경로가 될 겁니다.</p>
+<p>이제, fly.toml 파일이 완성되었으니까요.</p>
+<p>Fly.io에 디스크를 만들어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  mypocketbase&gt; fly volumes create pb_data --size<span class="o">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">Warning! Individual volumes are pinned to individual hosts. You should create two or more volumes per application. You will have downtime <span class="k">if</span> you only create one. Learn more at https://fly.io/docs/reference/volumes/
+</span></span><span class="line"><span class="cl">? Do you still want to use the volumes feature? Yes
+</span></span><span class="line"><span class="cl">Some regions require a paid plan <span class="o">(</span>bom, fra, maa<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">See https://fly.io/plans to <span class="nb">set</span> up a plan.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">? Select region: Tokyo, Japan <span class="o">(</span>nrt<span class="o">)</span>
+</span></span><span class="line"><span class="cl">        ID: vol_5456x2g3oqk0nkjr
+</span></span><span class="line"><span class="cl">      Name: pb_data
+</span></span><span class="line"><span class="cl">       App: mypocketbase
+</span></span><span class="line"><span class="cl">    Region: nrt
+</span></span><span class="line"><span class="cl">      Zone: fe01
+</span></span><span class="line"><span class="cl">   Size GB: <span class="m">1</span>
+</span></span><span class="line"><span class="cl"> Encrypted: <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">Created at: <span class="m">09</span> Sep <span class="m">23</span> 02:31 UTC
+</span></span><span class="line"><span class="cl">➜  mypocketbase&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 pb_data라는 이름으로 사이즈 1GB 디스크를 만들었습니다.</p>
+<p>pb_data는 fly.toml에 있는 source와 같은 이름이어야 합니다.</p>
+<p>이제, deploy 준비가 다 끝났으니까, 실행해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  mypocketbase&gt; fly <span class="nv">deploy</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Verifying app config
+</span></span><span class="line"><span class="cl">Validating /Users/cpro95/Codings/Javascript/projects/mypocketbase/fly.toml
+</span></span><span class="line"><span class="cl">Platform: machines
+</span></span><span class="line"><span class="cl">✓ Configuration is valid
+</span></span><span class="line"><span class="cl">--&gt; Verified app <span class="nv">config</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Building image
+</span></span><span class="line"><span class="cl">Remote builder fly-builder-snowy-sun-1195 <span class="nv">ready</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Building image with Docker
+</span></span><span class="line"><span class="cl">--&gt; docker host: 20.10.12 linux x86_64
+</span></span><span class="line"><span class="cl"><span class="o">[</span>+<span class="o">]</span> Building 6.3s <span class="o">(</span>9/9<span class="o">)</span> <span class="nv">FINISHED</span>
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load build definition from Dockerfile                                              0.8s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring dockerfile: 722B                                                              0.8s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load .dockerignore                                                                 0.5s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; transferring context: 2B                                                                   0.5s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>internal<span class="o">]</span> load metadata <span class="k">for</span> docker.io/library/alpine:latest                                  1.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>1/4<span class="o">]</span> FROM docker.io/library/alpine:latest@sha256:7144f7bab3d4c2648d7e59409f15ec52a18006a128  0.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; resolve docker.io/library/alpine:latest@sha256:7144f7bab3d4c2648d7e59409f15ec52a18006a128  0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; extracting sha256:7264a8db6415046d36d16ba98b79778e18accee6ffa71850405994cffa9be7de         0.1s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; sha256:7144f7bab3d4c2648d7e59409f15ec52a18006a128c733fcff20d3a4a54ba44a 1.64kB / 1.64kB    0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33 528B / 528B        0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; sha256:7e01a0d0a1dcd9e539f8e9bbd80106d59efbdf97293b3d38f5d7a34501526cdb 1.47kB / 1.47kB    0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; sha256:7264a8db6415046d36d16ba98b79778e18accee6ffa71850405994cffa9be7de 3.40MB / 3.40MB    0.1s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; https://github.com/pocketbase/pocketbase/releases/download/v0.18.1/pocketbase_0.18.1_linux_a  0.9s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>2/4<span class="o">]</span> RUN apk add --no-cache     unzip     ca-certificates     openssh                        3.1s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>3/4<span class="o">]</span> ADD https://github.com/pocketbase/pocketbase/releases/download/v0.18.1/pocketbase_0.18  0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">[</span>4/4<span class="o">]</span> RUN unzip /tmp/pb.zip -d /pb/                                                           0.7s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; exporting to image                                                                            0.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; exporting layers                                                                           0.2s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; writing image sha256:9200f7f66075976bc86c2a35c888dcbe8018fe2fb5b2d9c0fc68b59ff0cb05f7      0.0s
+</span></span><span class="line"><span class="cl"> <span class="o">=</span>&gt; <span class="o">=</span>&gt; naming to registry.fly.io/mypocketbase:deployment-01H9VWJCXQ08M5K07RW1PKRKZW               0.0s
+</span></span><span class="line"><span class="cl">--&gt; Building image <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="o">==</span>&gt; Pushing image to fly
+</span></span><span class="line"><span class="cl">The push refers to repository <span class="o">[</span>registry.fly.io/mypocketbase<span class="o">]</span>
+</span></span><span class="line"><span class="cl">ab5f287ac9ba: Pushed
+</span></span><span class="line"><span class="cl">0fcbd8bc6814: Pushed
+</span></span><span class="line"><span class="cl">e043ef2d202a: Pushed
+</span></span><span class="line"><span class="cl">4693057ce236: Pushed
+</span></span><span class="line"><span class="cl">deployment-01H9VWJCXQ08M5K07RW1PKRKZW: digest: sha256:68a7ea45e1d4885a0b6dc2336442d6a138085330d04d290abee216d566c6385e size: <span class="m">1163</span>
+</span></span><span class="line"><span class="cl">--&gt; Pushing image <span class="k">done</span>
+</span></span><span class="line"><span class="cl">image: registry.fly.io/mypocketbase:deployment-01H9VWJCXQ08M5K07RW1PKRKZW
+</span></span><span class="line"><span class="cl">image size: <span class="m">76</span> MB
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Watch your deployment at https://fly.io/apps/mypocketbase/monitoring
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Provisioning ips <span class="k">for</span> mypocketbase
+</span></span><span class="line"><span class="cl">  Dedicated ipv6: 2a09:8280:1::4e:6e62
+</span></span><span class="line"><span class="cl">  Shared ipv4: 66.241.124.137
+</span></span><span class="line"><span class="cl">  Add a dedicated ipv4 with: fly ips allocate-v4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">This deployment will:
+</span></span><span class="line"><span class="cl"> * create <span class="m">1</span> <span class="s2">&#34;app&#34;</span> machine
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">No machines in group app, launching a new machine
+</span></span><span class="line"><span class="cl">  Machine 5683d449f16328 <span class="o">[</span>app<span class="o">]</span> update finished: success
+</span></span><span class="line"><span class="cl">Finished launching new machines
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Visit your newly deployed app at https://mypocketbase.fly.dev/
+</span></span><span class="line"><span class="cl">➜  mypocketbase&gt;</span></span></code></pre></div>
+  </figure>
+</div>
+<p>성공적으로 배포가 끝났습니다.</p>
+<p>이제 &lsquo;https://mypocketbase.fly.dev/&rsquo; 주소로 가볼까요?</p>
+<p>이론상으로는 pocketbase가 해당 주소로 실행되고 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjS-Ob_PGa6Dh4nHElzunJgXZrdMLEzFeHbN14WZEqykne-FcnQ3aWS_SVuRqosyb5j2sKSnPfu8-T_47grjNzNCu0ni9UW6hpwNfyUg7ZVRvEO4ft2gF4FgC46GmIGIugnJR5OaUdFKH3qQYlfVHm3odcOpU6SKkSCfgHiDVu0giAQHi8CRPqjSGeTYfQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>브라우저에서 해당 주소로 가면 code 404 에러가 나는데요.</p>
+<p>페이지가 없다는 뜻입니다.</p>
+<p>왜냐하면 pocketbase는 기본 주소가 다음과 같습니다.</p>
+<p>&lsquo;https://mypocketbase.fly.dev/_/&rsquo;</p>
+<p>&lsquo;_&lsquo;가 해당 주소인데요.</p>
+<p>다시 접속해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjWi6X6gC-vJQnV7oFH68y95myTtKLQm1F7qlnJ5D23XcNlbgFYGk_SQ_Y97EMtwhtmEFOPzmDPk3NxlctzrAWji5LoSWp_MPlPqtilJg1hZOWFh58eLaWKY-EP68DSlCz49wdAK9avWXrrHvf9VCwxL9J5pXYvnW8tzD8MBIIXT3B0iEc3Dc_4rpkhkk4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그러면 위와 같은 화면이 나오는데요.</p>
+<p>이 화면은 리눅스로 따지면 root 계정을 만들라는 뜻입니다.</p>
+<p>pocketbase의 관리자 계정을 맨 처음 만드는 거죠.</p>
+<p>관리자 계정을 만들어 봅시다.</p>
+<p>만들면 아래와 같이 로그인되는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhLbJ668ttLMovWob0qA4FjUVQqFx1ildGiBEabTzHrujS9_3c9wRY6NAKHCcN7qugfSu9KCU5ak2_2M4d6IUyYaZM-_7N3uuniPo5YJP2F_TO1BNVgAew-Q0Xg85KLL8HrgeyXfK6fP9vA1jvBcbXSLEMDSkhLY3val-Aj4YG3N6XzaRjOcTBih23OTiQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>관리자 대시보드입니다.</p>
+<p>pocketbase가 좋은 점이 이렇게 웹상에서 관리자가 DB를 편하게 조작할 수 있는 대시보드를 제공한다는 점이죠.</p>
+<hr>
+<h2 id="2-db-강제로-초기화하기-또는-관리자-비밀번호를-잊어버린-경우">2. DB 강제로 초기화하기 또는 관리자 비밀번호를 잊어버린 경우</h2>
+<p>Fly.io가 좋은 점은 ssh 원격 접속으로 실제 가상서버에 접속할 수 있습니다.</p>
+<p>만약, 관리자 비밀번호를 잊어버렸다 싶으면 아래와 같이 하시면 됩니다.</p>
+<p>실제 포켓베이스가 아래처럼 관리자 비밀번호 초기화 링크를 제공해 줍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjGtclMJAnaxaJkwQZKwokh2MIHjoJ8cXMKTGsBfNAEOohf3DidpgHWS_wG1aZjtPMCOSuy0J6Wiwu5ErNBpBntyjIKdwiJ35HuwrlFZKB5pU5qYQbWU9a4a5AF4TLyuIG5_gZbCcj_KeXlhBhqkoobvRPPAMYRj6veZNOuYtn_894NAgJRztg_O5_P94U"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>근데 테스트해보니까 이메일이 오지 않더라고요.</p>
+<p>그래서 강제로 초기화하는 방법을 알려 드리겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 실행해서 mypocketbase 서버가 실행되고 있는 리눅스에 원격 접속합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  mypocketbase&gt; fly ssh console
+</span></span><span class="line"><span class="cl">Connecting to faa:0:5cc:ab:17:c9c:a5a:2... <span class="nb">complete</span>
+</span></span><span class="line"><span class="cl">5683d449f16328:/# <span class="nb">cd</span> /pb
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# ls -al
+</span></span><span class="line"><span class="cl">total <span class="m">45148</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">3</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 02:34 .
+</span></span><span class="line"><span class="cl">drwxr-xr-x   <span class="m">21</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 02:34 ..
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root         <span class="m">84985</span> Sep  <span class="m">6</span> 04:14 CHANGELOG.md
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root          <span class="m">1090</span> Sep  <span class="m">6</span> 04:14 LICENSE.md
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">3</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 02:44 pb_data
+</span></span><span class="line"><span class="cl">-rwxr-xr-x    <span class="m">1</span> root     root      <span class="m">46129152</span> Sep  <span class="m">6</span> 04:19 pocketbase
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb#</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 실제 포켓베이스 바이너리 파일과 해당 DB가 있는 폴더로 왔습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">5683d449f16328:/pb# <span class="nb">cd</span> pb_data
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb/pb_data# ls -al
+</span></span><span class="line"><span class="cl">total <span class="m">724</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">3</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 02:44 .
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">3</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 02:34 ..
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root         <span class="m">98304</span> Sep  <span class="m">9</span> 02:44 data.db
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root         <span class="m">40960</span> Sep  <span class="m">9</span> 02:44 logs.db
+</span></span><span class="line"><span class="cl">drwx------    <span class="m">2</span> root     root         <span class="m">16384</span> Sep  <span class="m">9</span> 02:34 lost+found
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root        <span class="m">577233</span> Sep  <span class="m">9</span> 02:34 types.d.ts
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb/pb_data#</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 pb_data에 data.db 파일이 있는데요.</p>
+<p>이 파일이 바로 Sqlite3 파일입니다.</p>
+<p>그러면 pb_data 폴더를 지우면 포켓베이스 DB가 초기화되는 거죠.</p>
+<p>먼저, pocketbase가 실행되고 있는 명령어를 kill 명령어로 죽이고 pb_data 폴더를 지우겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">5683d449f16328:/pb# ps -ef <span class="p">|</span> grep pocketbase
+</span></span><span class="line"><span class="cl">  <span class="m">263</span> root      0:00 /pb/pocketbase serve --http<span class="o">=</span>0.0.0.0:8080
+</span></span><span class="line"><span class="cl">  <span class="m">276</span> root      0:00 grep pocketbase
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# <span class="nb">kill</span> <span class="m">263</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그런데 이 방법으로는 pocketbase 명령어를 죽이자마자 서버가 끊어졌습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">2023-09-09T02:50:47.674 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> INFO Main child exited normally with code: <span class="m">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:50:47.675 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> INFO Starting clean up.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:50:47.675 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> INFO Umounting /dev/vdb from /pb/pb_data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:50:47.679 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> WARN hallpass exited, pid: 264, status: signal: <span class="m">15</span> <span class="o">(</span>SIGTERM<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:50:47.682 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> 2023/09/09 02:50:47 listening on <span class="o">[</span>fdaa:0:57cc:a7b:17c:c93c:a25a:2<span class="o">]</span>:22 <span class="o">(</span>DNS: <span class="o">[</span>fdaa::3<span class="o">]</span>:53<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:50:48.678 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> <span class="o">[</span> 36.354815<span class="o">]</span> reboot: Restarting system
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:50:48.852 runner<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> machine exited with <span class="nb">exit</span> code 0, not restarting</span></span></code></pre></div>
+  </figure>
+</div>
+<p>실제 위에서 보시면 fly.io 대시보드의 log 파일인데요.</p>
+<p>다시 mypocketbase 서버를 브라우저에서 접속하면 가상머신이 재 시작됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">2023-09-09T02:52:32.904 proxy<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> machine started in 475.703656ms
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:52:33.012 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> 2023/09/09 02:52:33 Server started at http://0.0.0.0:8080
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:52:33.012 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> ├─ REST API: http://0.0.0.0:8080/api/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:52:33.012 app<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> └─ Admin UI: http://0.0.0.0:8080/_/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2023-09-09T02:52:33.089 proxy<span class="o">[</span>5683d449f16328<span class="o">]</span> nrt <span class="o">[</span>info<span class="o">]</span> machine became reachable in 185.453966ms</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 재시작되었네요.</p>
+<p>그러면, 다른 방법으로 관리자 비밀번호를 초기화하겠습니다</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  mypocketbase&gt; fly ssh console
+</span></span><span class="line"><span class="cl">Connecting to fdaa:0:57cc:a7b:17c:c93c:a25a:2... <span class="nb">complete</span>
+</span></span><span class="line"><span class="cl">5683d449f16328:/# apk add sqlite
+</span></span><span class="line"><span class="cl">fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/APKINDEX.tar.gz
+</span></span><span class="line"><span class="cl">fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/community/x86_64/APKINDEX.tar.gz
+</span></span><span class="line"><span class="cl"><span class="o">(</span>1/2<span class="o">)</span> Installing readline <span class="o">(</span>8.2.1-r1<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">(</span>2/2<span class="o">)</span> Installing sqlite <span class="o">(</span>3.41.2-r2<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Executing busybox-1.36.1-r2.trigger
+</span></span><span class="line"><span class="cl">OK: <span class="m">16</span> MiB in <span class="m">29</span> packages
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">5683d449f16328:/# <span class="nb">cd</span> pb
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# <span class="nb">cd</span> pb_data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb/pb_data# sqlite3 data.db</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 서버에 접속하면 apk 명령어로 sqlite 패키지를 설치합니다.</p>
+<p>그리고 pb_data로 가서 sqlite3 data.db 파일을 읽어 들입니다.</p>
+<p>거기 보시면 _admins 테이블이 있는데요.</p>
+<p>아래처럼 관리자 계정을 보유하고 있는 테이블입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">CREATE TABLE <span class="sb">`</span>_admins<span class="sb">`</span> <span class="o">(</span>
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>id<span class="sb">`</span>              TEXT PRIMARY KEY NOT NULL,
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>avatar<span class="sb">`</span>          INTEGER DEFAULT <span class="m">0</span> NOT NULL,
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>email<span class="sb">`</span>           TEXT UNIQUE NOT NULL,
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>tokenKey<span class="sb">`</span>        TEXT UNIQUE NOT NULL,
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>passwordHash<span class="sb">`</span>    TEXT NOT NULL,
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>lastResetSentAt<span class="sb">`</span> TEXT DEFAULT <span class="s2">&#34;&#34;</span> NOT NULL,
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>created<span class="sb">`</span>         TEXT DEFAULT <span class="o">(</span>strftime<span class="o">(</span><span class="s1">&#39;%Y-%m-%d %H:%M:%fZ&#39;</span><span class="o">))</span> NOT NULL,
+</span></span><span class="line"><span class="cl">				<span class="sb">`</span>updated<span class="sb">`</span>         TEXT DEFAULT <span class="o">(</span>strftime<span class="o">(</span><span class="s1">&#39;%Y-%m-%d %H:%M:%fZ&#39;</span><span class="o">))</span> NOT NULL
+</span></span><span class="line"><span class="cl">			<span class="o">)</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 실제 select 문으로 뭐가 있는지 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">      sqlite&gt; <span class="k">select</span> * from _admins<span class="p">;</span>
+</span></span><span class="line"><span class="cl">pf9dwxzry0bbq3s<span class="p">|</span>0<span class="p">|</span>cpro95@daum.net<span class="p">|</span>vtiyYEj7JgVr56seBYKh4cKkznHjXyr6ojnyr29iL2hNCwEx8B<span class="p">|</span><span class="nv">$2</span>a<span class="nv">$12$OmX1Ou29yVS6metxZAgYDO</span>/Xleur0qfYsIEM2k7r8Pjh42ZXAprdy<span class="o">||</span>2023-09-09 02:39:48.398Z<span class="p">|</span>2023-09-09 02:39:48.398Z</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 해시된 암호 같은게 있는데요.</p>
+<p>우리가 필요한 건 email과 passwordHash입니다.</p>
+<p>pocketbase는 가장 기본적인 crypto 라이브러리를 이용해서 hash 파일을 생성하는데요.</p>
+<p>구글에 &ldquo;nodejs password hash online&rdquo; 이라고 치면 온라인으로 일반 문자열을 해쉬문자열로 바꿔주는 웹앱이 있습니다.</p>
+<p>다음 그림과 같이 &ldquo;12345678&quot;에 해당하는 해쉬를 찾습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjTeKmG2vPtFfBWspMg6hthnZ_IF4alciwflaRgqjOZ9mmsGJLAldI0sDLrLFZYdLLpeFq0wWL-c-grsY2EWekcRVva6ZEDvFFQ9m8t_VQlC9ECk9MVTgP9wrnd9Xc9ugH_nW0UXDbR_Xt2d-ndIBDaBrc_X57Vr-mmDwDVUjnsJaDuX3APOL218GZ3K60"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 sqlite update문으로 passwordHash값을 바꿔치기하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">update _admins <span class="nb">set</span> <span class="nv">passwordHash</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="nv">$2</span><span class="s2">a</span><span class="nv">$08$qeqzNleYmDf87kND</span><span class="s2">.LfgU.MhmE9qQ1aecPtlpeEmm.zd.dq5UAwr.&#34;</span> where <span class="nv">email</span> <span class="o">=</span> <span class="s2">&#34;cpro95@daum.net&#34;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하시면 됩니다.</p>
+<p>이제 다시 로그인해보면 암호를 12345678로 해서 접속이 될 겁니다.</p>
+<p>당연히 새로 접속하시면 관리자 비밀번호를 아래와 같이 꼭 바꿔주시기 바랍니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEghSehv4N62oV7x7rytuP0GZm4A_vw09H-SicCxlXriBfD1xu0xRZ2lszQK9xCYxzzyaky-3XV_qM7-b5aHWopoldfPz0fc2iM1k2SRFemzhnglYYQKlvTzWg9XY5opG6RzPCxGWI3cqpwno6wYy_V-eZdiqeVuhzODmmyX4aneUyZm-fZ7RmLWTKFbRKQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="3-pb_public-폴더에-대해-알아보기">3. pb_public 폴더에 대해 알아보기</h2>
+<p>아까 위에서 우리가 pb_data 폴더가 실제 DB가 있는 폴더라고 했습니다.</p>
+<p>포켓베이스는 pb_public 폴더를 지원하는데요.</p>
+<p>이 폴더에 HTML 파일을 위치시키면 이 파일을 웹 호스팅하게 됩니다.</p>
+<p>그러면 이 pb_public 폴더에 리액트로 Single Page App을 만들고 빌드 해서 여기에 넣으면 리액트 앱이 웹상에서 실행되겠죠.</p>
+<p>일단 로컬 파일에 빈 폴더로 리액트 앱을 하나 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx create-react-app pb-app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> pb-app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm start</span></span></code></pre></div>
+  </figure>
+</div>
+<p>리액트 앱을 만들었으면 App.js에서 Hello React 문구만 다른 걸로 바꾸십시오.</p>
+<p>그래야 나중에 내가 만든 게 제대로 빌드되는지 확인할 수 있으니까요?</p>
+<p>그리고 실제 리액트 앱을 build 합시다.</p>
+<p>&ldquo;npm run build&quot;를 실행하면 리액트 앱이 &ldquo;build&rdquo; 폴더에 만들어지는데요.</p>
+<p>우리는 이 build 폴더를 Fly.io 가상서버로 올려야 합니다.</p>
+<p>SFTP를 이용할 거라서 build 폴더를 압축해서 build.zip 파일로 만듭니다.</p>
+<p>그리고 아래와 같이 sftp 접속하면 됩니다.</p>
+<p>&lsquo;-a&rsquo; 옵션이 아무 데서나 해당 앱을 지정할 수 있는 옵션입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  pb-app git:<span class="o">(</span>main<span class="o">)</span> ✗ fly ssh sftp shell -a mypocketbase
+</span></span><span class="line"><span class="cl">» <span class="nb">cd</span> pb
+</span></span><span class="line"><span class="cl"><span class="o">[</span>/pb/<span class="o">]</span>
+</span></span><span class="line"><span class="cl">» ls
+</span></span><span class="line"><span class="cl">pb_data/
+</span></span><span class="line"><span class="cl">LICENSE.md
+</span></span><span class="line"><span class="cl">pocketbase
+</span></span><span class="line"><span class="cl">CHANGELOG.md
+</span></span><span class="line"><span class="cl">»</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 pb 폴더로 들어가면 우리가 ssh console로 봤던 파일들이 있습니다.</p>
+<p>이제 이 폴더에 sftp의 put 명령어를 이용해서 로컬에 있는, 즉, 내 컴퓨터에 있는 build.zip 파일을 원격으로 전송하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">» put build.zip
+</span></span><span class="line"><span class="cl"><span class="m">191228</span> bytes written
+</span></span><span class="line"><span class="cl">» ls
+</span></span><span class="line"><span class="cl">pb_data/
+</span></span><span class="line"><span class="cl">build.zip
+</span></span><span class="line"><span class="cl">LICENSE.md
+</span></span><span class="line"><span class="cl">pocketbase
+</span></span><span class="line"><span class="cl">CHANGELOG.md
+</span></span><span class="line"><span class="cl">»</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 전송이 끝났으니까요.</p>
+<p>SFTP는 Ctrl+C 로 접속을 끝내면 됩니다.</p>
+<p>이제 다시 SSH 접속을 해볼까요?s</p>
+<p>그리고 build.zip 파일을 압출 풀고 이름을 pb_public 라는 이름으로 바꾸겠습니다.</p>
+<p>그리고 build.zip 파일도 지우고요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  pb-app git:<span class="o">(</span>main<span class="o">)</span> ✗ fly ssh console -a mypocketbase
+</span></span><span class="line"><span class="cl">Connecting to fdaa:57cc:7b17c:c:a25a:2... <span class="nb">complete</span>
+</span></span><span class="line"><span class="cl">5683d449f16328:/# <span class="nb">cd</span> pb
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# ls -al
+</span></span><span class="line"><span class="cl">total <span class="m">45340</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">4</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 03:24 .
+</span></span><span class="line"><span class="cl">drwxr-xr-x   <span class="m">21</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 02:52 ..
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root         <span class="m">84985</span> Sep  <span class="m">6</span> 04:14 CHANGELOG.md
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root          <span class="m">1090</span> Sep  <span class="m">6</span> 04:14 LICENSE.md
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root        <span class="m">191228</span> Sep  <span class="m">9</span> 03:24 build.zip
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">3</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 03:11 pb_data
+</span></span><span class="line"><span class="cl">-rwxr-xr-x    <span class="m">1</span> root     root      <span class="m">46129152</span> Sep  <span class="m">6</span> 04:19 pocketbase
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# unzip build.zip
+</span></span><span class="line"><span class="cl">Archive:  build.zip
+</span></span><span class="line"><span class="cl">   creating: build/
+</span></span><span class="line"><span class="cl">  inflating: build/favicon.ico
+</span></span><span class="line"><span class="cl">  inflating: build/index.html
+</span></span><span class="line"><span class="cl">  inflating: build/logo512.png
+</span></span><span class="line"><span class="cl">  inflating: build/asset-manifest.json
+</span></span><span class="line"><span class="cl">   creating: build/static/
+</span></span><span class="line"><span class="cl">  inflating: build/manifest.json
+</span></span><span class="line"><span class="cl">  inflating: build/robots.txt
+</span></span><span class="line"><span class="cl">  inflating: build/logo192.png
+</span></span><span class="line"><span class="cl">   creating: build/static/css/
+</span></span><span class="line"><span class="cl">   creating: build/static/js/
+</span></span><span class="line"><span class="cl">   creating: build/static/media/
+</span></span><span class="line"><span class="cl">  inflating: build/static/css/main.073c9b0a.css
+</span></span><span class="line"><span class="cl">  inflating: build/static/css/main.073c9b0a.css.map
+</span></span><span class="line"><span class="cl">  inflating: build/static/js/787.e3df66b9.chunk.js.map
+</span></span><span class="line"><span class="cl">  inflating: build/static/js/main.2e7d9145.js.map
+</span></span><span class="line"><span class="cl">  inflating: build/static/js/main.2e7d9145.js
+</span></span><span class="line"><span class="cl">  inflating: build/static/js/main.2e7d9145.js.LICENSE.txt
+</span></span><span class="line"><span class="cl">  inflating: build/static/js/787.e3df66b9.chunk.js
+</span></span><span class="line"><span class="cl">  inflating: build/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# ls -al
+</span></span><span class="line"><span class="cl">total <span class="m">45344</span>
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">5</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 03:24 .
+</span></span><span class="line"><span class="cl">drwxr-xr-x   <span class="m">21</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 02:52 ..
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root         <span class="m">84985</span> Sep  <span class="m">6</span> 04:14 CHANGELOG.md
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root          <span class="m">1090</span> Sep  <span class="m">6</span> 04:14 LICENSE.md
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">3</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 03:13 build
+</span></span><span class="line"><span class="cl">-rw-r--r--    <span class="m">1</span> root     root        <span class="m">191228</span> Sep  <span class="m">9</span> 03:24 build.zip
+</span></span><span class="line"><span class="cl">drwxr-xr-x    <span class="m">3</span> root     root          <span class="m">4096</span> Sep  <span class="m">9</span> 03:11 pb_data
+</span></span><span class="line"><span class="cl">-rwxr-xr-x    <span class="m">1</span> root     root      <span class="m">46129152</span> Sep  <span class="m">6</span> 04:19 pocketbase
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# mv build pb_public
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# rm build.zip
+</span></span><span class="line"><span class="cl">5683d449f16328:/pb# exit</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 끝났습니다.</p>
+<p>이제 &lsquo;https://mypocketbase.fly.dev&rsquo; 주소로 들어가 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj6IdEC1FlKExuMIcGvec7ZTtoVaydkbDma_XRZJNLTjSeel_iLMzEf00AH6EzhaitydOzAwjdTgwwIPrNBeBKdGdJtQsZWdirYKLILzkVf2EW-dp7sDENI0M9J2_XmDwf3ggV7J3ZhNk8rFZFQ6tC3YevO4N3l-4MbZoxlzyYl01j5TfYvEt6f9pCZiZA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 리액트 앱이 웹 호스팅 되고 있습니다</p>
+<p>아까 Hello 문구를 바꾼 것도 잘 적용되고 있네요.</p>
+<p>어떤가요?</p>
+<p>포켓베이스가 웹 애플리케이션을 만드는데 필요한 모든 걸 제공해 주네요.</p>
+<p>다음 시간에는 본격적인 포켓베이스 API를 공부해 보겠습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/pocketbase/" role="button">pocketbase</a>
+        <a class="btn btn-light" href="/tags/fly.io/" role="button">fly.io</a>
+        <a class="btn btn-light" href="/tags/pb_public/" role="button">pb_public</a>
+        <a class="btn btn-light" href="/tags/server/" role="button">server</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-10-how-to-make-react-login-signup-register-with-pocketbase-server/">PocketBase 활용법 2탄. 리액트(React) 앱 만들기 - 유저 로그인, 가입</a></h2>
+                  <p>PocketBase 활용법 2탄. 리액트(React) 앱 만들기 - 유저 로그인, 가입</p>
+                  <p>
+  <small>September 10, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-09-04-howto-rust-web-server-web-application-with-actix-web/">Rust 웹 서버 만들기 1편. Actix Web 그리고 Fly.io에 배포하기</a></h2>
+                  <p>Rust로 가볍고 빠른 웹 서버 만들기 그리고 실제 서버로 배포하기</p>
+                  <p>
+  <small>September 4, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>8&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-08-21-how-to-avoid-my-fly-io-app-sleep-issue/">SvelteKit 실전 예제 6편 - Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</a></h2>
+                  <p>Fly.io에 배포한 앱을 영구히 잠들지 않게 하는 방법</p>
+                  <p>
+  <small>August 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

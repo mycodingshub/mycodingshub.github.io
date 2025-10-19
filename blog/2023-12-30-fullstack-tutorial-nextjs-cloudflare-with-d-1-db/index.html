@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)</title>
+<meta name="description" content="fullstack" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-12-30-fullstack-tutorial-nextjs-cloudflare-with-d-1-db/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)" />
+<meta property="og:description" content="fullstack" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-12-30-fullstack-tutorial-nextjs-cloudflare-with-d-1-db/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-12-30T07:24:54Z" />
+<meta property="article:modified_time" content="2023-12-30T07:24:54Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="cloudflare" />
+<meta property="article:tag" content="d1" />
+<meta property="article:tag" content="drizzle" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)" />
+<meta name="twitter:description" content="fullstack" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)\"",
+  "description": "\"fullstack\"",
+  "datePublished": "\"2023-12-30T07:24:54Z\"",
+  "dateModified": "\"2023-12-30T07:24:54Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-12-30-fullstack-tutorial-nextjs-cloudflare-with-d-1-db/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)</h1>
+        <p>
+  <small>December 30, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>최근에 풀스택 강의를 여러 프레임워크로 시도했었는데요.</p>
+<p>Next.Js가 빠졌었네요.</p>
+<p>그래서 오늘은 Next.js를 이용해서 Cloudflare Pages에 배포까지 해보겠습니다.</p>
+<p>전체 강의 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-06-introduction-cloudflare-pages-workers-d-1-react-full-stack">풀스택 강의 1편. Cloudflare Pages + Workers + D1 + React로 풀스택 개발하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-09-fullstack-cloudflare-pages-workers-d-1-react-part-2">풀스택 강의 2편. Cloudflare Pages 안에서 Workers를 이용한 D1 DB 제어하는 API 만들기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-10-fullstack-remix-cloudflare-pages-d-1-db-drizzle-orm">풀스택 강의 4편. Remix + Cloudflare Pages + D1 DB + Drizzle ORM</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-12-30-fullstack-tutorial-nextjs-cloudflare-with-d-1-db">풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-02-25-fullstack-tutorial-remix-cloudflare-with-kv-and-github-server">풀스택 강의 6편. Remix로 Github 저장소를 DB로 이용해서 KV와 함께 Cloudflare에 배포하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-03-03-fullstack-tutorial-transform-vite-react-app-with-hono-framework">풀스택 강의 7편. Vite React 템플릿을 Hono를 이용하여 풀스택 앱으로 개조하기</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ol>
+<li>
+<p><a href="#1-nextjs-%ed%85%9c%ed%94%8c%eb%a6%bf-%ec%84%a4%ec%b9%98">Next.js 템플릿 설치</a></p>
+</li>
+<li>
+<p><a href="#2-wrangler%eb%a1%9c-%ea%b0%9c%eb%b0%9c-%ec%84%9c%eb%b2%84-%eb%8f%8c%eb%a6%ac%ea%b8%b0">Wrangler로 개발 서버 돌리기</a></p>
+</li>
+<li>
+<p><a href="#3-d1-db-%ec%84%b8%ed%8c%85">D1 DB 세팅</a></p>
+</li>
+<li>
+<p><a href="#4-drizzle-schema-%eb%a7%8c%eb%93%a4%ea%b8%b0">Drizzle Schema 만들기</a></p>
+</li>
+<li>
+<p><a href="#5-db-%eb%a7%88%ec%9d%b4%ea%b7%b8%eb%a0%88%ec%9d%b4%ec%85%98-%ed%8c%8c%ec%9d%bc-%eb%a7%8c%eb%93%a4%ea%b8%b0">DB 마이그레이션 파일 만들기</a></p>
+</li>
+<li>
+<p><a href="#6-db%ec%97%90-%ed%85%8c%ec%9d%b4%eb%b8%94-%eb%a7%8c%eb%93%a4%ea%b8%b0">DB에 테이블 만들기</a></p>
+</li>
+<li>
+<p><a href="#7-env-%ec%84%b8%ed%8c%85">Env 세팅</a></p>
+</li>
+<li>
+<p><a href="#8-nextjs%ec%97%90%ec%84%9c-db-%eb%b6%88%eb%9f%ac%ec%98%a4%ea%b8%b0">Next.js에서 DB 불러오기</a></p>
+</li>
+<li>
+<p><a href="#9-%ea%b0%9c%eb%b0%9c-%ec%84%9c%eb%b2%84%eb%a5%bc-%ec%9c%84%ed%95%b4-npm-scripts-%ec%84%a4%ec%a0%95%ed%95%98%ea%b8%b0">개발 서버를 위해 npm scripts 설정하기</a></p>
+</li>
+<li>
+<p><a href="#10-add-todo-%ec%9e%91%ec%84%b1%ed%95%98%ea%b8%b0">ADD Todo 작성하기</a></p>
+</li>
+<li>
+<p><a href="#11-post-%ec%97%94%eb%93%9c%ed%8f%ac%ec%9d%b8%ed%8a%b8-%ec%9e%91%ec%84%b1%ed%95%98%ea%b8%b0">POST 엔드포인트 작성하기</a></p>
+</li>
+<li>
+<p><a href="#12-delete-%ea%b4%80%eb%a0%a8-%ec%bd%94%eb%93%9c-%ec%9e%91%ec%84%b1%ed%95%98%ea%b8%b0">DELETE 관련 코드 작성하기</a></p>
+</li>
+<li>
+<p><a href="#13-%eb%b0%b0%ed%8f%ac%ed%95%98%ea%b8%b0">배포하기</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-nextjs-템플릿-설치">1. Next.js 템플릿 설치</h2>
+<p>기본적인 템플릿을 아래와 같이 만들었습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm create next-app@latest nextjs-cloudflare
+</span></span><span class="line"><span class="cl">npm i -D @cloudflare/next-on-pages
+</span></span><span class="line"><span class="cl">npm i wrangler</span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 @cloudflare/next-on-pages 패키지를 설치했는데요.</p>
+<p>이 패키지가 Cloudflare가 Next.js를 다루는 패키지입니다.</p>
+<p>기본적으로 Next.js 앱을 빌드하면 &lsquo;.next&rsquo; 폴더가 생기는데요.</p>
+<p>Cloudflare는 다른 방식으로 Next.js 앱을 처리합니다.</p>
+<p>아까 설치한 @cloudflare/next-on-pages 패키지의 CLI 명령어로 빌드시켜야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx @cloudflare/next-on-pages                                                 
+</span></span><span class="line"><span class="cl">⚡️ @cloudflare/next-on-pages CLI v.1.8.2
+</span></span><span class="line"><span class="cl">⚡️ Detected Package Manager: npm <span class="o">(</span>9.6.7<span class="o">)</span>
+</span></span><span class="line"><span class="cl">⚡️ Preparing project...
+</span></span><span class="line"><span class="cl">⚡️ Project is ready
+</span></span><span class="line"><span class="cl">⚡️ Building project...
+</span></span><span class="line"><span class="cl">▲  Vercel CLI 33.0.1
+</span></span><span class="line"><span class="cl">▲  WARNING: You should not upload the <span class="sb">`</span>.next<span class="sb">`</span> directory.
+</span></span><span class="line"><span class="cl">▲  Installing dependencies...
+</span></span><span class="line"><span class="cl">▲  up to date in 1s
+</span></span><span class="line"><span class="cl">▲  <span class="m">140</span> packages are looking <span class="k">for</span> funding
+</span></span><span class="line"><span class="cl">▲  run <span class="sb">`</span>npm fund<span class="sb">`</span> <span class="k">for</span> details
+</span></span><span class="line"><span class="cl">▲  Detected Next.js version: 14.0.4
+</span></span><span class="line"><span class="cl">▲  Detected <span class="sb">`</span>package-lock.json<span class="sb">`</span> generated by npm 7+
+</span></span><span class="line"><span class="cl">▲  Running <span class="s2">&#34;npm run build&#34;</span>
+</span></span><span class="line"><span class="cl">▲  &gt; nextjs-cloudflare@0.1.0 build
+</span></span><span class="line"><span class="cl">▲  &gt; next build
+</span></span><span class="line"><span class="cl">▲  ▲ Next.js 14.0.4
+</span></span><span class="line"><span class="cl">▲  
+</span></span><span class="line"><span class="cl">▲  Creating an optimized production build ...
+</span></span><span class="line"><span class="cl">▲  ✓ Compiled successfully
+</span></span><span class="line"><span class="cl">▲  Linting and checking validity of types ...
+</span></span><span class="line"><span class="cl">▲  Collecting page data ...
+</span></span><span class="line"><span class="cl">▲  ⚠ Using edge runtime on a page currently disables static generation <span class="k">for</span> that page
+</span></span><span class="line"><span class="cl">▲  Generating static pages <span class="o">(</span>0/5<span class="o">)</span> ...
+</span></span><span class="line"><span class="cl">▲  Generating static pages <span class="o">(</span>1/5<span class="o">)</span>
+</span></span><span class="line"><span class="cl">▲  Generating static pages <span class="o">(</span>2/5<span class="o">)</span>
+</span></span><span class="line"><span class="cl">▲  Generating static pages <span class="o">(</span>3/5<span class="o">)</span>
+</span></span><span class="line"><span class="cl">▲  ✓ Generating static pages <span class="o">(</span>5/5<span class="o">)</span>
+</span></span><span class="line"><span class="cl">▲  Finalizing page optimization ...
+</span></span><span class="line"><span class="cl">▲  Collecting build traces ...
+</span></span><span class="line"><span class="cl">▲  
+</span></span><span class="line"><span class="cl">▲  Route <span class="o">(</span>app<span class="o">)</span>                              Size     First Load JS
+</span></span><span class="line"><span class="cl">▲  ┌ ○ /                                    <span class="m">137</span> B            <span class="m">82</span> kB
+</span></span><span class="line"><span class="cl">▲  ├ ○ /_not-found                          <span class="m">875</span> B          82.7 kB
+</span></span><span class="line"><span class="cl">▲  └ ℇ /api/hello                           <span class="m">0</span> B                <span class="m">0</span> B
+</span></span><span class="line"><span class="cl">▲  + First Load JS shared by all            81.8 kB
+</span></span><span class="line"><span class="cl">▲  ├ chunks/938-5e061ba0d46125b1.js       26.7 kB
+</span></span><span class="line"><span class="cl">▲  ├ chunks/fd9d1056-735d320b4b8745cb.js  53.3 kB
+</span></span><span class="line"><span class="cl">▲  ├ chunks/main-app-7818b5e7b9b78894.js  <span class="m">220</span> B
+</span></span><span class="line"><span class="cl">▲  └ chunks/webpack-cb11c3e0a0873661.js   1.64 kB
+</span></span><span class="line"><span class="cl">▲  ○  <span class="o">(</span>Static<span class="o">)</span>        prerendered as static content
+</span></span><span class="line"><span class="cl">▲  ℇ  <span class="o">(</span>Edge Runtime<span class="o">)</span>  server-rendered on demand using the Edge Runtime
+</span></span><span class="line"><span class="cl">▲  Traced Next.js server files in: 728.941ms
+</span></span><span class="line"><span class="cl">▲  Created all serverless functions in: 1.422s
+</span></span><span class="line"><span class="cl">▲  Collected static files <span class="o">(</span>public/, static/, .next/static<span class="o">)</span>: 6.176ms
+</span></span><span class="line"><span class="cl">▲  Build Completed in .vercel/output <span class="o">[</span>31s<span class="o">]</span>
+</span></span><span class="line"><span class="cl">⚡️ Completed <span class="sb">`</span>npx vercel build<span class="sb">`</span>.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">⚡️ Build Summary <span class="o">(</span>@cloudflare/next-on-pages v1.8.2<span class="o">)</span>
+</span></span><span class="line"><span class="cl">⚡️ 
+</span></span><span class="line"><span class="cl">⚡️ Edge Function Routes <span class="o">(</span>1<span class="o">)</span>
+</span></span><span class="line"><span class="cl">⚡️   - /api/hello
+</span></span><span class="line"><span class="cl">⚡️ 
+</span></span><span class="line"><span class="cl">⚡️ Prerendered Routes <span class="o">(</span>3<span class="o">)</span>
+</span></span><span class="line"><span class="cl">⚡️   ┌ /
+</span></span><span class="line"><span class="cl">⚡️   ├ /favicon.ico
+</span></span><span class="line"><span class="cl">⚡️   └ /index.rsc
+</span></span><span class="line"><span class="cl">⚡️ 
+</span></span><span class="line"><span class="cl">⚡️ Other Static Assets <span class="o">(</span>30<span class="o">)</span>
+</span></span><span class="line"><span class="cl">⚡️   ┌ /_app.rsc.json
+</span></span><span class="line"><span class="cl">⚡️   ├ /_document.rsc.json
+</span></span><span class="line"><span class="cl">⚡️   ├ /_error.rsc.json
+</span></span><span class="line"><span class="cl">⚡️   ├ /404.html
+</span></span><span class="line"><span class="cl">⚡️   └ ... <span class="m">26</span> more
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">⚡️ Build log saved to <span class="s1">&#39;.vercel/output/static/_worker.js/nop-build-log.json&#39;</span>
+</span></span><span class="line"><span class="cl">⚡️ Generated <span class="s1">&#39;.vercel/output/static/_worker.js/index.js&#39;</span>.
+</span></span><span class="line"><span class="cl">⚡️ Build completed in 0.58s</span></span></code></pre></div>
+  </figure>
+</div>
+<p>자체적으로 &rsquo;next build&rsquo;를 실행시키며 Cloudflare Pages에 맞게 조정해 주고 있습니다.</p>
+<hr>
+<h2 id="2-wrangler로-개발-서버-돌리기">2. Wrangler로 개발 서버 돌리기</h2>
+<p>Cloudflare CLI 명령 툴인 Wranlger로 개발 서버를 돌려야 합니다.</p>
+<p>단순하게 &rsquo;npm run dev&rsquo;로 하시면 Cloudflare가 제공해 주는 Pages와 Function 부분을 이용할 수 없습니다.</p>
+<p>그래서 다음과 같이 하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx wrangler pages dev ./.vercel/output/static --compatibility-date<span class="o">=</span>2023-12-26 --compatibility-flag<span class="o">=</span><span class="s2">&#34;nodejs_compat&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 명령어를 보시면 @cloudflare/next-on-pages 패키지가 만든 &lsquo;.vercel&rsquo; 폴더가 보이는데요.</p>
+<p>이 &lsquo;.vercel&rsquo; 폴더에 전체 Next.js 앱이 빌드되어 있습니다.</p>
+<p>단순히 빌드된 폴더를 웹서빙해서 개발서버를 돌리는거죠.</p>
+<p>그리고 compatibility 관련 옵션이 두개가 있는데요.</p>
+<p>마지막 옵션인 &lsquo;&ndash;compatibility-flag=nodejs_compat&rsquo; 옵션이 아주 치명적입니다.</p>
+<p>이게 없으면 개발 서버가 작동 안 하죠.</p>
+<p>실제 배포했을 때도 이 compatibility flag 부분을 직접 Cloudflare 대시보드에서 지정해 줘야 합니다.</p>
+<p>Next.js와 Cloudflare 간의 호환성 부분을 지정해 주는 거라 보시면 됩니다.</p>
+<hr>
+<h2 id="3-d1-db-세팅">3. D1 DB 세팅</h2>
+<p>지난 시간부터 계속 이용했던 Drizzle ORM을 이용하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i drizzle-orm better-sqlite3
+</span></span><span class="line"><span class="cl">npm i -D @types/better-sqlite3 drizzle-kit</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 관련 패키지를 설치했으니 Cloudflare 계정에 D1 DB를 생성해야겠죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  nextjs-cloudflare git:<span class="o">(</span>main<span class="o">)</span> ✗ npx wrangler login
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">➜  nextjs-cloudflare git:<span class="o">(</span>main<span class="o">)</span> ✗ npx wrangler d1 create nextjs-db
+</span></span><span class="line"><span class="cl">✅ Successfully created DB <span class="s1">&#39;nextjs-db&#39;</span> in region APAC
+</span></span><span class="line"><span class="cl">Created your database using D1<span class="err">&#39;</span>s new storage backend. The new storage backend is not yet recommended <span class="k">for</span> production
+</span></span><span class="line"><span class="cl">workloads, but backs up your data via point-in-time restore.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[[</span>d1_databases<span class="o">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">binding</span> <span class="o">=</span> <span class="s2">&#34;DB&#34;</span> <span class="c1"># i.e. available in your Worker on env.DB</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_name</span> <span class="o">=</span> <span class="s2">&#34;nextjs-db&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">database_id</span> <span class="o">=</span> <span class="s2">&#34;4addda6-2dd1-4107-baaf-4ed4asdf238b&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>먼저, 로그인하면 웹브라우저에 Cloudflare로 로그인하라는 화면이 나옵니다.</p>
+<p>로그인하고 그다음에 d1 create 하시면 됩니다.</p>
+<p>이제 위에 나온 &lsquo;d1_databases&rsquo; 관련 내용을 wrangler.toml 파일에 저장하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="nx">name</span> <span class="p">=</span> <span class="s2">&#34;nextjs-cloudflare&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">compatibility_date</span> <span class="p">=</span> <span class="s2">&#34;2023-12-26&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">d1_databases</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">binding</span> <span class="p">=</span> <span class="s2">&#34;DB&#34;</span> <span class="c"># i.e. available in your Worker on env.DB</span>
+</span></span><span class="line"><span class="cl"><span class="nx">database_name</span> <span class="p">=</span> <span class="s2">&#34;nextjs-db&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">database_id</span> <span class="p">=</span> <span class="s2">&#34;4addda6-2dd1-4107-baaf-4ed4asdf238b&#34;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="4-drizzle-schema-만들기">4. Drizzle Schema 만들기</h2>
+<p>Todo 앱을 위한 DB 테이블을 만들어야 하는데요.</p>
+<p>Next.js 템플릿 만들 때 src 폴더를 선택했다면 src 폴더 밑에 db 폴더를 만들고 그 밑에 &lsquo;schema.ts&rsquo; 파일을 아래와 같이 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">integer</span><span class="p">,</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">sqliteTable</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/sqlite-core&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">todos</span> <span class="o">=</span> <span class="nx">sqliteTable</span><span class="p">(</span><span class="s2">&#34;todos&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">integer</span><span class="p">(</span><span class="s2">&#34;id&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">mode</span><span class="o">:</span> <span class="s2">&#34;number&#34;</span> <span class="p">}).</span><span class="nx">primaryKey</span><span class="p">({</span> <span class="nx">autoIncrement</span>: <span class="kt">true</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">text</span><span class="p">(</span><span class="s2">&#34;name&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isCompleted</span>: <span class="kt">integer</span><span class="p">(</span><span class="s2">&#34;isCompleted&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">mode</span><span class="o">:</span> <span class="s2">&#34;boolean&#34;</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">notNull</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="k">default</span><span class="p">(</span><span class="kc">false</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>DB 스키마는 지난 시간 강좌에서 본 그대로입니다.</p>
+<hr>
+<h2 id="5-db-마이그레이션-파일-만들기">5. DB 마이그레이션 파일 만들기</h2>
+<p>Drizzle을 이용해서 DB 스키마를 만들었으면 실제 SQL 문구를 만들어야 하는데요.</p>
+<p>drizzle-kit을 이용하면 쉽게 만들 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx drizzle-kit generate:sqlite --schema<span class="o">=</span>./src/db/schema.ts
+</span></span><span class="line"><span class="cl">drizzle-kit: v0.20.8
+</span></span><span class="line"><span class="cl">drizzle-orm: v0.29.2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Error: Transform failed with <span class="m">1</span> error:
+</span></span><span class="line"><span class="cl">/Users/cpro95/Codings/Javascript/blog/nextjs-cloudflare/src/db/schema.ts:3:7: ERROR: Transforming const to the configured target environment <span class="o">(</span><span class="s2">&#34;es5&#34;</span><span class="o">)</span> is not supported yet</span></span></code></pre></div>
+  </figure>
+</div>
+<p>에러가 났습니다.</p>
+<p>drizzle 패키지는 &rsquo;es5&rsquo;를 지원하지 않는데요.</p>
+<p>tsconfig.json 파일에서 compileOptions 부분에서 target 부분을 &rsquo;es6&rsquo;로 바꾸면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;compilerOptions&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;target&#34;</span><span class="p">:</span> <span class="s2">&#34;es6&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 마이그레이션을 실행해 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  nextjs-cloudflare git:<span class="o">(</span>main<span class="o">)</span> ✗ npx drizzle-kit generate:sqlite --schema<span class="o">=</span>./src/db/schema.ts
+</span></span><span class="line"><span class="cl">drizzle-kit: v0.20.8
+</span></span><span class="line"><span class="cl">drizzle-orm: v0.29.2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">1</span> tables
+</span></span><span class="line"><span class="cl">todos <span class="m">3</span> columns <span class="m">0</span> indexes <span class="m">0</span> fks
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>✓<span class="o">]</span> Your SQL migration file ➜ drizzle/0000_mixed_emma_frost.sql 🚀</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 drizzle 폴더 밑에 sql 파일이 생성됐습니다.</p>
+<p>한번 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">todos</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTOINCREMENT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">name</span><span class="o">`</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">	</span><span class="o">`</span><span class="n">isCompleted</span><span class="o">`</span><span class="w"> </span><span class="nb">integer</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">false</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>SQL 문구입니다.</p>
+<p>이 문구를 이용해서 테이블을 만들면 됩니다.</p>
+<hr>
+<h2 id="6-db에-테이블-만들기">6. DB에 테이블 만들기</h2>
+<p>이제 DB에 실제 테이블을 만들어야 하는데요.</p>
+<p>어떻게 만들까요?</p>
+<p>아까 Drizzle로 만들었던 마이그레이션 파일을 이용하면 됩니다.</p>
+<p>wrangler는 D1 DB 관련 로컬 개발을 위해 miniflare 패키지를 제공해 주는데요.</p>
+<p>&lsquo;&ndash;local&rsquo; 옵션을 주면 로컬에 실제 테스트 DB를 만들어 줍니다.</p>
+<p>이제 만들어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  nextjs-cloudflare git:<span class="o">(</span>main<span class="o">)</span> ✗ npx wrangler d1 execute nextjs-db --local --file<span class="o">=</span>./drizzle/0000_mixed_emma_frost.sql
+</span></span><span class="line"><span class="cl">🌀 Mapping SQL input into an array of statements
+</span></span><span class="line"><span class="cl">🌀 Executing on <span class="nb">local</span> database nextjs-db <span class="o">(</span>4a2bfda6-5291-4807-ba7f-4e742f60238b<span class="o">)</span> from .wrangler/state/v3/d1:</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 &lsquo;&ndash;local&rsquo; 옵션으로 실행했습니다.</p>
+<p>만약 &lsquo;&ndash;local&rsquo; 옵션을 지우고 실행하면 실제 Cloudflare 서버에서 실행됩니다.</p>
+<p>나중에 최종 개발됐을 때 실제 Cloudflare 서버에도 todos 테이블이 있어야 하니까 이 단계에서 &lsquo;&ndash;local&rsquo; 옵션을 빼고 실행해 주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx wrangler d1 execute nextjs-db --file<span class="o">=</span>./drizzle/0000_mixed_emma_frost.sql</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 로컬 개발 서버에 자체 DB까지 만들었으니까, 테스트를 위해 더미 데이터를 sql 테이블에 넣어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  nextjs-cloudflare git:<span class="o">(</span>main<span class="o">)</span> ✗ npx wrangler d1 execute nextjs-db --local --command<span class="o">=</span><span class="s2">&#34;insert into todos (name, isCompleted) values (&#39;test 1&#39;, 0);&#34;</span>
+</span></span><span class="line"><span class="cl">🌀 Mapping SQL input into an array of statements
+</span></span><span class="line"><span class="cl">🌀 Executing on <span class="nb">local</span> database nextjs-db <span class="o">(</span>4a2bfda6-5291-4807-ba7f-4e742f60238b<span class="o">)</span> from .wrangler/state/v3/d1:</span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 todos 테이블 스키마에 이상한 부분이 있는데요.</p>
+<p>바로 isCompleted가 숫자 0이 지정되었습니다.</p>
+<p>분명히 Drizzle에서는 Boolean 타입으로 지정했는데요.</p>
+<p>왜냐하면 Sqlite3는 Boolean 타입이 없습니다.</p>
+<p>Drizzle이 알아서 0을 false로 1을 true로 변환시켜 줍니다.</p>
+<p>그래서 위처럼 직접 sqlite3 명령어로 insert 해야 할 때는 숫자 0을 사용한 겁니다.</p>
+<p>잘 들어갔는지 터미널에서 확인해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  nextjs-cloudflare git:<span class="o">(</span>main<span class="o">)</span> ✗ npx wrangler d1 execute nextjs-db --local --command<span class="o">=</span><span class="s2">&#34;select * from todos&#34;</span>
+</span></span><span class="line"><span class="cl">🌀 Mapping SQL input into an array of statements
+</span></span><span class="line"><span class="cl">🌀 Executing on <span class="nb">local</span> database nextjs-db <span class="o">(</span>4a2bfda6-5291-4807-ba7f-4e742f60238b<span class="o">)</span> from .wrangler/state/v3/d1:
+</span></span><span class="line"><span class="cl">┌────┬────────┬─────────────┐
+</span></span><span class="line"><span class="cl">│ id │ name   │ isCompleted │
+</span></span><span class="line"><span class="cl">├────┼────────┼─────────────┤
+</span></span><span class="line"><span class="cl">│ <span class="m">1</span>  │ <span class="nb">test</span> <span class="m">1</span> │ <span class="m">0</span>           │
+</span></span><span class="line"><span class="cl">└────┴────────┴─────────────┘</span></span></code></pre></div>
+  </figure>
+</div>
+<p>지금까지 아주 잘되고 있네요.</p>
+<p>테스트를 위해 몇 개 더 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">➜  npx wrangler d1 execute nextjs-db --local --command<span class="o">=</span><span class="s2">&#34;insert into todos (name, isCompleted) values (&#39;test 2&#39;, 1);&#34;</span>
+</span></span><span class="line"><span class="cl">➜  npx wrangler d1 execute nextjs-db --local --command<span class="o">=</span><span class="s2">&#34;insert into todos (name, isCompleted) values (&#39;test 3&#39;, 0);&#34;</span>
+</span></span><span class="line"><span class="cl">➜  npx wrangler d1 execute nextjs-db --local --command<span class="o">=</span><span class="s2">&#34;insert into todos (name, isCompleted) values (&#39;test 4&#39;, 1);&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">➜  nextjs-cloudflare git:<span class="o">(</span>main<span class="o">)</span> ✗ npx wrangler d1 execute nextjs-db --local --command<span class="o">=</span><span class="s2">&#34;select * from todos&#34;</span>
+</span></span><span class="line"><span class="cl">🌀 Mapping SQL input into an array of statements
+</span></span><span class="line"><span class="cl">🌀 Executing on <span class="nb">local</span> database nextjs-db <span class="o">(</span>4a2bfda6-5291-4807-ba7f-4e742f60238b<span class="o">)</span> from .wrangler/state/v3/d1:
+</span></span><span class="line"><span class="cl">┌────┬────────┬─────────────┐
+</span></span><span class="line"><span class="cl">│ id │ name   │ isCompleted │
+</span></span><span class="line"><span class="cl">├────┼────────┼─────────────┤
+</span></span><span class="line"><span class="cl">│ <span class="m">1</span>  │ <span class="nb">test</span> <span class="m">1</span> │ <span class="m">0</span>           │
+</span></span><span class="line"><span class="cl">├────┼────────┼─────────────┤
+</span></span><span class="line"><span class="cl">│ <span class="m">2</span>  │ <span class="nb">test</span> <span class="m">2</span> │ <span class="m">1</span>           │
+</span></span><span class="line"><span class="cl">├────┼────────┼─────────────┤
+</span></span><span class="line"><span class="cl">│ <span class="m">3</span>  │ <span class="nb">test</span> <span class="m">3</span> │ <span class="m">0</span>           │
+</span></span><span class="line"><span class="cl">├────┼────────┼─────────────┤
+</span></span><span class="line"><span class="cl">│ <span class="m">4</span>  │ <span class="nb">test</span> <span class="m">4</span> │ <span class="m">1</span>           │
+</span></span><span class="line"><span class="cl">└────┴────────┴─────────────┘</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발을 위한 준비가 끝났네요.</p>
+<hr>
+<h2 id="7-env-세팅">7. Env 세팅</h2>
+<p>타입스크립트를 사용하고 있으니까, Cloudflare의 D1 DB에 대한 타입을 지정해 주는 게 좋습니다.</p>
+<p>src 폴더에 &rsquo;env.d.ts&rsquo; 파일을 아래와 같이 만들어 줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// /src/env.d.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">D1Database</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@cloudflare/workers-types&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">declare</span> <span class="nx">global</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">namespace</span> <span class="nx">NodeJS</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">interface</span> <span class="nx">ProcessEnv</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">DB</span><span class="o">:</span> <span class="nx">D1Database</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>사실 이렇게 안 해줘도 되는데요. 나중에 설명하겠습니다.</p>
+<hr>
+<h2 id="8-nextjs에서-db-불러오기">8. Next.js에서 DB 불러오기</h2>
+<p>App Router 방식으로 Next.js 템플릿을 설정했기 때문에 layout.tsx 파일과 page.tsx 파일이 있는데요.</p>
+<p>layout.tsx 파일은 건드릴 게 없고, page.tsx 파일만 건들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">todos</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@/db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">select</span><span class="p">().</span><span class="nx">from</span><span class="p">(</span><span class="nx">todos</span><span class="p">).</span><span class="nx">all</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col items-center justify-between p-24 space-y-10&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Next</span><span class="p">.</span><span class="nx">js</span> <span class="nx">Cloudflare</span> <span class="nx">D1</span> <span class="nx">Drizzle</span> <span class="nx">Todos</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">result</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">result</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">d</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex justify-start gap-5&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span> <span class="o">/</span> <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">isCompleted</span><span class="p">.</span><span class="nx">toString</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서 가장 중요한 부분이 바로 runtime 이란 변수를 &rsquo;edge&rsquo;로 설정해서 export 해야 하는데요.</p>
+<p>이렇게 하면 Cloudflare의 엣지 런타임에서 작동하게 됩니다.</p>
+<p>모든 서버 사이드 렌더링 컴포넌트에 위와 같이 runtime이 &rsquo;edge&rsquo;인 변수를 export 해야 합니다.</p>
+<p>이제 Cloudflare의 D1 DB를 Next.js 코드에서 사용해야 하는데요.</p>
+<p>아까 설정했던 wrangler.toml 파일에서 보시면 Cloudflare의 D1 DB 이름이 &lsquo;DB&rsquo;잖아요.</p>
+<p>그래서 단순하게 process.env.DB라고 가져오고 있습니다.</p>
+<p>우리가 아까 전에 &rsquo;env.d.ts&rsquo;파일 안에 DB 관련 타입을 설정했기 때문입니다.</p>
+<p>만약 &rsquo;env.d.ts&rsquo;파일을 안 만들었다면 process.env.DB 관련 아래와 같이 코드를 짜시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">D1Database</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@cloudflare/workers-types&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s1">&#39;edge&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span> <span class="nx">as</span> <span class="nx">unknown</span> <span class="nx">as</span> <span class="nx">D1Database</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하시면 타입스크립트가 오류를 뿜어내지 않고 제대로 작동하게 됩니다.</p>
+<p>또, 자세히 보시면 DB 관련 서버사이드 명령어를 그냥 쓰고 있는데요.</p>
+<p>바로 Next.js 가 기본적으로 서버 사이드 렌더링이기 때문입니다.</p>
+<p>클라이언트 렌더링이라면 useEffect 훅을 이용해서 &lsquo;/api/get-todos&rsquo; 로 fetch 해서 데이터를 가져왔겠죠.</p>
+<p>당연히 get-todos에 해당하는 API 엔드 포인트로 만들어야 하고요.</p>
+<p>개발 서버를 돌려야 하는데요.</p>
+<p>여기서 조금 귀찮은 부분이 생깁니다.</p>
+<hr>
+<h2 id="9-개발-서버를-위해-npm-scripts-설정하기">9. 개발 서버를 위해 npm scripts 설정하기</h2>
+<p>좀 더 개발을 쉽게 하기 위해 wrangler 명령어를 npm scripts로 만들겠습니다.</p>
+<p>package.json 파일에 아래와 같이 수정하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;scripts&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;dev&#34;</span><span class="p">:</span> <span class="s2">&#34;next dev&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;build&#34;</span><span class="p">:</span> <span class="s2">&#34;next build&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;start&#34;</span><span class="p">:</span> <span class="s2">&#34;next start&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;lint&#34;</span><span class="p">:</span> <span class="s2">&#34;next lint&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;pages:build&#34;</span><span class="p">:</span> <span class="s2">&#34;npx @cloudflare/next-on-pages&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;pages:deploy&#34;</span><span class="p">:</span> <span class="s2">&#34;npm run pages:build &amp;&amp; wrangler pages deploy .vercel/output/static&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;pages:watch&#34;</span><span class="p">:</span> <span class="s2">&#34;npx @cloudflare/next-on-pages --watch&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;pages:dev&#34;</span><span class="p">:</span> <span class="s2">&#34;npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="err">,</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위에서 보시면 build, deploy, watch, dev 4가지 모드가 있습니다.</p>
+<p>언뜻 보시면 터미널 2개 만들어서 한 곳에는 watch, 한 곳에는 dev를 돌리면 될 거 같은데요.</p>
+<p>여기서 정말 귀찮은 부분이 있는데요.</p>
+<p>Cloudflare가 아직 Next.js를 완벽히 지원해 주는 게 아니라서 watch 부분이 완벽히 핫 리로딩이 되지 않습니다.</p>
+<p>그래서 테스트 결과를 보기 위해서는 build하고 dev를 순차적으로 실행시켜야 하는데요.</p>
+<p>build 하는 부분이 정말 시간이 오래 걸립니다.</p>
+<p>Next.js가 Vercel이라는 회사에서 만들어서 자기네 서버를 사용하는 걸 기본으로 개발하다 보니까 조금 어렵네요.</p>
+<p>최근에는 Docker안에서 Next.js 서버를 돌리는 게 나왔다고 하는데요.</p>
+<p>그래도 Cloudflare 같은 공짜 Pages+Worker 부분을 사용하고 싶으면 귀찮은 것도 참아야죠.</p>
+<p>일단 build 명령 후 dev를 실행시키면 아래와 같이 나옵니다.</p>
+<p>브라우저로 들어가기 위해 &lsquo;b&rsquo; 버튼을 누르면 아래와 같이 나오고, 터미널 창에서는 console.log 부분이 나올 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiakEtFRAXvs00TY8YmQYSTvV_aghhtNCDLoiBUvxHEAwIDDej2rGlzmMxUZ4KMgruldaklgMCd5g9Ru9MAdjoIUR-BwRvgAtikRmf8M5_Xh2yS_OZuPN53ms-eoTQStVN9Kafwkeiuk0qojt0hk6hl77r3ZL4fpUqvB3xR_OxuBrght5ORSgJZcZVwJts"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>
+</span></span><span class="line"><span class="cl">  <span class="o">{</span> id: 1, name: <span class="s1">&#39;test 1&#39;</span>, isCompleted: <span class="nb">false</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">{</span> id: 2, name: <span class="s1">&#39;test 2&#39;</span>, isCompleted: <span class="nb">true</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">{</span> id: 3, name: <span class="s1">&#39;test 3&#39;</span>, isCompleted: <span class="nb">false</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="o">{</span> id: 4, name: <span class="s1">&#39;test 4&#39;</span>, isCompleted: <span class="nb">true</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">]</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Next.js의 서버 사이드 렌더링이 아주 잘 작동하고 있네요.</p>
+<hr>
+<h2 id="10-add-todo-작성하기">10. ADD Todo 작성하기</h2>
+<p>이제 Todo 를 추가하는 코드를 만들어야 하는데요.</p>
+<p>지금 Next.js 버전이 &lsquo;14.0.4&rsquo;인데요.</p>
+<p>당연히 ServerAction을 사용하면 될 줄 알고 여러 번 시도했었는데요.</p>
+<p>Cloudflare의 Worker로 변환이 아직 개발되지 않아서 이 방식은 지금 이용할 수 없습니다.</p>
+<p>그래서 예전처럼 API 엔드포인트를 만들어야 하는데요.</p>
+<p>먼저, UI 부분을 추가하겠습니다.</p>
+<p>UI 부분은 클라이언트 렌더링 방식으로 해야 해서 컴포넌트를 따로 만들겠습니다.</p>
+<p>src 폴더 밑에 components 폴더를 만들고, 아래와 같이 &lsquo;NewTodos.tsx&rsquo; 파일을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useRouter</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next/navigation&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">NewTodos</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">name</span><span class="p">,</span> <span class="nx">setName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="nx">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isCompleted</span><span class="p">,</span> <span class="nx">setIsCompleted</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="kr">boolean</span><span class="o">&gt;</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">router</span> <span class="o">=</span> <span class="nx">useRouter</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">handleSubmit</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">e</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">SyntheticEvent</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`/api/post-todos`</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/json&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">isCompleted</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">router</span><span class="p">.</span><span class="nx">refresh</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">setName</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">setIsCompleted</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;mx-8 mt-4 mb-6&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSubmit</span><span class="p">}</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;space-x-2 mb-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;title&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">name</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setName</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&#34;New todo&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border p-2&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">required</span>
+</span></span><span class="line"><span class="cl">        <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;checkbox&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;isCompleted&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">checked</span><span class="o">=</span><span class="p">{</span><span class="nx">isCompleted</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">setIsCompleted</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">checked</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;border p-2&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Add</span> <span class="nx">Todo</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 클라이언트 사이드 렌더링이라서 &lsquo;use client&rsquo; 디렉티브를 사용했습니다.</p>
+<p>그리고 역시나 fetch 부분을 이용해서 post 하고 있는데요.</p>
+<p>이제, post 관련 API 엔드포인트를 만들어야 합니다.</p>
+<hr>
+<h2 id="11-post-엔드포인트-작성하기">11. POST 엔드포인트 작성하기</h2>
+<p>Next.js에서 엔드포인트는 app 폴더 밑에 api 폴더를 만들고 그 밑에 관련 이름의 폴더를 만들고 최종적으로 route.ts 파일을 만드는 겁니다</p>
+<p><code>fetch('/api/post-todos'....</code> 이렇게 fetch 하고 있으니까 app/api/post-todos/route.ts 가 되겠네요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">todos</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextResponse</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">DataType</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isCompleted</span><span class="o">:</span> <span class="kr">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">POST</span><span class="p">(</span><span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">isCompleted</span> <span class="p">}</span> <span class="o">=</span> <span class="p">(</span><span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span> <span class="nx">as</span> <span class="nx">DataType</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">todos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">values</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">isCompleted</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">message</span><span class="o">:</span> <span class="s2">&#34;Created Todo&#34;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">200</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>drizzle 부분은 예전 강의를 찾아보시면 됩니다.</p>
+<p>이제 테스트해봐야겠네요.</p>
+<p>다시 page.tsx 파일에 NewTods 컴포넌트를 추가하고 새로 빌드해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">todos</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@/db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NewTodos</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@/components/NewTodos&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">select</span><span class="p">().</span><span class="nx">from</span><span class="p">(</span><span class="nx">todos</span><span class="p">).</span><span class="nx">all</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col items-center justify-between p-24 space-y-10&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Next</span><span class="p">.</span><span class="nx">js</span> <span class="nx">Cloudflare</span> <span class="nx">D1</span> <span class="nx">Drizzle</span> <span class="nx">Todos</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">NewTodos</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">result</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">result</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">d</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex justify-start gap-5&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span> <span class="o">/</span> <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">isCompleted</span><span class="p">.</span><span class="nx">toString</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>역시나 빌드하고 다시 개발 서버 돌리기가 너무 오래 걸리네요.</p>
+<p>정말 Cloudflare에서는 Next.js를 사용하기 싫어지네요.</p>
+<p>브라우저에서 보시면 아래와 같이 나오고 테스트를 위해 &rsquo;tttttttt&rsquo;를 입력하고 버튼을 누르면 작동이 아주 잘 되는 걸 볼 수 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEicjv4eYwdvI8TOyw1sVV2UB_pNv9OXVRZ_3pxpSmbmTJR8zaKdnZ0K5M1tOZvOSf3-BOsGlqMDuBrtighl-8pYH3iqUI2XM3ESPo0TDf3e3YNQmEBqs7LhtVzBDdBMMUxdaQdl5H91Tbxf6KqTUrCh1XaVWYarWsxqcWrh33vey4sCqu4I3SmUMmouVjs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="12-delete-관련-코드-작성하기">12. DELETE 관련 코드 작성하기</h2>
+<p>DELETE 코드를 위해 DeleteTodo.tsx 컴포넌트를 아래와 같이 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useRouter</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next/navigation&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">DeleteTodo</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">todoId</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">todoId</span><span class="o">:</span> <span class="nx">any</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">router</span> <span class="o">=</span> <span class="nx">useRouter</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">handleClick</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">e</span><span class="o">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">SyntheticEvent</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`/api/delete-todos`</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;delete&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;Content-Type&#34;</span><span class="o">:</span> <span class="s2">&#34;application/json&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">id</span><span class="o">:</span> <span class="nx">todoId</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">router</span><span class="p">.</span><span class="nx">refresh</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;button&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleClick</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Delete</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 delete-todos 엔드포인트는 아래와 같이 &lsquo;src/app/api/delete-todos/route.ts&rsquo;파일에 작성하시면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">todos</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextResponse</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">eq</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">type</span> <span class="nx">DataType</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span><span class="o">:</span> <span class="nx">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">DELETE</span><span class="p">(</span><span class="nx">request</span><span class="o">:</span> <span class="nx">Request</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">id</span> <span class="p">}</span> <span class="o">=</span> <span class="p">(</span><span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span> <span class="nx">as</span> <span class="nx">DataType</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="nx">todos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">todos</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">id</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">run</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span> <span class="nx">message</span><span class="o">:</span> <span class="s2">&#34;Deleted Todo&#34;</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">200</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 page.tsx 파일 부분에 DeleteTodo 컴포넌트만 id를 연계해서 추가하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">todos</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@/db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NewTodos</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@/components/NewTodos&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">DeleteTodo</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@/components/DeleteTodo&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">select</span><span class="p">().</span><span class="nx">from</span><span class="p">(</span><span class="nx">todos</span><span class="p">).</span><span class="nx">all</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex flex-col items-center justify-between p-24 space-y-10&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Next</span><span class="p">.</span><span class="nx">js</span> <span class="nx">Cloudflare</span> <span class="nx">D1</span> <span class="nx">Drizzle</span> <span class="nx">Todos</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">NewTodos</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">result</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">result</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">d</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="nx">li</span> <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex justify-start gap-5&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">name</span><span class="p">}</span> <span class="o">/</span> <span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">isCompleted</span><span class="p">.</span><span class="nx">toString</span><span class="p">()}</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="nx">DeleteTodo</span> <span class="nx">todoId</span><span class="o">=</span><span class="p">{</span><span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 다시 빌드 후 dev 개발 서버를 돌려보면 아래와 같이 잘 작동되는 게 보일 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh5RNVA8BBOHhL1OYNN4RKDu4UCNNYzg_U8pvYoRqmm28ptgZDCFmhBb4SvyFLZ-mTmnJQghrCBCbG52EUy4w3aDu4icppLkAr68QxbdyB-n0NT0i-HFFJ8J5TRNqzCslkA6KgsenJM_6VCtzZ0if8ijkNS8y28SZqwPtGrQGTW93mzSZMA5r6nSGUNGeY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 &rsquo;test 1&rsquo; 부분을 삭제한 후의 스크린샷입니다.</p>
+<p>제대로 작동하네요.</p>
+<hr>
+<h2 id="13-배포하기">13. 배포하기</h2>
+<p>이제 모든 개발이 끝났으니까 Cloudflare Pages로 배포해야 하는데요.</p>
+<p>여기서 조금 귀찮은 부분이 있는데요.</p>
+<p>Github Action으로 자동 배포하는 방식이 아닌 Wrangler를 사용한 터미널 커맨드 방식이라 처음 배포 명령어를 한 번하고 나서 Cloudflare 대시보드에서 세팅 부분을 바꾼 다음 다시 배포해야 합니다.</p>
+<p>일단 아래와 같이 배포합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm run pages:deploy</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 build후에 배포하게 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="sb">```</span>bash
+</span></span><span class="line"><span class="cl">No project selected. Would you like to create one or use an existing project?
+</span></span><span class="line"><span class="cl">❯ Create a new project
+</span></span><span class="line"><span class="cl">  Use an existing project
+</span></span><span class="line"><span class="cl">✔ Enter the name of your new project: … nextjs-todos
+</span></span><span class="line"><span class="cl">✔ Enter the production branch name: … main
+</span></span><span class="line"><span class="cl">✨ Successfully created the <span class="s1">&#39;nextjs-todos&#39;</span> project.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 처음 배포하는 거라 프로젝트 이름과 branch name을 물어봅니다.</p>
+<p>적당하게 위와 같이 하시면 됩니다.</p>
+<p>배포가 되면 Cloudflare 대시보드에 nextjs-todos 라는 Pages라는게 생기는데요.</p>
+<p>배포된 주소로 가보면 아래와 같은 에러가 나올 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhtAsq2dUsuprPGRPfvsAeyC5IcDPixwd_8T9zfsGxawQj0c9nEdQKQnfUZlKqWWTrXI49fvnVnjH43ag3YF3fAjvSmBZIPI4TYu8vMQMnTHo9sBAML77m432tV497EVRBF4TpLGGpxauzuG87nk2JGx-4aptcDEmICF17TYtMR-9Cefe71sl4V1sto3jg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>뭔가 익숙한 에러죠.</p>
+<p>바로 &rsquo;nodejs_compat&rsquo;관련 세팅을 해줘야 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEifGqY-lJYNKpQtpYiVwAyryjq-ROdkZSUAJkblbp7bg3mK_vuD1_78E7d6RyN5qsNJ6D2Kl1uNIkhfvIT9n-ZF-3gdyAmxdWbhqABs3BD1NpbPxQ5rljPt7Y8FN-KD3j3ftftOW_JCDHb5XUSxvq8GfXL-2w3ZsSN6zuigVY_FoIOxOpNMByy_WT7VXig"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 대시보드에서 Settings - Functions 부분으로 들어가시면 compatibility flag 부분이 보일 겁니다.</p>
+<p>production과 preview 두 개다 지정하시면 됩니다.</p>
+<p>이제 D1 DB 부분도 대시보드에서 바인딩해줘야 합니다.</p>
+<p>화면을 조금 내려보시면 아래와 같이 D1 database bindings 부분이 나오는데요.</p>
+<p>아래 그림과 같이 하시면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhGqHLsrZo8svPkk468axAGc0JBdlnX8Rg75R20fbteJpUAfxQgK06Po8_3gkJuLBBUIQffwOekNpVKNYdtroNnuceJcv4GQUENJE_GOeGnhqfnWALmwAOYk2QBpos-XTeeUOmwnzU4VGUvXS6lqFmW2fs7hJ0ZHDKAHJz7hVaF4Ioc9P6OaZHR_2wndas"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 모든 준비가 끝났습니다.</p>
+<p>참고로 아까 로컬 DB 만들 때 원격 DB까지 만들어 둔 상태라서 대시보드에 가보시면 아래처럼 todos 테이블이 있을 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj27YXw6AO1Iezta8oPrfTfNbB3B3-MIPNWzTjyDwwthvlWWDrc3c5po2b83wt4nrZhDIILEZuVzrewuP2k75qQN3d3pOlJnfI6B5oU3pHZztPW6AQh07hpuVPNxynQJTSN0DGRrh8pALgbYYx1A1aJn2YgziP9G2QtttgPe___wdREvZZ5_PD4jMwQ9CI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>이제 다시 &rsquo;npm run pages:deploy&rsquo; 명령어로 재 배포 해봅시다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjxEdWKuwcPa6LpPK8p-Ey4ypAY2cJq6jLJCyGXauT84ucIwQqjbrzvFUtkwNcew1HzrN6TcBt1LhO56nEXKitJpblRpAvQ-_dTtXa1Oc1WBXf8fNi-xnRY0Hj1b1n7yO39V_Zb9D2z4UvxCN9qnerwl9wAe6VU4BTQBTZlKB2KteEosXP-gYmtyRYle-Y"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 사이트가 정상 작동하게 될 겁니다.</p>
+<hr>
+<p>지금까지 Next.js를 이용해서 Cloudflare Pages에 배포하는 풀스택 강의했는데요.</p>
+<p>개발 서버가 핫 리로딩이 안 되니까 개발 시간이 너무 오래 걸립니다.</p>
+<p>그래서 아직은 Next.js와 Cloudflare Pages에는 단순하게 정적 사이트만 하시는 걸 추천 드립니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">cloudflare</a>
+        <a class="btn btn-light" href="/tags/d1/" role="button">d1</a>
+        <a class="btn btn-light" href="/tags/drizzle/" role="button">drizzle</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-10-fullstack-remix-cloudflare-pages-d-1-db-drizzle-orm/">풀스택 강의 4편. Remix &#43; Cloudflare Pages &#43; D1 DB &#43; Drizzle ORM</a></h2>
+                  <p>풀스택 강의, Remix와 Pages, D1, Drizzle ORM으로 개발하기</p>
+                  <p>
+  <small>December 10, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm/">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></h2>
+                  <p>풀스택 개발하기 AstroJS + Cloudflare pages + D1 + Drizzle ORM</p>
+                  <p>
+  <small>December 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-19-refactoring-nextjs-lucia-auth-code-with-useformstate-and-useformstatus/">React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기</a></h2>
+                  <p>기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다.</p>
+                  <p>
+  <small>August 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

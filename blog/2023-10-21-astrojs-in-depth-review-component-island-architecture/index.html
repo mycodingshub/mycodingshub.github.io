@@ -1,0 +1,1385 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</title>
+<meta name="description" content="astrojs 아일랜드 아키텍처 자세히 알아보기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석" />
+<meta property="og:description" content="astrojs 아일랜드 아키텍처 자세히 알아보기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-10-21T08:38:53Z" />
+<meta property="article:modified_time" content="2023-10-21T08:38:53Z" />
+<meta property="article:tag" content="astrojs" />
+<meta property="article:tag" content="component" />
+<meta property="article:tag" content="island architecture" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석" />
+<meta name="twitter:description" content="astrojs 아일랜드 아키텍처 자세히 알아보기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석\"",
+  "description": "\"astrojs 아일랜드 아키텍처 자세히 알아보기\"",
+  "datePublished": "\"2023-10-21T08:38:53Z\"",
+  "dateModified": "\"2023-10-21T08:38:53Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</h1>
+        <p>
+  <small>October 21, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>astrojs 강좌가 벌써 4번째네요.</p>
+<p>전체 astrojs 강좌 목록입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs">astrojs 강좌 1편. astrojs에서 데이터 가져오기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme">astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component">astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture">astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing">astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing">astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering">astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token">astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia">astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목차 **</p>
+<ol>
+<li>
+<p><a href="#1-astrojs%ec%97%90-react-vuejs-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">AstroJS에 React, Vuejs 컴포넌트 사용하기</a></p>
+</li>
+<li>
+<p><a href="#2-%ec%97%ac%eb%9f%ac-%ea%b0%9c%ec%9d%98-%eb%8b%a4%eb%a5%b8-ui-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ed%95%9c%ea%ba%bc%eb%b2%88%ec%97%90-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">여러 개의 다른 UI 컴포넌트 한꺼번에 사용하기</a></p>
+</li>
+<li>
+<p><a href="#3-%ec%95%84%ec%9d%bc%eb%9e%9c%eb%93%9c-%ec%95%84%ed%82%a4%ed%85%8d%ec%b2%98-%ea%b0%84-state-%ea%b3%b5%ec%9c%a0%ed%95%98%ea%b8%b0">아일랜드 아키텍처 간 State 공유하기</a></p>
+</li>
+<li>
+<p><a href="#4-props-children-%ec%a0%84%eb%8b%ac%ed%95%98%ea%b8%b0">props, children 전달하기</a></p>
+</li>
+<li>
+<p><a href="#5-astro%ec%97%90%ec%84%9c-slot-%ec%a7%80%ec%a0%95%ed%95%b4%ec%84%9c-react-vue-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8%ec%97%90%ec%84%9c-%eb%b0%9b%ea%b8%b0">Astro에서 slot 지정해서 React, Vue 컴포넌트에서 받기</a></p>
+</li>
+<li>
+<p><a href="#6-%ec%a4%91%ec%b2%a9%ec%9c%bc%eb%a1%9c-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">중첩으로 컴포넌트 사용하기</a></p>
+</li>
+<li>
+<p><a href="#7-%ec%a3%bc%ec%9d%98-%ec%82%ac%ed%95%ad">주의 사항</a></p>
+</li>
+<li>
+<p><a href="#8-%ec%95%84%ec%9d%bc%eb%9e%9c%eb%93%9c-%ec%95%84%ed%82%a4%ed%85%8d%ec%b2%98%ec%9d%98-%ec%9e%a5%ec%a0%90">아일랜드 아키텍처의 장점</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-astrojs에-react-vuejs-컴포넌트-사용하기">1. AstroJS에 React, Vuejs 컴포넌트 사용하기</h2>
+<p>AstroJS는 기본적으로 자바스크립트를 최대한 배제하려고 하는 프레임워크인데요.</p>
+<p>어쩔 수 없이 자바스크립트를 써야한다면 그냥 <code>&lt;script&gt;</code> 태그를 사용해서 바닐라 자바스크립트를 사용하면 됩니다.</p>
+<p>그런데, 오늘날 UI 프레임워크로 나온 수많은 그 좋은 프레임워크나 라이브러리가 그렇게 많은데요.</p>
+<p>이걸 쓰지 못한다면 조금은 불편할 수 있습니다.</p>
+<p>그래서, AstroJS에서도 지원하는데요.</p>
+<p>사실 AstroJS도 직접 새로운 UI 라이브러리를 만들어 제공하는 줄 알았는데, AstroJS는 그냥 기존에 나와있는거 갔다 쓰면 됩니다.</p>
+<p>즉, 현재 가장 유명한 React, Vue, Svelte 등 UI 라이브러리를 그냥 사용하면 됩니다.</p>
+<p>이 방식이 AstroJS를 아주 유명하게 해주는 점인데요.</p>
+<p>AstroJS가 지원하는 외부 UI 라이브러리는 React, Preact, Svelte, Vue, SolidJS, AlpineJS, Lit입니다.</p>
+<p>좋다는 건 다 지원하네요.</p>
+<p>오늘은 가장 많이 쓰이는 React와 Vue를 통해서 아일랜드 아키텍처에 대해 알아보겠습니다.</p>
+<p>먼저, React나 Vuejs를 사용하려면 아래와 같이 설치해야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx astro add react vue</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 설치하면 astro.config.mjs 파일에 아래와 같이 integrations 부분에 react와 vue가 추가가 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;astro/config&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">tailwind</span> <span class="nx">from</span> <span class="s1">&#39;@astrojs/tailwind&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">react</span> <span class="nx">from</span> <span class="s1">&#39;@astrojs/react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">vue</span> <span class="nx">from</span> <span class="s1">&#39;@astrojs/vue&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// https://astro.build/config
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">integrations</span><span class="o">:</span> <span class="p">[</span><span class="nx">tailwind</span><span class="p">(),</span> <span class="nx">react</span><span class="p">(),</span> <span class="nx">vue</span><span class="p">()],</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>보통 React나 Vue 같은 UI 라이브러리는 컴포넌트 형태로 사용하는데요.</p>
+<p>그래서 components 폴더를 만들고 필요한 React, Vue 컴포넌트를 만드는 형식입니다.</p>
+<p>Vue는 .vue 확장자를 사용하고, React는 .jsx .tsx 확장자를 사용해서 평소처럼 만들면 됩니다.</p>
+<p>그러면 React 컴포넌트를 하나 만들어 볼까요?</p>
+<p>src/components/ReactVote.tsx 파일을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactVote</span> <span class="o">=</span> <span class="nx">props</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">voteCount</span><span class="p">,</span> <span class="nx">setVoteCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;rounded-xl border bg-sky-300 px-4 py-2&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">setVoteCount</span><span class="p">(</span><span class="nx">prevCount</span> <span class="p">=&gt;</span> <span class="nx">prevCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Vote</span><span class="o">!!</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;bg-red-500 py-2&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">style</span><span class="o">=</span><span class="p">{{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">width</span><span class="o">:</span> <span class="sb">`</span><span class="si">${</span><span class="nx">voteCount</span><span class="si">}</span><span class="sb">%`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">voteCount</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 전형적인 React의 useState를 이용한 가장 기본적인 코드인데요.</p>
+<p>이제 pages 폴더에서 react.astro 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../layout/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ReactVote</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/ReactVote.tsx&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Astro Component&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Astro</span> <span class="kd">with</span> <span class="nx">React</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">ReactVote</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Main, Header 컴포넌트는 지난 시간에도 나왔고 간단한 거라서 생략했습니다.</p>
+<p>이제 실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg2b0Y8y7gCFtyOjrhYbMVQtY0MHg_IeBSHPh-wxuuTihjbLbwxIwgB836KGZCY2-xDDSeCcChNXuTKAXKDojWRGqt9GiTeivc-BYmb6xrxbGEQi23MnJYpt-lS_ZdTe4CMWrSgZ8z6r0szqpzBCW-9MkuBIOwMj0fB08DBtYOSDFOoE2IqG1TmGeISh3g"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 잘 작동하는데요.</p>
+<p>버튼을 눌러보면 작동하지 않습니다.</p>
+<p>왜 그런 걸까요?</p>
+<p>바로 AstroJS가 NoJavascriptByDefault 이기 때문입니다.</p>
+<p>자바스크립트를 기본적으로 배제하는 게 바로 AstroJS입니다.</p>
+<p>그래서 React 같은 UI 자바스크립트 컴포넌트를 사용할 때 바로 아일랜드 아키텍처를 사용해야 합니다.</p>
+<p>지난 시간에 직접 웹 컴포넌트로 아일랜드 아키텍처로 구현해 봤듯이 AstroJS의 아일랜드 아키텍처 구현 방법은 아래와 같습니다.</p>
+<ul>
+<li>client:load</li>
+<li>client:only</li>
+<li>client:visible</li>
+<li>client:media</li>
+<li>client:idle</li>
+</ul>
+<p>위와 같이 5가지가 있는데요.</p>
+<p>각각의 특성에 대해 알아보겠습니다.</p>
+<hr>
+<h3 id="11-clientload">1.1 client:load</h3>
+<p><code>client:load</code>는 가능한 한 빨리 상호작용이 필요한 최우선 순위 인터페이스에 사용하면 됩니다.</p>
+<p>우선순위: 높음
+상호작용: 높음</p>
+<p><code>client:load</code> hydration 단계입니다.</p>
+<ol>
+<li>컴포넌트 HTML 렌더링(아직 &lsquo;하이드레이션&rsquo;되지 않음).</li>
+<li>페이지가 로드될 때까지 기다립니다.</li>
+<li>컴포넌트 Javascript를 로드합니다.</li>
+<li>컴포넌트 &lsquo;하이드레이션&rsquo;을 진행합니다.</li>
+</ol>
+<p>&rsquo;load&rsquo; 이벤트는 스타일시트, 스크립트, iframe, 이미지와 같은 각종 종속 리소스를 포함하여 페이지가 로드된 후에 발생합니다.</p>
+<hr>
+<h2 id="12-clientonly">1.2 client:only</h2>
+<p><code>client:only</code>는 <code>client:load</code>와 유사하게 동작합니다.</p>
+<p>컴포넌트가 초기에 HTML로 렌더링 되지 않는 즉, 서버 측 렌더링을 건너뛰고 클라이언트에 표시되는 즉시 상호작용하도록 작동합니다.</p>
+<p>우선순위: 중간 (초기 컴포넌트 HTML을 표시하지 않는 것이 괜찮음)
+상호작용: 높음 (사용자에게 표시되자마자)</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">only</span><span class="o">=</span><span class="s1">&#39;react&#39;</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위에 표시된 대로 프레임워크 이름을 전달하는 것이 중요합니다.</p>
+<p>그렇지 않으면 Astro는 어떤 프레임워크 Javascript를 로드해야 하는지 모르게 됩니다.</p>
+<p>왜냐하면 서버 측 렌더링을 건너뛰기 때문이죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">only</span><span class="o">=</span><span class="s2">&#34;react&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">PreactComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">only</span><span class="o">=</span><span class="s2">&#34;preact&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">SvelteComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">only</span><span class="o">=</span><span class="s2">&#34;svelte&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">VueComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">only</span><span class="o">=</span><span class="s2">&#34;vue&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">SolidComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">only</span><span class="o">=</span><span class="s2">&#34;solid-js&#34;</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다음은 &lsquo;hydration&rsquo; 단계입니다:</p>
+<ol>
+<li>컴포넌트 HTML을 렌더링하지 않습니다.</li>
+<li>페이지가 로드될 때까지 기다립니다.</li>
+<li>컴포넌트 Javascript를 로드합니다.</li>
+<li>컴포넌트 &lsquo;하이드레이션&rsquo;을 진행합니다.</li>
+</ol>
+<p><code>client:only</code>와 <code>client:load</code>의 차이점은 요소가 상호작용 가능하기 전에 정적 컴포넌트 HTML을 렌더링할 것인지 여부입니다.</p>
+<p><code>client:only</code>는 특히 클라이언트 (브라우저) API가 필요한 컴포넌트를 렌더링할 때 유용합니다.</p>
+<hr>
+<h3 id="13-clientvisible">1.3 client:visible</h3>
+<p><code>client:visible</code>은 페이지의 아래쪽(페이지 아래부분)에 있는 우선순위가 낮은 인터페이스나 리소스가 많이 필요한 부분에 사용하면 좋습니다.</p>
+<p>페이지를 보는 유저가 해당 컴포넌트를 볼 일이 없다면 아예 메모리에 로드되지 않으니까요.</p>
+<p>우선순위: 낮음
+상호작용: 낮음</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">visible</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다음은 &lsquo;hydration&rsquo; 단계입니다:</p>
+<ol>
+<li>컴포넌트 HTML을 렌더링합니다.</li>
+<li>요소가 표시되기를 기다립니다 (IntersectionObserver를 사용).</li>
+<li>컴포넌트 Javascript를 로드합니다.</li>
+<li>컴포넌트 &lsquo;하이드레이션&rsquo;을 진행합니다.</li>
+</ol>
+<hr>
+<h3 id="14-clientmedia">1.4 client:media</h3>
+<p><code>client:media</code>는 특정 화면 크기에서만 볼 수 있는 낮은 우선순위 인터페이스에 사용하면 좋습니다.</p>
+<p>예를 들어, 사이드바 토글과 같은 경우가 여기에 해당합니다.</p>
+<p>우선순위: 낮음
+상호작용: 낮음</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">media</span><span class="o">=</span><span class="s1">&#39;(max-width: 30em)&#39;</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다음은 &lsquo;hydration&rsquo; 단계입니다:</p>
+<ol>
+<li>컴포넌트 HTML을 렌더링합니다.</li>
+<li>미디어 쿼리가 일치하는지 확인합니다.</li>
+<li>컴포넌트 Javascript를 로드합니다.</li>
+<li>컴포넌트 &lsquo;하이드레이션&rsquo;을 진행합니다.</li>
+</ol>
+<hr>
+<h3 id="15-clientidle">1.5 client:idle</h3>
+<p><code>client:idle</code>는 즉시 상호작용이 필요하지 않은 낮은 우선순위 인터페이스 같은 곳에 사용하면 좋습니다.</p>
+<p>우선순위: 중간
+상호작용: 중간 (client:load와 비교했을 때 상대적으로 낮은 우선순위)</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">idle</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>다음은 &lsquo;hydration&rsquo; 단계입니다:</p>
+<ol>
+<li>컴포넌트 HTML을 렌더링합니다.</li>
+<li>페이지 로드를 기다립니다.</li>
+<li>requestIdleCallback 이벤트가 발생하기를 기다립니다. (requestIdleCallback이 지원되지 않는 경우 문서 로드 이벤트만 사용합니다)</li>
+<li>컴포넌트 Javascript를 로드합니다.</li>
+<li>컴포넌트 &lsquo;하이드레이션&rsquo;을 진행합니다.</li>
+</ol>
+<hr>
+<p>이제, 5가지 아일랜드 아키텍처를 구성하는 요소를 알아봤으니까요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../layout/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ReactVote</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/ReactVote.tsx&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Astro Component&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Astro</span> <span class="kd">with</span> <span class="nx">React</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">ReactVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p><code>client:load</code>를 적용하여 실행해 보면 아래 그림과 같이 우리가 만든 React 코드가 정상 작동할 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgUWBG669SR9ZK7MyPZufQM97A8vjmORKPwGepwJGmSNcqn1riuum_pcNX7ry93KrLPD5bnq5LG7QercOMvB3IeIq2eIPd6r5o40QoQb_ScWcWh3qFP4gV-SSMAd-wUR9KM2bWSw1OnMA5NVMLhRCICjneMliSLWgKzeWAL_AMYImtfVIkI7sf3QyPEe9g"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h3 id="vue-컴포넌트-작성">Vue 컴포넌트 작성</h3>
+<p>React 컴포넌트도 만들었으니까 Vue 컴포넌트도 만들어 볼까요?</p>
+<p>components 폴더에 VueVote.vue 파일을 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">data</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">voteCount</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">vote</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="nx">voteCount</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;border px-4 py-2 bg-yellow-300 rounded-xl&#34;</span> <span class="err">@</span><span class="nx">click</span><span class="o">=</span><span class="s2">&#34;vote&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Vote</span><span class="o">!!</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;bg-red-500 py-2&#34;</span> <span class="o">:</span><span class="nx">style</span><span class="o">=</span><span class="s2">&#34;{ width: `${voteCount}%` }&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{{</span> <span class="nx">voteCount</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/template&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../layout/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">VueVote</span> <span class="nx">from</span> <span class="s2">&#34;../components/VueVote.vue&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Vuejs Page&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Vuejs</span> <span class="nx">Page</span><span class="o">!&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">VueVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행 결과는 아래와 같이 잘 작동합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjZFbAeSbHjpchzTmUr1nuctXAsxc3EKiP1cB06lTGKRCcbIbZxM3BrrI3uPwVkx_HMy9gznW5jMlEUuxQGw1wuCEADLc1-9wgDCbdePtNAjjfSln8nHgWeVPXe9o2RsywWHnE0d3lmj-Pt7J6UYAuH6WrgsVA2caDcbl4HOvZeR0i1f2VZ2zdgFUJJ-8k"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="2-여러-개의-다른-ui-컴포넌트-한꺼번에-사용하기">2. 여러 개의 다른 UI 컴포넌트 한꺼번에 사용하기</h2>
+<p>말 그대로 한 개의 astro 파일에 React, Vue 등 다른 UI 라이브러리 컴포넌트를 동시에 사용할 수 있습니다.</p>
+<p>pages 폴더에 multi.astro 파일을 아래와 같이 만들어 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../layout/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ReactVote</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/ReactVote.tsx&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">VueVote</span> <span class="nx">from</span> <span class="s2">&#34;../components/VueVote.vue&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Astro Component&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Astro</span> <span class="kd">with</span> <span class="mi">3</span><span class="nx">rd</span> <span class="nx">party</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">ReactVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">VueVote</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 그냥 단순하게 React나 Vue 컴포넌트를 불러오고 사용하면 됩니다.</p>
+<p>실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhLWkh3WGiw7yHbQEgMrvMz7vqIaIM6XfDwPO_G1VKKvHdoozJ7AjL3AC98zn_e1rGo9dZK6uJNY0OULhLDwTCoD5GkzwtmbiegiXU05VQ-yQmCN-QU7AhO2wcYMYhxjKMS9aqBdUdsd82gAPSzZtTCqohr6GRwSN_YF6xM3vQzmmTXL5zwTNOO4bHXV-Q"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 두 개가 로드되었고 아래와 같이 두 개의 컴포넌트 모두 작동합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjj1cpEpTYNvI2nxx9lgAzmA2p9eLplKeBKzyYcPPDqxz4i3ApMxMOqiPoE0RGmUEmA_s74Wo10CCPxzyhE_-RXqr2xJqMgo671t3cAV-Jz-Fvvc43AeW0oXzuPfdXUzY8kC1pU3pGtspuG_6T88XKwaLv1s6t3sSvqo9yxqCBBfVUMWkf6O86leNw_sNM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>즉, React 컴포넌트 부분이 한 개의 아이랜드가 되고, Vue 컴포넌트 부분이 다른 한 개의 아일랜드가 되는겁니다.</p>
+<p>이렇게 아일랜드 아키텍처가 작동하는 거죠.</p>
+<hr>
+<h2 id="3-아일랜드-아키텍처-간-state-공유하기">3. 아일랜드 아키텍처 간 State 공유하기</h2>
+<p>React 컴포넌트와 Vue 컴포넌트 간 상태를 공유할 수 있을까요?</p>
+<p>방법은 글로벌 상태관리 프레임워크를 사용하면 됩니다.</p>
+<p>상태관리 프레임워크에는 Redux 등 여러 가지가 많은 데요.</p>
+<p>AstroJS가 자바스크립트를 최소한 로드시키는 게 AstroJS의 목적이자 장점인데요.</p>
+<p>그래서 Nano Stores 라는 아주 작은(1kb 이하) 프레임워크를 사용하는 걸 추천합니다.</p>
+<p>이제 이걸 사용해 볼까요?</p>
+<p>nanostores 를 아래와 같이 설치합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">nanostores</span> <span class="err">@</span><span class="nx">nanostores</span><span class="o">/</span><span class="nx">vue</span> <span class="err">@</span><span class="nx">nanostores</span><span class="o">/</span><span class="nx">react</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 상태를 담을 store 를 만들어야 하는데요.</p>
+<p>src 폴더 밑에 stores 폴더를 만들고 vote.ts 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">atom</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;nanostores&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">voteCountState</span> <span class="o">=</span> <span class="nx">atom</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>어떤가요?</p>
+<p>정말 간단하지 않나요?</p>
+<p>이제 이 nano store를 React나 Vue 컴포넌트에서 사용하면 됩니다.</p>
+<p>먼저, React 컴포넌트를 수정해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useStore</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;@nanostores/react&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">voteCountState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../stores/vote&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactVoteNano</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">voteCount</span> <span class="o">=</span> <span class="nx">useStore</span><span class="p">(</span><span class="nx">voteCountState</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;rounded-xl border bg-sky-300 px-4 py-2&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">voteCountState</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">voteCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Vote</span><span class="o">!!</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;bg-red-500 py-2&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">style</span><span class="o">=</span><span class="p">{{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">width</span><span class="o">:</span> <span class="sb">`</span><span class="si">${</span><span class="nx">voteCount</span><span class="si">}</span><span class="sb">%`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">voteCount</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Nano Stores 사용 방법은 아주 간단합니다.</p>
+<p>useStore를 이용해서 우리가 만든 State를 불러오고 이 State의 set 메서드를 이용해서 vote 카운트를 1씩 증가시키면 됩니다.</p>
+<p>이제, Vue 컴포넌트도 바꿔 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useStore</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@nanostores/vue&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">voteCountState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../stores/vote&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">setup</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">voteCount</span><span class="o">:</span> <span class="nx">useStore</span><span class="p">(</span><span class="nx">voteCountState</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">vote</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">voteCountState</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">voteCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;border px-4 py-2 bg-yellow-300 rounded-xl&#34;</span> <span class="err">@</span><span class="nx">click</span><span class="o">=</span><span class="s2">&#34;vote&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">Vote</span><span class="o">!!</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;bg-red-500 py-2&#34;</span> <span class="o">:</span><span class="nx">style</span><span class="o">=</span><span class="s2">&#34;{ width: `${voteCount}%` }&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{{</span> <span class="nx">voteCount</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/template&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Nano Stores를 이용해서 만든 React 컴포넌트와 Vue 컴포넌트를 같이 불러와서 테스트해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Main</span> <span class="nx">from</span> <span class="s2">&#34;../layout/Main.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">ReactVoteNano</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/ReactVoteNano.tsx&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">VueVoteNano</span> <span class="nx">from</span> <span class="s2">&#34;../components/VueVoteNano.vue&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Main</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Astro Component&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Astro</span> <span class="kd">with</span> <span class="mi">3</span><span class="nx">rd</span> <span class="nx">party</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">ReactVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">VueVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Main&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행 결과는 아래 그림과 같이 한쪽 Vote 버튼을 누르면 다른 쪽도 똑같이 반응합니다.</p>
+<p>왜냐하면 Nano Stores를 이용해서 React와 VueJS간에 State(상태)를 공유했기 때문입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg_TL1UVe7ydu-SnQ73MMsqPTBP2HiJoqzROr0Oaae-QftKfpZCB2L3wSnN-3q7vxW2WqQmV15GTM38rZoIgrMlm8cDm4c9Rmi-AzXLH2-bWqjvP_9EGuBUXG-1v6DWPz51jSrc9kBh2k8WNVLTWj6lo_tCc0hInK02TK8JRTWM2T1qPZTUaOBjwBqIlZs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 볼 수 있듯이 버튼을 누르면 같은 Vote 숫자가 올라가게 됩니다.</p>
+<hr>
+<h2 id="4-props-children-전달하기">4. props, children 전달하기</h2>
+<p>우리가 만든 React, Vue 컴포넌트에 Astro 파일에서 props나 children을 전달할 수 있는데요.</p>
+<p>다음과 같은 코드가 있다고 합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="nx">label</span><span class="o">=</span><span class="s1">&#39;React Props 전달&#39;</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아까 만든 ReactVoteNano 컴포넌트에서 label이라는 props를 전달하고 있는데요.</p>
+<p>그럼 ReactVoteNano 컴포넌트에서 이 props를 처리해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactVoteNano</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">voteCount</span> <span class="o">=</span> <span class="nx">useStore</span><span class="p">(</span><span class="nx">voteCountState</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">label</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 React 코드에서 props 전달하듯이 사용하면 됩니다.</p>
+<p>실행 결과는 아래와 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj0BFwkjhXfKfnhZg71IUQsjGHlGNXr5D8dj0GJbb87B0-Vffsgno8JGZDNa5iIyyktWEdn3i3BPeGKG1sj8uCppwkbAJAvIYhjqh9zbPScvMIrm-uDRw93kU19NAnwO274I8omAFq8DdPfmgfLbW8kYqPRoLlgHpj0iZuEFuKg71UmLPlxkXtlLns_XAw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그러면 props 말고 children은 잘 될까요?</p>
+<p>테스트해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="nx">label</span><span class="o">=</span><span class="s1">&#39;React Props 전달&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">React</span> <span class="nx">child</span> <span class="nx">전달하기</span><span class="o">&lt;</span><span class="err">/em&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/ReactVoteNano&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 props와 children을 전달했습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactVoteNano</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">voteCount</span> <span class="o">=</span> <span class="nx">useStore</span><span class="p">(</span><span class="nx">voteCountState</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">label</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj0uZ5gUumdxVtl8eXHjcW9cBjT20wzxqh7uF5k6FQGv-Kd9UaqAWJ2fho5fzCbGMaobuQJWmt6YGsIHs9FQi6CPq_jpVgK_ti7tZ2kXyMtU75WZfnOhM4I4SFlFgU4DBV9CN6NB2Ue-Lp4XdwYJ6Vqz59FIHvCdafdV3anjZAjwQ32OkGBFcFSJYNmBqM"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보시면 children으로 전달한 부분은 <code>&lt;em&gt;</code> 태그라서 강조하는 태그이거든요.</p>
+<p>이 태그가 그대로 잘 전달되고 있습니다.</p>
+<p>React는 props와 children 방식을 쓰는데요.</p>
+<p>Preact도 같은 방식입니다.</p>
+<p>Vue와 Svelte는 slot 방식을 쓰는데요.</p>
+<p>이 부분도 알아보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">VueVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="nx">label</span><span class="o">=</span><span class="s1">&#39;Vue Props 전달&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">Vue</span> <span class="nx">child</span> <span class="nx">전달하기</span><span class="o">&lt;</span><span class="err">/em&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/VueVoteNano&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>VueVoteNano 컴포넌트를 손볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useStore</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@nanostores/vue&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">voteCountState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../stores/vote&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">props</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">label</span><span class="o">:</span> <span class="nb">String</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">setup</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">voteCount</span><span class="o">:</span> <span class="nx">useStore</span><span class="p">(</span><span class="nx">voteCountState</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">methods</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">vote</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">voteCountState</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">voteCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">template</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{{</span> <span class="nx">label</span> <span class="p">}}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;&lt;</span><span class="nx">slot</span> <span class="o">/&gt;&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/template&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 props와 slot 형태로 사용하시면 됩니다.</p>
+<p>실행 결과는 아래와 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgpF8RbHAugGZMUX8_C9s3csrsjY-8n7crY-YkNqqFRi388lo8JeY8WuUXx2WQxd8kVsolACKUx3VjzIy6tDPNal5yacKAB0P7teD62RucOxrrnIsJvo8GkstkmiDCcf8uFMlofz5gKrZc9dFCeVBXhaz6DXtKWlZlQopNsp8opveQR2SYkCAVo5NSMYdI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>React와의 차이점은 children 방식이 아니고 slot 방식이란 겁니다.</p>
+<hr>
+<h2 id="5-astro에서-slot-지정해서-react-vue-컴포넌트에서-받기">5. Astro에서 slot 지정해서 React, Vue 컴포넌트에서 받기</h2>
+<p>Astro 파일에서 slot을 지정할 수 있는데요.</p>
+<p>아래와 같이 React 컴포넌트를 children 방식으로 사용할 때 전달하는 거에 slot을 이용해서 구분할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="nx">label</span><span class="o">=</span><span class="s1">&#39;React Props 전달&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">children</span><span class="o">!&lt;</span><span class="err">/span&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">ul</span> <span class="nx">slot</span><span class="o">=</span><span class="s1">&#39;social-links&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">First</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">Second</span><span class="o">!&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">em</span> <span class="nx">slot</span><span class="o">=</span><span class="s1">&#39;desc&#39;</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">React</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="err">/em&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/ReactVoteNano&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 ReactVoteNano 컴포넌트를 전달할 때 전달할 수 있는 모든 걸 전달했는데요.</p>
+<p>먼저, props로 label을 전달했고, children도 전달했습니다.</p>
+<p>그래서 children을 slot 이름을 지정해서 전달했는데요.</p>
+<p>이제, React 코드를 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">ReactVoteNano</span> <span class="o">=</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">voteCount</span> <span class="o">=</span> <span class="nx">useStore</span><span class="p">(</span><span class="nx">voteCountState</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">label</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">children</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">socialLinks</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">desc</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">      <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiapjrw4j3lcNUuyZTnwtqD-MQuUKUek6dJYI5TCrbl8StBCpoozLvdz9Kv89v55IsqDo41sHJ2E7pyClsGHm2xT9uueLVERnZ82kCx_Y2-RSUg-WpiMmiwbmZlzKJzk-2fCw5HYur2M5-_ErUfgi6mvYx4pxFw1LSOrcfPTvECmevd27MhoLhTJTQJdRA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>실행 결과는 위와 같습니다.</p>
+<p>어떤가요?
+slot으로 지정하면 해당 부분을 특정 위치에 위치시킬 수 있는 아주 강력한 무기가 됩니다.</p>
+<p>근데, 여기서 이상한 게 Astro에서 slot으로 &lsquo;social-links&rsquo; 형태의 케밥케이스(kebab-case) 형태로 전달했는데요.</p>
+<p>React에서는 캐멀케이스(camelCase) 형태로 사용했습니다.</p>
+<p>이건 규칙인데요.</p>
+<p>Astro에서는 꼭 케밥케이스 형태로 써야 하고, React에서는 꼭 캐멜케이스(camelCase) 형태로 써야 합니다.</p>
+<hr>
+<h2 id="6-중첩으로-컴포넌트-사용하기">6. 중첩으로 컴포넌트 사용하기</h2>
+<p>AstroJS에서는 심지어 React나 Vue 컴포넌트를 중첩(Nested)하여 사용할 수 있는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">ReactVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="nx">label</span><span class="o">=</span><span class="s2">&#34;React Props 전달&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">children</span><span class="o">!&lt;</span><span class="err">/span&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">ul</span> <span class="nx">slot</span><span class="o">=</span><span class="s2">&#34;social-links&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">First</span><span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span><span class="nx">Second</span><span class="o">!&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">em</span> <span class="nx">slot</span><span class="o">=</span><span class="s2">&#34;desc&#34;</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">React</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="err">/em&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">VueVoteNano</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/ReactVoteNano&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 ReactVoteNano 컴포넌트 안에 VueVoteNano 컴포넌트를 위치시켰습니다.</p>
+<p>위 코드도 아주 정상적으로 작동합니다.</p>
+<p>실행 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi0SZbj_LZAIaNVmifGUFQD_XGgUhh0uSl9PpBrUWB-pu8V5oO6td8Q-1tKeTTacDYsg8XicnW9XE974hJYJVBgiTvg95ziTnLXUz7VRniLoQi52026XkRqKDfPU6KKDQqMU-vcGvHGwLKwxyNUKXFKQI6k-6ZdxWgRakRDMklXLieAZjBemFoKwgnO_wg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>AstroJS의 유연함에 대해서는 상상을 초월하는데요.</p>
+<hr>
+<h2 id="7-주의-사항">7. 주의 사항</h2>
+<p>AstroJS가 아주 유연한 프레임워크인 거는 확실한데요.</p>
+<p>다음과 같이 사용하시면 안 됩니다.</p>
+<p>꼭 주의하시기 바랍니다.</p>
+<ol>
+<li>React 컴포넌트 안에서 Astro 컴포넌트 사용하기</li>
+</ol>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">OurAstroComponent</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/OurAstroComponent&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">OurReactComponent</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">OurAstroComponent</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">OurReactComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 평상시와는 반대로 사용했는데요.</p>
+<p>React 컴포넌트 안에서 Astro 컴포넌트를 사용했습니다.</p>
+<p>위와 같이 사용하시면 에러가 나니 꼭 주의 바랍니다.</p>
+<p>꼭 React 컴포넌트에서 Astro 컴포넌트를 사용해야 한다면 slot 방식을 사용하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">OurReactComponent</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/OurReactComponent&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">OurAstroComponent</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/OurAstroComponent&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">OurReactComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="c">&lt;!--</span> <span class="nx">pass</span> <span class="nx">Astro</span> <span class="nx">component</span> <span class="nx">as</span> <span class="nx">a</span> <span class="nx">child</span> <span class="nx">via</span> <span class="nx">a</span> <span class="nx">named</span> <span class="nx">slot</span> <span class="o">--&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">&lt;</span><span class="nx">OurAstroComponent</span> <span class="nx">slot</span><span class="o">=</span><span class="s2">&#34;description&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/OurReactComponent&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<ol start="2">
+<li>Astro 컴포넌트에 아일랜드 아키텍처 사용하지 말기</li>
+</ol>
+<p>다음과 같이 하시면 안 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"> <span class="kr">import</span> <span class="p">{</span> <span class="nx">OurAstroComponent</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../components/OurAstroComponent&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">OurAstroComponent</span> <span class="nx">client</span><span class="o">:</span><span class="nx">load</span> <span class="o">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Astro 컴포넌트는 기본적으로 client-side 런타임이 없기 때문에 위와 같이 hydrate가 불가능합니다.</p>
+<p>Astro 컴포넌트에서는 <code>&lt;script&gt;</code>를 이용해서 간단한 자바스크립트 코드를 작성하는 걸 추천 드립니다.</p>
+<hr>
+<h2 id="8-아일랜드-아키텍처의-장점">8. 아일랜드 아키텍처의 장점</h2>
+<p>&lsquo;아일랜드 아키텍처&rsquo;에 왜 초점을 맞추는 걸까요?</p>
+<ol>
+<li><strong>성능</strong></li>
+</ol>
+<p>주요 이점 중 하나는 성능을 향상할 수 있다는 것입니다.</p>
+<p>대부분의 웹사이트를 정적 HTML로 변환하고 필요한 경우에만 Javascript를 &lsquo;하이드레이션&rsquo;함으로써 웹사이트의 성능을 크게 향상할 수 있습니다.</p>
+<p>바로 Javascript가 바이트당 로드 속도가 느린 것 중 하나이기 때문입니다.</p>
+<ol start="2">
+<li><strong>하이드레이션</strong></li>
+</ol>
+<p>만약 Javascript를 실행하는 데 많은 리소스가 소요된다면(성능 측면에서) 세심한 주의가 필요할 겁니다.</p>
+<p>그래서 &lsquo;아일랜드&rsquo;가 언제 &lsquo;하이드레이션&rsquo;되는지를 제어함으로써 웹사이트 성능을 조절할 수 있다는 게 큰 장점인 거죠.</p>
+<ol start="3">
+<li>*<em>병렬 로딩</em></li>
+</ol>
+<p>마지막으로, 병렬 로딩인데요.</p>
+<p>여러 개의 &lsquo;아일랜드&rsquo;를 로드할 때 실제로 서로 기다릴 필요가 없다는 겁니다.</p>
+<p>대신, 각 &lsquo;아일랜드&rsquo;는 독립적으로 로드되고 &lsquo;하이드레이션&rsquo;되는 즉, 각각 별개의 단위로 간주 됩니다.</p>
+<hr>
+<p>지금까지 AstroJS의 아일랜드 아키텍처에 대해 알아보았습니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/astrojs/" role="button">astrojs</a>
+        <a class="btn btn-light" href="/tags/component/" role="button">component</a>
+        <a class="btn btn-light" href="/tags/island-architecture/" role="button">island architecture</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component/">astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</a></h2>
+                  <p>웹 컴포넌트를 직접 만들어 보면서 배우는 astrojs의 아일랜드 아키텍처</p>
+                  <p>
+  <small>October 14, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-09-fullstack-astrojs-cloudflare-pages-d-1-drizzle-orm/">풀스택 강의 3편. AstroJS와 Cloudflare Pages, D1, Drizzle ORM으로 개발하기</a></h2>
+                  <p>풀스택 개발하기 AstroJS + Cloudflare pages + D1 + Drizzle ORM</p>
+                  <p>
+  <small>December 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>13&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></h2>
+                  <p>Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

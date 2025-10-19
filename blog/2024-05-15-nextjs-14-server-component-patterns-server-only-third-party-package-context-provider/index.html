@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기</title>
+<meta name="description" content="서버 컴포넌트 패턴 - 서버 전용 코드, 써드 파티 패키지, 컨텍스트 프로바이더 활용하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-server-component-patterns-server-only-third-party-package-context-provider/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기" />
+<meta property="og:description" content="서버 컴포넌트 패턴 - 서버 전용 코드, 써드 파티 패키지, 컨텍스트 프로바이더 활용하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-server-component-patterns-server-only-third-party-package-context-provider/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-05-15T10:53:20Z" />
+<meta property="article:modified_time" content="2024-05-15T10:53:20Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="server component patterns" />
+<meta property="article:tag" content="server-only" />
+<meta property="article:tag" content="context provider" />
+<meta property="article:tag" content="third party package" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기" />
+<meta name="twitter:description" content="서버 컴포넌트 패턴 - 서버 전용 코드, 써드 파티 패키지, 컨텍스트 프로바이더 활용하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기\"",
+  "description": "\"서버 컴포넌트 패턴 - 서버 전용 코드, 써드 파티 패키지, 컨텍스트 프로바이더 활용하기\"",
+  "datePublished": "\"2024-05-15T10:53:20Z\"",
+  "dateModified": "\"2024-05-15T10:53:20Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-server-component-patterns-server-only-third-party-package-context-provider/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기</h1>
+        <p>
+  <small>May 15, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Next.js 14 강좌 열 두 번째입니다.</p>
+<p>전체 강좌 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-13-nextjs-14-tutorial-1-all-about-routing">Next.js 14 강좌 1편. 라우팅의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-14-nextjs-14-tutorial-2-all-about-layout-and-link-component">Next.js 14 강좌 2편. 레이아웃의 모든 것 and Link 컴포넌트</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-20-nextjs-14-tutorial-template-and-loading-ui-special-files">Next.js 14 강좌 3편. Template과 Loading 스페셜 파일</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-27-nextjs-14-tutorial-all-about-error">Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-28">Next.js 14 강좌 5편. 병렬 라우팅(Parallel Routes), 일치하지 않는 라우팅(Unmatched Routes), 조건부 라우팅(Conditional Routes) 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-04-nextjs-14-tutorial-6-intercepting-routes-and-parallel-intercepting-routes">Next.js 14 강좌 6편. 인터셉팅 라우팅(Intercepting Routes)과 병렬 인터셉팅 라우팅(Parallel Intercepting Routes) 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-get-post-patch-delete-method-and-dynamic-route-handler">Next.js 14 강좌 7편. 라우트 핸들러의 기본(GET, POST, PATCH, DELETE)과 동적 라우트 핸들러 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-and-url-query-parameter-redirect-headers-cookies-caching">Next.js 14 강좌 8편, 라우트 핸들러에서 URL 쿼리 파라미터와 redirect, Headers, Cookies 그리고 캐싱 방식 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-middleware-and-rewrite-cookies-headers-in-middleware">Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-14-nextjs-14-tutorial-all-about-rendering-csr-ssr-rsc">Next.js 14 강좌 10편. CSR부터 SSR, RSC까지 React의 렌더링의 역사 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-rendering-lifecycle-static-dynamic-rendering-and-streaming">Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-server-component-patterns-server-only-third-party-package-context-provider">Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-client-component-patterns-client-only-client-component-placement-interleaving-server-and-client-components">Next.js 14 강좌 13편. 클라이언트 컴포넌트 패턴 - 클라이언트 전용 코드(client-only), 컴포넌트 배치, 서버-클라이언트 컴포넌트 섞어 활용하기</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#server-only-code">Server-only Code</a>
+<ul>
+<li><a href="#%ec%84%9c%eb%b2%84-%eb%b0%8f-%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0">서버 및 클라이언트 컴포넌트 생성하기</a></li>
+<li><a href="#%ec%84%9c%eb%b2%84-%ec%9c%a0%ed%8b%b8%eb%a6%ac%ed%8b%b0-%ed%95%a8%ec%88%98-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0">서버 유틸리티 함수 생성하기</a></li>
+<li><a href="#%ec%84%9c%eb%b2%84-%eb%b0%8f-%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8%ec%97%90%ec%84%9c-%ed%95%a8%ec%88%98-%ed%99%9c%ec%9a%a9%ed%95%98%ea%b8%b0">서버 및 클라이언트 컴포넌트에서 함수 활용하기</a></li>
+<li><a href="#server-only-%ed%8c%a8%ed%82%a4%ec%a7%80%eb%a1%9c-%eb%b3%b4%ec%95%88-%ea%b0%95%ed%99%94%ed%95%98%ea%b8%b0">server-only 패키지로 보안 강화하기</a></li>
+<li><a href="#%ea%b2%b0%eb%a1%a0">결론</a></li>
+</ul>
+</li>
+<li><a href="#third-party-packages">Third Party Packages</a>
+<ul>
+<li><a href="#%ec%9d%b4%eb%af%b8%ec%a7%80-%ec%8a%ac%eb%9d%bc%ec%9d%b4%eb%8d%94-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0">이미지 슬라이더 컴포넌트 생성하기</a></li>
+<li><a href="#%ec%9a%94%ec%95%bd">요약</a></li>
+</ul>
+</li>
+<li><a href="#context-providers">Context Providers</a>
+<ul>
+<li><a href="#%ed%85%8c%eb%a7%88-%ed%94%84%eb%a1%9c%eb%b0%94%ec%9d%b4%eb%8d%94-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8-%ec%83%9d%ec%84%b1%ed%95%98%ea%b8%b0">테마 프로바이더 컴포넌트 생성하기</a></li>
+<li><a href="#%eb%a0%88%ec%9d%b4%ec%95%84%ec%9b%83%ec%97%90-%ed%85%8c%eb%a7%88-%ed%94%84%eb%a1%9c%eb%b0%94%ec%9d%b4%eb%8d%94-%ec%a0%81%ec%9a%a9%ed%95%98%ea%b8%b0">레이아웃에 테마 프로바이더 적용하기</a></li>
+<li><a href="#%ed%81%b4%eb%9d%bc%ec%9d%b4%ec%96%b8%ed%8a%b8-%ec%bb%b4%ed%8f%ac%eb%84%8c%ed%8a%b8%ec%97%90%ec%84%9c-%ed%85%8c%eb%a7%88-%ec%82%ac%ec%9a%a9%ed%95%98%ea%b8%b0">클라이언트 컴포넌트에서 테마 사용하기</a></li>
+<li><a href="#%eb%a7%88%eb%ac%b4%eb%a6%ac">마무리</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="server-only-code">Server-only Code</h2>
+<p>첫 번째 서버 컴포넌트 패턴에서는 서버 전용 코드를 분리하는 방법에 대해 이야기해보겠습니다.</p>
+<p>Next.js 애플리케이션을 구축할 때, 일부 코드는 서버에서만 실행되어야 합니다.</p>
+<p>예를 들어, 여러 라이브러리를 사용하거나 환경 변수를 활용하고, 데이터베이스에 직접 접근하거나 기밀 정보를 처리하는 모듈이나 함수들이 이에 해당됩니다.</p>
+<p>자바스크립트 모듈은 서버와 클라이언트 컴포넌트 모두에서 공유될 수 있기 때문에, 서버 전용 코드가 의도치 않게 클라이언트에 포함될 수 있습니다.</p>
+<p>서버 코드가 클라이언트 측 자바스크립트에 포함되면 번들 크기가 커질 뿐만 아니라, 비밀 키, 데이터베이스 쿼리, 민감한 비즈니스 로직 등이 노출될 수 있습니다.</p>
+<p>따라서 애플리케이션의 보안과 무결성을 지키기 위해 서버 전용 코드를 클라이언트 측 코드와 분리하는 것이 매우 중요합니다.</p>
+<p>이를 위해 <code>server-only</code>라는 패키지를 사용하여 개발자가 서버 전용 모듈을 클라이언트 컴포넌트에 잘못 가져오는 경우 빌드 타임 오류를 발생시킬 수 있습니다.</p>
+<p>그럼 이제 VS Code에서 예시를 통해 알아보겠습니다.</p>
+<hr>
+<h3 id="서버-및-클라이언트-컴포넌트-생성하기">서버 및 클라이언트 컴포넌트 생성하기</h3>
+<p>먼저 <code>app</code> 폴더에 서버 및 클라이언트 컴포넌트를 만들어보겠습니다.</p>
+<ol>
+<li><strong>서버 컴포넌트</strong></li>
+</ol>
+<p><code>server-route/page.tsx</code> 파일을 만들고 간단한 React 컴포넌트를 정의합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// app/server-route/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">serverSideFunction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../../src/utils/server-utils&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ServerRoutePage() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">serverSideFunction</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Server route rendered&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;{</span><span class="nx">result</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<ol start="2">
+<li><strong>클라이언트 컴포넌트</strong></li>
+</ol>
+<p>동일한 <code>app</code> 폴더에 <code>client-route/page.tsx</code> 파일을 만들고 또 다른 React 컴포넌트를 삽입합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// app/client-route/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">serverSideFunction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../../src/utils/server-utils&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ClientRoutePage() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">serverSideFunction</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Client route rendered&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;{</span><span class="nx">result</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>클라이언트 컴포넌트의 최상단에는 <code>use client</code> 지시문을 추가합니다.</p>
+<hr>
+<h3 id="서버-유틸리티-함수-생성하기">서버 유틸리티 함수 생성하기</h3>
+<p>다음으로 <code>src</code> 폴더에 <code>utils</code>라는 새 폴더를 만들고 <code>server-utils.ts</code> 파일을 추가합니다.</p>
+<p>여기서 서버에서만 사용하기 위한 함수 하나를 정의해보겠습니다.</p>
+<p>이 함수의 구현 세부사항보다는 서버 전용 코드의 개념에 집중할 것이므로 간단한 로그 문구와 문자열 반환만 추가하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// src/utils/server-utils.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">serverSideFunction() {</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Server-only function executed&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="s1">&#39;Server-only result&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h3 id="서버-및-클라이언트-컴포넌트에서-함수-활용하기">서버 및 클라이언트 컴포넌트에서 함수 활용하기</h3>
+<p>이제 서버 및 클라이언트 컴포넌트에서 이 함수를 가져와 호출해봅시다.</p>
+<ol>
+<li><strong>서버 컴포넌트</strong></li>
+</ol>
+<p><code>server-route/page.tsx</code>에서 <code>const result = serverSideFunction()</code>으로 결과를 받아오고, <code>utils/server-utils</code>에서 서버 측 함수를 가져옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// app/server-route/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">serverSideFunction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../../src/utils/server-utils&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ServerRoutePage() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">serverSideFunction</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Server route rendered&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;{</span><span class="nx">result</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<ol start="2">
+<li><strong>클라이언트 컴포넌트</strong></li>
+</ol>
+<p><code>client-route/page.tsx</code>에서 <code>const result = serverSideFunction()</code>으로 결과를 받아와 단락 태그에 바인딩합니다.</p>
+<p>그리고 최상단에서 함수를 가져옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// app/client-route/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">serverSideFunction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;../../src/utils/server-utils&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ClientRoutePage() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">serverSideFunction</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Client route rendered&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;{</span><span class="nx">result</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>브라우저에서 <code>localhost:3000/server-route</code>로 이동하면 터미널에서만 로그 메시지가 보입니다.</p>
+<p>왜냐하면 이 페이지 컴포넌트는 서버 컴포넌트이기 때문이죠.</p>
+<p>클라이언트 컴포넌트인 <code>localhost:3000/client-route</code>에서는 콘솔에서 로그 메시지가 나타납니다.</p>
+<hr>
+<h3 id="server-only-패키지로-보안-강화하기">server-only 패키지로 보안 강화하기</h3>
+<p>서버 전용 함수가 클라이언트 측 번들에 포함되면 번들 크기가 커지고, 보안 문제가 생길 수 있습니다.</p>
+<p>이를 방지하기 위해 <code>server-only</code> 패키지를 사용해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install server-only</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발자가 이 모듈을 클라이언트 측 컴포넌트에 잘못 가져오면 빌드 프로세스가 실패하며 오류를 알립니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// src/utils/server-utils.ts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="s1">&#39;server-only&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">serverSideFunction() {</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Server-only function executed&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="s1">&#39;Server-only result&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h3 id="결론">결론</h3>
+<p>서버 전용 코드와 클라이언트 측 코드를 명확히 구분하는 것은 특히 민감한 데이터나 작업을 다룰 때 매우 중요합니다.</p>
+<p><code>server-only</code> 패키지를 사용하면 이러한 분리를 강제하여 애플리케이션의 보안, 성능 및 안정성을 유지할 수 있습니다.</p>
+<hr>
+<h2 id="third-party-packages">Third Party Packages</h2>
+<p>두 번째 서버 컴포넌트 패턴에서는 서드파티 패키지의 통합에 대해 알아보겠습니다.</p>
+<p>서버 컴포넌트는 React에 새로운 패러다임을 도입했기 때문에 에코시스템 내 서드파티 패키지들도 점차 적응하고 있는데요,</p>
+<p>클라이언트 기능에 의존하는 컴포넌트에 <code>use client</code> 지시어를 추가해 실행 환경을 명확히 구분하고 있습니다.</p>
+<p>하지만 아직 많은 npm 패키지의 컴포넌트들은 이 지시어를 통합하지 않았다는 점을 주의해야 합니다.</p>
+<p><code>use client</code> 지시어가 없으면 이러한 컴포넌트들은 클라이언트 컴포넌트에서 제대로 작동하지만, 서버 컴포넌트에서는 문제가 발생하거나 아예 작동하지 않을 수 있습니다.</p>
+<p>이 문제를 해결하려면 클라이언트 기능에 의존하는 서드파티 컴포넌트를 직접 만든 클라이언트 컴포넌트로 감싸야 합니다.</p>
+<p>예제를 통해 어떻게 하는지 확인해볼게요.</p>
+<p>이번 예제에서는 <code>react-slick</code> npm 패키지를 사용할 건데요, 이 패키지는 React 캐러셀 컴포넌트를 제공합니다.</p>
+<p>이 컴포넌트는 클라이언트 측 기능을 사용하기 때문에 먼저 다음 패키지들을 설치해줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install react-slick slick-carousel @types/react-slick</span></span></code></pre></div>
+  </figure>
+</div>
+<p>설치가 완료되면 <code>react-slick</code>의 샘플 코드를 복사해서 <code>client-route/page.tsx</code> 클라이언트 컴포넌트에 붙여넣습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// client-route/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Slider</span> <span class="kr">from</span> <span class="s1">&#39;react-slick&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ClientRoutePage() {</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">settings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">dots</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">infinite</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">speed</span>: <span class="kt">500</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">slidesToShow</span>: <span class="kt">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">slidesToScroll</span>: <span class="kt">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Image</span> <span class="nx">Slider</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">Slider</span> <span class="p">{</span><span class="na">...settings</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 1&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 2&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 3&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">Slider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>CSS 파일에서 <code>image-slider.css</code> 코드를 복사해 <code>globals.css</code>에 붙여넣고, 색상을 검정색에서 흰색으로 변경합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="c">/* globals.css */</span>
+</span></span><span class="line"><span class="cl"><span class="nt">body</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background-color</span><span class="p">:</span> <span class="mh">#fff</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">color</span><span class="p">:</span> <span class="mh">#000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nc">slick-prev</span><span class="p">:</span><span class="nd">before</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nc">slick-next</span><span class="p">:</span><span class="nd">before</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">color</span><span class="p">:</span> <span class="mh">#fff</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>브라우저에서 <code>localhost:3000/client-route</code>로 이동하면 첫 번째 이미지를 확인할 수 있습니다.</p>
+<p>이때 색상을 흰색으로 변경했으므로 두 개의 화살표도 잘 보일 거예요.</p>
+<p>이제 <code>react-slick</code>을 서버 컴포넌트에 직접 통합해보겠습니다.</p>
+<p><code>client-route/page.tsx</code>의 코드를 <code>server-route/page.tsx</code>에 복사해 붙여넣어봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// server-route/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">Slider</span> <span class="kr">from</span> <span class="s1">&#39;react-slick&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ServerRoutePage() {</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">settings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">dots</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">infinite</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">speed</span>: <span class="kt">500</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">slidesToShow</span>: <span class="kt">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">slidesToScroll</span>: <span class="kt">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Image</span> <span class="nx">Slider</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">Slider</span> <span class="p">{</span><span class="na">...settings</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 1&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 2&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 3&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">Slider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>하지만 <code>localhost:3000/server-route</code>로 이동하면 오류가 발생하는데요,</p>
+<p>이는 <code>Slider</code> 컴포넌트가 클라이언트 측 기능을 사용하지만 <code>use client</code> 지시어가 없기 때문입니다.</p>
+<p>이 문제를 해결하기 위해 서버 컴포넌트인 <code>ServerRoutePage</code>에 <code>use client</code> 지시어를 추가할 수도 있지만,</p>
+<p>이렇게 하면 서버 측 기능(예: 데이터베이스 호출, 환경 변수 등)을 사용할 수 없게 됩니다.</p>
+<p>따라서 클라이언트 기능에 의존하는 서드파티 컴포넌트를 직접 만든 클라이언트 컴포넌트로 감싸야 합니다.</p>
+<hr>
+<h3 id="이미지-슬라이더-컴포넌트-생성하기">이미지 슬라이더 컴포넌트 생성하기</h3>
+<p><code>components</code> 폴더에 <code>image-slider.tsx</code>라는 새 파일을 만들고, 다음 코드를 추가합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// components/image-slider.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Slider</span> <span class="kr">from</span> <span class="s1">&#39;react-slick&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ImageSlider() {</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">settings</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">dots</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">infinite</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">speed</span>: <span class="kt">500</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">slidesToShow</span>: <span class="kt">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">slidesToScroll</span>: <span class="kt">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Image</span> <span class="nx">Slider</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">Slider</span> <span class="p">{</span><span class="na">...settings</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 1&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 2&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://via.placeholder.com/800x400&#34;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&#34;Slide 3&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">Slider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 <code>server-route/page.tsx</code>에서 <code>ImageSlider</code> 컴포넌트를 임포트해 사용해보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// server-route/page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">ImageSlider</span> <span class="kr">from</span> <span class="s1">&#39;../components/image-slider&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ServerRoutePage() {</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Server</span> <span class="nx">Route</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">ImageSlider</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>브라우저에서 <code>localhost:3000/server-route</code>로 이동하면 문제가 해결된 것을 볼 수 있습니다.</p>
+<hr>
+<h3 id="요약">요약</h3>
+<p>React 에코시스템의 서드파티 패키지들은 아직 전환 과정에 있기 때문에 많은 컴포넌트들이 <code>use client</code> 지시어를 통합하지 않았습니다.</p>
+<p>따라서 이러한 컴포넌트를 우리가 직접 만든 클라이언트 컴포넌트로 감싸면 서버 컴포넌트 모델을 따르면서도 서드파티 패키지를 적극 활용할 수 있습니다.</p>
+<hr>
+<h2 id="context-providers">Context Providers</h2>
+<p>마지막 서버 컴포넌트 패턴으로 이번에는 컨텍스트 프로바이더를 사용하는 방법을 알아보겠습니다.</p>
+<p>여러분도 아시다시피 React에서는 컨텍스트 프로바이더를 애플리케이션의 루트에 렌더링하여 전역 상태와 로직을 공유하는데요, 예를 들어 애플리케이션의 테마 같은 것을 말이죠.</p>
+<p>하지만 서버 컴포넌트에서는 React 컨텍스트가 지원되지 않기 때문에 애플리케이션의 루트에서 컨텍스트를 생성하려고 하면 오류가 발생합니다.</p>
+<p>이 문제를 해결하려면 컨텍스트를 생성하고 별도의 클라이언트 컴포넌트 안에 프로바이더를 렌더링해야 합니다.</p>
+<p>VS Code로 들어가 예제를 통해 이를 이해해보도록 합시다.</p>
+<p>Next.js 애플리케이션의 루트 파일은 <code>app</code> 폴더에 있는 <code>layout.tsx</code>인데요, 여기서 애플리케이션 전체에 테마 컨텍스트를 제공해보겠습니다.</p>
+<p>먼저 <code>react</code>에서 <code>createContext</code>를 임포트하세요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>테마 타입을 정의할 건데요, 이는 <code>primary</code>와 <code>secondary</code> 색상을 갖는 객체로 설정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Theme</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">primary</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secondary</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 기본 테마를 정의합니다.</p>
+<p>이 기본 테마는 <code>Theme</code> 타입을 갖습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">defaultTheme</span>: <span class="kt">Theme</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">primary</span><span class="o">:</span> <span class="s1">&#39;#0070f3&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secondary</span><span class="o">:</span> <span class="s1">&#39;#1a1a1a&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>마지막으로, 테마 컨텍스트를 생성하고 초기값을 기본 테마로 설정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">ThemeContext</span> <span class="o">=</span> <span class="nx">createContext</span><span class="p">&lt;</span><span class="nt">Theme</span><span class="p">&gt;(</span><span class="nx">defaultTheme</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 <code>layout.tsx</code>에서 <code>body</code> 태그를 테마 컨텍스트 프로바이더로 감싸줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// layout.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">ThemeContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./components/ThemeContext&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span> <span class="nx">children</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">children</span>: <span class="kt">React.ReactNode</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">ThemeContext.Provider</span> <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">defaultTheme</span><span class="p">}&gt;{</span><span class="nx">children</span><span class="p">}&lt;/</span><span class="nt">ThemeContext.Provider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>파일을 저장하고 브라우저에서 확인하면 오류가 발생하는 것을 볼 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">You<span class="err">&#39;</span>re importing a component that needs createContext. It only works in a client component, but none of its parents are marked with <span class="s2">&#34;use client&#34;</span>.</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이는 <code>createContext</code>가 클라이언트 컴포넌트에서만 작동하기 때문인데요, <code>layout.tsx</code>를 클라이언트 컴포넌트로 변환하려면 상단에 <code>use client</code> 지시어를 추가하면 됩니다.</p>
+<p>하지만 이렇게 하면 <code>layout.tsx</code>와 해당 파일이 임포트하는 모든 컴포넌트가 클라이언트 측에서 실행되도록 Next.js에 신호를 보내게 되죠. 이는 우리가 원하는 바가 아닙니다.</p>
+<p>이 문제를 해결하려면 컨텍스트를 생성하고 프로바이더를 별도의 클라이언트 컴포넌트에 렌더링해야 합니다.</p>
+<hr>
+<h3 id="테마-프로바이더-컴포넌트-생성하기">테마 프로바이더 컴포넌트 생성하기</h3>
+<p><code>components</code> 폴더에 <code>theme-provider.tsx</code>라는 새 파일을 만들고, 다음 코드를 추가합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// theme-provider.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createContext</span><span class="p">,</span> <span class="nx">useContext</span><span class="p">,</span> <span class="nx">ReactNode</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;react&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Theme</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">primary</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secondary</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">defaultTheme</span>: <span class="kt">Theme</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">primary</span><span class="o">:</span> <span class="s1">&#39;#0070f3&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">secondary</span><span class="o">:</span> <span class="s1">&#39;#1a1a1a&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">ThemeContext</span> <span class="o">=</span> <span class="nx">createContext</span><span class="p">&lt;</span><span class="nt">Theme</span><span class="p">&gt;(</span><span class="nx">defaultTheme</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">ThemeProvider</span><span class="p">({</span> <span class="nx">children</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">children</span>: <span class="kt">ReactNode</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">ThemeContext.Provider</span> <span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">defaultTheme</span><span class="p">}&gt;{</span><span class="nx">children</span><span class="p">}&lt;/</span><span class="nt">ThemeContext.Provider</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">useTheme() {</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">useContext</span><span class="p">(</span><span class="nx">ThemeContext</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>클라이언트 컴포넌트임을 나타내기 위해 상단에 <code>use client</code> 지시어를 추가했고,</p>
+<p><code>ThemeProvider</code> 컴포넌트는 <code>ThemeContext.Provider</code>로 자식 컴포넌트를 감싸고 기본 테마를 제공합니다.</p>
+<p>그리고 <code>useTheme</code> 훅을 만들어 쉽게 테마 컨텍스트에 접근할 수 있도록 했습니다.</p>
+<hr>
+<h3 id="레이아웃에-테마-프로바이더-적용하기">레이아웃에 테마 프로바이더 적용하기</h3>
+<p>이제 <code>layout.tsx</code>에서 테마와 관련된 코드를 모두 제거하고, <code>ThemeProvider</code> 컴포넌트를 임포트해 사용합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// layout.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="p">{</span> <span class="nx">ThemeProvider</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./components/theme-provider&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span> <span class="nx">children</span> <span class="p">}</span><span class="o">:</span> <span class="p">{</span> <span class="nx">children</span>: <span class="kt">React.ReactNode</span> <span class="p">})</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">&lt;</span><span class="nt">ThemeProvider</span><span class="p">&gt;{</span><span class="nx">children</span><span class="p">}&lt;/</span><span class="nt">ThemeProvider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h3 id="클라이언트-컴포넌트에서-테마-사용하기">클라이언트 컴포넌트에서 테마 사용하기</h3>
+<p>테마가 잘 작동하는지 확인하기 위해 클라이언트 컴포넌트에서 테마를 사용해봅시다.</p>
+<p><code>page.tsx</code>를 다음과 같이 수정해봅니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// page.tsx
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;use client&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useTheme</span> <span class="p">}</span> <span class="kr">from</span> <span class="s1">&#39;./components/theme-provider&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">ClientRoutePage() {</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">theme</span> <span class="o">=</span> <span class="nx">useTheme</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">color</span>: <span class="kt">theme.primary</span> <span class="p">}}&gt;</span><span class="nx">Client</span> <span class="nx">Route</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 브라우저에서 <code>/client-route</code>로 이동하면 <code>Client Route</code> 텍스트가 파란색으로 표시되는 것을 확인할 수 있습니다.</p>
+<p>색상을 <code>theme.secondary</code>로 변경하면 회색으로 바뀌는 것도 확인할 수 있죠.</p>
+<hr>
+<h3 id="마무리">마무리</h3>
+<p>여기까지 서버 컴포넌트 패턴 중 컨텍스트 프로바이더를 다뤄봤습니다.</p>
+<p>핵심은 서버 컴포넌트를 클라이언트 컴포넌트로 변환하지 않고, 별도의 클라이언트 컴포넌트를 만들어 이를 서버 컴포넌트에서 자식으로 사용하는 것이죠.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/server-component-patterns/" role="button">server component patterns</a>
+        <a class="btn btn-light" href="/tags/server-only/" role="button">server-only</a>
+        <a class="btn btn-light" href="/tags/context-provider/" role="button">context provider</a>
+        <a class="btn btn-light" href="/tags/third-party-package/" role="button">third party package</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-25-3-ways-in-data-fetching-with-react/">옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기</a></h2>
+                  <p>이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다.</p>
+                  <p>
+  <small>August 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-19-refactoring-nextjs-lucia-auth-code-with-useformstate-and-useformstatus/">React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기</a></h2>
+                  <p>기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다.</p>
+                  <p>
+  <small>August 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

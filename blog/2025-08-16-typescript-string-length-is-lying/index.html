@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>TypeScript의 `string.length`는 왜 거짓말을 할까</title>
+<meta name="description" content="자바스크립트의 string.length가 이모지와 복잡한 문자 앞에서 어떻게 우리를 배신하는지, 그리고 이 혼돈을 해결할 현대적인 API, Intl.Segmenter의 모든 것을 파헤쳐 봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-16-typescript-string-length-is-lying/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="TypeScript의 `string.length`는 왜 거짓말을 할까" />
+<meta property="og:description" content="자바스크립트의 string.length가 이모지와 복잡한 문자 앞에서 어떻게 우리를 배신하는지, 그리고 이 혼돈을 해결할 현대적인 API, Intl.Segmenter의 모든 것을 파헤쳐 봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-16-typescript-string-length-is-lying/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-17T06:21:38Z" />
+<meta property="article:modified_time" content="2025-08-17T06:21:38Z" />
+<meta property="article:tag" content="TypeScript" />
+<meta property="article:tag" content="Unicode" />
+<meta property="article:tag" content="emoji" />
+<meta property="article:tag" content="string.length" />
+<meta property="article:tag" content="Intl.Segmenter" />
+<meta property="article:tag" content="Grapheme" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TypeScript의 `string.length`는 왜 거짓말을 할까" />
+<meta name="twitter:description" content="자바스크립트의 string.length가 이모지와 복잡한 문자 앞에서 어떻게 우리를 배신하는지, 그리고 이 혼돈을 해결할 현대적인 API, Intl.Segmenter의 모든 것을 파헤쳐 봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"TypeScript의 `string.length`는 왜 거짓말을 할까\"",
+  "description": "\"자바스크립트의 string.length가 이모지와 복잡한 문자 앞에서 어떻게 우리를 배신하는지, 그리고 이 혼돈을 해결할 현대적인 API, Intl.Segmenter의 모든 것을 파헤쳐 봅니다.\"",
+  "datePublished": "\"2025-08-17T06:21:38Z\"",
+  "dateModified": "\"2025-08-17T06:21:38Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-16-typescript-string-length-is-lying/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>TypeScript의 `string.length`는 왜 거짓말을 할까</h1>
+        <p>
+  <small>August 17, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>자바스크립트나 타입스크립트에서 문자열 길이를 셀 때 <code>.length</code>를 쓰는 건 너무나 당연한 일인데요.<br /><br />
+그런데 이 당연한 코드가 때로는 우리 뒤통수를 제대로 치죠.<br /><br />
+혹시 아래 테스트 코드가 왜 전부 실패하는지 바로 설명하실 수 있으신가요?<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;과연 통과될까?&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expect</span><span class="p">(</span><span class="s1">&#39;😊&#39;</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 실패! 실제 값: 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="s1">&#39;👍🏿&#39;</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 실패! 실제 값: 4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="s1">&#39;パ&#39;</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 실패! 실제 값: 2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="s1">&#39;👨‍👩‍👦&#39;</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 실패! 실제 값: 8
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="s1">&#39;🏴󠁧󠁢󠁥󠁮󠁧󠁿&#39;</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 실패! 실제 값: 14
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리 눈에는 분명 &lsquo;한 글자&rsquo;인데, <code>.length</code>는 제멋대로 다른 숫자를 뱉어내고 있거든요.<br /><br />
+이건 버그가 아니라, 우리가 &lsquo;문자&rsquo;라고 생각하는 것과 자바스크립트가 &lsquo;문자&rsquo;를 세는 방식 사이에 아주 깊은 오해가 있기 때문입니다.<br /><br />
+오늘은 이 기묘한 문자 코드의 세계로 함께 다이빙해서, <code>.length</code>의 배신 뒤에 숨겨진 진실과 그 우아한 해결책까지 완벽하게 알아보겠습니다.<br /><br /></p>
+<h2 id="1단계---모든-비극의-시작-서로게이트-페어surrogate-pair">1단계 - 모든 비극의 시작, 서로게이트 페어(Surrogate Pair)</h2>
+<p>가장 먼저 우리를 혼란에 빠뜨리는 건 &lsquo;😊&rsquo; 같은 기본적인 이모지인데요.<br /><br />
+<code>.length</code>가 2를 반환하는 이유는 자바스크립트의 문자열이 내부적으로 &lsquo;UTF-16&rsquo;이라는 방식으로 인코딩되기 때문이죠.<br /><br />
+UTF-16은 문자를 2바이트(16비트)의 &lsquo;코드 유닛&rsquo; 단위로 다루거든요.<br /><br />
+대부분의 흔한 문자들, 예를 들어 알파벳이나 한글은 2바이트 하나로 표현이 가능한데요.<br /><br />
+하지만 &lsquo;😊&rsquo; 같은 이모지나 일부 한자(𩸽 같은)는 2바이트로는 표현할 수 있는 범위를 넘어서 버립니다.<br /><br />
+그래서 이런 문자들은 2바이트짜리 코드 유닛 두 개를 합쳐서, 즉 4바이트로 하나의 문자를 표현하게 되죠.<br /><br />
+이걸 바로 &lsquo;서로게이트 페어(Surrogate Pair)&lsquo;라고 부릅니다.<br /><br />
+결국 <code>.length</code>는 우리가 생각하는 &lsquo;글자&rsquo;의 개수를 세는 게 아니라, 내부적으로 사용된 2바이트짜리 &lsquo;코드 유닛&rsquo;의 개수를 세고 있었던 거예요.<br /><br />
+&lsquo;😊&lsquo;는 코드 유닛 두 개로 만들어진 글자이니, <code>.length</code>가 2를 뱉는 건 어찌 보면 당연한 결과였던 겁니다.<br /><br /></p>
+<h2 id="2단계---합체하고-변신하는-문자들">2단계 - 합체하고 변신하는 문자들</h2>
+<p>&ldquo;아하, 그럼 4바이트 문자만 조심하면 되겠네!&rdquo; 라고 생각하셨다면, 문자 코드의 세계는 그렇게 만만하지 않은데요.<br /><br />
+다음 예제를 한번 보시죠.<br /><br />
+&lsquo;👍🏿&lsquo;는 우리 눈엔 그냥 &lsquo;피부색이 어두운 따봉&rsquo; 이모지 한 글자인데요.<br /><br />
+하지만 이건 사실 &lsquo;👍&rsquo; (따봉) 문자와 &lsquo;🏿&rsquo; (어두운 피부색)라는 &lsquo;이체자 선택자(Variation Selector)&rsquo; 문자가 합쳐져서 하나의 글자처럼 &lsquo;보여주는&rsquo; 겁니다.<br /><br />
+마치 레고 블록 두 개를 합쳐서 새로운 모양을 만드는 것과 같죠.<br /><br />
+&lsquo;パ&rsquo;도 마찬가지인데요.<br /><br />
+이건 우리가 보통 쓰는 완성형 글자 &lsquo;パ&rsquo;와는 다릅니다.<br /><br />
+&lsquo;ハ&rsquo; (하) 라는 베이스 문자에 &lsquo;゚&rsquo; (반탁점) 라는 &lsquo;결합 문자(Combining Character)&lsquo;가 뒤따라오면서 합쳐져 &lsquo;파&rsquo; 소리를 내는 글자로 렌더링되는 거죠.<br /><br />
+<code>.length</code>는 당연히 이 두 개의 문자를 각각 별개로 인식하기 때문에, 결과는 2가 나옵니다.<br /><br /></p>
+<h2 id="3단계---문자를-이어-붙이는-마법의-접착제">3단계 - 문자를 이어 붙이는 마법의 접착제</h2>
+<p>자, 이제 문자열의 세계가 레고처럼 조립식이라는 건 알게 됐는데요.<br /><br />
+그렇다면 이 &lsquo;👨‍👩‍👦&rsquo; (가족) 이모지는 어떻게 된 걸까요?<br /><br />
+<code>.length</code>가 무려 8이나 나오는데요.<br /><br />
+이 이모지의 속을 들여다보면 정말 놀랍습니다.<br /><br />
+&lsquo;👨&rsquo; (남자) + <code>&amp;zwj;</code> + &lsquo;👩&rsquo; (여자) + <code>&amp;zwj;</code> + &lsquo;👦&rsquo; (남자아이)<br /><br />
+이렇게 세 개의 이모지 사이에 눈에 보이지 않는 특수문자, &lsquo;제로 너비 접합자(Zero-Width Joiner, ZWJ)&lsquo;가 접착제처럼 붙어서 여러 문자를 하나의 이모지로 합쳐주고 있었던 거죠.<br /><br />
+&lsquo;🏴󠁧󠁢󠁥󠁮󠁧󠁿&rsquo; (잉글랜드 국기) 이모지는 그야말로 이 복잡성의 끝판왕인데요.<br /><br />
+&lsquo;🏴&rsquo; (검은 깃발) 뒤에 여러 개의 태그 문자들이 따라붙어 특정 지역의 깃발을 만들어내는 &lsquo;이모지 태그 시퀀스&rsquo;라는 기술을 사용합니다.<br /><br />
+우리 눈엔 한 글자지만, 내부적으로는 무려 7개의 코드 유닛, 즉 14바이트를 차지하는 거대한 문자였던 겁니다.<br /><br /></p>
+<h2 id="혼돈의-해결사-intlsegmenter">혼돈의 해결사, <code>Intl.Segmenter</code></h2>
+<p>이제 우리는 <code>.length</code>가 얼마나 순진한 친구였는지 알게 됐는데요.<br /><br />
+그렇다면 이 모든 혼돈을 뚫고 &lsquo;인간이 인식하는 글자&rsquo; 단위로 문자열을 다룰 방법은 없는 걸까요?<br /><br />
+다행히도, 현대 자바스크립트에는 이 문제를 해결하기 위해 태어난 아주 강력한 API가 있습니다.<br /><br />
+바로 <code>Intl.Segmenter</code> 입니다.<br /><br />
+<code>Intl.Segmenter</code>는 언어별로 텍스트를 의미 있는 단위(단어, 문장, 그리고 우리가 원하는 &lsquo;글자&rsquo;)로 분할해주는 국제화 API인데요.<br /><br />
+이걸 사용하면 우리가 지금까지 겪었던 모든 문제를 한 방에 해결할 수 있습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 문자열을 &#39;글자소 클러스터(Grapheme Cluster)&#39; 단위로 쪼개는 헬퍼 함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">toGraphemes</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">segmenter</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Intl</span><span class="p">.</span><span class="nx">Segmenter</span><span class="p">(</span><span class="s1">&#39;ko-KR&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">granularity</span><span class="o">:</span> <span class="s1">&#39;grapheme&#39;</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nb">Array</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">segmenter</span><span class="p">.</span><span class="nx">segment</span><span class="p">(</span><span class="nx">str</span><span class="p">),</span> <span class="p">({</span> <span class="nx">segment</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">segment</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 새로운 length 함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">length</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">toGraphemes</span><span class="p">(</span><span class="nx">str</span><span class="p">).</span><span class="nx">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 새로운 truncate 함수
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">export</span> <span class="kr">const</span> <span class="nx">truncate</span> <span class="o">=</span> <span class="p">(</span><span class="nx">str</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">size</span>: <span class="kt">number</span><span class="p">,</span> <span class="nx">suffix</span> <span class="o">=</span> <span class="s1">&#39;...&#39;</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">graphemes</span> <span class="o">=</span> <span class="nx">toGraphemes</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">graphemes</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="nx">size</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="sb">`</span><span class="si">${</span><span class="nx">graphemes</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">size</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}${</span><span class="nx">suffix</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 핵심은 <code>granularity: 'grapheme'</code> 옵션인데요.<br /><br />
+&lsquo;grapheme&rsquo;, 우리말로는 &lsquo;글자소 클러스터&rsquo;가 바로 &lsquo;사용자가 인식하는 최소한의 문자 단위&rsquo;를 의미하는 전문 용어입니다.<br /><br />
+<code>Intl.Segmenter</code>에게 이 옵션을 주면, 지금까지 우리를 괴롭혔던 모든 복잡한 조합들을 알아서 하나의 단위로 묶어주죠.<br /><br />
+이제 이 새로운 <code>length</code> 함수로 아까 그 테스트를 다시 돌려볼까요?<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;드디어 세상이 평화로워졌다&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">expect</span><span class="p">(</span><span class="nx">length</span><span class="p">(</span><span class="s1">&#39;😊&#39;</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>        <span class="c1">// 통과!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="nx">length</span><span class="p">(</span><span class="s1">&#39;👍🏿&#39;</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>        <span class="c1">// 통과!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="nx">length</span><span class="p">(</span><span class="s1">&#39;パ&#39;</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>        <span class="c1">// 통과!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="nx">length</span><span class="p">(</span><span class="s1">&#39;👨‍👩‍👦&#39;</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>        <span class="c1">// 통과!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="nx">length</span><span class="p">(</span><span class="s1">&#39;🇦🇿🇿🇦&#39;</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>    <span class="c1">// 통과! (국기 2개 맞음)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">expect</span><span class="p">(</span><span class="nx">length</span><span class="p">(</span><span class="s1">&#39;🏴󠁧󠁢󠁥󠁮󠁧󠁿&#39;</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>    <span class="c1">// 통과!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>마침내 모든 테스트가 통과하며 세상에 평화가 찾아왔습니다.<br /><br /></p>
+<h2 id="그래서-우리는-어떻게-해야-할까">그래서 우리는 어떻게 해야 할까?</h2>
+<p>&ldquo;와, 그럼 이제부터 <code>.length</code>는 절대 쓰지 말고 무조건 <code>Intl.Segmenter</code>만 써야 하나요?&rdquo; 라고 물으실 수 있는데요.<br /><br />
+그건 &lsquo;상황에 따라 다릅니다.&rsquo;<br /><br />
+명확한 가이드라인을 드릴게요.<br /><br /></p>
+<ol>
+<li><strong>사용자가 입력하거나 보는 모든 텍스트는 <code>Intl.Segmenter</code>를 쓰세요.</strong><br />
+사용자 이름의 길이를 제한하거나, 게시물 내용을 특정 길이로 자를 때 <code>.length</code>를 썼다가는 이모지 하나 때문에 레이아웃이 깨지거나 입력이 막히는 끔찍한 UX를 선사하게 될 겁니다.<br /><br />
+이건 선택이 아닌 필수죠.<br /><br /></li>
+<li><strong>내부적으로만 쓰는 데이터나 ID는 <code>.length</code>도 괜찮습니다.</strong><br />
+API 키, UUID, 데이터베이스 ID처럼 기계가 읽고 쓰는, 이모지가 들어갈 리 없는 데이터의 길이를 잴 때는 굳이 <code>Intl.Segmenter</code>의 오버헤드를 감수할 필요는 없습니다.<br /><br /></li>
+<li><strong>내가 쓰는 라이브러리의 정책을 이해하세요.</strong><br />
+예를 들어 <code>zod</code> 같은 유효성 검사 라이브러리의 <code>.max(1)</code>는 <code>.length</code>를 기준으로 동작할 수 있습니다.<br /><br />
+이는 라이브러리가 &lsquo;코드 유닛&rsquo;의 개수를 제한하는 것을 정책으로 삼았기 때문이죠.<br /><br />
+이처럼 내가 사용하는 도구가 어떤 기준을 따르는지 아는 것도 중요합니다.<br /><br /></li>
+</ol>
+<p>결론적으로, 문자열의 세계는 우리가 상상하는 것보다 훨씬 더 복잡하고 다층적인데요.<br /><br />
+이제 우리는 <code>.length</code>의 순진한 거짓말에 더 이상 속지 않을 겁니다.<br /><br />
+문자열을 다룰 땐 <code>.length</code>를 의심하고, 사용자를 마주할 땐 <code>Intl.Segmenter</code>를 기억하세요.<br /><br />
+그것이 바로 현대 웹 개발자가 갖춰야 할 새로운 기본 소양이니까요.<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/typescript/" role="button">TypeScript</a>
+        <a class="btn btn-light" href="/tags/unicode/" role="button">Unicode</a>
+        <a class="btn btn-light" href="/tags/emoji/" role="button">emoji</a>
+        <a class="btn btn-light" href="/tags/string.length/" role="button">string.length</a>
+        <a class="btn btn-light" href="/tags/intl.segmenter/" role="button">Intl.Segmenter</a>
+        <a class="btn btn-light" href="/tags/grapheme/" role="button">Grapheme</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-26-react-componentprops-typescript-guide/">React Props 타입, 아직도 className?; string 쓰세요? (ComponentProps 완벽 가이드)</a></h2>
+                  <p>매번 className, onClick을 수동으로 추가하는 데 지치셨나요? HTMLAttributes부터 ComponentProps까지, 타입스크립트로 React 컴포넌트의 props를 정의하는 가장 우아하고 확장 가능한 방법을 소개합니다.</p>
+                  <p>
+  <small>August 27, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-building-testable-telegram-bots-with-zustand-vanilla/">Zustand, 리액트 없이도 이렇게 강력하다고? (테스트 가능한 텔레그램 봇 만들기)</a></h2>
+                  <p>Zustand의 바닐라 스토어를 활용해 React 없이도 완벽하게 테스트 가능한 텔레그램 봇을 만드는 방법을 소개합니다. 단방향 데이터 흐름과 반응형 상태 구독을 통해 복잡한 봇 로직을 우아하게 관리하는 비법을 확인하세요.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-tanstack-query-advanced-patterns-typescript-and-prefetching/">TanStack Query, 아직도 로딩 스피너 쓰세요? (타입스크립트와 프리페칭으로 만드는 즉각적인 UX)</a></h2>
+                  <p>TanStack Query를 타입스크립트로 안전하게 만들고, 프리페칭으로 로딩 스피너를 없애는 고급 패턴을 알아봅니다. 제네릭 훅부터 on hover 프리페칭까지, 사용자 경험을 극적으로 향상시키는 실전 팁을 확인하세요.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

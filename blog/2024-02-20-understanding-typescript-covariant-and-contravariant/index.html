@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>타입스크립트 변성 5분 만에 이해하기(공변성, 반변성, 양변성)</title>
+<meta name="description" content="타입스크립트 공변성, 반변성, 양변성 쉽게 이해하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-02-20-understanding-typescript-covariant-and-contravariant/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="타입스크립트 변성 5분 만에 이해하기(공변성, 반변성, 양변성)" />
+<meta property="og:description" content="타입스크립트 공변성, 반변성, 양변성 쉽게 이해하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-02-20-understanding-typescript-covariant-and-contravariant/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-02-20T12:40:29Z" />
+<meta property="article:modified_time" content="2024-02-20T12:40:29Z" />
+<meta property="article:tag" content="typescript" />
+<meta property="article:tag" content="covariant" />
+<meta property="article:tag" content="contravariant" />
+<meta property="article:tag" content="bivariant" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="타입스크립트 변성 5분 만에 이해하기(공변성, 반변성, 양변성)" />
+<meta name="twitter:description" content="타입스크립트 공변성, 반변성, 양변성 쉽게 이해하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"타입스크립트 변성 5분 만에 이해하기(공변성, 반변성, 양변성)\"",
+  "description": "\"타입스크립트 공변성, 반변성, 양변성 쉽게 이해하기\"",
+  "datePublished": "\"2024-02-20T12:40:29Z\"",
+  "dateModified": "\"2024-02-20T12:40:29Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-02-20-understanding-typescript-covariant-and-contravariant/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>타입스크립트 변성 5분 만에 이해하기(공변성, 반변성, 양변성)</h1>
+        <p>
+  <small>February 20, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>TypeScript에 대한 글을 읽다 보면, 공변성과 반변성이라는 생소한 단어를 마주치게 됩니다.</p>
+<p>도대체 뭘까요?</p>
+<p>이 글에서는 그런 공변성과 반변성에 대해, 5분 만에 이해할 수 있도록 아주 간단하게 설명해보겠습니다.</p>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#%ed%83%80%ec%9e%85%ec%8a%a4%ed%81%ac%eb%a6%bd%ed%8a%b8-%eb%b3%80%ec%84%b1-5%eb%b6%84-%eb%a7%8c%ec%97%90-%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0%ea%b3%b5%eb%b3%80%ec%84%b1-%eb%b0%98%eb%b3%80%ec%84%b1-%ea%b7%b8%eb%a6%ac%ea%b3%a0-%ec%96%91%eb%b3%80%ec%84%b1">타입스크립트 변성 5분 만에 이해하기(공변성, 반변성, 그리고 양변성)</a>
+<ul>
+<li><a href="#%ea%b8%b0%eb%b3%b8-%ec%bd%94%eb%93%9c">기본 코드</a></li>
+<li><a href="#%ec%84%9c%eb%b8%8c%ed%83%80%ec%9e%85%ea%b3%bc-%ec%8a%88%ed%8d%bc%ed%83%80%ec%9e%85">서브타입과 슈퍼타입</a></li>
+<li><a href="#%ed%95%a8%ec%88%98%ec%9d%98-%eb%b0%98%ed%99%98%ea%b0%92%ea%b3%b5%eb%b3%80%ec%84%b1-covariant">함수의 반환값(공변성: covariant)</a></li>
+<li><a href="#%ed%95%a8%ec%88%98%ec%9d%98-%ec%9d%b8%ec%9e%90%eb%b0%98%eb%b3%80%ec%84%b1-contravariant">함수의 인자(반변성: contravariant)</a></li>
+<li><a href="#%eb%a9%94%ec%86%8c%eb%93%9c-%ea%b8%b0%eb%a1%9d%eb%b2%95%ec%96%91%eb%b3%80%ec%84%b1-bivariant%ec%9d%98-%ec%9c%84%ed%97%98%ec%84%b1">메소드 기록법(양변성: bivariant)의 위험성</a></li>
+<li><a href="#%eb%81%9d%eb%a7%ba%ec%9d%8c">끝맺음</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>영어로는 변셩을 variant, 공변성을 covariant, 반변성을 contravariant라는 단어로 씁니다.</p>
+<p>ChatGPT에 물어보니 무변성(invariant)도 있네요.</p>
+<p>ChatGPT 결과를 한번 보고 갈까요?</p>
+<hr>
+<ol>
+<li>
+<p><strong>공변성 (Covariant):</strong></p>
+<ul>
+<li>공변성은 주로 타입이나 클래스 관계에서 나타납니다.</li>
+<li>만약 A가 B의 하위 타입(서브타입)이라면, <code>Array&lt;A&gt;</code>는 <code>Array&lt;B&gt;</code>의 하위 타입이 됩니다.</li>
+<li>예를 들어, 만약 동물이라는 클래스가 있고, 그 중에서 강아지가 파생된다면, Animal 배열은 Dog 배열의 하위 타입이 됩니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>반변성 (Contravariant):</strong></p>
+<ul>
+<li>반변성은 공변성과 반대로 동작합니다. 만약 A가 B의 하위 타입이라면, <code>Array&lt;B&gt;</code>는 <code>Array&lt;A&gt;</code>의 하위 타입이 됩니다.</li>
+<li>함수 매개변수의 관점에서 설명하면, 만약 B 타입의 함수를 받는 곳에 A 타입의 함수를 사용할 수 있다면, B는 A의 반변성입니다.</li>
+</ul>
+</li>
+<li>
+<p><strong>무변성 (Invariant):</strong></p>
+<ul>
+<li>무변성은 타입 간에 서로 상속 관계가 있어도 상관하지 않는 경우를 의미합니다.</li>
+<li>A가 B의 하위 타입이더라도, <code>Array&lt;A&gt;</code>와 <code>Array&lt;B&gt;</code>는 서로 관련이 없는 타입입니다.</li>
+</ul>
+</li>
+</ol>
+<p>간단하게 코드로 예를 들면 다음과 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 공변성 (Covariant)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">class</span> <span class="nx">Animal</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">Dog</span> <span class="kr">extends</span> <span class="nx">Animal</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">animals</span>: <span class="kt">Array</span><span class="p">&lt;</span><span class="nt">Animal</span><span class="p">&gt;</span> <span class="o">=</span> <span class="p">[</span><span class="k">new</span> <span class="nx">Dog</span><span class="p">()];</span> <span class="c1">// 이는 올바른 사용입니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 반변성 (Contravariant)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">printAnimal</span><span class="o">:</span> <span class="p">(</span><span class="nx">animal</span>: <span class="kt">Animal</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span> <span class="o">=</span> <span class="p">(</span><span class="nx">dog</span>: <span class="kt">Dog</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">dog</span><span class="p">);</span> <span class="c1">// 이는 올바른 사용입니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 무변성 (Invariant)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">invariantArray</span>: <span class="kt">Array</span><span class="p">&lt;</span><span class="nt">Animal</span><span class="p">&gt;</span> <span class="o">=</span> <span class="p">[</span><span class="k">new</span> <span class="nx">Dog</span><span class="p">()];</span> <span class="c1">// 이는 올바른 사용입니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1">// let invariantArray: Array&lt;Animal&gt; = [new Animal()]; // 이는 올바르지 않습니다.
+</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 타입의 상속 관계를 기반으로 설명된 공변성과 반변성은 TypeScript에서 제네릭이나 함수 매개변수 등 다양한 상황에서 발생할 수 있습니다.</p>
+<p>역시나 ChatGPT는 무적이네요.</p>
+<p>그런데 살짝 이해하기 어려운데요.</p>
+<p>5분만에 이해할 수 있게 상세하게 설명해 보겠습니다.</p>
+<hr>
+<h2 id="기본-코드">기본 코드</h2>
+<p>일단 이 글에서 사용할 타입과 변수를 다음과 같이 정의합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 타입선언
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">type</span> <span class="nx">User</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span>: <span class="kt">string</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">Admin</span> <span class="o">=</span> <span class="nx">User</span> <span class="o">&amp;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">permissions</span>: <span class="kt">string</span><span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 타입에 맞는 변수 준비
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">user</span>: <span class="kt">User</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">admin</span>: <span class="kt">Admin</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;admin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">permissions</span><span class="o">:</span> <span class="p">[],</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>User는 <code>name</code>만을 가진 타입이고, Admin은 User의 <code>name</code>과 <code>permissions</code>을 가진 타입입니다.</p>
+<p>또한, 각 타입의 변수도 준비해두었습니다.</p>
+<hr>
+<h2 id="서브타입과-슈퍼타입">서브타입과 슈퍼타입</h2>
+<p>Admin 타입의 변수는 name 속성을 가지고 있으며, User 타입의 조건을 만족합니다.</p>
+<p>그래서, User 타입의 변수에는 Admin 타입의 변수를 할당할 수 있습니다.</p>
+<p>그 반대의 경우는 타입 에러가 발생합니다.</p>
+<p>User 타입의 변수에는 permissions 속성이 없기 때문에, Admin 타입을 만족시키지 못합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// admin은 User의 타입을 만족시키므로 할당 가능
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">value1</span>: <span class="kt">User</span> <span class="o">=</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 타입 에러. Type &#39;User&#39; is not assignable to type &#39;Admin&#39;.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">value2</span>: <span class="kt">Admin</span> <span class="o">=</span> <span class="nx">user</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이처럼 Admin 타입은 User 타입으로도 취급될 수 있으며, 이 관계를 &lsquo;Admin 타입은 User 타입의 서브타입이다&rsquo;라고 합니다.</p>
+<p>그 반대로, &lsquo;User 타입은 Admin 타입의 슈퍼타입이다&rsquo;라고 합니다.</p>
+<hr>
+<h2 id="함수의-반환값공변성-covariant">함수의 반환값(공변성: covariant)</h2>
+<p>다음으로, 함수를 할당하는 경우에 대해 살펴보겠습니다.</p>
+<p>타입으로 지정한 반환값과 다른 값을 반환하는 함수를 할당해봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// admin은 User의 타입을 만족시키므로 할당 가능
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">fn1</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">User</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 타입 에러. Type &#39;User&#39; is not assignable to type &#39;Admin&#39;.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">fn2</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Admin</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">user</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;User 타입을 반환하는 함수&rsquo;라는 타입을 지정한 변수 fn1에 &lsquo;Admin 타입을 반환하는 함수&rsquo;를 할당할 수 있습니다.</p>
+<p>앞서 본 것처럼 Admin 타입은 User 타입으로 취급될 수 있기 때문에, 이는 이해하기 쉽습니다.</p>
+<p>반면, fn2처럼 반대의 패턴으로 할당하려고 하면 속성이 부족해서 타입 에러가 발생합니다.</p>
+<p>이처럼, 서브타입의 관계가 필요한 것을 공변성(또는 공변의 위치에 있는)이라고 합니다.</p>
+<hr>
+<h2 id="함수의-인자반변성-contravariant">함수의 인자(반변성: contravariant)</h2>
+<p>이어서 함수의 인자에 대해 살펴보겠습니다.</p>
+<p>타입으로 지정한 인자와 다른 타입을 받는 함수를 할당해봅니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 타입 에러. Type &#39;(arg: Admin) =&gt; void&#39; is not assignable to type &#39;(arg: User) =&gt; void&#39;.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">fn3</span><span class="o">:</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">User</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span> <span class="o">=</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">Admin</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 이 경우는 OK
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">fn4</span><span class="o">:</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">Admin</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span> <span class="o">=</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">User</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&lsquo;User를 받는 함수&rsquo;라는 타입을 지정한 변수 fn3에 &lsquo;Admin을 받는 함수&rsquo;를 할당하려고 하면 타입 에러가 발생하고, 그 반대의 fn4는 OK입니다.</p>
+<p>앞서와 반대이므로, 이것만 보면 뭔가 헷갈립니다.</p>
+<p>함수의 본체를 아래와 같이 바꿔보면 왜 타입 에러가 발생하는지 이해하기 쉽습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 타입 에러. 타입의 인자는 User이지만, 실제로는 Admin이 필요
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">fn3</span><span class="o">:</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">User</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span> <span class="o">=</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">Admin</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arg</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">arg</span><span class="p">.</span><span class="nx">permissions</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">fn3</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span> <span class="c1">// &#34;user&#34;와 undefined가 출력됩니다
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// Admin을 전달받아도 User의 부분만 사용하므로 할당 가능
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">fn4</span><span class="o">:</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">Admin</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span> <span class="o">=</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">User</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arg</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위의 fn3 예시에서는, 타입상으로는 &lsquo;User를 받는 함수&rsquo;로 되어 있지만, 실제로는 Admin 타입이 전달되는 것을 예상하고 있습니다.</p>
+<p>그래서 name은 출력되지만, permissions는 User 타입의 변수에는 존재하지 않기 때문에 undefined가 됩니다.</p>
+<p>이 예에서는 &lsquo;undefined가 출력된다&rsquo; 정도의 문제입니다만, 코드를 arg.permissions.length로 변경하면 아래와 같이 런타임 에러가 발생합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Cannot <span class="nb">read</span> properties of undefined <span class="o">(</span>reading <span class="s1">&#39;length&#39;</span><span class="o">)</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이런 일을 방지하기 위해, &lsquo;함수의 타입의 인자 vs 실제 함수의 인자&rsquo;가 서브타입의 관계에 있을 경우 타입 에러가 발생하는 것입니다.</p>
+<p>반대로 fn4는, 타입상으로는 &lsquo;Admin을 받는 함수&rsquo;이고, 실제로는 &lsquo;User를 받는 함수&rsquo;가 됩니다.</p>
+<p>Admin 타입은 User 타입으로 취급될 수 있기 때문에, 이 할당은 문제가 없습니다.</p>
+<p>함수의 인자에 대해서는, 반환값과는 반대의 관계가 되는 것을 알 수 있습니다.</p>
+<p>공변성과는 반대로, 슈퍼타입의 관계가 필요한 것을 반변성(또는 반변의 위치에 있는)이라고 합니다.</p>
+<hr>
+<h2 id="메소드-기록법양변성-bivariant의-위험성">메소드 기록법(양변성: bivariant)의 위험성</h2>
+<p>객체의 타입 정의를 할 때 메소드 기록법을 사용하면 양변성이 됩니다.</p>
+<p>이는 공변성이나 반변성 중 하나만 충족하면 되는 관계입니다.</p>
+<p>그래서 인자가 서브타입인 경우에도 타입 에러가 발생하지 않습니다.</p>
+<p>즉, 위에서 설명한 반변성의 부분에서 언급한 런타임 에러가 실제로 발생할 위험이 있습니다.</p>
+<p>특별한 의도가 없다면 피하는 것이 좋습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">MyObject</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">fnProp</span><span class="o">:</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">User</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span> <span class="c1">// 함수 속성으로 정의
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">method</span><span class="p">(</span><span class="nx">arg</span>: <span class="kt">User</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span> <span class="c1">// 메소드 기록법으로 정의
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">obj</span>: <span class="kt">MyObject</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 속성으로 정의된 함수는 반변성이므로 서브타입은 타입 에러
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// Type &#39;(arg: Admin) =&gt; void&#39; is not assignable to type &#39;(arg: User) =&gt; void&#39;.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">fnProp</span><span class="o">:</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">Admin</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 메소드 기록법으로 정의된 함수는 양변성이므로 서브타입이라도 타입 에러가 발생하지 않습니다!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 아래 코드는 런타임 에러를 일으킬 수 있습니다
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">method</span><span class="o">:</span> <span class="p">(</span><span class="nx">arg</span>: <span class="kt">Admin</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">arg</span><span class="p">.</span><span class="nx">permissions</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="끝맺음">끝맺음</h2>
+<p>이 글에서는 TypeScript의 변성(공변성과 반변성)에 대해 설명했는데요.</p>
+<p>구체적으로는 서브타입과 슈퍼타입의 관계, 함수의 반환값에서의 공변성, 함수의 인자에서의 반변성에 대해 언급했습니다.</p>
+<p>ChatGPT가 설명하는게 어려웠다면 제 글이 도움이 됐으면 합니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/typescript/" role="button">typescript</a>
+        <a class="btn btn-light" href="/tags/covariant/" role="button">covariant</a>
+        <a class="btn btn-light" href="/tags/contravariant/" role="button">contravariant</a>
+        <a class="btn btn-light" href="/tags/bivariant/" role="button">bivariant</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-11-09-typescript-intermediate-type-exercises/">TypeScript 중급자를 위한 실전 타입 문제 및 해답</a></h2>
+                  <p>TypeScript 중급 레벨을 위한 실전 문제 모음으로, 다양한 타입 관련 문제를 풀어보며 타입스크립트의 이해도를 높여보세요. 함수 타입, 제네릭, 선택적 프로퍼티 등 실제 개발에서 자주 마주치는 문제들을 해결해보세요.</p>
+                  <p>
+  <small>November 9, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>22&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-11-08-typescript-advanced-types-union-conditional-mapped/">TypeScript 타입 시스템 마스터하기 - 유니언, 조건부, 매핑 타입 완벽 해설</a></h2>
+                  <p>TypeScript 타입 시스템의 핵심, 유니언, 조건부, 매핑 타입을 활용한 고급 테크닉을 배우고 실용적인 타입 활용 전략을 익히세요. 표준 라이브러리 활용법과 함수 오버로드, this 타입, 커스텀 타입 가드 등으로 TypeScript 타입 마스터가 되어 생산성을 높여보세요.</p>
+                  <p>
+  <small>November 8, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>23&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-05-01-typescript-5-5-new-feature-type-predicate-inference/">타입스크립트 5.5의 강력한 기능 타입 가드 추론(type predicate inference)</a></h2>
+                  <p>타입스크립트 5.5에 도입될 신 기능, 타입 가드 추론(type predicate inference)</p>
+                  <p>
+  <small>May 1, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

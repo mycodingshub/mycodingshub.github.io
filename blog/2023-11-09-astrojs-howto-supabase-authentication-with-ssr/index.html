@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</title>
+<meta name="description" content="Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현" />
+<meta property="og:description" content="Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-11-09T12:18:37Z" />
+<meta property="article:modified_time" content="2023-11-09T12:18:37Z" />
+<meta property="article:tag" content="astrojs" />
+<meta property="article:tag" content="supabase" />
+<meta property="article:tag" content="ssr" />
+<meta property="article:tag" content="authentication" />
+<meta property="article:tag" content="auth" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현" />
+<meta name="twitter:description" content="Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현\"",
+  "description": "\"Supabase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기\"",
+  "datePublished": "\"2023-11-09T12:18:37Z\"",
+  "dateModified": "\"2023-11-09T12:18:37Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</h1>
+        <p>
+  <small>November 9, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>astrojs 강좌가 벌써 9번째네요.</p>
+<p>전체 astrojs 강좌 목록입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-07-astrojs-tutorial-how-to-handle-data-in-astrojs">astrojs 강좌 1편. astrojs에서 데이터 가져오기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-astrojs-tutorial-clean-build-of-darkmode-theme">astrojs 강좌 2편. React 쓰지 않고 순수 자바스크립트로 Dark Mode 만드는 법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-14-understanding-astosjs-island-architecture-from-making-my-own-island-web-component">astrojs 강좌 3편. 웹 컴포넌트로 직접 아일랜드 아키텍처 구현해 보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-21-astrojs-in-depth-review-component-island-architecture">astrojs 강좌 4편. astrojs 아일랜드 아키텍처 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-all-about-routing-and-dynamic-routing">astrojs 강좌 5편. astrojs 라우팅 완벽 분석(routing, dynamic routing)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-29-astrojs-howto-use-content-collection-and-dynamic-routing">astrojs 강좌 6편. astrojs Content Collection과 다이내믹 라우팅 접목하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering">astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2023-11-09-astrojs-howto-supabase-authentication-with-ssr">astrojs 강좌 9편. astrojs와 supabase로 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-02-astrojs-auth-user-login-by-cookie-with-jwt-token">astrojs 강좌 10편. astrojs에서 쿠키와 토큰을 이용해서 유저 로그인 구현</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-16-astrojs-tutorial-auth-with-lucia">astrojs 강좌 11편. astrojs와 lucia를 이용해서 유저 인증 구현</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목차 **</p>
+<ol>
+<li>
+<p><a href="#1-supabase-%ed%94%84%eb%a1%9c%ec%a0%9d%ed%8a%b8-%ec%84%a4%ec%a0%95">Supabase 프로젝트 설정</a></p>
+</li>
+<li>
+<p><a href="#2-astrojs-%ed%85%9c%ed%94%8c%eb%a6%bf-%ec%84%a4%ec%b9%98%ed%95%98%ea%b8%b0">Astrojs 템플릿 설치하기</a></p>
+</li>
+<li>
+<p><a href="#3-supabase-%ec%a4%80%eb%b9%84">Supabase 준비</a></p>
+</li>
+<li>
+<p><a href="#4-register-%ec%9c%a0%ec%a0%80-%ea%b0%80%ec%9e%85%ed%95%98%ea%b8%b0-%ea%b5%ac%ed%98%84">Register 유저 가입하기 구현</a></p>
+</li>
+<li>
+<p><a href="#5-sign-in-%ec%9c%a0%ec%a0%80-%eb%a1%9c%ea%b7%b8%ec%9d%b8-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">sign in 유저 로그인 구현하기</a></p>
+</li>
+<li>
+<p><a href="#6-dashboard-ui-%eb%a7%8c%eb%93%a4%ea%b8%b0">dashboard UI 만들기</a></p>
+</li>
+<li>
+<p><a href="#7-github-%ec%95%84%ec%9d%b4%eb%94%94-%eb%a1%9c%ea%b7%b8%ec%9d%b8-%eb%b0%a9%ec%8b%9d-%ea%b5%ac%ed%98%84%ed%95%98%ea%b8%b0">Github 아이디 로그인 방식 구현하기</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="1-supabase-프로젝트-설정">1. Supabase 프로젝트 설정</h2>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgvqYJ2E7UOiSDrJ18XJIzWnG3kP8mcafbtr9cnU-vRdZ6WYkqtQ578f6S-qhFEJ2XdBL0HPDURFFr_-4ljMVbxia7cUKMm2GB13ku4IORquZGX_2zR1qPLNVyGz9VAGtMRsDL-qLk51yk69K-FExc1j5z5pSc3UqysNgFZLx1gQSjtmjhq6Mx9Qdh6uJw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 Supabase 홈페이지에서 New Project를 설정합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg9bpcdC8qIqnt83lVOMS2NfE4omS1NlYRWcS4Z-bqFBeF8SStU9wOqkBSfLr_tO1iMiQr8KKlIlswnxQXJJxjqET5Y2BX0U6r4zBFWSwkAZfEvqbPw-28tGeBPyPnUyQcb9fP63LHKjQ8rUWI8a7huZicYDeM7lSv1j2BPFbUz5lcoFPQCXEnSalqw9gU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 적당한 이름을 적으시고, Region은 한국으로 선택하면 됩니다.</p>
+<p>예전에는 한국 지역이 없었는데요.</p>
+<p>새로 생겼네요.</p>
+<p>이제, 세팅 - API 메뉴를 클릭하면 아래와 같이 API Settings이 보입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjhJTjietg5d6cOXcgcxK70FsHgd5ftiO9vFkAYR61NwkW0B5xPRbLdJJQVfyUlIQBCZoVSTv0aiY8iy8OgxCfe-TIbycdubqbQzp9hGcNjt3h2jOOyCUFvFvkrgYo42VNUsr2HsXioi8VxiE3R7D1zuTl2o8NpO0YatypDE6gQUP1hSS-tekvqdTPpyxE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 Supabase와 Astrojs를 연결하는 URL과 ANON_KEY가 있어야 하는데요.</p>
+<p>Project URL과, anon public 부분에 있는 hash 키를 가지고 나중에 astrojs와 연결해야 합니다.</p>
+<hr>
+<h2 id="2-astrojs-템플릿-설치하기">2. Astrojs 템플릿 설치하기</h2>
+<p>이제 supabase도 준비가 되었으니 astrojs를 준비해 보도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm create astro@latest --  --template<span class="o">=</span>minimal --yes --skip-houston astro-supabase-auth-example
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> astro-supabase-auth-example
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npx astro add node tailwind
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm install @supabase/supabase-js</span></span></code></pre></div>
+  </figure>
+</div>
+<p>SSR 구현을 위해 node 어댑터를 설치했고, CSS를 위해 tailwindcss도 설치했습니다.</p>
+<p>마지막으로 supabase의 자바스크립트 클라이언트까지 설치 완료했습니다.</p>
+<p>이제, UI를 좀 더 멋지게 보이게 하기 위해 Layout.astro 파일과 Header.astro 파일을 src 폴더 밑에 layouts 폴더를 만들고 그 밑에 두도록 하겠습니다.</p>
+<p>먼저, Layout.astro 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Header</span> <span class="nx">from</span> <span class="s2">&#34;./Header.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">title</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">props</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;!</span><span class="nx">doctype</span> <span class="nx">html</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">html</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&#34;en&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">charset</span><span class="o">=</span><span class="s2">&#34;UTF-8&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">link</span> <span class="nx">rel</span><span class="o">=</span><span class="s2">&#34;icon&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;image/svg+xml&#34;</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/favicon.svg&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;viewport&#34;</span> <span class="nx">content</span><span class="o">=</span><span class="s2">&#34;width=device-width, initial-scale=1.0&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">meta</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;generator&#34;</span> <span class="nx">content</span><span class="o">=</span><span class="p">{</span><span class="nx">Astro</span><span class="p">.</span><span class="nx">generator</span><span class="p">}</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/head&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&#34;container p-8&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Header</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">slot</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/body&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/html&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Header.astro 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">nav</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/&#34;</span><span class="o">&gt;</span><span class="nx">Home</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/dashboard&#34;</span><span class="o">&gt;</span><span class="nx">Dashboard</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/register&#34;</span><span class="o">&gt;</span><span class="nx">Register</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/signin&#34;</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="k">in</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/api/auth/signout&#34;</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="nx">out</span><span class="o">&lt;</span><span class="err">/a&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/nav&gt;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">nav</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="err">@</span><span class="nx">apply</span> <span class="nx">flex</span> <span class="nx">items</span><span class="o">-</span><span class="nx">start</span> <span class="nx">justify</span><span class="o">-</span><span class="nx">start</span> <span class="nx">space</span><span class="o">-</span><span class="nx">x</span><span class="o">-</span><span class="mi">4</span> <span class="nx">pb</span><span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">a</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="err">@</span><span class="nx">apply</span> <span class="nx">underline</span> <span class="nx">text</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">800</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/style&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>사실 Layout과 Header는 별거 없습니다.</p>
+<hr>
+<h2 id="3-supabase-준비">3. Supabase 준비</h2>
+<p>먼저, .env 파일을 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">SUPABASE_URL</span><span class="o">=</span>https://bdfctwzjlcne.supabase.co
+</span></span><span class="line"><span class="cl"><span class="nv">SUPABASE_ANON_KEY</span><span class="o">=</span>eyJhbGciOiJIUzI1NiIs...............</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 Typescript를 위해 src 폴더에 있는 env.d.ts 파일을 아래와 같이 수정합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">/// &lt;reference types=&#34;astro/client&#34; /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">interface</span> <span class="nx">ImportMetaEnv</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">SUPABASE_URL</span><span class="o">:</span> <span class="nx">string</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">SUPABASE_ANON_KEY</span><span class="o">:</span> <span class="nx">string</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">interface</span> <span class="nx">ImportMeta</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">readonly</span> <span class="nx">env</span><span class="o">:</span> <span class="nx">ImportMetaEnv</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Supabase 클라이언트를 준비해야 합니다.</p>
+<p>src 폴더 밑에 lib 폴더를 만들고 다시 supabase.ts 파일을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createClient</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@supabase/supabase-js&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">supabase</span> <span class="o">=</span> <span class="nx">createClient</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SUPABASE_URL</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SUPABASE_ANON_KEY</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 supabase 준비가 끝났네요.</p>
+<hr>
+<h2 id="4-register-유저-가입하기-구현">4. Register 유저 가입하기 구현</h2>
+<p>Supabase와의 연결은 바로 API Endpoint를 구현해서 할 건데요.</p>
+<p>src/pages/api/auth 폴더를 만들고 그 밑에 우리가 필요한 register.ts 파일과 signin.ts 파일, signout.ts 파일을 만듭니다.</p>
+<p>먼저, register.ts 파일부터 만들어 보겠습니다.</p>
+<p>UI 부분에서 Form을 submit하면 바로 register.ts 파일이 실행되는 형태입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">supabase</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../lib/supabase&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">POST</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">({</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">email</span> <span class="o">||</span> <span class="o">!</span><span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="s2">&#34;Email and password are required&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">400</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signUp</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">500</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/signin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>UI 부분에서 POST method로 HTTP 리퀘스트가 오면 위의 엔드포인트에서 받아서 처리하는 겁니다.</p>
+<p>위 엔드포인트를 잘 보시면 단순하게 supabase.auth.signUp 함수를 실행한게 다입니다.</p>
+<p>나머지는 그렇게 어려운 코드가 아니고요.</p>
+<p>바로 Supabase의 간결함이 여기에 있는 거죠.</p>
+<p>그러면, Register UI 부분을 작성해 봅시다.</p>
+<p>UI 부분은 astrojs에서 라우팅이 되야 하는 부분이기 때문에 src/pages 폴더 밑에 놔둡니다.</p>
+<p>register.astro 파일을 만들도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Register&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Register</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Already</span> <span class="nx">have</span> <span class="nx">an</span> <span class="nx">account</span><span class="o">?</span> <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/signin&#34;</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="k">in</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/p&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;/api/auth/register&#34;</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;email&#34;</span><span class="o">&gt;</span><span class="nx">Email</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;password&#34;</span><span class="o">&gt;</span><span class="nx">Password</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span><span class="nx">Register</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">h1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">font</span><span class="o">-</span><span class="nx">bold</span> <span class="nx">text</span><span class="o">-</span><span class="mi">2</span><span class="nx">xl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">p</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">text</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">700</span> <span class="nx">py</span><span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">a</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">underline</span> <span class="nx">text</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">form</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">w</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="nx">space</span><span class="o">-</span><span class="nx">y</span><span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">label</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">block</span> <span class="nx">mb</span><span class="o">-</span><span class="mi">2</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">font</span><span class="o">-</span><span class="nx">medium</span> <span class="nx">text</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">700</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">text</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">input</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">50</span> <span class="nx">border</span> <span class="nx">border</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span> <span class="nx">text</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">900</span>  <span class="nx">placeholder</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">700</span>  <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">border</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span> <span class="nx">block</span> <span class="nx">w</span><span class="o">-</span><span class="nx">full</span> <span class="nx">p</span><span class="o">-</span><span class="mf">2.5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">text</span><span class="o">-</span><span class="nx">white</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">700</span> <span class="nx">hover</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">800</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="mi">4</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">300</span> <span class="nx">font</span><span class="o">-</span><span class="nx">medium</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">px</span><span class="o">-</span><span class="mi">5</span> <span class="nx">py</span><span class="o">-</span><span class="mf">2.5</span> <span class="nx">mr</span><span class="o">-</span><span class="mi">2</span> <span class="nx">mb</span><span class="o">-</span><span class="mi">2</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">outline</span><span class="o">-</span><span class="nx">none</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/style&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjIvbTr7nY4pgsZS00n6OWrpvB__2H5SDhpweeDxUyATCE2lmSqoDiJzZ2OlJ3f77cLuITybK2qeyj8ogdSBicCMwyrXmH9fwuzoeNd20_DdtxYqeqBQDQyTdnadj0a5hRr5hjmgTtw1_LP26mPkARwGnSd09kYxjj6UiJtn-PxYmc3iuISjkh7mNX_8vA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 디자인도 멋진 코드가 작성되었는데요.</p>
+<p>Tailwind를 위와 같이 사용하면 HTML을 좀 더 명확하게 볼 수 있어 아주 유용합니다.</p>
+<p>지금까지 만든 Register 코드는 작동하는데요.</p>
+<p>작동시키면 최종적으로 &lsquo;/signin&rsquo; 라우팅으로 이동하는데요.</p>
+<p>그전에 supabase User 테이블에 사용자 가입정보가 보여야 정상입니다.</p>
+<p>한번 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiQvlegCF6t_kk6_ZcemNpurR48pgPwGG2fj_VfIJsDTigu3BP3oatalSUBruTHt8oAscTjx7ocYLnxMLYvYAcMfAdB-HeVzUBRQJke8YdY_Iuf9iXUEwKjZKGj3wruquxTpzdzipkxf8B3Znv-eDZ88bdX0ZcsszU2VsxhFJDwJCwH9-NIGVrNio82-bs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 &rsquo;test@test.com&rsquo;으로 가입한 유저 정보가 supabase DB에 잘 등록되네요.</p>
+<p>그런데, 위 그림을 잘 보시면 이메일 컨펌을 해야 한다는데요.</p>
+<p>테스트를 위해서 먼저, supabase의 이메일 컨펌 기능을 끄도록 하겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjtw8clF31ovqOCDRzTo5q_pGqcj0K297shSIIXPcpKvCMuRI1XJBORZZ4URCpkB3T0r6KExO-NgucjkayXRs89zMd_1gu0E5wGVj148djoSgX0Mw9j1Wo6VIMi7YebsOSTMZWyiQbAuY4NSM6bmPthIkGvTGRcYjWKgab9zpLIqEcHIYJesGZj_-7q5p8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 좌측 메뉴 Authentication을 선택한 다음 Providers를 선택하고 그다음 Email 부분에서 Enabled 부분을 클릭하면 위와 같이 나옵니다.</p>
+<p>위와 같이 나오면 Confirm email 부분을 해제시키면 됩니다.</p>
+<p>해제시키고 밑에 &lsquo;Save&rsquo; 버튼을 눌러 저장시키면 됩니다.</p>
+<p>그럼, User 를 클릭하고 아이디 행의 오른쪽에 점 3개를 누른 다음 &ldquo;Delete user&quot;를 클릭해서 삭제하고 다시 Register 라우팅에서 유저를 생성해 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEihs0DNzKQfO_Bm4l9XNGMpOecTLuPx4T9ldv83L2Pu_4RXnTBmh1L_ktCBWf4sb4DamazOYhFYJ5dwAFrgU37yDBLHTksAHYGn2XQ5tRPlYIvz_zXxb8079qBHK46IBrsuitXs48QwKsgIyTMvBy2Z7dsrymy6szRlDjwuqYlGSa354MMg4pBmItA_lTo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>삭제하고 다시 유저 가입을 하면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjeywXA562Rg-XeJNQ0SDxtDhtn517T0Msdj7N7bBuiVudvcjgWSzuuLWS5Wm4a1FP1m03ZBxVQyvMumnvMV3qQSy47NB8c5ZHO_GS3r5yUtQSflspA2ztS745vRyhxapOICf8Bit-rFirWeVhqvbUIihX17-pwRqAhusM7z6bsOpyudZDJ5af3U78pXC0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>지금까지 정상적으로 작동하네요.</p>
+<hr>
+<h2 id="5-sign-in-유저-로그인-구현하기">5. sign in 유저 로그인 구현하기</h2>
+<p>유저 등록을 했으니까 이제 등록된 유저 이메일과 패스워드를 가지고 로그인해보겠습니다.</p>
+<p>먼저, src/pages/api/auth/signin.ts 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">supabase</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../lib/supabase&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">POST</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">({</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">cookies</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">email</span> <span class="o">||</span> <span class="o">!</span><span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="s2">&#34;Email and password are required&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">400</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signInWithPassword</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">500</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">access_token</span><span class="p">,</span> <span class="nx">refresh_token</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">session</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;sb-access-token&#34;</span><span class="p">,</span> <span class="nx">access_token</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;sb-refresh-token&#34;</span><span class="p">,</span> <span class="nx">refresh_token</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/dashboard&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>supabase.auth.signInWithPassword 함수를 이용해서 supabase에서 유저 로그인하는 겁니다.</p>
+<p>그리고 세션에서 갑자기 access_token과 refresh_token을 가져다가 로컬스토리지에 있는 쿠키에 저장하는데요.</p>
+<p>UI 부분 코드를 봅시다.</p>
+<p>Sign in UI 코드는 Register 코드와 거의 비슷합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">accessToken</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;sb-access-token&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">refreshToken</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;sb-refresh-token&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">accessToken</span> <span class="o">&amp;&amp;</span> <span class="nx">refreshToken</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/dashboard&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Sign in&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="k">in</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">New</span> <span class="nx">here</span><span class="o">?</span> <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/register&#34;</span><span class="o">&gt;</span><span class="nx">Create</span> <span class="nx">an</span> <span class="nx">account</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/p&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;/api/auth/signin&#34;</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;email&#34;</span><span class="o">&gt;</span><span class="nx">Email</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;password&#34;</span><span class="o">&gt;</span><span class="nx">Password</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span><span class="nx">Login</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">h1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">font</span><span class="o">-</span><span class="nx">bold</span> <span class="nx">text</span><span class="o">-</span><span class="mi">2</span><span class="nx">xl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">p</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">text</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">700</span> <span class="nx">py</span><span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">a</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">underline</span> <span class="nx">text</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">form</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">w</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="nx">space</span><span class="o">-</span><span class="nx">y</span><span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">label</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">block</span> <span class="nx">mb</span><span class="o">-</span><span class="mi">2</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">font</span><span class="o">-</span><span class="nx">medium</span> <span class="nx">text</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">700</span> <span class="nx">dark</span><span class="o">:</span><span class="nx">text</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">input</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">50</span> <span class="nx">border</span> <span class="nx">border</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span> <span class="nx">text</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">900</span>  <span class="nx">placeholder</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">700</span>  <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">border</span><span class="o">-</span><span class="nx">green</span><span class="o">-</span><span class="mi">500</span> <span class="nx">block</span> <span class="nx">w</span><span class="o">-</span><span class="nx">full</span> <span class="nx">p</span><span class="o">-</span><span class="mf">2.5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">text</span><span class="o">-</span><span class="nx">white</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">700</span> <span class="nx">hover</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">800</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="mi">4</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">300</span> <span class="nx">font</span><span class="o">-</span><span class="nx">medium</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">px</span><span class="o">-</span><span class="mi">5</span> <span class="nx">py</span><span class="o">-</span><span class="mf">2.5</span> <span class="nx">mr</span><span class="o">-</span><span class="mi">2</span> <span class="nx">mb</span><span class="o">-</span><span class="mi">2</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">outline</span><span class="o">-</span><span class="nx">none</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/style&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>signin UI의 로직은 간단합니다.</p>
+<p>이미 로그인되어 있다면 바로 dashboard 라우팅으로 이동하는 겁니다.</p>
+<p>바로 cookies의 &ldquo;sb-access-token&rdquo;, &ldquo;sb-refresh-token&rdquo; 토큰을 이용하는 건데요.</p>
+<p>이 토큰들은 아까 signin.ts 파일에서 미리 만들어 놓았던 쿠키입니다.</p>
+<p>이 쿠키에 정보가 있다면 로그인된 상태니까 그걸 체크하는 겁니다.</p>
+<p>signin.ts 파일을 보시면 끝날 때 보시면 토큰을 저장하고 바로 &lsquo;/dashboard&rsquo;라는 라우팅으로 보냅니다.</p>
+<p>즉, 이 라우팅이 protected 라우팅이 되는 겁니다.</p>
+<p>이제, dashboard 라우팅을 만들어야 하는데요.</p>
+<p>먼저, signout.ts 파일을 만들어서 로그아웃 기능도 구현해 봅시다.</p>
+<p>src 폴더 밑에 pages 폴더 밑에 그리고 signout.ts 파일을 만들면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">supabase</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../lib/supabase&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">GET</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">({</span> <span class="nx">cookies</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signOut</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">500</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="s2">&#34;sb-access-token&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="s2">&#34;sb-refresh-token&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/signin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 signout은 토큰을 지우고 다시 총선 모드로 들어가는 건데요.</p>
+<hr>
+<h2 id="6-dashboard-ui-만들기">6. dashboard UI 만들기</h2>
+<p>이제 dashboard UI를 꾸며볼까요?</p>
+<p>src/pages/dashboard.astro 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Layout</span> <span class="nx">from</span> <span class="s2">&#34;../layouts/Layout.astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">supabase</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../lib/supabase&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">accessToken</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;sb-access-token&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">refreshToken</span> <span class="o">=</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;sb-refresh-token&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">accessToken</span> <span class="o">||</span> <span class="o">!</span><span class="nx">refreshToken</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/signin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">setSession</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">refresh_token</span><span class="o">:</span> <span class="nx">refreshToken</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">access_token</span><span class="o">:</span> <span class="nx">accessToken</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="s2">&#34;sb-access-token&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Astro</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="s2">&#34;sb-refresh-token&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">Astro</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/signin&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">user</span><span class="o">?</span><span class="p">.</span><span class="nx">email</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">---</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;dashboard&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Welcome</span> <span class="p">{</span><span class="nx">email</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">We</span> <span class="nx">are</span> <span class="nx">happy</span> <span class="nx">to</span> <span class="nx">see</span> <span class="nx">you</span> <span class="nx">here</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;/api/auth/signout&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="nx">out</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">style</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">h1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">font</span><span class="o">-</span><span class="nx">bold</span> <span class="nx">text</span><span class="o">-</span><span class="mi">2</span><span class="nx">xl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">p</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">text</span><span class="o">-</span><span class="nx">gray</span><span class="o">-</span><span class="mi">700</span> <span class="nx">py</span><span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">form</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">w</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="nx">space</span><span class="o">-</span><span class="nx">y</span><span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@</span><span class="nx">apply</span> <span class="nx">text</span><span class="o">-</span><span class="nx">white</span> <span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">700</span> <span class="nx">hover</span><span class="o">:</span><span class="nx">bg</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">800</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="mi">4</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">ring</span><span class="o">-</span><span class="nx">blue</span><span class="o">-</span><span class="mi">300</span> <span class="nx">font</span><span class="o">-</span><span class="nx">medium</span> <span class="nx">rounded</span><span class="o">-</span><span class="nx">lg</span> <span class="nx">text</span><span class="o">-</span><span class="nx">sm</span> <span class="nx">px</span><span class="o">-</span><span class="mi">5</span> <span class="nx">py</span><span class="o">-</span><span class="mf">2.5</span> <span class="nx">mr</span><span class="o">-</span><span class="mi">2</span> <span class="nx">mb</span><span class="o">-</span><span class="mi">2</span> <span class="nx">focus</span><span class="o">:</span><span class="nx">outline</span><span class="o">-</span><span class="nx">none</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/style&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>dashboard에서는 supabase.auth.setSession을 쿠키에 저장된 토큰을 이용해서 세션을 만듭니다.</p>
+<p>그리고 만든 세션에서 data 항목만 빼내가지고 그 안에 있는 email 부분만 출력해 주고 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjyLYByJq4UF8Ed4BVNGeEy17Cb8Mp_JjxSiV13C4rpWjmC7y7rG3VM_7XQbNlSZi1ZQsTBQ-Hcmi0H8tm4haO7wPvUmAtUScYOvYYgmg2Tp1-oT4Bx0X-UxKAV0QQxZivBr6BdQiPxUOBVfJeveveyZ79e55udvrOiXfhoTYK81UNBOSnNVgir-8lglM8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 dashboard 도 정상 작동하고 있네요.</p>
+<p>signout 버튼을 눌러보시면 잘 작동할 겁니다.</p>
+<p>signout 한 상태에서 dashboard 라우팅으로는 절대 이동되지 못합니다.</p>
+<p>왜냐하면 쿠키를 검사해서 로그인 여부를 판가름하기 때문이죠.</p>
+<p>이렇게 하는 게 바로 protected page를 만드는 방식입니다.</p>
+<hr>
+<h2 id="7-github-아이디-로그인-방식-구현하기">7. Github 아이디 로그인 방식 구현하기</h2>
+<p>OAuth 방식이라고 해서 예를 들어 구글 아이디나, Github 아이디로도 로그인을 구현할 수 있는데요.</p>
+<p>우리는 여기서 Github 아이디로 로그인하는 방법을 배워보겠습니다.</p>
+<p>먼저, Github 사이트에 가서 Developer Settings 부분에서</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi12HSKB0kXXUZjqFmGBv4Fdng4Q7Xcw_s7lgPQG52I3BWOlpkyaccqmoKm9h5LtfZCFRavRk3EUaYbpX0xsZ917Bb9EvipVisoIK3h38TsoUIxhNVV_cXGJN4ujEuWbXv2GreSRWt73Xdrs6KLrzD6ALIQuVS5fjWMRFtBPqZE355ol8XGe3S2wavz3Ug"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Github Apps를 추가해야 합니다.</p>
+<p>저번에 next-auth를 이용한 Github App이 그대로 남아있네요.</p>
+<p>&ldquo;New Github App&rdquo; 버튼을 눌러 추가하도록 합니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhAJXYyEbYFjNQqX2nzobzFwW6QMr__gbVJrd6i4kfUv02SmGaQ1TjDGXdFUYu2llaopq7krYnlX24mnS5dk3zXl-Ku-l4gfGhgfytHdiwsEyt7Yd76bTczN6d8fqwYqr2ja7kr7iWZgX2LBj66nCz4DPUOTxZXdX2Q6-14SPMdGQcfJbJDZFkRcQr_WyU"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>추가를 다 하면 위와 같이 나오는데요.</p>
+<p>가장 중요한 부분이 바로 Client ID와 Client secret입니다.</p>
+<p>이 부분을 Supabase에 저장해야 하는데요.</p>
+<p>아까 Supabase에서 Providers에서 Email을 선택했던 곳에서 밑으로 이동하셔서 Github을 눌러 아래 그림과 같이 넣으시면 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjnLtqIwPMoDUxco5vxUt_2GHkqJA3574RDR_AYshkyBBN0dwspANIJR4jJ8G2TKeJQrT-CT5_cwV9j0LCKffcn3Ni1seOUw6NkhpPgYkIkkgmwUKK6QIIKSNuYUp1CMX8nh3T7Fx7qLXMhzTzvRZFZ31gjHZOVftGkGAcIjfCyhfXSTHq_tylyJsyDz-E"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 보듯이 Client ID와 Client Secret는 Github Apps에서 가져와서 넣었는데요.</p>
+<p>밑에 보시면 Callback URL 부분은 복사하라고 되어 있네요.</p>
+<p>이 부분은 바로 Github Apps에 넣어야 하는 겁니다.</p>
+<p>이 Callback URL을 이용해서 Github Apps와 Supabase가 상호작용하는 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhYdDNS1QEMiizjsGZLEobFv7kFis19HvU95hs7K9Uh7L5KRIHrZOO-aI8YnZINHtK2AlUHxhih2yIEyxsPMgYi_Cl-VS2ge6k6VrQBamkP9GhzsIO1wtKoJuf1q42_ih--rH3gs4BgGcR_U7HgxkSoD_pT8I2Zt72sC-cee20pMLlYjZbDmeTlQPbPQSI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Github Apps 세팅 부분에 Callback URL 부분에 넣어주시면 됩니다.</p>
+<p>이제 준비가 다 됐는데요.</p>
+<p>먼저, signin 부분을 고쳐보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">Layout</span> <span class="nx">title</span><span class="o">=</span><span class="s2">&#34;Sign in&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Sign</span> <span class="k">in</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">New</span> <span class="nx">here</span><span class="o">?</span> <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&#34;/register&#34;</span><span class="o">&gt;</span><span class="nx">Create</span> <span class="nx">an</span> <span class="nx">account</span><span class="o">&lt;</span><span class="err">/a&gt;&lt;/p&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="nx">form</span> <span class="nx">action</span><span class="o">=</span><span class="s2">&#34;/api/auth/signin&#34;</span> <span class="nx">method</span><span class="o">=</span><span class="s2">&#34;post&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;email&#34;</span><span class="o">&gt;</span><span class="nx">Email</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;email&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">label</span> <span class="k">for</span><span class="o">=</span><span class="s2">&#34;password&#34;</span><span class="o">&gt;</span><span class="nx">Password</span><span class="o">&lt;</span><span class="err">/label&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="nx">id</span><span class="o">=</span><span class="s2">&#34;password&#34;</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span><span class="nx">Login</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c">&lt;!--</span> <span class="nx">아래가</span> <span class="nx">추가된</span> <span class="nx">부분</span> <span class="o">--&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">value</span><span class="o">=</span><span class="s2">&#34;github&#34;</span> <span class="nx">name</span><span class="o">=</span><span class="s2">&#34;provider&#34;</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;submit&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Sign</span> <span class="k">in</span> <span class="kd">with</span> <span class="nx">GitHub</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">&lt;</span><span class="err">/form&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">/Layout&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>UI 부분에서 추가된 부분이 있는데요.</p>
+<p>바로 button인데 좀 특이합니다.</p>
+<p>name은 provider이고 value 값이 github이네요.</p>
+<p>이렇게 되어 있으면 button을 클릭했을 때 formData.get 메서드로 provider를 얻을 수 있습니다.</p>
+<p>이제, signin.ts 부분을 고쳐볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">supabase</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../lib/supabase&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">POST</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">({</span> <span class="nx">request</span><span class="p">,</span> <span class="nx">cookies</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">formData</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">request</span><span class="p">.</span><span class="nx">formData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 여기서 부터 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kr">const</span> <span class="nx">provider</span> <span class="o">=</span> <span class="nx">formData</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;provider&#34;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">provider</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signInWithOAuth</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">provider</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">redirectTo</span><span class="o">:</span> <span class="s2">&#34;http://localhost:4321/api/auth/callback&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">500</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">url</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 여기까지가 추가된 부분
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">email</span> <span class="o">||</span> <span class="o">!</span><span class="nx">password</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="s2">&#34;Email and password are required&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">400</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signInWithPassword</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">500</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">access_token</span><span class="p">,</span> <span class="nx">refresh_token</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">session</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;sb-access-token&#34;</span><span class="p">,</span> <span class="nx">access_token</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;sb-refresh-token&#34;</span><span class="p">,</span> <span class="nx">refresh_token</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/dashboard&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>주석을 보시면 추가된 부분이 보이는데요.</p>
+<p>아까 button에서 name이 provider가 되고 value가 github이라서 만약 이 버튼을 눌렀다면 provider가 github인 상태가 되는 거죠.</p>
+<p>그래서 supabase.auth.signInWithOAuth 메서드를 수행하게 되는 겁니다.</p>
+<p>supabase.auth.signInWithOAuth 메서드는 다음 형식인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">signInWithOAuth</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">provider</span><span class="o">:</span> <span class="s1">&#39;github&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">redirectTo</span><span class="o">:</span> <span class="s2">&#34;http://localhost:4321/api/auth/callback&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 redirectTo 옵션이 있는데요.</p>
+<p>이 옵션이 가장 중요합니다.</p>
+<p>만약 provider형식으로 로그인 요청이 왔다면 바로 redirectTo 주소로 이동하라는 뜻이죠.</p>
+<p>이제 api/auth/callback 엔드포인트를 만들겠습니다.</p>
+<p>이 엔드포인트에서 실제 로그인이 이루어지는 거죠.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">APIRoute</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;astro&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">supabase</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;../../../lib/supabase&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">GET</span><span class="o">:</span> <span class="nx">APIRoute</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">({</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">cookies</span><span class="p">,</span> <span class="nx">redirect</span> <span class="p">})</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">authCode</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">searchParams</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&#34;code&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">authCode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="s2">&#34;No code provided&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">400</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">supabase</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">exchangeCodeForSession</span><span class="p">(</span><span class="nx">authCode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Response</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="p">{</span> <span class="nx">status</span><span class="o">:</span> <span class="mi">500</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">access_token</span><span class="p">,</span> <span class="nx">refresh_token</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">session</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;sb-access-token&#34;</span><span class="p">,</span> <span class="nx">access_token</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&#34;sb-refresh-token&#34;</span><span class="p">,</span> <span class="nx">refresh_token</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="s2">&#34;/&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">redirect</span><span class="p">(</span><span class="s2">&#34;/dashboard&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 바로 upabase.auth.exchangeCodeForSession 이 함수가 가장 중요한데요.</p>
+<p>이 함수에 의해 supabase와 provider로 제공된 github이 연결되는 겁니다.</p>
+<p>실제 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhAxPd8LoWNy4nPLCYoFnWIb4FjThg4hetDuMkdkkuRc82F85ENQdMyduVoSEWngG11tcpuYFYX4wp5yn4RpzcRUPlqq5MIaL3k2EYfaUaUYZZNSBcjE0O9kQoOwVlN7K8b7Xp61elwxtcpEeNAlHpZ3tyWOHHNzJ8ef0ds3Be1brr5tyJPyDZlvxjzkWk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 login 버튼 옆에 signin with Github 버튼이 보이네요.</p>
+<p>이제 이 버튼을 누르면 github 아이디로 로그인하게 됩니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgrES00iu5bMeb8ubstf-alzNk7MUy8661TTHLeoUI9-eoN3FCW8LufEza1SCe_XzbP4WxDyV6OxiyFYE_hRIAZ2O4sFDhuZr2tOBpmw7AAWgKEifo1TlvpgEDaaWocseVBp6bkPT6hvKkeaT9p9wKh6P2s0RNEEuxOetYQ2JooVAPlYZV_woKI7N0gPIA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Github Apps 연결 표시가 나오게 됩니다.</p>
+<p>이제 정상적으로 작동될 거라고 보시면 안 되는데요.</p>
+<p>여기서 한 가지 더 추가하고 가야 합니다.</p>
+<p>OAuth 방식을 이용하려면, supabase 클라이언트를 만들 때 아래와 같이 만들어야 합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createClient</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;@supabase/supabase-js&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">supabase</span> <span class="o">=</span> <span class="nx">createClient</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SUPABASE_URL</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SUPABASE_ANON_KEY</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">auth</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">flowType</span><span class="o">:</span> <span class="s2">&#34;pkce&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>바로 auth 부분에서 flowType을 &lsquo;pkce&rsquo; 방식으로 지정해 줘야 합니다.</p>
+<p>이걸 지정 안 하면 계속 no code error가 나올 겁니다.</p>
+<p>참고로 Github 아이디의 email을 open 하는 부분이 있는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgBfXv9CCuDPik9iWn0zccODYvOC4aGm2uEtnamYXxCIZUpNCwZBURH9F0e-qJgSvJaHK68gJvmq2A4eJ37u8fZqW9y-M5hHeCY1Gvm1c-XNnVk1ATJvff7YnuD-pXe8bBkMod4mxG9P_ckDSp9kFU12gYG3_G1k12hSxdbNMXJV0nTA1XAv7qwyepRIY8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 Github Apps 세팅에 들어가서 Account permissions 부분에서 Email Address 부분을 Read-only로 하시면 바로 Email 정보를 astrojs에서 확인할 수 있을 겁니다.</p>
+<hr>
+<p>지금까지 AstroJS와 Supabase를 이용해서 유저 로그인을 구현해 봤는데요.</p>
+<p>아울러 Protected Page 구현 방법도 알아봤습니다.</p>
+<p>이걸 기초로 AstroJS의 FullStack 웹 앱 구현에 많은 도움이 됐으면 합니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/astrojs/" role="button">astrojs</a>
+        <a class="btn btn-light" href="/tags/supabase/" role="button">supabase</a>
+        <a class="btn btn-light" href="/tags/ssr/" role="button">ssr</a>
+        <a class="btn btn-light" href="/tags/authentication/" role="button">authentication</a>
+        <a class="btn btn-light" href="/tags/auth/" role="button">auth</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-ssr-login-with-react-router-and-supabase/">React Router V7에서 서버사이드 렌더링(SSR) 방식으로 완벽하게 Supabase 로그인 구현하기</a></h2>
+                  <p>Supabase의 로그인 부분을 클라이언트 사이드쪽 말고 서버사이드 렌더링 방식으로 구현해 봅시다.</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-11-08-astrojs-how-to-ssr-with-firebase-user-session/">astrojs 강좌 8편. astrojs와 firebase로 유저 로그인 구현</a></h2>
+                  <p>Firebase의 Authentication을 이용해서 AstroJS에서 유저 로그인 구현하기</p>
+                  <p>
+  <small>November 8, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-10-30-astrojs-howto-use-ssr-in-astrojs-server-side-rendering/">astrojs 강좌 7편. astrojs Server Side Rendering(SSR) 완벽 분석</a></h2>
+                  <p>astrojs에서 SSR(Server Side Rendering) 사용하기</p>
+                  <p>
+  <small>October 30, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기</title>
+<meta name="description" content="이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-08-25-3-ways-in-data-fetching-with-react/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기" />
+<meta property="og:description" content="이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-08-25-3-ways-in-data-fetching-with-react/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-08-25T13:02:28Z" />
+<meta property="article:modified_time" content="2024-08-25T13:02:28Z" />
+<meta property="article:tag" content="react" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="data fetching" />
+<meta property="article:tag" content="react query" />
+<meta property="article:tag" content="server components" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기" />
+<meta name="twitter:description" content="이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기\"",
+  "description": "\"이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다.\"",
+  "datePublished": "\"2024-08-25T13:02:28Z\"",
+  "dateModified": "\"2024-08-25T13:02:28Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-08-25-3-ways-in-data-fetching-with-react/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기</h1>
+        <p>
+  <small>August 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>React를 오랫동안 공부하고 있는 개발자로서 오늘은 리액트에서의 Data Fetching 방법에 대해 알아보겠습니다.</p>
+<p>좀 더 현대적인 방법을 공부하기 전에 초창기때는 어떻게 Data Fetching 했는지 알아보는 것도 좋을 듯 싶습니다.</p>
+<h2 id="프로젝트-구성">프로젝트 구성</h2>
+<p>일단 빈 Next.js 앱을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npx create-next-app@latest 3-ways-of-fetching-in-react
+</span></span><span class="line"><span class="cl">Need to install the following packages:
+</span></span><span class="line"><span class="cl">create-next-app@14.2.6
+</span></span><span class="line"><span class="cl">Ok to proceed? <span class="o">(</span>y<span class="o">)</span>
+</span></span><span class="line"><span class="cl">✔ Would you like to use TypeScript? … No / Yes
+</span></span><span class="line"><span class="cl">✔ Would you like to use ESLint? … No / Yes
+</span></span><span class="line"><span class="cl">✔ Would you like to use Tailwind CSS? … No / Yes
+</span></span><span class="line"><span class="cl">✔ Would you like to use <span class="sb">`</span>src/<span class="sb">`</span> directory? … No / Yes
+</span></span><span class="line"><span class="cl">✔ Would you like to use App Router? <span class="o">(</span>recommended<span class="o">)</span> … No / Yes
+</span></span><span class="line"><span class="cl">✔ Would you like to customize the default import <span class="nb">alias</span> <span class="o">(</span>@/*<span class="o">)</span>? … No / Yes
+</span></span><span class="line"><span class="cl">Creating a new Next.js app in /Users/cpro95/Codings/Javascript/nextjs/3-ways-of-fetching-in-react.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Using npm.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Initializing project with template: app-tw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Installing dependencies:
+</span></span><span class="line"><span class="cl">- react
+</span></span><span class="line"><span class="cl">- react-dom
+</span></span><span class="line"><span class="cl">- next
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Installing devDependencies:
+</span></span><span class="line"><span class="cl">- typescript
+</span></span><span class="line"><span class="cl">- @types/node
+</span></span><span class="line"><span class="cl">- @types/react
+</span></span><span class="line"><span class="cl">- @types/react-dom
+</span></span><span class="line"><span class="cl">- postcss
+</span></span><span class="line"><span class="cl">- tailwindcss
+</span></span><span class="line"><span class="cl">- eslint
+</span></span><span class="line"><span class="cl">- eslint-config-next</span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 위와 같이 빈 Next.js 앱을 만들고 page.tsx 파일에서 <code>&lt;main&gt;</code> 태그만 남기고 모드 지웁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Fetch1</span> <span class="kr">from</span> <span class="s2">&#34;@/components/Fetch1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">main</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-10&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Fetch1</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Fetch1 컴포넌트를 만들어야 겠네요.</p>
+<h2 id="초창기-옛날-방식">초창기 옛날 방식</h2>
+<p>초창기 React를 배웠을 때 작성할 수 있는 Best Code가 바로 Fetch1 컴포너트가 되는데요.</p>
+<p>옛날에는 이 방식으로 멋지게 작성했었는데요.</p>
+<p>지금은 이런 방식은 추천하지 않습니다.</p>
+<p>그러나 이 방식은 실제로 React를 처음 배우는 분들은 꼭 한 번 마스터하고 지나가야 좀 더 능숙한 React 개발자가 될 수 있기 때문에 이 방식은 꼭 숙지하시길 바랍니다.</p>
+<p>Fetch1 컴포넌트를 아래와 같이 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useEffect</span><span class="p">,</span> <span class="nx">useRef</span><span class="p">,</span> <span class="nx">useState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">BASE_URL</span> <span class="o">=</span> <span class="s2">&#34;https://jsonplaceholder.typicode.com&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Post</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Fetch1() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">error</span><span class="p">,</span> <span class="nx">setError</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isLoading</span><span class="p">,</span> <span class="nx">setIsLoading</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">posts</span><span class="p">,</span> <span class="nx">setPosts</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">&lt;</span><span class="nt">Post</span><span class="err">[]</span><span class="p">&gt;([]);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">page</span><span class="p">,</span> <span class="nx">setPage</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">abortControllerRef</span> <span class="o">=</span> <span class="nx">useRef</span><span class="p">&lt;</span><span class="nt">AbortController</span> <span class="err">|</span> <span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">fetchPosts</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">abortControllerRef</span><span class="p">.</span><span class="nx">current</span><span class="o">?</span><span class="p">.</span><span class="nx">abort</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">abortControllerRef</span><span class="p">.</span><span class="nx">current</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AbortController</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nx">setIsLoading</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">BASE_URL</span><span class="si">}</span><span class="sb">/posts?page=</span><span class="si">${</span><span class="nx">page</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">signal</span>: <span class="kt">abortControllerRef.current?.signal</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">});</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">posts</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span> <span class="kr">as</span> <span class="nx">Post</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">setPosts</span><span class="p">(</span><span class="nx">posts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span>: <span class="kt">any</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">name</span> <span class="o">===</span> <span class="s2">&#34;AbortError&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Aborted&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nx">setError</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">setIsLoading</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">fetchPosts</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">[</span><span class="nx">page</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Something</span> <span class="nx">went</span> <span class="nx">wrong</span><span class="o">!</span> <span class="nx">Please</span> <span class="k">try</span> <span class="nx">again</span><span class="p">.&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;mb-4 text-2xl&#34;</span><span class="p">&gt;</span><span class="nx">Data</span> <span class="nx">Fething</span> <span class="nx">With</span> <span class="nx">Old</span> <span class="nx">Way</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded-lg bg-white text-black&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">setPage</span><span class="p">(</span><span class="nx">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Decrease</span> <span class="nx">Page</span> <span class="p">({</span><span class="nx">page</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded-lg bg-gray-300 text-gray-800&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">setPage</span><span class="p">(</span><span class="nx">page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Increase</span> <span class="nx">Page</span> <span class="p">({</span><span class="nx">page</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">isLoading</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Loading</span><span class="p">...&lt;/</span><span class="nt">div</span><span class="p">&gt;}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="o">!</span><span class="nx">isLoading</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">posts</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">post</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">post</span><span class="p">.</span><span class="nx">id</span><span class="p">}&gt;{</span><span class="nx">post</span><span class="p">.</span><span class="nx">title</span><span class="p">}&lt;/</span><span class="nt">li</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiywWksFb2U3ooFlvXIfurTnzGTbL_WcCIMMdphaCo8zcQ5av6yPGCM7xLTWy-otYdoScm5uDAjHxQM2vNoSsGfnlm46qCuOCTmZZYca69uRvN9BppJLAAiHLlbqwU3yON8LchnGsMv2PlHhEhe6MyRDJkR3oCRJXpOLxZ4kBjrrAsUxlEvIZ7BxQ50j68"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 코드를 보시면, 기본 URL(BASE_URL)이 있습니다.</p>
+<p>이 URL은 데이터를 가져오는 data의 원천(source)입니다.</p>
+<p>그리고 데이터 가져오기에 필요한 모든 것을 처리하는 몇 가지 상태 변수가 있습니다.</p>
+<p><code>error</code>, <code>isLoading</code>, 실제 데이터를 담는 <code>posts</code>, 그리고 페이지 번호를 나타내는 <code>page</code> 변수가 있습니다.</p>
+<p>옛날에 배웠듯이 Data Fetching의 모든 작업은 <code>useEffect</code> 훅 안에서 처리됩니다.</p>
+<p>하나의 <code>useEffect</code> 훅 안에 <code>fetchPosts</code>라는 함수가 있고, 이 함수는 로딩 상태를 처리하고, 데이터를 가져오기 위해 <code>fetch</code> 요청을 보내고, 상태에 데이터를 설정하며, 로딩 상태를 <code>true</code>에서 <code>false</code>로 변경하고, 에러를 처리하는 역할을 합니다.</p>
+<p>또, 경쟁 조건(race condition)을 처리하기 위한 <code>AbortController</code>도 포함되어 있습니다.</p>
+<p>AbortController은 옛날 방식의 최고로 어려운 방식인데요.</p>
+<p>알아두면 좋습니다.</p>
+<p>여러분이 React 개발자라면 이와 같은 코드를 몇 번이고 본 적이 있을 건데요.</p>
+<p>초보 React 개발자라면 이런 방식으로 Data Fetching하고 싶을 수도 있는데요.</p>
+<p>하지만 아까도 누누이 말씀드렸듯이 이 방식은 추천하지 않습니다.</p>
+<p>이 방식은 데이터를 가져오는 데 전혀 문제가 없지만, 대신 그다지 효율적이지 않다는데 문제가 있습니다.</p>
+<p>그 이유는 다음과 같습니다.</p>
+<ul>
+<li>
+<p><strong>모든 것을 직접 처리해야 합니다.</strong> 에러, 로딩, 그리고 다른 모든 상태를 직접 관리하고, <code>useEffect</code> 훅을 통해 데이터를 가져오고, 적절한 시점에 상태를 업데이트해야 합니다.</p>
+</li>
+<li>
+<p><strong>버그가 발생하기 쉽습니다.</strong> 이렇게 많은 코드를 직접 작성하다 보면 쉽게 실수를 범하고 버그를 유발할 수 있습니다.</p>
+</li>
+<li>
+<p><strong>불필요한 작업이 많습니다.</strong> 실제로 필요하지 않은 작업을 많이 해야 합니다.</p>
+</li>
+<li>
+<p><strong>기본적인 기능이 부족합니다.</strong> Data Fetching에서 가장 중요한 기능이 없습니다. 캐싱 기능이 없다는 뜻입니다. 첫 페이지의 글을 가져온 후 다음 페이지로 이동했다가 다시 첫 페이지로 돌아오면, 이미 가져온 데이터가 있음에도 불구하고 백엔드에 다시 요청을 보내게 됩니다. 좋은 앱이라면 데이터를 캐싱하고 불필요한 백엔드 요청을 피해야 합니다. 옛날 방식에는 이러한 기능이 없습니다. 실제로 캐싱기능을 직접 구현해야 하는데, 쉽지 않습니다.</p>
+</li>
+<li>
+<p><strong>다른 기능도 직접 구현해야 합니다.</strong> 예를 들어 백그라운드 새로고침 기능도 직접 구현해야 합니다. 캐시에 데이터가 있고 사용자에게 표시하고 있는 경우, 백그라운드에서 새 데이터가 있는지 확인하기 위해 요청을 보내는 것이 이상적인 UI입니다. 사용자는 이 작업을 모르는데요. 이 기능도 직접 구현해야 하며, 이 외에도 많은 기능을 직접 구현해야 합니다.</p>
+</li>
+</ul>
+<hr>
+<h2 id="react-query를-사용하는-좀-더-현대적인-data-fetching-방식">React Query를 사용하는 좀 더 현대적인 Data Fetching 방식</h2>
+<p>두 번째로 좀 더 현대적인 Data Fetching 방식입니다.</p>
+<p>Data Fetching의 최고봉인 React Query 패키지를 이용하는 건데요.</p>
+<p>이 패키지는 진짜 만능입니다.</p>
+<p>일단 React Query도 클라이언트 상에서 이루어져야 합니다.</p>
+<p>layout.tsx 파일에 React Query의 Providers 설정을 먼저 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Metadata</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Inter</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/font/google&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="s2">&#34;./globals.css&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Providers</span> <span class="kr">from</span> <span class="s2">&#34;@/components/Providers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">inter</span> <span class="o">=</span> <span class="nx">Inter</span><span class="p">({</span> <span class="nx">subsets</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;latin&#34;</span><span class="p">]</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">metadata</span>: <span class="kt">Metadata</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;Create Next App&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">description</span><span class="o">:</span> <span class="s2">&#34;Generated by create next app&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="nx">Readonly</span><span class="o">&lt;</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span>: <span class="kt">React.ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">body</span> <span class="na">className</span><span class="o">=</span><span class="p">{</span><span class="nx">inter</span><span class="p">.</span><span class="nx">className</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">Providers</span><span class="p">&gt;{</span><span class="nx">children</span><span class="p">}&lt;/</span><span class="nt">Providers</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 했으면 이제 components 폴더에 Providers.tsx 파일을 만들어야 하는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">PropsWithChildren</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">QueryClient</span><span class="p">,</span> <span class="nx">QueryClientProvider</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">queryClient</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">QueryClient</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">ProvidersProps</span> <span class="o">=</span> <span class="nx">PropsWithChildren</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Providers</span><span class="p">({</span> <span class="nx">children</span> <span class="p">}</span><span class="o">:</span> <span class="nx">ProvidersProps</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">QueryClientProvider</span> <span class="na">client</span><span class="o">=</span><span class="p">{</span><span class="nx">queryClient</span><span class="p">}&gt;{</span><span class="nx">children</span><span class="p">}&lt;/</span><span class="nt">QueryClientProvider</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 하면 이제 React Query를 이용해서 Data Fetching 하는 준비가 끝났습니다.</p>
+<p>page.tsx 파일을 아래와 같이 바꿉니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="c1">// import Fetch1 from &#34;@/components/Fetch1&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">Fetch2</span> <span class="kr">from</span> <span class="s2">&#34;@/components/Fetch2&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">main</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-10&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="cm">/* &lt;Fetch1 /&gt; */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Fetch2</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 Fetch2 컴포넌트를 아래와 같이 만들면 끝입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useQuery</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@tanstack/react-query&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">BASE_URL</span> <span class="o">=</span> <span class="s2">&#34;https://jsonplaceholder.typicode.com&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Post</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Fetch2() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">page</span><span class="p">,</span> <span class="nx">setPage</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span>: <span class="kt">posts</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">isError</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">isPending</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryKey</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;posts&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">page</span> <span class="p">}],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">queryFn</span>: <span class="kt">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">BASE_URL</span><span class="si">}</span><span class="sb">/posts?page=</span><span class="si">${</span><span class="nx">page</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span> <span class="kr">as</span> <span class="nx">Post</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;mb-4 text-2xl&#34;</span><span class="p">&gt;</span><span class="nx">Data</span> <span class="nx">Fething</span> <span class="kd">with</span> <span class="nx">React</span> <span class="nx">Query</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded-lg bg-white text-black&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">setPage</span><span class="p">(</span><span class="nx">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Decrease</span> <span class="nx">Page</span> <span class="p">({</span><span class="nx">page</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">        <span class="na">className</span><span class="o">=</span><span class="s">&#34;border rounded-lg bg-gray-300 text-gray-800&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="na">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">setPage</span><span class="p">(</span><span class="nx">page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">Increase</span> <span class="nx">Page</span> <span class="p">({</span><span class="nx">page</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">isPending</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Loading</span><span class="p">...&lt;/</span><span class="nt">div</span><span class="p">&gt;}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="o">!</span><span class="nx">isPending</span> <span class="o">&amp;&amp;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">posts</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">post</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">post</span><span class="p">.</span><span class="nx">id</span><span class="p">}&gt;{</span><span class="nx">post</span><span class="p">.</span><span class="nx">title</span><span class="p">}&lt;/</span><span class="nt">li</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드에서도 jsonplaceholder에서 데이터를 가져오지만, 코드가 훨씬 간결합니다.</p>
+<p>페이지 번호를 나타내는 <code>page</code> 상태 변수는 여전히 사용하지만, 옛날 방식의 코드에서처럼 아주 많은 코드를 작성할 필요가 없습니다.</p>
+<p>왜냐하면 <strong>React Query</strong>를 사용하기 때문입니다.</p>
+<p>React Query는 비동기 상태 관리 솔루션으로, Data Fetching에 매우 적합합니다.</p>
+<p>React Query를 사용하면 모든 작업을 자동으로 처리해 줍니다.</p>
+<p>옛날 방식에서 했던 모든 작업과 그 외에 더 많은 작업을 자동으로 처리해 주기 때문에, 개발자가 모든 걸 직접 처리할 필요가 없습니다.</p>
+<p>코드를 보시면, <code>data</code> 변수가 <code>posts</code>라는 별칭(alias)으로 사용되고 있으며, 이는 옛날 방식의 <code>posts</code>와 동일합니다.</p>
+<p>하지만 React Query가 자동으로 관리해 주기 때문에 개발자가 직접 관리할 필요가 없습니다.</p>
+<p>또, <code>isError</code>는 옛날 방식의 <code>error</code>와 동일하며, <code>isPending</code>은 로딩 상태를 나타냅니다.</p>
+<p><code>isFetched</code>, <code>isFetchedAfterMount</code>, <code>isLoading</code>, <code>isLoadingError</code>, <code>isPaused</code> 등 더 많은 변수가 있어 원하는 경우 모두 사용할 수 있습니다.</p>
+<p>React Query를 사용하려면 쿼리 키(<code>queryKey</code>)와 쿼리 함수(<code>queryFn</code>)를 전달해야 합니다.</p>
+<p>쿼리 키는 어떤 쿼리를 가져오는지 정의하는 역할을 합니다.</p>
+<p>쿼리 함수는 옛날 방식에서와 같이 데이터를 가져오는 URL을 지정하고, 반환된 데이터는 <code>data</code> 속성에 저장됩니다.</p>
+<p>React Query는 에러 상태, 로딩 상태를 자동으로 처리해 주고, 그리고 UI를 구성하는 JSX에서도 옛날 방식과 같은 방식으로 사용할 수 있습니다.</p>
+<p>하지만 코드가 훨씬 간결하고, 개발자가 대부분의 기능을 직접 처리할 필요가 없습니다.</p>
+<p>그리고 React Query는 전세계 수많은 사용자가 실제 프로덕션(Production)에 사용할 정도로 아주 많은 테스트를 거쳤고 거의 버그가 없습니다.</p>
+<p>그리고 React Query의 가장 큰 장점 중 하나는 <strong>캐싱</strong> 기능입니다.</p>
+<p>옛날 방식에서는 캐싱을 직접 구현해야 했지만, React Query에서는 쿼리 키를 통해 자동으로 캐싱을 처리해 줍니다.</p>
+<p>예를 들어 <code>posts</code>와 <code>page</code>를 쿼리 키로 사용하면, 페이지 0의 데이터를 가져온 후 다시 페이지 0의 데이터를 가져오려고 할 때, 백엔드에 다시 요청을 보내는 대신 캐시에서 결과를 반환합니다.</p>
+<p>이는 성능 향상에 큰 도움이 됩니다.</p>
+<p>또한, 캐시 유효 시간(<code>stale time</code>), 가비지 콜렉션 시간(<code>GC time</code>) 등을 설정하여 캐싱을 사용자가 임의로 지정할 수 있습니다.</p>
+<p>React Query의 또 다른 장점은 <strong>데이터 공유</strong>입니다.</p>
+<p>같은 쿼리를 다른 컴포넌트에서 사용해도 백엔드에 다시 요청을 보내는 대신 캐시에서 데이터를 가져오기 때문에 효율적입니다.</p>
+<p>옛날 방식에서 같은 코드를 다른 컴포넌트에 넣으면 같은 데이터를 가져오는 두 개의 요청이 백엔드에 전송되는데, 아주 비효율적입니다.</p>
+<p>물론 React Query 외에도 SWR, Apollo GraphQL 등 유사한 솔루션을 사용할 수 있습니다.</p>
+<hr>
+<h2 id="가장-최신-방식인-서버-컴포넌트에서-데이터-가져오기">가장 최신 방식인 서버 컴포넌트에서 데이터 가져오기</h2>
+<p>이제 세 번째 예제를 살펴보겠습니다.</p>
+<p>이 예제는 클라이언트 환경이 아닌 <strong>서버 환경</strong>에서 데이터를 가져오는 방법을 보여줍니다.</p>
+<p>먼저, page.tsx 파일을 아래와 같이 바꿉니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// import Fetch1 from &#34;@/components/Fetch1&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="c1">// import Fetch2 from &#34;@/components/Fetch2&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">import</span> <span class="nx">Fetch3</span> <span class="kr">from</span> <span class="s2">&#34;@/components/Fetch3&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Suspense</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home() {</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">main</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-10&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="cm">/* &lt;Fetch1 /&gt; */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="cm">/* &lt;Fetch2 /&gt; */</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">Suspense</span> <span class="na">fallback</span><span class="o">=</span><span class="p">{&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Loading</span><span class="p">...&lt;/</span><span class="nt">div</span><span class="p">&gt;}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">Fetch3</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">Suspense</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 Fetch3 컴포넌트를 Suspense로 감쌌습니다.</p>
+<p>이제 Fetch3 컴포넌트를 아래와 같이 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">BASE_URL</span> <span class="o">=</span> <span class="s2">&#34;https://jsonplaceholder.typicode.com&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Post</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">Fetch3() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">BASE_URL</span><span class="si">}</span><span class="sb">/posts`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">await</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="mi">2000</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&#34;Failed to fetch posts&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">posts</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span> <span class="kr">as</span> <span class="nx">Post</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;tutorial&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;mb-4 text-2xl&#34;</span><span class="p">&gt;</span><span class="nx">Data</span> <span class="nx">Fething</span> <span class="k">in</span> <span class="nx">React</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">posts</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">post</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="k">return</span> <span class="p">&lt;</span><span class="nt">li</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">post</span><span class="p">.</span><span class="nx">id</span><span class="p">}&gt;{</span><span class="nx">post</span><span class="p">.</span><span class="nx">title</span><span class="p">}&lt;/</span><span class="nt">li</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>Next.js에서는 서버 컴포넌트를 사용하여 서버에서 작업을 수행할 수 있습니다.</p>
+<p>서버 컴포넌트는 이름에서 알 수 있듯이 서버에서 실행되며, 클라이언트에는 전달되지 않습니다.</p>
+<p>위 코드는 서버에서 실행되기 때문에, <strong>비동기(async) 컴포넌트</strong>를 만들 수 있습니다.</p>
+<p>즉, 렌더링, 상태, 로딩 상태 등을 신경 쓸 필요가 없습니다.</p>
+<p>그리고 컴포넌트 바디에서 직접 데이터를 가져올 수 있습니다.</p>
+<p>클라이언트 컴포넌트에서는 절대로 이렇게 할 수 없습니다.</p>
+<p><code>fetch</code>를 통해 데이터를 가져오고, Response를 확인합니다.</p>
+<p>Response가 정상적이지 않으면 에러를 발생시키거나, 다른 곳으로 리디렉션하거나, 사용자에게 에러 메시지를 표시합니다.</p>
+<p>Response가 정상적이면 <code>response.json()</code>을 통해 게시글 데이터를 가져옵니다.</p>
+<p>클라이언트 컴포넌트에서 사용했던 것과 같은 코드이지만, 비동기 서버 컴포넌트의 바디에 직접 넣었습니다.</p>
+<p>그리고 HTML, JSX를 생성하여 게시글을 렌더링합니다.</p>
+<p>로딩 상태, 대기 상태 등이 없고, 의존성도 없습니다.</p>
+<p>서버 컴포넌트를 사용하면 복잡성을 줄이고 코드와 의존성을 줄일 수 있다는 큰 장점이 있습니다.</p>
+<p>하지만 로딩 상태 등 몇 가지 기능을 잃게 됩니다.</p>
+<p>예를 들어 <code>fetch</code> 요청이 진행되는 동안 데이터가 없기 때문에 컴포넌트가 렌더링되지 않습니다.</p>
+<p>하지만 이러한 문제를 해결하는 방법이 있습니다.</p>
+<p>바로 <strong>Suspense</strong>를 사용하면 됩니다.</p>
+<p>Suspense는 React의 컴포넌트로, 컴포넌트를 감싸고, 렌더링이 완료될 때까지 컴포넌트를 블록합니다.</p>
+<p>또한, 렌더링이 완료될 때까지 표시할 폴백(fallback)을 제공할 수 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="c1">// ... (Fetch3 컴포넌트 안)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">&lt;</span><span class="nt">Suspense</span> <span class="na">fallback</span><span class="o">=</span><span class="p">{&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Loading</span><span class="p">...&lt;/</span><span class="nt">div</span><span class="p">&gt;}&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">Fetch3</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">Suspense</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드를 사용하면 페이지가 로딩되는 동안 로딩 표시가 나타나고, 컴포넌트가 렌더링되면 데이터가 표시됩니다.</p>
+<p>이렇게 하면 서버 컴포넌트에서도 로딩 상태를 표시할 수 있습니다.</p>
+<p>서버 컴포넌트에서 데이터를 가져올 때는 페이지 번호를 나타내는 상태 변수가 없고, 페이지가 변경될 때 데이터를 다시 가져오지 않습니다.</p>
+<p>서버 컴포넌트에서는 상태가 없고 페이지가 다시 렌더링되지 않기 때문입니다.</p>
+<p>같은 기능을 구현하려면 URL을 이용해서 params을 사용해야 합니다.</p>
+<p>URL을 기반으로 서버 컴포넌트에서 가져올 페이지를 결정하면 됩니다.</p>
+<p>그리고 여기서 중요한 캐싱은 라이브러리가 아닌 Next.js 프레임워크에서 처리합니다.</p>
+<p>왜냐하면 Next.js는 URL을 기반으로 캐싱을 처리하기 때문입니다.</p>
+<p>서버 컴포넌트에서 데이터를 가져오는 것은 클라이언트 컴포넌트에서 데이터를 가져오는 것과 같은 결과를 달성하지만, 제가 볼 때 더 효율적인 방식이라고 생각합니다.</p>
+<hr>
+<h2 id="끝맺음">끝맺음</h2>
+<p>지금까지 이 글을 통해 React 애플리케이션에서 데이터를 가져오는 방법을 배우셨습니다.</p>
+<p>서버 컴포넌트에서 데이터를 가져오는 방법, 클라이언트 컴포넌트에서 React Query를 사용하여 데이터를 가져오는 방법, 그리고 클라이언트 컴포넌트에서 데이터를 직접 가져오는 방법을 배웠습니다.</p>
+<p>되도록이면 서버 컴포넌트를 사용하고 부득이하게 클라이언트 상에서 데이터를 가져오러면 무조건 React Query, SWR 같은 라이브러리를 사용하면 됩니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/data-fetching/" role="button">data fetching</a>
+        <a class="btn btn-light" href="/tags/react-query/" role="button">react query</a>
+        <a class="btn btn-light" href="/tags/server-components/" role="button">server components</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-09-react-data-fetching-study-guide-from-useeffect-to-server-components/">리액트 데이터 페칭 완전 정복 - useEffect부터 서버 컴포넌트까지</a></h2>
+                  <p>리액트 데이터 페칭의 기초부터 최신 서버 컴포넌트까지, 단계별 발전 과정을 예제와 함께 완벽하게 알아봅니다.</p>
+                  <p>
+  <small>July 9, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-16-use-tanstack-react-query-as-global-state-management/">React Query로 구현하는 간단하고 강력한 상태 관리 솔루션</a></h2>
+                  <p>React Query를 활용하여 Redux나 Zustand 대신 간단하고 강력한 상태 관리 시스템을 구현하는 방법을 소개합니다. 기존 데이터 페칭 라이브러리를 사용해 비동기 상태 관리도 함께 다루어봅니다.</p>
+                  <p>
+  <small>July 16, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

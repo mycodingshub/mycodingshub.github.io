@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기</title>
+<meta name="description" content="기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-08-19-refactoring-nextjs-lucia-auth-code-with-useformstate-and-useformstatus/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기" />
+<meta property="og:description" content="기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-08-19-refactoring-nextjs-lucia-auth-code-with-useformstate-and-useformstatus/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-08-19T12:27:05Z" />
+<meta property="article:modified_time" content="2024-08-19T12:27:05Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="cloudflare" />
+<meta property="article:tag" content="d1" />
+<meta property="article:tag" content="lucia" />
+<meta property="article:tag" content="lucia auth" />
+<meta property="article:tag" content="useFormState" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기" />
+<meta name="twitter:description" content="기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기\"",
+  "description": "\"기존에 만들었넌 Next.js, Lucia, Cloudflare D1 DB를 활용한 유저 로그인 구현을 조금 더 세련되게 꾸몄습니다.\"",
+  "datePublished": "\"2024-08-19T12:27:05Z\"",
+  "dateModified": "\"2024-08-19T12:27:05Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-08-19-refactoring-nextjs-lucia-auth-code-with-useformstate-and-useformstatus/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React 18의 useFormState를 활용하여 Next.js와 Lucia Auth의 유저 로그인 구현해 보기</h1>
+        <p>
+  <small>August 19, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>10&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>지난 시간에는 간단하게 Next.js상에서 Lucia Auth를 이용해서 세션 정보를 Cloudflare D1 DB상에 저장해서 유저 로그인을 구현했었습니다.</p>
+<p>이번 시간에는 useFormState와 Next.js 미들웨어를 적용해서 좀 더 코드를 완성시켜 나가 보겠습니다.</p>
+<p><a href="https://mycodingshub.github.io/blog/2024-08-16-nextjs-lucia-auth-with-cloudflare-d-1-db">지난 시간 강의</a> 링크입니다.</p>
+<hr>
+<h2 id="layouttsx-파일과-메인-페이지-바꾸기">layout.tsx 파일과 메인 페이지 바꾸기</h2>
+<p>먼저, 테스트를 위해 헤더 Navbar 링크 부분과 메인 페이지 내용을 조금 바꾸겠습니다.</p>
+<p>먼저, layout.tsx 파일을 아래와 같이 수정합시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">Metadata</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="s2">&#34;./globals.css&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">Link</span> <span class="kr">from</span> <span class="s2">&#34;next/link&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">metadata</span>: <span class="kt">Metadata</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span><span class="o">:</span> <span class="s2">&#34;Create Next App&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">description</span><span class="o">:</span> <span class="s2">&#34;Generated by create next app&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">RootLayout</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">:</span> <span class="nx">Readonly</span><span class="o">&lt;</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">children</span>: <span class="kt">React.ReactNode</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="o">&gt;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">body</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;max-w-xl p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">header</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex space-x-4 py-4 underline&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/&#34;</span><span class="p">&gt;</span><span class="nx">Home</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/signup&#34;</span><span class="p">&gt;</span><span class="nx">Sign</span> <span class="nx">up</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="p">&gt;</span><span class="nx">Log</span> <span class="k">in</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/admin&#34;</span><span class="p">&gt;</span><span class="nx">Admin</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/dashboard&#34;</span><span class="p">&gt;</span><span class="nx">Dashboard</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">Link</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/open&#34;</span><span class="p">&gt;</span><span class="nx">Open</span><span class="p">&lt;/</span><span class="nt">Link</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">header</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;{</span><span class="nx">children</span><span class="p">}&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>a 태그가 아니라 Next.js에서 제공해 주는 Link 컴포넌트를 사용했습니다.</p>
+<p>그리고 Auth 테스트를 위해 &ldquo;/admin&rdquo;, &ldquo;/dashboard&rdquo;, &ldquo;/open&rdquo; 라우팅 주소를 추가했습니다.</p>
+<p>이제 메인 페이지를 구성해 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">logoutAction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/actions/logoutAction&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">validateSession</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/lib/auth&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">Home() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">validateSession</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">section</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Welcome</span> <span class="nx">to</span> <span class="nx">Next</span><span class="p">.</span><span class="nx">js</span> <span class="nx">Lucia</span> <span class="nx">Test</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">user</span> <span class="o">?</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">logoutAction</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">              <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-3 py-2 rounded-lg border bg-gray-700 text-white&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">Log</span> <span class="nx">out</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="o">:</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">a</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;underline&#34;</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;/login&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">Please</span> <span class="nx">Login</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>메인 페이지를 보시면 validateSession 함수를 이용해서 유저 로그인 여부를 확인할 수 있습니다.</p>
+<p>validateSession 함수는 지난 시간에도 만들었으니 지난 링크를 참고 바랍니다.</p>
+<p>지난 시간에는 lib.ts 파일에 모든 서버 관련 함수를 넣었는데, validateSession 함수만 남기고 그 파일을 auth.ts로 바꾸었습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgIeLWjKiHFmoq9ZxclBnlmut0detKTyHTAjn036gdF5K3hGWc1OlkhEw2DBEQMJCiaA0GtW1eUaTx8gFZ5YyBGYK7J5eB5OMvjQzR3FzgPZV0Ozfi0UFxJl663vpeNjku544HePC9Tm0zBiDQglZynEQoNqSaiIp-9RoWnKd-GiKYCz2Uw9llkU7b5vPc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>그리고 아래 그림은 로그인 후의 메인 화면입니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhvh62Z6l4vCqo3IIJgkP_9WIFfIyRSObYATIIHUobzq8pC1bvxGq8K6suQA9I620bflJhBa4b6BxXWLKtUYzK7LrA5JBsuvzwQlU7i0oN0953WLY_Xs-ZRpIL5LNKE4egIQYrAtDWjX3DZ4P_fLlAnCDLxvSbsFiUZz1xhJm81pSRndOj3F9dRI_f7-g0"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="sign-up-페이지-다시-만들기">Sign Up 페이지 다시 만들기</h2>
+<p>이제 React 최신 기술인 userFormState 훅을 이용해서 Sign Up 페이지를 다시 만들어 보겠습니다.</p>
+<p>일단 app 폴더 밑에 signup 폴더를 만들었으니 그 밑에 page.tsx 파일을 아래와 같이 만들겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">logoutAction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/actions/logoutAction&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">SignupForm</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./SignupForm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">validateSession</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/lib/auth&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">SignUp() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">validateSession</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-5&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-4 text-2xl font-bold&#34;</span><span class="p">&gt;</span><span class="nx">Sign</span> <span class="nx">Up</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">user</span> <span class="o">?</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex gap-4 p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-3 py-2 rounded-lg border bg-slate-100&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">email</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">logoutAction</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">              <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-3 py-2 rounded-lg border bg-gray-700 text-white&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">Log</span> <span class="nx">out</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="o">:</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-4 p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-3 py-2 rounded-lg border bg-slate-100&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Not</span> <span class="nx">Logged</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">SignupForm</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>항상 validateSession 함수를 이용해서 유저가 로그인 되어 있는지 체크하고 되어 있으면 유저 이메일을 보여주면서 로그아웃 버튼을 표시해 두면 됩니다.</p>
+<p>로그아웃 버튼은 form 방식의 서버 액션을 이용해서 구현했는데요.</p>
+<p>서버 액션 관련 함수는 app 폴더 밑에 actions 폴더를 만들었고 그 밑에 logoutAction.ts 파일을 만들었습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="s2">&#34;use server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">initializeLucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/db/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">validateSession</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/lib/auth&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getRequestContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@cloudflare/next-on-pages&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/headers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">logoutAction() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">session</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">validateSession</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">success</span>: <span class="kt">false</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">getRequestContext</span><span class="p">().</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">invalidateSession</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">sessionCookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createBlankSessionCookie</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cookies</span><span class="p">().</span><span class="kr">set</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">attributes</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">{</span> <span class="nx">success</span>: <span class="kt">true</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드는 Next.js의 서버 액션 파일입니다.</p>
+<p>이렇게 만들어 놓으면 언제든지 Next.js 서버 액션 코드를 삽입할 수 있게 됩니다.</p>
+<p>이제 다시 signup 페이지로 돌아가 보면 Form 부분을 SignupForm 컴포넌트로 분할 했습니다.</p>
+<p>왜냐하면 지금 보시는 signup 메인 페이지는 서버 컴포넌트고 우리가 만들 SignupForm 컴포넌트는 클라이언트 컴포넌트이기 때문입니다.</p>
+<p>useFormState와 useFormStatus 훅을 사용하려면 클라이언트 컴포넌트에서 사용해야 하기 때문입니다.</p>
+<p>이제 SignupForm.tsx 파일을 살펴보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useFormState</span><span class="p">,</span> <span class="nx">useFormStatus</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-dom&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">signupAction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/actions/signupAction&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">SignupForm() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">state</span><span class="p">,</span> <span class="nx">formAction</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useFormState</span><span class="p">(</span><span class="nx">signupAction</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">section</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex gap-4 p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">formAction</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-1 flex-col  sm:w-1/2&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">          <span class="na">className</span><span class="o">=</span><span class="s">&#34;rounded-lg px-2 py-4 border&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span><span class="o">?</span><span class="p">.</span><span class="nx">email</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">i</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-red-500 ml-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">msg</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">          <span class="na">className</span><span class="o">=</span><span class="s">&#34;rounded-lg px-2 py-4 border&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span><span class="o">?</span><span class="p">.</span><span class="nx">password</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">i</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-red-500 ml-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">msg</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">SubmitButton</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">error</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-red-500 ml-4&#34;</span><span class="p">&gt;{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex-1 rounded-lg bg-cyan-600 p-8 text-white&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">SubmitButton() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">pending</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useFormStatus</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">      <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-cyan-600 rounded-lg px-2 py-4 border&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">pending</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">pending</span> <span class="o">?</span> <span class="s2">&#34;Processing&#34;</span> <span class="o">:</span> <span class="s2">&#34;Signup&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 useFormState, useFormStatus 훅을 &lsquo;react-dom&rsquo;에서 가장 먼저 import 했습니다.</p>
+<p>당연히 &lsquo;use client&rsquo; 디렉티브로 이 파일이 클라이언트 컴포넌트라고 지정했고요.</p>
+<p>useFormState는 React 19가 나오면 useActionState로 대체될 거 지만 React 18에서는 위와 같이 useFormState와 useFormStatus를 위해 sumit 버튼을 별도의 컴포넌트로 구분해야 합니다.</p>
+<p>위 코드는 useFormState로 리턴되는 state의 에러 값에 따라 여러 가지를 보여주게 됩니다.</p>
+<p>그러면 signupAction 서버 코드를 보겠습니다.</p>
+<p>app/actions/signupAction.ts</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="s2">&#34;use server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">initializeLucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/db/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">usersTable</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getRequestContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@cloudflare/next-on-pages&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">eq</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Scrypt</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">revalidatePath</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/cache&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/headers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">z</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;zod&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">signupFormSchema</span> <span class="o">=</span> <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">email</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&#34;email is required&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">password</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&#34;password is required&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">signupAction</span><span class="p">(</span><span class="nx">state</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">formData</span>: <span class="kt">FormData</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">signupFormSchema</span><span class="p">.</span><span class="nx">safeParse</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// when FormData parsing success
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">email</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">password</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">getRequestContext</span><span class="p">().</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">existingUser</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="nx">email</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// console.log(`existingUser : ${JSON.stringify(user, null, 2)}`);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">existingUser</span><span class="p">.</span><span class="nx">length</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/signup&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;Email already exists.&#34;</span><span class="p">,</span> <span class="nx">success</span>: <span class="kt">false</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">passwordHash</span> <span class="o">=</span> <span class="k">await</span> <span class="k">new</span> <span class="nx">Scrypt</span><span class="p">().</span><span class="nx">hash</span><span class="p">(</span><span class="nx">password</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">values</span><span class="p">({</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">password</span>: <span class="kt">passwordHash</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">returning</span><span class="p">({</span> <span class="nx">id</span>: <span class="kt">usersTable.id</span><span class="p">,</span> <span class="nx">email</span>: <span class="kt">usersTable.email</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">user</span> <span class="o">||</span> <span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;An error occured during sign up.Email already exists.&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">success</span>: <span class="kt">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">cookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">cookies</span><span class="p">().</span><span class="kr">set</span><span class="p">(</span><span class="nx">cookie</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">attributes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/signup&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">success</span>: <span class="kt">true</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Error handling
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/signup&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">errors</span>: <span class="kt">result.error.flatten</span><span class="p">().</span><span class="nx">fieldErrors</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드가 길지만 지난 시간에 배웠던 로직과 비슷합니다.</p>
+<p>다만 zod를 이용해서 formData 값을 검증했고, 여러 경웨 따라 에러 값을 리턴해 주고 있습니다.</p>
+<p>성공하면 간단하게 success 항목이 true인 객체를 리턴해주고 있습니다.</p>
+<p>여기서 서버 액션은 뭘 리턴해야하는데요.</p>
+<p>왜냐하면 useFormState에서 state값을 사용해야 하기 때문입니다.</p>
+<p>그리고 revalidatePath 함수를 이용해서 모든 작업이 완료되면 현재 페이지를 새로고침해주고 있습니다.</p>
+<p>revalidatePath 함수를 잊어버리지 않도록 하시기 바랍니다.</p>
+<p>아니면 여기서 redirect로 보통 다른 곳으로 이동하는데 우리는 테스트를 위해 같은 라우팅으로 revalidatePath 함수를 이용해서 새로고침을 시도하고 있습니다.</p>
+<p>마지막으로 useFormStatus 훅을 이용하려면 아까처럼 submit 버튼을 따로 빼내서 한개의 컴포넌트로 만들어야 합니다.</p>
+<p>이제 테스트를 해볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjSbf3AjWTShAhy3OVq-cB8Er3C3EACBVnSgbQ023C43TKCUIzUlUkuNXiEWVaDiM9GEwINpfr7gXnLCJAaW6PLq53QUtN_3bhsMLolMPYtKwimHCLquXNOu8n3CtIBcB4w87h8mEqT4-_rhv3NCC7NHPwkafcNU7o0A7xqS4a6hIreSHa3-IlCswm2WaQ"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같은 화면이 나옵니다.</p>
+<p>여기서 그냥 Signup 버튼을 누르면 아래와 같이 에러값이 표시될겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg2YD1AMm5f-zmVeN1X-ELc5BCgSDMdy4bEeshaKj34qBeo8DsK_GoZsKCtS3uRLlbeNtX0yzGAGns7SOxmbB98HwZweuriHtGXozJOwz0cmP9QRi20KxZCkMyfyFociPQnUE-v4K7iBvmn-12PxBXYrE9h9lv7tmtxA4A7bP0edhHHp1IUhl1AY5TcHaI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 보시면 useFormState 훅으로 리턴되는 state 값이 제대로 작동하고 있습니다.</p>
+<p>이제는 이메일에 잘못된 형식의 이메일을 넣어 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgPMp0WZfnWh2kxa_Dz76nQDShC96-9j94bJWoR6JwB3pI5IRPnTe-yQXtxgtE8j3acg6EjtxUzh_GHEyZG1Yqsoh_gFZRXWs3ppmUQy5YpfXPoeLh04Qgr5y20KsygklCiQ-zdDE7UcBB0mUOOypkZxgzLqlj0RtR0R2JauFKqWArogs3TXQph9TeZZGo"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>어떤가요?</p>
+<p>위와 같이 Zod가 완벽하게 잡아내고 있습니다.</p>
+<p>마지막으로 이미 가입된 이메일을 넣어 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi7FKRgZWDw4aiks7zuNyHCurVgE5-Q8WvXjm96NUnGmdoovwzDsod7JzRLyTBgNDZBDKjD0bkza42k1r24p5GWynlPsJN5Ana_ytI0UlQie6uXPEUrH2jpd8mwfbKtJBzXZIq64Rol1d7M0wZbdatwn7RQffPLJno__SLgY5pjBnOiHTVwWIWlReFMrg4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 이메일이 이미 존재한다고 완벽하게 표시해 주고 있습니다.</p>
+<p>이제 signup 라우팅은 완벽하게 구현되었습니다.</p>
+<hr>
+<h2 id="login-라우팅-구현">login 라우팅 구현</h2>
+<p>signup 라우팅을 구현했으니 login 라우팅 구현하는 거는 아주 쉬운데요.</p>
+<p>signup과 로직이 거의 비슷하기 때문입니다.</p>
+<p>login 폴더의 page.tsx 파일입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">validateSession</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/lib/auth&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">LoginForm</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./LoginForm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">logoutAction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/actions/logoutAction&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">runtime</span> <span class="o">=</span> <span class="s2">&#34;edge&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">SignUp() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">validateSession</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-5&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;p-4 text-2xl font-bold&#34;</span><span class="p">&gt;</span><span class="nx">Log</span> <span class="nx">In</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">user</span> <span class="o">?</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex gap-4 p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-3 py-2 rounded-lg border bg-slate-100&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">email</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">logoutAction</span><span class="p">}&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">              <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">              <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-3 py-2 rounded-lg border bg-gray-700 text-white&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">Log</span> <span class="nx">out</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span> <span class="o">:</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-col gap-4 p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;px-3 py-2 rounded-lg border bg-slate-100&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">Not</span> <span class="nx">Logged</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">&lt;</span><span class="nt">LoginForm</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>아까 signup 페이지가 아주 똑같습니다.</p>
+<p>이제 LoginForm 컴포넌트만 살펴보면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-tsx" data-lang="tsx"><span class="line"><span class="cl"><span class="s2">&#34;use client&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">loginAction</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/actions/loginAction&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useFormState</span><span class="p">,</span> <span class="nx">useFormStatus</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;react-dom&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">LoginForm() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">state</span><span class="p">,</span> <span class="nx">formAction</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useFormState</span><span class="p">(</span><span class="nx">loginAction</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">section</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex gap-4 p-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="p">{</span><span class="nx">formAction</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex flex-1 flex-col  sm:w-1/2&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">          <span class="na">className</span><span class="o">=</span><span class="s">&#34;rounded-lg px-2 py-4 border&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">type</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">name</span><span class="o">=</span><span class="s">&#34;email&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;Email&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span><span class="o">?</span><span class="p">.</span><span class="nx">email</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">i</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-red-500 ml-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">msg</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">input</span>
+</span></span><span class="line"><span class="cl">          <span class="na">className</span><span class="o">=</span><span class="s">&#34;rounded-lg px-2 py-4 border&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">type</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">name</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="na">placeholder</span><span class="o">=</span><span class="s">&#34;password&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">errors</span><span class="o">?</span><span class="p">.</span><span class="nx">password</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">i</span><span class="p">}</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-red-500 ml-4&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nx">msg</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">))}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">br</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">SubmitButton</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">error</span> <span class="o">&amp;&amp;</span> <span class="p">&lt;</span><span class="nt">p</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;text-red-500 ml-4&#34;</span><span class="p">&gt;{</span><span class="nx">state</span><span class="o">?</span><span class="p">.</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">className</span><span class="o">=</span><span class="s">&#34;flex-1 rounded-lg bg-cyan-600 p-8 text-white&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">pre</span><span class="p">&gt;{</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">state</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}&lt;/</span><span class="nt">pre</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">SubmitButton() {</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">{</span> <span class="nx">pending</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useFormStatus</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">button</span>
+</span></span><span class="line"><span class="cl">      <span class="na">className</span><span class="o">=</span><span class="s">&#34;bg-cyan-600 rounded-lg px-2 py-4 border&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="na">type</span><span class="o">=</span><span class="s">&#34;submit&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">pending</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span><span class="nx">pending</span> <span class="o">?</span> <span class="s2">&#34;Processing&#34;</span> <span class="o">:</span> <span class="s2">&#34;Login&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드도 SignupForm과 아주 비슷합니다.</p>
+<p>마지막으로 서버 액션 코드입니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="s2">&#34;use server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">eq</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">usersTable</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/db/schema&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getRequestContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@cloudflare/next-on-pages&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">drizzle</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;drizzle-orm/d1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">Scrypt</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">initializeLucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@/db/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cookies</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/headers&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">z</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;zod&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">revalidatePath</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/cache&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">loginFormSchema</span> <span class="o">=</span> <span class="nx">z</span><span class="p">.</span><span class="kt">object</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">email</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">email</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&#34;email is required&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">password</span>: <span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&#34;password is required&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">loginAction</span><span class="p">(</span><span class="nx">state</span>: <span class="kt">any</span><span class="p">,</span> <span class="nx">formData</span>: <span class="kt">FormData</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">loginFormSchema</span><span class="p">.</span><span class="nx">safeParse</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">email</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;email&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">password</span>: <span class="kt">formData.get</span><span class="p">(</span><span class="s2">&#34;password&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// when FormData parsing success
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">email</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">password</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">password</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">getRequestContext</span><span class="p">().</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">drizzle</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">select</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="nx">eq</span><span class="p">(</span><span class="nx">usersTable</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="nx">email</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// console.log(`user : ${JSON.stringify(user, null, 2)}`);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;user length === 0&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;Email does not exist!&#34;</span><span class="p">,</span> <span class="nx">success</span>: <span class="kt">false</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">isValidPassword</span> <span class="o">=</span> <span class="k">await</span> <span class="k">new</span> <span class="nx">Scrypt</span><span class="p">().</span><span class="nx">verify</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">password</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">password</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isValidPassword</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">//   throw new Error(&#34;Invalid password.&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Invalid password!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">error</span><span class="o">:</span> <span class="s2">&#34;Incorrect password!&#34;</span><span class="p">,</span> <span class="nx">success</span>: <span class="kt">false</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSession</span><span class="p">(</span><span class="nx">user</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">id</span><span class="p">,</span> <span class="p">{});</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">cookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`session : </span><span class="si">${</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">session</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">cookies</span><span class="p">().</span><span class="kr">set</span><span class="p">(</span><span class="nx">cookie</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="nx">cookie</span><span class="p">.</span><span class="nx">attributes</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">success</span>: <span class="kt">true</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Error handling
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">revalidatePath</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">errors</span>: <span class="kt">result.error.flatten</span><span class="p">().</span><span class="nx">fieldErrors</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>login 서버 액션 함수입니다.</p>
+<p>signup 함수와 아주 유사한데요.</p>
+<p>마지막으로 테스트를 위해 잘못된 패스워드를 넣어 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgMf9lr__bY2_LSELFnLjmSd1KaikFVOecIl9vs6enopV3EJ-1Wam7FYgOuu1jkZCKd-cYqeCt_HoerllDerdTZjyJMPSqHXpXDxmNy3wd3rcWGHH0p1mYEA_C2SRTByv10Tpo0DiJHpFY-3ry0Hl7S1anxCn-whR-juXsPmRn6-GLp-5VEoLCIPrst4uY"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 패스워드가 틀렸다고 잘 표시되고 있습니다.</p>
+<p>똑같이 이메일에 잘못된 형식을 넣어도 아래 그림처럼 Zod가 제대로 작동하고 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjhTWZHi-mH4aagLuMSgltZRFmrd1I94_9pDyECDGKIyB8L2V2jb6wx3AhNNFLniwYvJzo6XU9ufgJUMtNnVh5bGA2xNjDNMcipGpwh-Q3D3k4ERcjeiLEeeR9AZckRORwkGMttN0a3St7fs-isg127jOg_FbukVH9Puv0J7Wgj6ndGDf00giNDUrDKdbs"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<hr>
+<h2 id="미들웨어로-protected-라우팅-구분하기">미들웨어로 protected 라우팅 구분하기</h2>
+<p>이제 유저 로그인 여부에 따라 보여줘야할 곳과 보여주지 말아야 할 곳을 구분할 수 있어야 하는데요.</p>
+<p>단순하게 모든 컴포넌트를 서버 컴포넌트로 작성하고 그리고 나서 validateSession 함수를 통해서 유저 로그인 여부를 찾는 것도 꽤 단순하고 좋은 방법이지만 Next.js는 미들웨어라는 걸 제공해주고 있는데, 이 걸 이용해서 구현해 보겠습니다.</p>
+<p>Next.js의 미들웨어파일은 app 폴더와 같은 레벨에 middleware.ts 파일로 작성하면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextRequest</span><span class="p">,</span> <span class="nx">NextResponse</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">getRequestContext</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;@cloudflare/next-on-pages&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">initializeLucia</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./db/lucia&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">async</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">DB</span> <span class="o">=</span> <span class="nx">getRequestContext</span><span class="p">().</span><span class="nx">env</span><span class="p">.</span><span class="nx">DB</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">lucia</span> <span class="o">=</span> <span class="nx">initializeLucia</span><span class="p">(</span><span class="nx">DB</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">sessionId</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="nx">lucia</span><span class="p">.</span><span class="nx">sessionCookieName</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">value</span> <span class="o">??</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">sessionId</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;No sessionId&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">validateSession</span><span class="p">(</span><span class="nx">sessionId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// console.log(result);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="o">?</span><span class="p">.</span><span class="nx">session</span> <span class="o">&amp;&amp;</span> <span class="nx">result</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">fresh</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">sessionCookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createSessionCookie</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 여기서 cookies는 NextRequest가 아니라 NextResponse를 사용해야 함
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">response</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">attributes</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="o">?</span><span class="p">.</span><span class="nx">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">sessionCookie</span> <span class="o">=</span> <span class="nx">lucia</span><span class="p">.</span><span class="nx">createBlankSessionCookie</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">response</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sessionCookie</span><span class="p">.</span><span class="nx">attributes</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Error in session validation:&#34;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="s2">&#34;/login&#34;</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// matcher: &#34;/admin&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">matcher</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;/admin&#34;</span><span class="p">,</span> <span class="s2">&#34;/dashboard&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 작성했습니다.</p>
+<p>마지막에 보시면 config 객체를 export 했는데요.</p>
+<p>config 객체에 matcher 항목을 잘 보시면 라우팅이 몇개 있습니다.</p>
+<p>이런 방식으로 미들웨어가 작동하는 라우팅을 지정할 수 있습니다.</p>
+<p>즉, 위 코드에서는 &lsquo;/admin&rsquo;, &lsquo;/dashboard&rsquo; 라우팅으로 가면 미들웨어가 작동한다는 뜻입니다.</p>
+<p>미들웨어는 validateSession 함수와 동일한데요.</p>
+<p>대신 validateSession 함수는 NodeJS 서버 환경에서 실행하는 거라 cookies 함수는 &rsquo;next/headers&rsquo;에서 가져왔지만 미들웨어 함수는 Edge Runtime에서 작동되기 때문에 위 코드처럼 직접 Request나 Response 객체에서 cookies 값을 가져와서 쿠키값을 set해야 합니다.</p>
+<p>그 부분만 다르고 나머지는 validateSession 함수와 똑같다고 보면 됩니다.</p>
+<p>이제 테스트를 위해 &lsquo;/open&rsquo;, &lsquo;/admin&rsquo;, &lsquo;/dashboard&rsquo; 링크를 눌러보면 미들웨어가 작동되는 걸 볼 수 있을 겁니다.</p>
+<hr>
+<h2 id="마무리">마무리</h2>
+<p>지금까지 Next.js를 이용해서 유저 로그인 구현과 세션 유지 그리고 유저별 라우팅 구분을 미들웨어로 구현했는데요.</p>
+<p>또, useFormState, useFormStatus 훅으로 UI도 멋지게 구현했습니다.</p>
+<p>이제 Cloudflare에 배포해서 실행해 보셔도 제대로 작동되는걸 볼 수 있을 겁니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/cloudflare/" role="button">cloudflare</a>
+        <a class="btn btn-light" href="/tags/d1/" role="button">d1</a>
+        <a class="btn btn-light" href="/tags/lucia/" role="button">lucia</a>
+        <a class="btn btn-light" href="/tags/lucia-auth/" role="button">lucia auth</a>
+        <a class="btn btn-light" href="/tags/useformstate/" role="button">useFormState</a>
+        <a class="btn btn-light" href="/tags/useformstatus/" role="button">useFormStatus</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-16-nextjs-lucia-auth-with-cloudflare-d-1-db/">Next.js에서 Lucia Auth, Cloudflare D1 DB를 이용해서 유저 로그인 구현하기</a></h2>
+                  <p>이번 강좌에서는 Lucia Auth를 Next.js상에서 구현해 보겠습니다. Cloudflare D1 DB를 사용할 겁니다.</p>
+                  <p>
+  <small>August 16, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-30-fullstack-tutorial-nextjs-cloudflare-with-d-1-db/">풀스택 강의 5편. Next.js 서버 렌더링을 이용하여 Cloudflare Pages로 배포하기(D1 DB, Drizzle ORM)</a></h2>
+                  <p>fullstack</p>
+                  <p>
+  <small>December 30, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>14&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-10-fullstack-remix-cloudflare-pages-d-1-db-drizzle-orm/">풀스택 강의 4편. Remix &#43; Cloudflare Pages &#43; D1 DB &#43; Drizzle ORM</a></h2>
+                  <p>풀스택 강의, Remix와 Pages, D1, Drizzle ORM으로 개발하기</p>
+                  <p>
+  <small>December 10, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>11&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

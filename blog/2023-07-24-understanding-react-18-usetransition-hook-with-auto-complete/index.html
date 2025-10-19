@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기</title>
+<meta name="description" content="AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-07-24-understanding-react-18-usetransition-hook-with-auto-complete/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기" />
+<meta property="og:description" content="AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-07-24-understanding-react-18-usetransition-hook-with-auto-complete/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-07-24T09:49:19Z" />
+<meta property="article:modified_time" content="2023-07-24T09:49:19Z" />
+<meta property="article:tag" content="useTransition" />
+<meta property="article:tag" content="AutoComplete" />
+<meta property="article:tag" content="react" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기" />
+<meta name="twitter:description" content="AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기\"",
+  "description": "\"AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기\"",
+  "datePublished": "\"2023-07-24T09:49:19Z\"",
+  "dateModified": "\"2023-07-24T09:49:19Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-07-24-understanding-react-18-usetransition-hook-with-auto-complete/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>AutoComplete 컴포넌트와 함께 리액트 18의 useTransition 훅 알아보기</h1>
+        <p>
+  <small>July 24, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>리액트가 점점 더 발전하면서 사소한 시간도 절약시켜 줄 수 있는 여러 가지 기능이 추가되고 있는데요.</p>
+<p>그중에서 오늘은 React 18 버전에서 새롭게 추가된 useTransition 훅에 대해 알아보겠습니다.</p>
+<hr>
+<h2 id="usetransition-훅은-왜-나왔을까요">useTransition 훅은 왜 나왔을까요?</h2>
+<p>자바스크립트는 싱글 스레드로 작동되는데요.</p>
+<p>그래서 많은 양의 데이터를 처리할 때 간혹 딜레이가 발생합니다.</p>
+<p>왜냐하면 싱글 스레드라서 작업이 순차적으로 이루어지기 때문입니다.</p>
+<p>예를 들어, 우리나라 전국 주소를 AutoComplete 컴포넌트를 만들어서 키보드 입력으로 검색한다고 할 때,</p>
+<p>각각의 키 입력 때마다 fiter 를 걸어야 하는데요.</p>
+<p>여기서 심하게 과부하가 걸립니다.</p>
+<p>이럴 때, 리액트 18의 useTransition 훅을 사용하면 사용자의 키 입력과는 별도로 자바스크립트가 filter 하는 작업을 리액트는 좀 더 신경을 안 쓰게 됩니다.</p>
+<p>즉, 리액트가 약간 병렬처리 비슷하게 작업해 준다는 뜻입니다.</p>
+<p>그래서 키 입력에 딜레이가 생기지 않게 해주는 거죠.</p>
+<p>즉, 사용자의 키 입력에는 딜레이가 없고, filter로 인해서 찾아지는 주소는 조금 늦게 화면에 뿌려지게 됩니다</p>
+<p>그럼, 실제 코드를 이용해서 구현해 볼까요?</p>
+<hr>
+<h2 id="autocomplete-컴포넌트-구현하기">AutoComplete 컴포넌트 구현하기</h2>
+<p>여기서 사용할 AutoComplete 컴포넌트는 제가 <a href="https://mylotto.pages.dev">myLotto</a> 페이지를 만들었을 때, 전국 시, 군, 동 단위로 검색할 때 만들었던 건데요.</p>
+<p>이 AutoComplete 컴포넌트만 Next.js 빈 템플릿에 처음부터 새로 만들어 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npx create-next-app@latest use-transition-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pnpm create next-app use-transition-test</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 Next.js 빈 템플릿을 만듭니다.</p>
+<p>UI를 위해서 TailwindCSS를 꼭 선택해 주세요.</p>
+<p>작업의 편의를 위해 app 라우팅은 선택하지 마시고요.</p>
+<p>src 폴더는 선택해 주십시오.</p>
+<p>그리고 daisyUI를 설치하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install daisyui
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">or
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pnpm install daisyui</span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 daisyui 세팅을 위해 tailwind.config.js 파일을 아래와 같이 고쳐줍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="cm">/** @type {import(&#39;tailwindcss&#39;).Config} */</span>
+</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">content</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;./src/pages/**/*.{js,ts,jsx,tsx,mdx}&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;./src/components/**/*.{js,ts,jsx,tsx,mdx}&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;./src/app/**/*.{js,ts,jsx,tsx,mdx}&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">theme</span><span class="o">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">daisyui</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">themes</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">theme</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;light&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;daisyui&#39;</span><span class="p">)],</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 src 폴더에서 불필요한 CSS를 지워줍니다.</p>
+<p>src/styles/globals.css 파일을 열어 처음 세 줄만 남겨두고 다 지웁니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="err">@</span><span class="nx">tailwind</span> <span class="nx">base</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="nx">tailwind</span> <span class="nx">components</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="nx">tailwind</span> <span class="nx">utilities</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 src/pages/index.tsx 파일을 다음과 같이 고칩시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">AutoComplete</span> <span class="nx">from</span> <span class="s1">&#39;@/components/auto_complete&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Home</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">main</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;flex flex-col items-center justify-between gap-4 p-24&#39;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">h1</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;text-4xl font-bold&#39;</span><span class="o">&gt;</span><span class="nx">useTransition</span> <span class="nx">Test</span> <span class="kd">with</span> <span class="nx">React</span> <span class="mi">18</span><span class="o">&lt;</span><span class="err">/h1&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">section</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;p-12 text-2xl font-semibold&#39;</span><span class="o">&gt;</span><span class="nx">Auto</span> <span class="nx">Complete</span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// &lt;AutoComplete /&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="o">&lt;</span><span class="err">/section&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/main&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 개발 서버를 돌려볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgExVhz8gZE3xWt7FduxjH7l2ViU73VBlJ3TU9sOVT-7FqRKBAqPI-4Nz9PA3yA3eVO1HUgId8cV_p7klDfJ9na74bwW50UD2r4QExmjn3pNU5RAyAXoj0XeaM2MBcf9gA8HwMsatLMFXqgMfjtHDpjfjNX25mZ18e39VbPQmmx4Tr72WHQO460MYFa61s"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 TailwindCSS도 제대로 작동하고 잘 되네요.</p>
+<p>이제 AutoComplete 컴포넌트를 본격적으로 만들어 볼까요?</p>
+<p>src 폴더 밑에 components 폴더를 만들고 그 밑에 auto_complete.tsx 파일을 만듭시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useRef</span><span class="p">,</span> <span class="nx">useState</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">AutoComplete</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">setValue</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">countries</span><span class="p">,</span> <span class="nx">setCountries</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="nx">string</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/도곡동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/신사동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/압구정동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/역삼동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/삼성동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/개포동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/대치동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/세곡동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/일원동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/논현동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/수서동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/청담동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/자곡동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">items</span><span class="p">,</span> <span class="nx">setItems</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="nx">string</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">([]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">ref</span> <span class="o">=</span> <span class="nx">useRef</span><span class="o">&lt;</span><span class="nx">HTMLDivElement</span><span class="o">&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">open</span><span class="p">,</span> <span class="nx">setOpen</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 편의상 alert 함수 사용
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 여기서 검색한 주소를 클릭했을 때 next/router를 이용해서
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 페이지 이동하면 됩니다.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">function</span> <span class="nx">handleClick</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">trim</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">))</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">endsWith</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">))</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">hrefs</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alert</span><span class="p">(</span><span class="nx">hrefs</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">className</span><span class="o">=</span><span class="p">{</span><span class="nx">open</span> <span class="o">?</span> <span class="s2">&#34;dropdown dropdown-open w-full&#34;</span> <span class="o">:</span> <span class="s2">&#34;dropdown w-full&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">ref</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;flex&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">type</span><span class="o">=</span><span class="s2">&#34;text&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;input input-bordered w-full&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">value</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="c1">// 이 부분이 제일 중요!!!
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="nx">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">setValue</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="kr">const</span> <span class="nx">newItems</span> <span class="o">=</span> <span class="nx">countries</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">p</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="nx">p</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="nx">sort</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="nx">setItems</span><span class="p">(</span><span class="nx">newItems</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">          <span class="nx">placeholder</span><span class="o">=</span><span class="s2">&#34;주소 검색 ......&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">tabIndex</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">button</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;btn btn-outline ml-2&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="nx">handleClick</span><span class="p">(</span><span class="nx">value</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">검색</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;dropdown-content bg-base-200 top-14 max-h-96 overflow-auto flex-col rounded-md&#34;</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">ul</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">className</span><span class="o">=</span><span class="s2">&#34;menu menu-compact&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">style</span><span class="o">=</span><span class="p">{{</span> <span class="nx">width</span><span class="o">:</span> <span class="nx">ref</span><span class="p">.</span><span class="nx">current</span><span class="o">?</span><span class="p">.</span><span class="nx">clientWidth</span> <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">{</span><span class="nx">items</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">item</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="nx">li</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">key</span><span class="o">=</span><span class="p">{</span><span class="nx">index</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">tabIndex</span><span class="o">=</span><span class="p">{</span><span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                  <span class="nx">setValue</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                  <span class="nx">setOpen</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">&lt;</span><span class="nx">button</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">item</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+</span></span><span class="line"><span class="cl">              <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">);</span>
+</span></span><span class="line"><span class="cl">          <span class="p">})}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">AutoComplete</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>UI는 DaisyUI의 DropDown을 사용했습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgRnm0TboU1MH6iW0KNWEmLvgnD5rxCcGVq4NhVmVZQM26z4ONCpKJkkMRksMwyKjCmZ7wgpS0dKizx_wpQbjl48Zy1ELTBCiC4qsO7gFjc_5cAvX5rkEck06yFv781hHDae7h6mmgcMu67iyRjqcZQceOWwa7V5YBbfN4lHzsycuB1PB1YKESnGgFVCi8"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 검색창이 제대로 나오네요.</p>
+<p>countries 변수를 보시면 서울시 강남구 데이터만 있는데요.</p>
+<p>사실 전국 읍 면 동 단위 데이터는 2,318개나 되는 큰 데이터입니다.</p>
+<p>블로그라 위 코드에는 몇 개 안 적었는데요.</p>
+<p>제 개발 서버에는 전부 다 입력해 놓은 상태입니다.</p>
+<p>이제 AutoComplete 컴포넌트에서 가장 중요한 코드가 바로 아래와 같이 input 태그에서 onChange 부분인데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">type</span><span class="o">=</span><span class="s1">&#39;text&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;input input-bordered w-full&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">value</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">e</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">setValue</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">newItems</span> <span class="o">=</span> <span class="nx">countries</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">p</span> <span class="p">=&gt;</span> <span class="nx">p</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)).</span><span class="nx">sort</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">setItems</span><span class="p">(</span><span class="nx">newItems</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">placeholder</span><span class="o">=</span><span class="s1">&#39;주소 검색 ......&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">tabIndex</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>사용자의 키 입력에 따라 countries 배열에 filter를 걸어서 새로운 newItems를 만들고 그걸 setItems로 저장합니다.</p>
+<p>그래서 코드 마지막에 보이는 items.map 부분에서 그걸 화면에 뿌려주게 되는 거죠.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhT2OQhTOk3lxvDsG8pEvdw8FZ47My1fgM6Qxwi4BPn6PtBS43uH-VEy6VyKwSsB7kV0MfrbkARRXVVg9J44nnARwYXes04xz8nRA4TO0bMH3M8j3C2pATp9BxwQGS8ou8WEhG5ZOFSnWEWmtGwPUA-bf9yOSmXJxpIA7U4MGxaz-2ZZ85oFGWL0TRNPpc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 나옵니다.</p>
+<p>사실 제 countries 변수의 데이터가 한글이라서 그렇지 만약 영어라면 toLowerCase 함수를 꼭 사용해 주세요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">newItems</span> <span class="o">=</span> <span class="nx">countries</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">p</span> <span class="p">=&gt;</span> <span class="nx">p</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">includes</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()))</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">sort</span><span class="p">()</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그럼 이렇게 완성된 AutoComplete를 크롬의 성능탭으로 테스트해 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhLle18tzGBpy37fBZqaw-JM2r-CkdtMC1rF4XfGYK7vhC7LpCLQ5olQ_SG2QdfBvRPLhomEICJZSuDL8wADfXQCByTxzOLmYL-lx1Nm6BOayvdo9PBgU9XSV1el4tHL3sPZ5R85IoFTGGgzrxxpnFW-4d2BpVJLq9C8qvNfWHaYpM3CcP40JrpncZIbNw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 크롬 DEV에는 우리가 많이 쓰는 네트워크 탭 옆에 성능 탭이 있는데요.</p>
+<p>사용방법은 왼쪽 위에 있는 녹화 단추를 누릅니다.</p>
+<p>그러면 뭔가 프로파일링 중이라고 뜨는데요.</p>
+<p>이때 홈페이지에서 작업을 한 다음 다시 프로파일링이라고 뜨는 작은 화면에서 중지 버튼을 누르면 됩니다.</p>
+<p>그러면 방금 홈페이지에서 했던 작업에 대한 성능 분석 결과를 보여주는데요.</p>
+<p>테스트를 위해 AutoComplete 검색에서 &ldquo;서울&rdquo; 이라고 입력했을 때 어떤 성능이 나오는지 살펴보겠습니다.</p>
+<p>성능 탭에서 보시면 상호작용이라는 부분이 있는데요.</p>
+<p>홈페이지에서 유저가 키 입력 작업 단위별로 성능을 분석할 수 있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgHSnyxl9uACLpp9D432sW6MICi4mYHTzSketDv_vD9OXp9n5NVqpQqj7RQG_6kPZHa5D3oKLQgcLoJuPb2vALljVZtDlh09PqZKM29dotjRQk819To3kBWL_Kbk-b8ZMzDWtHnLRNzhiYI8GyHS2ZEUm7FsTfDRTZuA-obtEVgd4JJCQf7ozwHB513AsE"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjhx60DHQ8I59WY6iZqiO2XJCdR55suPrTUaNf1LybqJM2Wf-wJCDhN_d8kYd7z_Bzv2_n4xNYPQpzl8wcZ7mLxPza67GYAizfYWs5xjJjL09sz9yzhexWWa-uE0txdaa-nH-6QKEE99h558yhWX6W7qvhxOK-Um7BPG-Ex9bDusx59eQo4AtmxLfeiDGI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 &ldquo;서&rdquo; 한 글자만 입력했을 때의 상호작용 시간을 나타내 주는데요.</p>
+<p>83.78밀리초가 걸렸네요.</p>
+<p>그리고 &ldquo;서울&quot;이라고 다 입력했을 때의 상호작용 시간을 보겠습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj1S3VBLh5E-Buny-j2Saj_-eIupNyDvOH83wJZpBBtAcdAVji1Dv9cls5RlPABLTzu3Quwfe1SUQq6nZWAlYhef0sLCE_ulEO4zCtTo0GkvdiItdbjlCOV18GzFcI2gEOzEJx01Dd9k2Ez7N-QreZH_itM1EAcWovdpk59LSZpZbfnsWxykrRWquCYqSI"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhaj1CmuQVsPeTTxZdyutEi9KkotTtHnbR2q3hASuE9pc6KcbhQsfk4G7PPlAH6FrLvKPPYsAHVQufl_Xib4ZCTCWgjD-y5jyvS6nA-TFwt_onNTvMsb3tDQE5hbdEng0-sDoQtDj1PgtlCymzPnSUiBzhqV4NF63MTvxNYml2Ge-fboa70Tg8Qj2imXH4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 87.22밀리초가 걸렸습니다.</p>
+<p>실제 키 입력할 때부터 살짝 딜레이가 있습니다.</p>
+<p>전국 시,도,읍,면,동 단위의 데이터가 2,318개나 있고 그걸 전부 filter 연산을 하고 있기 때문이죠.</p>
+<hr>
+<h2 id="usetransition-훅을-적용해-보기">useTransition 훅을 적용해 보기</h2>
+<p>이제, useTransition 훅을 적용해 보겠습니다.</p>
+<p>일단 아래와 같이 useTransition 훅을 불러옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">useRouter</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;next/router&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useRef</span><span class="p">,</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useTransition</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">AutoComplete</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">isPending</span><span class="p">,</span> <span class="nx">startTransition</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useTransition</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">value</span><span class="p">,</span> <span class="nx">setValue</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">countries</span><span class="p">,</span> <span class="nx">setCountries</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="nx">string</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/도곡동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/신사동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/압구정동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/역삼동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/삼성동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/개포동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/대치동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/세곡동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/일원동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/논현동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/수서동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/청담동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;서울/강남구/자곡동&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="p">[</span><span class="nx">items</span><span class="p">,</span> <span class="nx">setItems</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="o">&lt;</span><span class="nx">string</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">([]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>useTransition 훅에서 지원하는 게 isPending 변수와 startTransition 콜백 함수인데요.</p>
+<p>isPending 변수의 사용방법은 말 그대로 useTransition 훅이 작동하고 있을 때를 나타냅니다.</p>
+<p>적당히 UI부분을 isPending 조건에 따라 바꿔주면 되겠죠.</p>
+<p>그러면 실제 startTransition 콜백 함수를 사용해 보겠습니다.</p>
+<p>input 태그의 onChange 함수를 아래와 같이 바꿔주면 됩니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="o">&lt;</span><span class="nx">input</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">type</span><span class="o">=</span><span class="s1">&#39;text&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;input input-bordered w-full&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">value</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">e</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">setValue</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">startTransition</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">newItems</span> <span class="o">=</span> <span class="nx">countries</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">p</span> <span class="p">=&gt;</span> <span class="nx">p</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)).</span><span class="nx">sort</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">setItems</span><span class="p">(</span><span class="nx">newItems</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">placeholder</span><span class="o">=</span><span class="s1">&#39;주소 검색 ......&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">tabIndex</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">/&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>startTransition 콜백함수에는 배열의 filter 같이 시간이 오래 걸리는 작업을 넣어두면 리액트가 작업 우선 순위에서 좀 더 느긋하게 처리합니다.</p>
+<p>이제 성능 결과를 볼까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi_21wcryBOd7M8fDx0nNfGviJwwZSnZ0PUPafTKvDrk0WvjswPWoK9PBrK6r5v_mi2gfsnWGrTLjT8gSeMmT9Rq-f4zr_PmMtRzAx4U3wlxeZhU4OazzSOdPC8LEAn2lRUI_iRIQJPLG_K2533FlnzQ0MnG_PE9iTKA30Zb1KiZp-Oe3_8y6IVmJ3PAmc"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh5jmJatx8ptfKSpJUbMBM08TWLXEZZcQaoovuVu_mdRKCDZR4Xkybq5u5WLhhklfk0qOEe1bEHoPFLENUfinE19UbUri927hP3XH4jJLGdak6ca3AjykJtHdGWBqQI_DdKMIyHWfY7PV9k0a12sbGRF3eBNd31B6B878p7FC_hWe9ACrtZaqagFFA_tMg"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>&ldquo;서&rdquo; 한 글자만 입력했을 때 보시면 10.76밀리초가 걸렸습니다.</p>
+<p>아까 위에서는 83.78밀리초보다 확실히 많이 줄었네요.</p>
+<p>&ldquo;서울&quot;이라는 글자를 다 입력했을 때는 어떨까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhvp7ONnfXXfmD54WdYyWXrDecUGNrl301QEb-f3nbpOF9x_BDQTsI2bYsAHH9J9wS8N05Z-OX5tyKyCuNOgGpoYd4yV20pBvwTJvLMhm6YcZ_Kh3UbiCefijaCt0quxxhQ46UBQaORn6E2G7yqz3O25W4YxZ9vJinwLDSCrVKLTxEM1xr-bIMT5A4o5_A"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEh3oWR4sR0CfgrcWXpYTgEYQtQgAirelAIUJJm460RFg6RS8ctXeL7n8SwqGvoKnGe0Mv7Jd_IZ9gb1VXqG8BrudJmqRif2FUOjfIKNbDHpUbj7RlB1EPkqWb6CnRhoLeM3G_iaF4Evjky_gWYe27LlZQNNQ76DeDDIIvrurieCgcsY6bL0tKvMFFV328I"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>역시나 위에서 보듯이 37.36밀리초가 걸렸네요.</p>
+<p>useTranssition 훅의 startTransition 콜백 함수를 적용하지 않을 때 걸렸던 87.22밀리초보다 현격히 반응속도가 줄어들었습니다.</p>
+<hr>
+<p>지금까지 리액트 버전 18에서 새로 나온 useTransition 훅에 대해 알아봤는데요.</p>
+<p>클라이언트 사이드 쪽 렌더링에서 무거운 연산 부분에 useTransition 훅을 적용하면 좀 더 빠른 페이지가 될 거 같네요.</p>
+<p>그럼, 많은 도움이 되셨으면 좋겠습니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/usetransition/" role="button">useTransition</a>
+        <a class="btn btn-light" href="/tags/autocomplete/" role="button">AutoComplete</a>
+        <a class="btn btn-light" href="/tags/react/" role="button">react</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-07-14-react-19-tutorial-1-usetransition-and-new-form-api/">React 19 강좌 1편 - 액션과 useTransition으로 비동기 작업 처리하기 기본 사용법과 폼 처리 변화</a></h2>
+                  <p>React 19의 두 주요 기능인 액션과 useTransition, 그리고 폼 처리의 변화를 포괄적으로 다루고 있음을 강조합니다.</p>
+                  <p>
+  <small>July 14, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-31-howto-configure-react-with-webpack-parcel-esbuild-from-scratch/">Create-react-app이나 Vite를 이용하지 않고 Webpack, Parcel, Esbuild를 이용해서 React 개발 환경 구축하기</a></h2>
+                  <p>맨 땅에 헤딩하기 - react 앱 환경 구축</p>
+                  <p>
+  <small>December 31, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>17&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2023-12-25-brief-history-of-web-rendering-before-and-after-react/">웹 렌더링, React 탄생 전부터 RSC(React Server Components)까지의 흐름</a></h2>
+                  <p>React 탄생 전부터 App Router with RSC까지의 웹 렌더링 역사 살펴보기</p>
+                  <p>
+  <small>December 25, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

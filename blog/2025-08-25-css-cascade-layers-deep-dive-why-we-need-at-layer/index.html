@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>CSS @layer 완벽 가이드 명확도 전쟁은 끝났다</title>
+<meta name="description" content="CSS 명확도(Specificity)와의 싸움에 지치셨나요? Tailwind CSS도 사용하는 @layer, 즉 Cascade Layers가 왜 등장했고 어떻게 우리의 스타일링을 구원해 주는지 그 배경부터 실전 예제까지 깊이 있게 파헤쳐 봅니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-25-css-cascade-layers-deep-dive-why-we-need-at-layer/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="CSS @layer 완벽 가이드 명확도 전쟁은 끝났다" />
+<meta property="og:description" content="CSS 명확도(Specificity)와의 싸움에 지치셨나요? Tailwind CSS도 사용하는 @layer, 즉 Cascade Layers가 왜 등장했고 어떻게 우리의 스타일링을 구원해 주는지 그 배경부터 실전 예제까지 깊이 있게 파헤쳐 봅니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-25-css-cascade-layers-deep-dive-why-we-need-at-layer/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-26T12:57:46Z" />
+<meta property="article:modified_time" content="2025-08-26T12:57:46Z" />
+<meta property="article:tag" content="CSS" />
+<meta property="article:tag" content="layer" />
+<meta property="article:tag" content="Cascade Layers" />
+<meta property="article:tag" content="CSS 명확도" />
+<meta property="article:tag" content="Specificity" />
+<meta property="article:tag" content="Tailwind CSS" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="CSS @layer 완벽 가이드 명확도 전쟁은 끝났다" />
+<meta name="twitter:description" content="CSS 명확도(Specificity)와의 싸움에 지치셨나요? Tailwind CSS도 사용하는 @layer, 즉 Cascade Layers가 왜 등장했고 어떻게 우리의 스타일링을 구원해 주는지 그 배경부터 실전 예제까지 깊이 있게 파헤쳐 봅니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"CSS @layer 완벽 가이드 명확도 전쟁은 끝났다\"",
+  "description": "\"CSS 명확도(Specificity)와의 싸움에 지치셨나요? Tailwind CSS도 사용하는 @layer, 즉 Cascade Layers가 왜 등장했고 어떻게 우리의 스타일링을 구원해 주는지 그 배경부터 실전 예제까지 깊이 있게 파헤쳐 봅니다.\"",
+  "datePublished": "\"2025-08-26T12:57:46Z\"",
+  "dateModified": "\"2025-08-26T12:57:46Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-25-css-cascade-layers-deep-dive-why-we-need-at-layer/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>CSS @layer 완벽 가이드 명확도 전쟁은 끝났다</h1>
+        <p>
+  <small>August 26, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>Tailwind CSS 같은 프레임워크를 사용하다 보면 <code>@layer</code>라는 녀석을 꼭 만나게 되는데요.<br /></p>
+<p>저도 처음에는 이 녀석 덕분에 스타일링 구조가 깔끔해져서 좋다고 생각했지만, 때로는 예상치 못한 문제에 부딪히기도 했습니다.<br /></p>
+<p>그러다 문득 이런 근본적인 질문이 떠오르는데요.<br /></p>
+<p>&lsquo;잠깐, 우리에겐 이미 명확도(Specificity)라는 게 있었는데 굳이 @layer가 또 필요했던 이유가 뭘까?&rsquo; 하는 생각이 들었습니다.<br /></p>
+<p>그래서 이 궁금증을 해결해봐야겠다고 생각했는데요.<br /></p>
+<p>이번 글에서는 <code>@layer</code>의 탄생 배경부터 작동 원리, 그리고 실전 사용법까지 제대로 파헤쳐 보겠습니다.<br /></p>
+<h2 id="layer-대체-넌-누구냐">@layer, 대체 넌 누구냐</h2>
+<p>MDN 문서를 보면 <code>@layer</code>를 이렇게 설명하고 있는데요.<br /></p>
+<blockquote>
+<p><code>@layer</code>는 CSS의 at-rule 중 하나로, Cascade Layers(캐스케이드 레이어)를 선언하고 여러 레이어 간의 우선순위를 정의하는 데 사용됩니다.<br /></p></blockquote>
+<p>그런데 이 설명만으로는 궁금증이 전부 해결되지는 않는데요.<br /></p>
+<p>CSS에는 이미 명확도라는 우선순위 규칙이 있는데, 왜 또 새로운 규칙이 필요했는지 알아봐야 합니다.<br /></p>
+<p>이 질문에 답하려면, 먼저 CSS의 근본적인 동작 방식인 &lsquo;캐스케이드&rsquo;부터 다시 짚어봐야겠죠.<br /></p>
+<h3 id="css-스타일-적용의-대원칙-캐스케이드">CSS 스타일 적용의 대원칙, 캐스케이드</h3>
+<p>CSS 스타일이 웹페이지에 적용될 때는 &lsquo;캐스케이드(Cascade)&lsquo;라는 알고리즘을 통해 어떤 스타일을 최종적으로 보여줄지 결정되는데요.<br /></p>
+<p>이것이 바로 스타일 우선순위를 계산하는 핵심 규칙입니다.<br /></p>
+<p>캐스케이드는 여러 곳에서 선언된 스타일 값들 중에서 단 하나의 &lsquo;승자&rsquo;를 가려내는 과정인데요.<br /></p>
+<p>그 기준은 다음과 같은 순서로 명확하게 정해져 있습니다.<br /></p>
+<ol>
+<li><strong>Origin and Importance (출처와 중요도)</strong><br /></li>
+<li><strong>Context (컨텍스트)</strong><br /></li>
+<li><strong>Element-Attached Styles (요소에 직접 첨부된 스타일)</strong><br /></li>
+<li><strong>Layers (레이어)</strong><br /></li>
+<li><strong>Specificity (명확도)</strong><br /></li>
+<li><strong>Order of Appearance (선언 순서)</strong><br /></li>
+</ol>
+<p>여기서 4번 &lsquo;Layers&rsquo;가 바로 오늘의 주인공인데요.<br /></p>
+<p>하지만 이 녀석은 잠시 제쳐두고, 나머지 전통적인 기준들부터 빠르게 훑어보겠습니다.<br /></p>
+<p>가장 먼저 따지는 건 스타일이 어디서 왔고, 얼마나 중요한가 하는 &lsquo;출처와 중요도&rsquo;인데요.<br /></p>
+<p>기본적으로 스타일시트는 3가지 출처로 나뉩니다.<br /></p>
+<ul>
+<li><strong>User-agent stylesheets (브라우저 스타일시트)</strong> 브라우저가 기본적으로 제공하는 스타일입니다.<br /></li>
+<li><strong>Author stylesheets (개발자 스타일시트)</strong> 우리 같은 개발자들이 작성하는 가장 일반적인 스타일시트죠.<br /></li>
+<li><strong>User stylesheets (사용자 스타일시트)</strong> 사용자가 브라우저 확장 프로그램 등을 통해 직접 설정하는 스타일시트예요.<br /></li>
+</ul>
+<p>여기에 <code>!important</code> 키워드가 붙으면 이 판이 완전히 뒤집히는데요.<br /></p>
+<p><code>!important</code>가 붙은 스타일은 일반 스타일보다 무조건 우선순위가 높아지고, 심지어 출처 간의 우선순위도 역전됩니다.<br /></p>
+<p>그다음으로는 Shadow DOM 같은 독립된 컨텍스트인지, <code>style</code> 속성으로 직접 붙은 인라인 스타일인지 등을 따지는데요.<br /></p>
+<p>그다음 단계가 바로 우리에게 가장 익숙한 &lsquo;명확도(Specificity)&lsquo;입니다.<br /></p>
+<p>ID &gt; 클래스 &gt; 태그 순으로 점수를 매겨서 더 높은 점수를 가진 스타일이 이기는 규칙인데요.<br /></p>
+<p>만약 명확도까지 똑같다면, 가장 마지막에 선언된 스타일이 이기는 &lsquo;선언 순서(Order of Appearance)&rsquo; 규칙이 적용됩니다.<br /></p>
+<h2 id="명확도만으로는-부족했던-이유">명확도만으로는 부족했던 이유</h2>
+<p>여기까지 보면 &lsquo;이 정도면 충분하지 않나?&rsquo; 싶을 수 있는데요.<br /></p>
+<p>사실 현업 개발자 입장에서는 명확도와 선언 순서만으로 스타일을 관리하는 데 엄청난 한계가 있었습니다.<br /></p>
+<p>바로 이 지점에서 <code>@layer</code>가 태어날 수밖에 없었던 이유가 드러나는데요.<br /></p>
+<p>지금부터 그 이야기를 해보겠습니다.<br /></p>
+<h3 id="거대해진-css와-설계-기법의-등장">거대해진 CSS와 설계 기법의 등장</h3>
+<p>웹이 점점 복잡해지고, 하나의 프로젝트에 여러 개발자가 참여하게 되면서 CSS 파일의 규모는 걷잡을 수 없이 커졌는데요.<br /></p>
+<p>개발자들이 작성하는 스타일은 모두 같은 &lsquo;Author&rsquo; 출처를 가지기 때문에, 결국 &lsquo;명확도&rsquo; 싸움으로 귀결될 수밖에 없었습니다.<br /></p>
+<p>프로젝트가 커질수록 명확도 충돌이 빈번해지고, 결국 <code>'!important'</code>를 남발하거나 선언 순서에 의존하는 임시방편만 늘어났는데요.<br /></p>
+<p>이러다 보니 유지보수는 점점 어려워지는 악순환이 시작된 겁니다.<br /></p>
+<p>이런 &lsquo;CSS 지옥&rsquo;에서 벗어나기 위해 개발자들은 다양한 CSS 설계 기법을 고안해 냈는데요.<br /></p>
+<p>그중 대표적인 것이 바로 &lsquo;ITCSS(Inverted Triangle CSS, 역삼각형 CSS)&lsquo;입니다.<br /></p>
+<p>ITCSS는 CSS를 여러 추상적인 계층으로 나누는 아이디어인데요.<br /></p>
+<p>가장 위에는 포괄적이고 명확도가 낮은 스타일을, 가장 아래에는 구체적이고 명확도가 높은 스타일을 배치하는 구조였습니다.<br /></p>
+<p>이렇게 명확도를 계층적으로 관리해서 예측 가능하고 확장성 있는 CSS를 만들자는 아주 스마트한 접근법이었죠.<br /></p>
+<h3 id="설계-기법의-한계와-새로운-제안의-탄생">설계 기법의 한계와 새로운 제안의 탄생</h3>
+<p>하지만 ITCSS 같은 설계 기법도 결국은 &lsquo;사람들 간의 약속&rsquo;일 뿐, 언어 자체의 기능이 아니라는 명확한 한계가 있었는데요.<br /></p>
+<p>팀원 중 한 명이라도 규칙을 어기거나, 명확도 규칙을 무시하는 서드파티 라이브러리가 끼어드는 순간 이 구조는 와르르 무너질 수밖에 없었습니다.<br /></p>
+<p>바로 이 문제를 해결하기 위해 2019년, 미리암 수잔(Miriam Suzanne)이라는 개발자가 CSS 명세에 아주 중요한 제안을 하는데요.<br /></p>
+<p>제안의 핵심은 바로 이것이었습니다.<br /></p>
+<blockquote>
+<p>개발자들이 ITCSS처럼 개념적으로 만들어 쓰던 &lsquo;레이어&rsquo;를 아예 CSS 공식 기능으로 지원해주면 어떨까?<br />
+개발자가 직접 스타일의 계층을 정의하고 제어할 수 있게 만들어서, 명확도 문제를 근본적으로 해결하자!<br /></p></blockquote>
+<p>이 제안이 받아들여져 마침내 &lsquo;Cascade Layers&rsquo;라는 이름으로 표준화된 것이 바로 <code>@layer</code>입니다.<br /></p>
+<h2 id="새로운-기준의-등장-cascade-layers">새로운 기준의 등장, Cascade Layers</h2>
+<p><code>@layer</code>는 캐스케이드 알고리즘에서 &lsquo;명확도&rsquo;보다 먼저 평가되는, 아주 강력한 새로운 기준인데요.<br /></p>
+<p>이것은 이제 우리가 명확도 점수를 일일이 계산하며 싸울 필요 없이, &lsquo;레이어의 순서&rsquo;만으로 스타일의 우선순위를 결정할 수 있게 되었다는 것을 의미합니다.<br /></p>
+<p>개발자들이 그토록 원했던 &lsquo;개념적 레이어&rsquo;가 드디어 CSS의 공식 스펙이 된 거죠.<br /></p>
+<h2 id="layer-실전-사용법-a-to-z">@layer 실전 사용법 A to Z</h2>
+<p>자, 그럼 이제 <code>@layer</code>를 실제로 어떻게 사용하는지 한번 살펴봐야 하는데요.<br /></p>
+<p>사용법은 생각보다 아주 간단합니다.<br /></p>
+<h3 id="1단계-레이어-순서-정의하기">1단계 레이어 순서 정의하기</h3>
+<p>가장 먼저 해야 할 일은 CSS 파일 최상단에서 <code>@layer</code> 규칙을 사용해 전체 레이어의 순서를 선언하는 건데요.<br /></p>
+<p>이때 선언된 순서가 곧 우선순위가 됩니다.<br /></p>
+<p>나중에 선언된 레이어일수록 더 높은 우선순위를 가지죠.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="c">/* 레이어 순서 정의: utilities가 가장 높은 우선순위를 가짐 */</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">reset</span><span class="o">,</span> <span class="nt">base</span><span class="o">,</span> <span class="nt">components</span><span class="o">,</span> <span class="nt">utilities</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 <code>reset</code>, <code>base</code>, <code>components</code>, <code>utilities</code> 순으로 선언하면, <code>utilities</code> 레이어의 스타일이 <code>components</code> 레이어의 스타일보다 항상 우선 적용됩니다.<br /></p>
+<h3 id="2단계-레이어에-스타일-할당하기">2단계 레이어에 스타일 할당하기</h3>
+<p>순서를 정의했다면, 이제 각 스타일에 레이어를 할당해주면 되는데요.<br /></p>
+<p>여기에는 두 가지 방법이 있습니다.<br /></p>
+<p>첫 번째는 <code>@layer</code> 블록으로 스타일을 감싸는 방법입니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">components</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nc">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">padding</span><span class="p">:</span> <span class="mi">8</span><span class="kt">px</span> <span class="mi">16</span><span class="kt">px</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">border-radius</span><span class="p">:</span> <span class="mi">4</span><span class="kt">px</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background-color</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">color</span><span class="p">:</span> <span class="kc">white</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">utilities</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nc">bg-red</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background-color</span><span class="p">:</span> <span class="kc">red</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>두 번째는 <code>@layer</code> 키워드를 import 문에 붙이는 방법인데요.<br /></p>
+<p>파일별로 레이어를 관리할 때 아주 유용합니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">@</span><span class="k">import</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;reset.css&#39;</span><span class="o">)</span> <span class="nt">layer</span><span class="o">(</span><span class="nt">reset</span><span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">import</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;components.css&#39;</span><span class="o">)</span> <span class="nt">layer</span><span class="o">(</span><span class="nt">components</span><span class="o">)</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h3 id="layer의-마법-명확도를-이기는-레이어">@layer의 마법 명확도를 이기는 레이어</h3>
+<p>이제 <code>@layer</code>의 진짜 힘을 보여주는 예제를 한번 봐야 하는데요.<br /></p>
+<p>아래와 같은 HTML과 CSS가 있다고 가정해 봅시다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;button bg-red&#34;</span><span class="p">&gt;</span>Click Me<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span></span></span></code></pre></div>
+  </figure>
+</div>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="c">/* utilities 레이어가 components보다 나중에 선언되어 우선순위가 높음 */</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">components</span><span class="o">,</span> <span class="nt">utilities</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">components</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c">/* 명확도가 더 높음 (클래스 2개) */</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">button</span><span class="p">.</span><span class="nc">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background-color</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">utilities</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c">/* 명확도가 더 낮음 (클래스 1개) */</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nc">bg-red</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background-color</span><span class="p">:</span> <span class="kc">red</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>기존의 명확도 규칙대로라면 <code>button.button</code> 셀렉터가 <code>.bg-red</code> 셀렉터보다 우선순위가 높아야 하는데요.<br /></p>
+<p>하지만 <code>@layer</code>를 사용하면 결과는 완전히 달라집니다.<br /></p>
+<p><code>utilities</code> 레이어가 <code>components</code> 레이어보다 나중에 선언되었기 때문에 명확도와 상관없이 최종적으로 적용되는 건데요.<br /></p>
+<p>이것이 바로 <code>@layer</code>가 &lsquo;명확도 전쟁&rsquo;을 끝냈다고 말하는 핵심 이유입니다.<br /></p>
+<h2 id="이것만은-꼭-주의하세요-layer의-가장-큰-함정">이것만은 꼭 주의하세요 @layer의 가장 큰 함정</h2>
+<p><code>@layer</code>는 정말 강력하지만, 딱 한 가지 반드시 기억해야 할 치명적인 함정이 있는데요.<br /></p>
+<p>바로 **&lsquo;레이어에 속하지 않은 스타일은 모든 레이어에 속한 스타일보다 우선순위가 높다&rsquo;**는 규칙입니다.<br /></p>
+<p>이것이 왜 중요하냐면, 기존에 운영하던 프로젝트에 <code>@layer</code>를 점진적으로 도입할 때 예상치 못한 문제를 일으킬 수 있거든요.<br /></p>
+<p>예를 들어, 기존 CSS 파일에 아래와 같은 스타일이 있었다고 해봅시다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="c">/* legacy.css - 레이어에 속하지 않은 기존 스타일 */</span>
+</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nc">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">background-color</span><span class="p">:</span> <span class="kc">gray</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>그리고 새로운 기능 개발을 위해 <code>@layer</code>를 도입해서 버튼 스타일을 재정의했는데요.<br /></p>
+<p>이때 다음과 같이 코드를 작성했습니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">components</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">components</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nc">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background-color</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span> <span class="c">/* 이 스타일이 적용되길 기대! */</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>우리의 기대와는 달리, 버튼은 파란색이 아니라 여전히 회색으로 보일 텐데요.<br /></p>
+<p>왜냐하면 <code>legacy.css</code>의 <code>.button</code> 스타일은 어떤 레이어에도 속해있지 않기 때문에, <code>components</code> 레이어에 속한 새로운 스타일보다 우선순위가 더 높아지는 겁니다.<br /></p>
+<p>이 문제를 해결하려면 기존 스타일도 특정 레이어에 할당해주어야 하는데요.<br /></p>
+<p>가장 낮은 우선순위의 레이어를 만들어 기존 스타일을 모두 넣어주는 것이 일반적인 해결책입니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="c">/* 모든 레이어의 가장 앞에 legacy 레이어를 추가 */</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">legacy</span><span class="o">,</span> <span class="nt">components</span><span class="o">,</span> <span class="nt">utilities</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">/* 기존 스타일을 legacy 레이어로 가져오기 */</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">import</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;legacy.css&#39;</span><span class="o">)</span> <span class="nt">layer</span><span class="o">(</span><span class="nt">legacy</span><span class="o">)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c">/* 이제 새로운 스타일이 정상적으로 우선순위를 가짐 */</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">components</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nc">button</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background-color</span><span class="p">:</span> <span class="kc">blue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="tailwind-css는-layer를-어떻게-활용할까">Tailwind CSS는 @layer를 어떻게 활용할까</h2>
+<p>이런 <code>@layer</code>의 개념을 가장 적극적으로 활용하고 있는 것이 바로 Tailwind CSS인데요.<br /></p>
+<p>Tailwind CSS v4부터는 공식적으로 Cascade Layers를 채택해서 스타일 시스템의 근간으로 삼고 있습니다.<br /></p>
+<p>Tailwind의 레이어 구조는 보통 이렇게 정의되는데요.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">theme</span><span class="o">,</span> <span class="nt">base</span><span class="o">,</span> <span class="nt">components</span><span class="o">,</span> <span class="nt">utilities</span><span class="p">;</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>각 레이어의 역할은 다음과 같습니다.<br /></p>
+<ul>
+<li><strong>base</strong>: 브라우저 스타일을 초기화하는 리셋 규칙이나 <code>h1</code>, <code>p</code> 같은 기본 HTML 요소에 대한 스타일을 정의합니다.<br /></li>
+<li><strong>components</strong>: 버튼, 카드처럼 재사용 가능한 컴포넌트 클래스를 위한 레이어입니다.<br /></li>
+<li><strong>utilities</strong>: <code>.text-red-500</code>, <code>.p-4</code>처럼 단일 목적을 가진 유틸리티 클래스를 위한 곳으로, 다른 모든 스타일을 덮어쓸 수 있도록 가장 높은 우선순위를 가집니다.<br /></li>
+</ul>
+<p>만약 여러분이 Tailwind CSS 프로젝트에 직접 작성한 CSS를 추가하고 싶다면, 이 레이어 구조를 이해하는 것이 아주 중요한데요.<br /></p>
+<p>예를 들어, 기본 버튼 스타일을 직접 만들고 싶다면 <code>components</code> 레이어에 추가해야 유틸리티 클래스로 쉽게 커스터마이징할 수 있습니다.<br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">@</span><span class="k">tailwind</span> <span class="nt">base</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">tailwind</span> <span class="nt">components</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">tailwind</span> <span class="nt">utilities</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">@</span><span class="k">layer</span> <span class="nt">components</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nc">btn-primary</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="err">@apply</span> <span class="err">py-2</span> <span class="err">px-4</span> <span class="err">bg-blue-500</span> <span class="err">text-white</span> <span class="err">font-semibold</span> <span class="err">rounded-lg</span> <span class="err">shadow-md</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이렇게 하면 <code>.btn-primary</code> 클래스를 사용하면서도, 필요에 따라 <code>&lt;button class=&quot;btn-primary bg-red-500&quot;&gt;</code>처럼 유틸리티 클래스로 색상을 덮어쓰는 것이 가능해집니다.<br /></p>
+<h2 id="정리하며">정리하며</h2>
+<p>Cascade Layers, 즉 <code>@layer</code>가 어떻게 탄생했고 왜 필요했는지, 그 배경부터 차근차근 정리해보니 저 역시 개념이 훨씬 명확해지는 기분인데요.<br /></p>
+<p>단순히 &lsquo;새로운 CSS 기능&rsquo;이라고만 알고 있었는데, 그 뒤에 숨겨진 CSS의 역사와 개발자들의 고민을 엿볼 수 있는 좋은 기회였습니다.<br /></p>
+<p>CSS의 복잡성 때문에 명확도와 끝없는 싸움을 벌여왔던 우리에게 <code>@layer</code>는 분명 한 줄기 빛과 같은 존재인데요.<br /></p>
+<p>이 글이 <code>@layer</code>에 대해 막연한 궁금증을 가졌던 분들에게 명쾌한 해답이 되었으면 좋겠습니다.<br /></p>
+<p>읽어주셔서 감사합니다.<br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/css/" role="button">CSS</a>
+        <a class="btn btn-light" href="/tags/layer/" role="button">layer</a>
+        <a class="btn btn-light" href="/tags/cascade-layers/" role="button">Cascade Layers</a>
+        <a class="btn btn-light" href="/tags/css-%EB%AA%85%ED%99%95%EB%8F%84/" role="button">CSS 명확도</a>
+        <a class="btn btn-light" href="/tags/specificity/" role="button">Specificity</a>
+        <a class="btn btn-light" href="/tags/tailwind-css/" role="button">Tailwind CSS</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-21-the-css-you-dont-know-about-modern-features/">NDC Oslo 2025 - 아직도 이 CSS를 모르시나요 (모던 CSS 총정리)</a></h2>
+                  <p>최신 CSS는 우리가 알던 것보다 훨씬 더 강력해졌습니다. 변수, 네이티브 네스팅, 컨테이너 쿼리, 그리고 혁명적인 has() 선택자까지, 자바스크립트 없이도 놀라운 인터랙션을 구현하는 모던 CSS의 세계를 깊이 파헤쳐 봅니다.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-07-09-minecraft-in-pure-css-explained/">자바스크립트 없이 CSS로 마인크래프트를? 이게 진짜 가능합니다!</a></h2>
+                  <p>자바스크립트 없이 오직 CSS만으로 마인크래프트를 구현한 놀라운 프로젝트, 그 작동 원리를 쉽고 재미있게 파헤쳐봅니다.</p>
+                  <p>
+  <small>July 9, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>3&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

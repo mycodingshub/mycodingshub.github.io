@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법</title>
+<meta name="description" content="미들웨어 설정 방법, redirect, rewrite, cookies, headers 사용 방법" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-middleware-and-rewrite-cookies-headers-in-middleware/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법" />
+<meta property="og:description" content="미들웨어 설정 방법, redirect, rewrite, cookies, headers 사용 방법" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-middleware-and-rewrite-cookies-headers-in-middleware/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2024-05-12T12:30:57Z" />
+<meta property="article:modified_time" content="2024-05-12T12:30:57Z" />
+<meta property="article:tag" content="next.js" />
+<meta property="article:tag" content="middleware" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법" />
+<meta name="twitter:description" content="미들웨어 설정 방법, redirect, rewrite, cookies, headers 사용 방법" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법\"",
+  "description": "\"미들웨어 설정 방법, redirect, rewrite, cookies, headers 사용 방법\"",
+  "datePublished": "\"2024-05-12T12:30:57Z\"",
+  "dateModified": "\"2024-05-12T12:30:57Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-middleware-and-rewrite-cookies-headers-in-middleware/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법</h1>
+        <p>
+  <small>May 12, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>Next.js 14 강좌 아홉 번째입니다.</p>
+<p>전체 강좌 리스트입니다.</p>
+<ol>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-13-nextjs-14-tutorial-1-all-about-routing">Next.js 14 강좌 1편. 라우팅의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-01-14-nextjs-14-tutorial-2-all-about-layout-and-link-component">Next.js 14 강좌 2편. 레이아웃의 모든 것 and Link 컴포넌트</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-20-nextjs-14-tutorial-template-and-loading-ui-special-files">Next.js 14 강좌 3편. Template과 Loading 스페셜 파일</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-27-nextjs-14-tutorial-all-about-error">Next.js 14 강좌 4편. 에러(Error) 처리의 모든 것</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-04-28">Next.js 14 강좌 5편. 병렬 라우팅(Parallel Routes), 일치하지 않는 라우팅(Unmatched Routes), 조건부 라우팅(Conditional Routes) 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-04-nextjs-14-tutorial-6-intercepting-routes-and-parallel-intercepting-routes">Next.js 14 강좌 6편. 인터셉팅 라우팅(Intercepting Routes)과 병렬 인터셉팅 라우팅(Parallel Intercepting Routes) 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-get-post-patch-delete-method-and-dynamic-route-handler">Next.js 14 강좌 7편. 라우트 핸들러의 기본(GET, POST, PATCH, DELETE)과 동적 라우트 핸들러 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-route-handler-and-url-query-parameter-redirect-headers-cookies-caching">Next.js 14 강좌 8편, 라우트 핸들러에서 URL 쿼리 파라미터와 redirect, Headers, Cookies 그리고 캐싱 방식 알아보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-12-nextjs-14-tutorial-middleware-and-rewrite-cookies-headers-in-middleware">Next.js 14 강좌 9편. 미들웨어(middleware) 설정 방법과 미들웨어에서의 rewrite, cookies, headers 처리 방법</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-14-nextjs-14-tutorial-all-about-rendering-csr-ssr-rsc">Next.js 14 강좌 10편. CSR부터 SSR, RSC까지 React의 렌더링의 역사 살펴보기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-rendering-lifecycle-static-dynamic-rendering-and-streaming">Next.js 14 강좌 11편. 렌더링 라이프사이클(Rendering Lifecycle)과 서버 렌더링 전략 세가지(정적 렌더링, 다이내믹 렌더링, 스트리밍)</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-server-component-patterns-server-only-third-party-package-context-provider">Next.js 14 강좌 12편. 서버 컴포넌트 패턴 - 서버 전용 코드(server-only), 써드 파티 패키지, 컨텍스트 프로바이더(Context Provider) 활용하기</a></p>
+</li>
+<li>
+<p><a href="https://mycodingshub.github.io/blog/2024-05-15-nextjs-14-tutorial-client-component-patterns-client-only-client-component-placement-interleaving-server-and-client-components">Next.js 14 강좌 13편. 클라이언트 컴포넌트 패턴 - 클라이언트 전용 코드(client-only), 컴포넌트 배치, 서버-클라이언트 컴포넌트 섞어 활용하기</a></p>
+</li>
+</ol>
+<hr>
+<p>** 목 차 **</p>
+<ul>
+<li><a href="#matcher-%ec%84%a4%ec%a0%95-%eb%b0%a9%eb%b2%95">matcher 설정 방법</a></li>
+<li><a href="#%ec%a1%b0%ea%b1%b4-%ec%84%a4%ec%a0%95-%eb%b0%a9%eb%b2%95">조건 설정 방법</a></li>
+<li><a href="#rewrite">rewrite</a></li>
+<li><a href="#cookies-in-%eb%af%b8%eb%93%a4%ec%9b%a8%ec%96%b4">cookies in 미들웨어</a></li>
+<li><a href="#headers-in-%eb%af%b8%eb%93%a4%ec%9b%a8%ec%96%b4">headers in 미들웨어</a></li>
+</ul>
+<hr>
+<p>Next.js의 미들웨어는 매우 강력한 기능인데요.</p>
+<p>애플리케이션 내에서 Request와 Response를 가로채고 제어할 수 있는 아주 확실하고 견고한 방식을 제공합니다.</p>
+<p>미들웨어는 전역 수준에서 이루어지며, redirect, URL rewrites, 인증, 헤더 및 쿠키 관리 등의 기능을 크게 향상할 수 있습니다.</p>
+<p>그럼, 본격적인 middleware 강좌를 이어 나가겠습니다.</p>
+<hr>
+<h2 id="matcher-설정-방법">matcher 설정 방법</h2>
+<p>Next.js 파일에서 미들웨어는 src 폴더 밑에 middleware.ts 파일을 작성하면 됩니다.</p>
+<p>작성할 함수는 middleware 함수이고, 또 특별하게 matcher config 객체를 export 해야 합니다.</p>
+<p>matcher는 영어 뜻 그대로 매칭되는 건데요.</p>
+<p>아래 예를 봅시다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextResponse</span><span class="p">,</span> <span class="kr">type</span> <span class="nx">NextRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="s2">&#34;/&#34;</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">matcher</span><span class="o">:</span> <span class="s2">&#34;/profile&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>코드를 보면 config 객체에 matcher 부분이 &ldquo;/profile&rdquo; URL입니다.</p>
+<p>즉, Next.js 앱에서 URL이 &ldquo;/profile&quot;이면 즉, 매칭되면 미들웨어 함수가 작동된다는 겁니다.</p>
+<p>미들웨어 함수를 잘 보시면 Response를 이용해서 redirect 해주고 있는데요.</p>
+<p>이때 NextResponse라는 객체를 사용합니다.</p>
+<p>Next.js에서 HTTP의 기본 Response를 약간 변형시킨 겁니다.</p>
+<p>실제로 코드를 테스트해 볼까요?</p>
+<p>브라우저에서 &ldquo;/profile&rdquo; 주소로 가보면 다시 &ldquo;/&rdquo; 페이지로 가는데요.</p>
+<p>네트워크 탭을 보시면 분명히 profile 주소로 갔던 게 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjhPRazGqvIRiv25UT-iqjCGDip0PZxl6SX-2Xj1umMptnBjIb_fnKVkyHJqo_1mRD3ip-4hXGrWgcFDiMn_eOa0Js0O3WVYtEapN28GLxVwShavFqF8yRMjzYvWGfHAfJsBpa-UxYYDtLl7adB0KRvN2IH9t97Bdn6eULanL34FMZW1Eqr78C3aq9fHbw"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림과 같이 미들웨어가 정상적으로 작동하네요.</p>
+<hr>
+<h2 id="조건-설정-방법">조건 설정 방법</h2>
+<p>미들웨어를 config 객체의 matcher 방식으로 제어했다면 아예 if 문을 이용해서 제어해도 됩니다.</p>
+<p>아까 미들웨어 파일을 다시 고쳐 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextResponse</span><span class="p">,</span> <span class="kr">type</span> <span class="nx">NextRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">nextUrl</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">===</span> <span class="s2">&#34;/profile&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">redirect</span><span class="p">(</span><span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="s2">&#34;/hello&#34;</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드와 같이 이제는 아예 &ldquo;/hello&rdquo; 라우팅으로 보냈습니다.</p>
+<p>실행 결과를 보시면 아래와 같이 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiu3KMY2v-nwVrEzqhjX9Q6VHkp0YHhox2HFFS4eapNqeg79viGkITosxj3-5ES_HvP9kmBjvVcQ0yHkdLh-IoDMbp4SHRUzMStumVRXfEF9bpmS7v0mMEav3BpAR_rzefnHgFYBElicwYrm5gNQiU1s2vz4Flrm0T3G3wjAhm4ChMNg9ZlhiT47gfrbvk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림에서 네트워크 탭을 잘 보시면 profile 라우팅이 존재하는 걸 볼 수 있을 겁니다.</p>
+<hr>
+<h2 id="rewrite">rewrite</h2>
+<p>NextResponse에는 redirect 함수만 있는 게 아니라 rewrite 함수도 있는데요.</p>
+<p>이 두 함수의 차이점은 아래와 같습니다.</p>
+<p>NextResponse.redirect와 NextResponse.rewrite는 모두 클라이언트 요청에 대한 응답을 수정하는 데 사용되지만, 그 동작 방식에 차이가 있습니다.</p>
+<ol>
+<li>NextResponse.redirect(url, options)</li>
+</ol>
+<ul>
+<li>클라이언트를 주어진 URL로 완전히 리디렉션 합니다.</li>
+<li>브라우저는 새 URL을 가져오기 위해 전체 페이지를 새로 고칩니다.</li>
+<li>301(영구 이동) 또는 307(임시 리디렉션) HTTP 상태 코드를 반환할 수 있습니다.</li>
+</ul>
+<ol start="2">
+<li>NextResponse.rewrite(destination, options)</li>
+</ol>
+<ul>
+<li>요청 URL을 다른 URL로 재작성(rewrite)합니다.</li>
+<li>클라이언트에게 리디렉션되지 않고 서버에서 URL이 재작성됩니다.</li>
+<li>브라우저는 원래 요청한 URL을 표시하지만, 서버는 재작성된 URL로부터 응답을 가져옵니다.</li>
+<li>프록시 역할을 하여 다른 API 엔드포인트로 요청을 전달하는 데 유용합니다.</li>
+</ul>
+<p>요약하면, redirect는 클라이언트를 완전히 다른 URL로 리디렉션하는 반면, rewrite는 서버 측에서 URL을 변경하고 원래 요청 URL을 유지하면서 변경된 URL에서 응답을 가져옵니다. 따라서 rewrite는 클라이언트 측 리디렉션 없이 백엔드 라우팅을 처리하는 데 유용합니다.</p>
+<p>테스트를 위해 코드를 rewrite로 바꿔 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextResponse</span><span class="p">,</span> <span class="kr">type</span> <span class="nx">NextRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">nextUrl</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">===</span> <span class="s2">&#34;/profile&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">rewrite</span><span class="p">(</span><span class="k">new</span> <span class="nx">URL</span><span class="p">(</span><span class="s2">&#34;/hello&#34;</span><span class="p">,</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>실행 결과는 아래와 같습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEie9NAudJtaauyk6xtq-cTvZr_QqmNoT6Hntbf0Sk4qprZl9Y5Rwd2k1DZx_Cyb2pAUhkSI0IcdxfcJdhkOA-yvWXLDfLlYj1D635PzD8TKjzbSFH8BkXc5oGpDwTZ7o1aIriCbv8ssQfGRMWbvJ4uYqF_JxmDI4FcbiVpgM1BAegJT9OcVqBGP8WDn_ks"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 잘 보시면 브라우저의 URL 부분은 profile이라고 나오고, 네트워크 탭도 profile만 나옵니다.</p>
+<p>그런데 실제 내용은 hello 라우팅이죠.</p>
+<p>아까 설명했듯이 rewrite는 서버에서 작업이 이루어지고 클라이언트에서는 해당 작업이 이루어지지 않는 데서 기인합니다.</p>
+<hr>
+<h2 id="cookies-in-미들웨어">cookies in 미들웨어</h2>
+<p>미들웨어에서 cookies를 다루는 것도 간단한데요.</p>
+<p>theme-test라는 테마 관련 쿠키를 themePreference라는 변수에 저장해서 관리해 보도록 하겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextResponse</span><span class="p">,</span> <span class="kr">type</span> <span class="nx">NextRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">themePreference</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;theme-test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">themePreference</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">response</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;theme-test&#34;</span><span class="p">,</span> <span class="s2">&#34;dark&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 코드를 보시면 &ldquo;theme-test&quot;라는 쿠키를 가져오는데 만약 없다면 &ldquo;dark&quot;로 세팅합니다.</p>
+<p>실제 테스트를 해보면 먼저 현재 상태에서 새로고침 없이 네트워크 탭이 아닌 애플리케이션 탭으로 가보면 쿠키란이 비어있습니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiGcjL3K0f6kQN48-sflAP1ehfYSH0h1hsYfUewxY2PHd0gLrEBPp0FiTU7RwWba_nEZIQeYvnvdFqyRHQe8cuWCGM6-V5xRzt0aeV4vyDyJ9wRNBN3I7BOmFpY0xYwyzmx-6Zy65C6RbzSqZWIzarPaz_pUC9rlnIy1lkSogz6kKsdW2oGhRR9mJUEfFk"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 비어 있는 상태에서 아까 코드를 작성했다면 새로고침시 아래와 같이 쿠키가 보일 겁니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi5dJFq_6hpWL7HLIet4cyD3kt_45hg3Ov2Ih7F6OT-1BBPmbJocnIimxV5Qp6gXucrsv-XAYNSZUOCpXnVATUpFIA5AY1rKsWcSNIQgQdydYNgQdE5XUXBujGjitMPt0C1jhdxkb_BR77NgQBUViazcK41RDFa2_4jXvXhyb5LZJjRE011KXR2flYBRKA"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 미들웨어에서 쿠키 관련 제어를 성공적으로 작동시켰네요.</p>
+<p>이제 브라우저에서 애플리케이션 탭에서 &rsquo;theme-test&rsquo;라는 쿠키 값을 직접 수정할 수 있는데요.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEj5H7n2Jtz-dbOsd4nuaj917IYJzgA5ctMeVlWObadPEpK1MLKs3SMr27VqlMsA2hNBzqcIU-E5WDg-KndTgqUIOt4cjZJrH9cN5d3eAN0DFAkjUfdXAdhTqVy1x8j0LppJJxyQs1bXYeiGhiScphUgqy5Obp8BbYZdiLwXOtxRyayYJ0SmUR55g5Ogt0w"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 dark 값을 light 값으로 변경했습니다.</p>
+<p>이제 다시 브라우저를 새로고침하면 &ldquo;theme-test&rdquo; 쿠키값이 dark로 변할까요? light 인 상태로 그대로 있을 까요?</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjkGQH0vOinUtP02JZSUJb9nb-Rx9_fBKx_fjXLUiUzPQF6xXHAF6pyAoOJEA7wDD9o5mngqX9uzSpk6CDPuQKdm7Fv-MvyPKMfTJATLNCRFiyv1vBuMwgfU5GzrjDR_xoLuNlHCEkfpg7Z7Lm7KWQ7ka6mL1CXbGbu1nzV2kXNWvV7_6buppPZl8Zdce4"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위와 같이 쿠키값이 light로 변했습니다.</p>
+<p>미들웨어에서 쿠키 관련 제어하는 명령이 정상적으로 작동했다는 거죠.</p>
+<p>왜냐하면 현재 &rsquo;theme-test&rsquo; 쿠키값을 themePreference 값에 저장하는 게 제대로 작동했다는 뜻이기 때문이죠.</p>
+<hr>
+<h2 id="headers-in-미들웨어">headers in 미들웨어</h2>
+<p>headers 부분도 미들웨어에서 잘 작동하는데요.</p>
+<p>코드를 변경시켜 보겠습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">NextResponse</span><span class="p">,</span> <span class="kr">type</span> <span class="nx">NextRequest</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;next/server&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">middleware</span><span class="p">(</span><span class="nx">request</span>: <span class="kt">NextRequest</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">NextResponse</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">themePreference</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">get</span><span class="p">(</span><span class="s2">&#34;theme-test&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">themePreference</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">response</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;theme-test&#34;</span><span class="p">,</span> <span class="s2">&#34;dark&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="kr">set</span><span class="p">(</span><span class="s2">&#34;my-header&#34;</span><span class="p">,</span> <span class="s2">&#34;my-value&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>&ldquo;my-header&quot;이라는 Key 값을 지정했고 Value 값으로는 &lsquo;my-value&rsquo;라고 지정했습니다.</p>
+<p>이제 어느 주소에서도 새로고침해보면 아래와 같이 Headers 부분에 잘 나옵니다.</p>
+<p>
+  <figure>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEg1FqYpKBaYAGm5nuRYBT9aRYFQLS7nq_CXYBPmLrcqwTSW57qpITS2z2sCMpRcIuBFKfLzN4OrJuJ5mgQNeLFYfz9lxavSxFUagD5dv-iOQuYoMANj0vlMGsZNakttvKT6BLbS__455QT0j1twcCZDIBpAE5asz5Ii-6r6Nsxr60IcGFDl7NOlyNnx-6U"
+         alt=""
+         
+         class="img-fluid"
+         loading="lazy"
+         decoding="async" />
+    
+  </figure></p>
+<p>위 그림을 잘 보시면 제가 지정했던 Key 값은 &lsquo;my-header&rsquo;인데요.</p>
+<p>브라우저에서는 &lsquo;My-Header&rsquo;라고 첫 글자가 대문자로 나옵니다.</p>
+<p>그래서 지난 시간에 배웠던게 &ldquo;Content-Type&rdquo; 같이 첫 글자가 대문자로 나오는 거 같네요.</p>
+<p>이렇게 Response에 특정 headers를 전송해 주면 클라이언트에서 자바스크립트를 이용해서 디버그할 때 아주 유용할 겁니다.</p>
+<hr>
+<p>지금까지 Next.js의 라우팅 부분에 대해 총 9편에 걸쳐서 알아보았는데요.</p>
+<p>다음 편에서는 렌더링 관련 공부를 해보겠습니다.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/next.js/" role="button">next.js</a>
+        <a class="btn btn-light" href="/tags/middleware/" role="button">middleware</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-01-19-nextjs-supabase-tutorial-9-using-middleware-implementing-authorization/">Next.js 15, Supabase 강좌 9편. 미들웨어로 Authorization 페이지 구현하기</a></h2>
+                  <p>Next.js의 middleware를 이용해서 Authorization 구현해 봅시다.</p>
+                  <p>
+  <small>January 19, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-12-29-nextjs-supabase-tutorial-1-making-template-and-omit-middleware/">Next.js 15, Supabase 강좌 1편. 유저 인증(Auth)을 위한 Next.js 15와 Supabase 템플릿 만들기</a></h2>
+                  <p>nextjs</p>
+                  <p>
+  <small>December 29, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2024-08-25-3-ways-in-data-fetching-with-react/">옛날 방식과 React Query, 그리고 서버 컴포넌트까지 React Data Fetching 완전 정복하기</a></h2>
+                  <p>이 글에서는 클라이언트 컴포넌트와 서버 컴포넌트에서 데이터를 가져오는 방법, 캐싱 및 Suspense 활용법, 그리고 React 개발자가 꼭 알아야 할 최신 데이터 페칭 베스트 프랙티스를 상세히 다룹니다.</p>
+                  <p>
+  <small>August 25, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>9&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

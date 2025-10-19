@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>React Cache 그냥 쓰셨나요? (숨겨진 일관성의 비밀)</title>
+<meta name="description" content="React의 cache 함수는 단순한 성능 최적화 도구가 아닙니다. React 서버 컴포넌트(RSC) 환경에서 데이터 일관성을 보장하는 핵심 API로서 cache의 진짜 역할을 깊이 있게 파헤칩니다." />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2025-08-21-react-cache-the-secret-of-consistency/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="React Cache 그냥 쓰셨나요? (숨겨진 일관성의 비밀)" />
+<meta property="og:description" content="React의 cache 함수는 단순한 성능 최적화 도구가 아닙니다. React 서버 컴포넌트(RSC) 환경에서 데이터 일관성을 보장하는 핵심 API로서 cache의 진짜 역할을 깊이 있게 파헤칩니다." />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2025-08-21-react-cache-the-secret-of-consistency/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2025-08-23T06:22:43Z" />
+<meta property="article:modified_time" content="2025-08-23T06:22:43Z" />
+<meta property="article:tag" content="React" />
+<meta property="article:tag" content="React Cache" />
+<meta property="article:tag" content="React Server Components" />
+<meta property="article:tag" content="RSC" />
+<meta property="article:tag" content="데이터 일관성" />
+<meta property="article:tag" content="데이터 페칭" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Cache 그냥 쓰셨나요? (숨겨진 일관성의 비밀)" />
+<meta name="twitter:description" content="React의 cache 함수는 단순한 성능 최적화 도구가 아닙니다. React 서버 컴포넌트(RSC) 환경에서 데이터 일관성을 보장하는 핵심 API로서 cache의 진짜 역할을 깊이 있게 파헤칩니다." />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"React Cache 그냥 쓰셨나요? (숨겨진 일관성의 비밀)\"",
+  "description": "\"React의 cache 함수는 단순한 성능 최적화 도구가 아닙니다. React 서버 컴포넌트(RSC) 환경에서 데이터 일관성을 보장하는 핵심 API로서 cache의 진짜 역할을 깊이 있게 파헤칩니다.\"",
+  "datePublished": "\"2025-08-23T06:22:43Z\"",
+  "dateModified": "\"2025-08-23T06:22:43Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2025-08-21-react-cache-the-secret-of-consistency/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>React Cache 그냥 쓰셨나요? (숨겨진 일관성의 비밀)</h1>
+        <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p><a href="https://twofoldframework.com/blog/react-cache-its-about-consistency">원본 링크</a></p>
+<p>여기 아주 좋은 해외 아티클이 있는데요, 이 글의 핵심만 전체적으로 살펴볼까 힙니다.<br /><br />React 서버 컴포넌트(RSC) 환경에서 데이터 페칭을 다뤄보신 분이라면 아마 <code>React.cache</code> 함수를 몇 번쯤은 사용해보셨을 거예요.<br /><br />대부분 이 함수를 네트워크 요청을 메모이제이션해서 최적화하는 기술 정도로 알고 계실 텐데요.<br /><br />하지만 오늘 이 글을 통해, <code>cache</code> 함수를 단순히 최적화 기법을 넘어 전체 RSC 렌더링 과정에서 &lsquo;일관성&rsquo;을 보장하는 아주 중요한 API로 바라봐야 한다는 점을 이야기해볼까 합니다.<br /><br /></p>
+<h2 id="가장-흔한-사용법-데이터-페칭-중복-제거">가장 흔한 사용법, 데이터 페칭 중복 제거</h2>
+<p><code>React.cache</code>의 가장 대표적인 사용 사례는 여러 컴포넌트가 동일한 외부 데이터에 접근할 때 요청을 중복으로 보내지 않도록 막아주는 역할이죠.<br /><br />예를 들어, 두 개의 다른 컴포넌트가 모두 <code>react.dev</code> 홈페이지의 HTML 소스를 필요로 하는 상황을 한번 볼게요.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cache</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ReactsPageTitle</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ReactsPageDescription</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">ReactsPageTitle</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">reactsHtml</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getPage</span><span class="p">(</span><span class="s2">&#34;https://react.dev&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">title</span> <span class="o">=</span> <span class="nx">reactsHtml</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/&lt;title&gt;(.*?)&lt;\/title&gt;/</span><span class="p">)[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Page</span> <span class="nx">title</span><span class="o">:</span> <span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">ReactsPageDescription</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">reactsHtml</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">getPage</span><span class="p">(</span><span class="s2">&#34;https://react.dev&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">description</span> <span class="o">=</span> <span class="nx">reactsHtml</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="sr">/&lt;meta name=&#34;description&#34; content=&#34;(.*?)&#34;/</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)[</span><span class="mi">1</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Page</span> <span class="nx">description</span><span class="o">:</span> <span class="p">{</span><span class="nx">description</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">getPage</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">(</span><span class="kr">async</span> <span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">html</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">text</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드에서 <code>cache</code> 함수가 정말 빛을 발하는데요.<br /><br /><code>ReactsPageTitle</code>과 <code>ReactsPageDescription</code> 두 컴포넌트 모두 <code>getPage</code> 함수를 호출하지만, <code>getPage</code>가 <code>cache</code>로 감싸져 있기 때문에 실제 <code>fetch</code> 요청은 단 한 번만 발생합니다.<br /><br />그 결과를 두 컴포넌트가 공유하게 되는 거죠.<br /><br />덕분에 각 컴포넌트는 데이터 페칭 로직을 부모로 끌어올리거나 props로 내려받을 걱정 없이 독립적으로 유지할 수 있습니다.<br /><br /></p>
+<h2 id="단순한-최적화를-넘어서">단순한 최적화를 넘어서</h2>
+<p>그런데 여기서 아주 흥미로운 점이 하나 있는데요.<br /><br />만약 위 코드에서 <code>cache</code> 함수를 제거하더라도, 두 컴포넌트의 동작은 사실상 똑같을 거라는 점입니다.<br /><br />물론 최적화 측면에서는 비효율적이겠지만, 최종적으로 렌더링되는 결과물 자체는 <code>cache</code>를 쓰나 안 쓰나 동일하죠.<br /><br />이것만 보면 <code>cache</code>는 그저 느린 외부 데이터 요청을 최적화하기 위한 메모이제이션 도구라고 생각하기 쉬운데요.<br /><br />하지만 발표자는 여기에 훨씬 더 깊은 의미가 숨어있다고 주장합니다.<br /><br /></p>
+<h2 id="외부-페칭과의-일관성-문제">외부 페칭과의 &lsquo;일관성&rsquo; 문제</h2>
+<p><code>cache</code>가 없는 데이터 페칭 함수를 사용해서 앱을 만들고, 거기서 발생하는 미묘한 버그를 <code>cache</code>만으로 해결하는 과정을 따라가 보죠.<br /><br />먼저, 컴포넌트 트리를 조금 더 복잡하게 만들어 볼 건데요.<br /><br />렌더링에 시간이 걸리는 <code>SlowComponent</code>를 추가하고 <code>Suspense</code>로 감싸보겠습니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">Page</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">ReactsPageTitle</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">Suspense</span> <span class="nx">fallback</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Loading</span><span class="p">...</span><span class="o">&lt;</span><span class="err">/div&gt;}&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="nx">SlowComponent</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="o">&lt;</span><span class="nx">ReactsPageDescription</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">&lt;</span><span class="err">/SlowComponent&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="err">/Suspense&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>혹시 여기서 발생할 수 있는 잠재적인 버그가 보이시나요?<br /><br />바로 &lsquo;데이터의 불일치&rsquo; 문제입니다.<br /><br /><code>ReactsPageDescription</code> 컴포넌트가 <code>SlowComponent</code> 안에 들어가면서 <code>ReactsPageTitle</code>보다 늦게 렌더링되는데요.<br /><br />이로 인해 두 컴포넌트의 데이터 페칭 시점 사이에 시간적 &lsquo;간격&rsquo;이 생기게 되죠.<br /><br />만약 이 간격 동안 <code>react.dev</code>의 HTML 내용이 바뀐다면 어떻게 될까요?<br /><br />우리는 서로 다른 버전의 페이지 제목과 설명을 화면에 표시하게 되는 끔찍한 상황을 맞이하게 됩니다.<br /><br />마치 UI가 찢어지는 것처럼 보이는 &lsquo;UI 테어링(UI Tearing)&rsquo; 현상이죠.<br /><br />이런 버그를 해결하는 방법이 바로 <code>getPage</code> 함수를 <code>cache</code>로 감싸는 겁니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cache</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">getPage</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">(</span><span class="kr">async</span> <span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">html</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">res</span><span class="p">.</span><span class="nx">text</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span></span></span></code></pre></div>
+  </figure>
+</div>
+<br />
+이렇게 하면 `ReactsPageTitle`과 `ReactsPageDescription`은 렌더링 시점이 다르더라도, 항상 동일한 버전의 HTML 데이터를 사용하게 됩니다.<br /><br />`cache`가 해당 렌더링 사이클에서 `getPage("https://react.dev")`의 첫 번째 호출 결과를 기억해두었다가, 두 번째 호출에 그대로 돌려주기 때문이죠.<br /><br />여기서 중요한 점은 `React.cache`의 생명주기가 아주 짧다는 건데요.<br /><br />오직 '현재 RSC 렌더링' 동안에만 유효합니다.<br /><br />페이지를 새로고침하면 새로운 `fetch` 요청이 발생하고 캐시도 새로 생성되죠.<br /><br />`cache`는 미래의 렌더링을 위한 것이 아니라, '현재 렌더링'의 일관성을 위한 도구인 셈입니다.<br /><br />
+<h2 id="sql-쿼리와의-일관성">SQL 쿼리와의 &lsquo;일관성&rsquo;</h2>
+<p><code>fetch</code> 요청은 Next.js 같은 프레임워크가 자동으로 <code>cache</code> 처리를 해주는 경우가 많아서 이런 문제를 겪을 확률이 적은데요.<br /><br />하지만 SQL 쿼리처럼 직접 다뤄야 하는 경우에는 <code>cache</code>의 중요성이 더욱 부각됩니다.<br /><br />총 판매량과 총 판매 금액을 보여주는 대시보드 컴포넌트를 한번 보시죠.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kd">function</span> <span class="nx">DashboardPage</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">TotalSalesVolume</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">&lt;</span><span class="nx">TotalSalesAmount</span> <span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">TotalSalesVolume</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;SELECT count(*) as volume FROM sales&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Total</span> <span class="nx">sales</span> <span class="nx">volume</span><span class="o">:</span> <span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">volume</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">TotalSalesAmount</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;SELECT SUM(amount) as amount FROM sales&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Total</span> <span class="nx">sales</span> <span class="nx">amount</span><span class="o">:</span> <span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">amount</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/div&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기에도 아까와 똑같이 <code>SlowComponent</code>를 추가하면 동일한 문제가 발생합니다.<br /><br />두 컴포넌트의 렌더링 시점 차이로 인해, 중간에 새로운 판매 데이터가 추가되면 판매량과 판매 금액이 서로 맞지 않는 불일치 상태가 될 수 있죠.<br /><br />이번에는 문제가 좀 더 까다로운데요.<br /><br />두 컴포넌트가 서로 다른 쿼리를 실행하기 때문에, 단순히 쿼리 함수 하나를 캐싱한다고 해결되지 않습니다.<br /><br />우리는 두 컴포넌트 모두가 &lsquo;전체 RSC 렌더링&rsquo; 동안 일관성을 유지할 수 있는 공통된 데이터를 찾아야 하죠.<br /><br />바로 &lsquo;시간&rsquo;입니다.<br /><br /></p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">cache</span> <span class="p">}</span> <span class="nx">from</span> <span class="s2">&#34;react&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">now</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">getSalesVolume</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">(()</span> <span class="p">=&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">db</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;SELECT count(*) as volume FROM sales where created_at &lt;= ?&#34;</span><span class="p">,</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">now</span><span class="p">(),</span> 
+</span></span><span class="line"><span class="cl">  <span class="p">]),</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">getSalesAmount</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">(()</span> <span class="p">=&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">db</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">&#34;SELECT SUM(amount) as amount FROM sales where created_at &lt;= ?&#34;</span><span class="p">,</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">now</span><span class="p">(),</span> 
+</span></span><span class="line"><span class="cl">  <span class="p">]),</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 코드가 정말 기가 막힌데요.<br /><br /><code>now</code>라는 함수를 <code>cache</code>로 감쌌습니다.<br /><br />이제 어떤 컴포넌트가 <code>now()</code>를 처음 호출하면 그 시점의 <code>Date</code> 객체가 생성되고 캐시되는데요.<br /><br />그 이후에 다른 컴포넌트가 <code>now()</code>를 호출하면, 새로 생성하는 대신 캐시된 동일한 <code>Date</code> 객체를 받게 되죠.<br /><br />덕분에 두 컴포넌트는 렌더링 시점이 달라도 정확히 &lsquo;동일한 시점&rsquo;을 기준으로 데이터베이스를 쿼리할 수 있게 되어 데이터의 일관성을 완벽하게 지킬 수 있습니다.<br /><br />이 예제에서 중요한 점은, 우리가 <code>new Date()</code>의 성능이 느려서 <code>cache</code>를 쓴 게 아니라는 겁니다.<br /><br />오히려 우리는 <code>new Date()</code>가 호출될 때마다 &lsquo;다른 값&rsquo;을 반환하는 것을 막고, 렌더링 내내 &lsquo;같은 값&rsquo;을 유지하기 위해 <code>cache</code>를 사용한 거죠.<br /><br /></p>
+<h2 id="불순한-데이터impure-data를-다루는-법">&lsquo;불순한 데이터(Impure Data)&lsquo;를 다루는 법</h2>
+<p><code>fetch</code> 요청, SQL 쿼리, <code>new Date()</code> 생성자는 모두 공통점이 있는데요.<br /><br />바로 &lsquo;불순한(impure) 데이터&rsquo;에 접근한다는 점입니다.<br /><br />이 함수들은 호출될 때마다 다른 결과를 반환할 수 있거든요.<br /><br />이런 불순한 함수들은 일관성의 가장 큰 적입니다.<br /><br />이들이 반환하는 값이 계속 변할 수 있다는 사실 자체가, 우리 React 컴포넌트가 모순되고 혼란스러운 페이지를 렌더링할 문을 열어주는 셈이죠.<br /><br /></p>
+<h2 id="예측-가능한-컴포넌트-트리">예측 가능한 컴포넌트 트리</h2>
+<p>우리가 다루기 쉬운 좋은 React 컴포넌트를 생각할 때 떠오르는 단어는 바로 &lsquo;예측 가능성&rsquo;입니다.<br /><br />React 컴포넌트는 몇 번을 렌더링하든, 트리 어디에 위치하든, <code>Suspense</code>에 감싸여 있든 상관없이 예측 가능한 결과를 내놓아야 하죠.<br /><br />RSC의 등장으로 컴포넌트 안에서 직접 데이터를 가져올 수 있게 되면서, 렌더링 간의 예측 가능성은 조금 낮아졌습니다.<br /><br />데이터는 변할 수 있고, 페이지를 새로고침하면 최신 데이터를 보는 것이 당연하니까요.<br /><br />하지만 &lsquo;동일한 렌더링&rsquo; 내에서는 컴포넌트가 일관되고 예측 가능한 결과를 출력해야만 합니다.<br /><br />만약 컴포넌트가 불순한 데이터를 사용한다면, &lsquo;일관성&rsquo;을 위해 반드시 <code>cache</code>를 사용해야 한다는 뜻이죠.<br /><br /></p>
+<h2 id="마치며">마치며</h2>
+<p>발표자는 마지막으로 재미있는 상상을 제안하는데요.<br /><br />만약 React가 불순한 데이터에 접근할 때 <code>cache</code>로 감싸지 않으면 에러를 던진다면 어떨까요?<br /><br />아마 개발자들은 엄청난 보일러플레이트 때문에 싫어하겠지만, 처음부터 일관성 버그를 피하고 더 예측 가능한 컴포넌트를 만들도록 강제하는 좋은 습관을 들일 수 있을지도 모릅니다.<br /><br />이것이 바로 우리가 불순한 데이터에 접근하는 새로운 컴포넌트를 만들 때마다 스스로에게 던져야 할 질문이죠.<br /><br />&lsquo;이 컴포넌트가 재사용 가능하길 바라는가?&rsquo;<br /><br />&lsquo;이 컴포넌트가 트리 어디에서든 렌더링될 수 있길 바라는가?&rsquo;<br /><br />&lsquo;이 컴포넌트가 예측 가능하길 바라는가?&rsquo;<br /><br />이 질문들에 &lsquo;예&rsquo;라고 답한다면, <code>React.cache</code>와 그것이 보장하는 &lsquo;일관성&rsquo;에 대해 깊이 이해하는 것이 정말 중요할 겁니다.<br /><br /></p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/react/" role="button">React</a>
+        <a class="btn btn-light" href="/tags/react-cache/" role="button">React Cache</a>
+        <a class="btn btn-light" href="/tags/react-server-components/" role="button">React Server Components</a>
+        <a class="btn btn-light" href="/tags/rsc/" role="button">RSC</a>
+        <a class="btn btn-light" href="/tags/%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%9D%BC%EA%B4%80%EC%84%B1/" role="button">데이터 일관성</a>
+        <a class="btn btn-light" href="/tags/%EB%8D%B0%EC%9D%B4%ED%84%B0-%ED%8E%98%EC%B9%AD/" role="button">데이터 페칭</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-21-react-server-client-component-composition-in-practice/">서버 컴포넌트, &#39;이렇게&#39; 쓰시면 말짱 꽝입니다 (RSC 조합의 기술)</a></h2>
+                  <p>React 서버 컴포넌트의 이점을 해치지 않으면서 클라이언트 컴포넌트와 효과적으로 조합하는 핵심 패턴을 알아봅니다. 서버 컴포넌트를 children으로 전달하는 간단한 방법으로 성능과 재사용성을 모두 잡아보세요.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>6&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-09-05-introducing-forket-rsc-without-framework/">프레임워크 없는 React 서버 컴포넌트 라이브러리 Forket을 소개합니다</a></h2>
+                  <p>Next.js 없이 React 서버 컴포넌트를 사용하려는 한 해외 개발자의 도전을 소개합니다. Krasimir Tsonev가 만든 Forket이라는 도구가 어떻게 이 문제를 해결하는지 자세히 살펴보시죠.</p>
+                  <p>
+  <small>September 7, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>4&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2025-08-22-react-suspense-avoiding-waterfalls-in-data-fetching/">React Suspense, 잘못 쓰면 폭포수처럼 느려집니다 (워터폴 피하는 법)</a></h2>
+                  <p>React의 Suspense는 비동기 UI를 위한 강력한 도구지만, 자칫하면 데이터 로딩이 순차적으로 지연되는 워터폴 현상을 유발할 수 있습니다. 중첩된 Suspense와 병렬 Suspense의 차이점을 이해하고, 워터폴을 피하는 세 가지 실전 패턴을 알아봅니다.</p>
+                  <p>
+  <small>August 23, 2025<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>

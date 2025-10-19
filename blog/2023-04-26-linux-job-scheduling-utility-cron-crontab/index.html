@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="auto">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://mycodingshub.github.io/fonts/vendor/jost/jost-v4-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+<script 
+  src="/js/color-mode.86a91f050a481d0a3f0c72ac26543cb6228c770875981c58dcbc008fd3f875c8.js"
+  integrity="sha256-hqkfBQpIHQo/DHKsJlQ8tiKMdwh1mBxY3LwAj9P4dcg=">
+</script>
+
+
+<link rel="stylesheet" href="/main.86b7305f5a96b7dd3a46fa6277d87b125af3bf13f48c4cfcc269be84fa9e8fb75375d45a5fe9056ce9190644b7a6e5f13f917f12d853ed38bb76d8856898f755.css" integrity="sha512-hrcwX1qWt906Rvpid9h7ElrzvxP0jEz8wmm+hPqej7dTddRaX+kFbOkZBkS3puXxP5F/EthT7Ti7dtiFaJj3VQ==" crossorigin="anonymous">
+
+<noscript><style>img.lazyload { display: none; }</style></noscript><title>리눅스 잡 스케줄러 크론탭(crontab) 이해하기</title>
+<meta name="description" content="리눅스 잡 스케줄러 크론탭(crontab) 이해하기" />
+<link rel="canonical" href="https://mycodingshub.github.io/blog/2023-04-26-linux-job-scheduling-utility-cron-crontab/" />
+<meta name="robots" content="index, follow" />
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="리눅스 잡 스케줄러 크론탭(crontab) 이해하기" />
+<meta property="og:description" content="리눅스 잡 스케줄러 크론탭(crontab) 이해하기" />
+<meta property="og:url" content="https://mycodingshub.github.io/blog/2023-04-26-linux-job-scheduling-utility-cron-crontab/" />
+<meta property="og:site_name" content="Home" />
+<meta property="og:image" content="https://mycodingshub.github.io/cover.png" />
+<meta property="og:locale" content="en" />
+<meta property="article:published_time" content="2023-04-26T11:40:09Z" />
+<meta property="article:modified_time" content="2023-04-26T11:40:09Z" />
+<meta property="article:tag" content="cron" />
+<meta property="article:tag" content="crontab" />
+<meta property="article:tag" content="linux" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="리눅스 잡 스케줄러 크론탭(crontab) 이해하기" />
+<meta name="twitter:description" content="리눅스 잡 스케줄러 크론탭(crontab) 이해하기" />
+<meta name="twitter:image" content="https://mycodingshub.github.io/cover.png" />
+
+<meta name="author" content="cpro95@gmail.com" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "\"리눅스 잡 스케줄러 크론탭(crontab) 이해하기\"",
+  "description": "\"리눅스 잡 스케줄러 크론탭(crontab) 이해하기\"",
+  "datePublished": "\"2023-04-26T11:40:09Z\"",
+  "dateModified": "\"2023-04-26T11:40:09Z\"",
+  "author": {
+    "@type": "Person",
+    "name": "\"cpro95@gmail.com\""
+  },
+  "image": "\"https://mycodingshub.github.io/cover.png\"",
+  "url": "\"https://mycodingshub.github.io/blog/2023-04-26-linux-job-scheduling-utility-cron-crontab/\"",
+  "publisher": {
+    "@type": "Organization",
+    "name": "\"Home\""
+  }
+}
+</script>
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C7SBETWEJ0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C7SBETWEJ0');
+</script>
+
+
+<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7748316956330968"
+  crossOrigin="anonymous"
+></script>
+
+
+</head>
+
+  
+  <body class="single section blog" data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0">
+    <div class="sticky-top">
+<header class="navbar navbar-expand-sm">
+  <div class="container-lg">
+  <div class="d-flex flex-grow-1 justify-content-between">
+    <div class="d-flex flex-row navbar-nav justify-content-between align-items-start gap-2">
+    
+    <a class="nav-link fw-bold fs-4" href="/">Home</a>
+
+    
+    
+            <a class="nav-link fs-4  active" href="https://mycodingshub.github.io/blog/" aria-current="true">Blog</a>
+          
+        
+            <a class="nav-link fs-4 " href="https://mycodingshub.github.io/life/">Life</a>
+          
+        
+    </div>
+    <div class="d-flex flex-row justify-content-between align-items-center">
+      
+      
+      <button type="button" id="searchToggleMobile" class="btn btn-link nav-link mx-2 d-lg-none" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      
+      <button type="button" id="searchToggleDesktop" class="btn btn-link nav-link p-2 d-none d-lg-block" aria-label="Search website">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <circle cx="10" cy="10" r="7"></circle>
+          <line x1="21" y1="21" x2="15" y2="15"></line>
+        </svg>
+      </button>
+      
+      <button id="buttonColorMode" class="btn btn-link mx-auto nav-link p-0 ms-lg-2 me-lg-1" type="button" aria-label="Toggle theme">
+        <svg data-bs-theme-value="dark" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+        </svg>
+        <svg data-bs-theme-value="light" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+          <path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0m-5 0h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"></path>
+        </svg>
+      </button>
+      </div>
+        
+        
+        
+        
+        </div>
+    </div>
+
+    
+    </div>
+</header>
+</div>
+
+<div class="modal" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen-md-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 visually-hidden" id="searchModalLabel">Search</h1>
+        <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="search-input flex-grow-1 d-none">
+          <form id="search-form" class="search-form" action="#" method="post" accept-charset="UTF-8" role="search">
+            <label for="query" class="visually-hidden">Search</label>
+            <div class="d-flex">
+              <input type="search" id="query" name="query" class="search-text form-control form-control-lg" placeholder="Search" aria-label="Search" maxlength="128" autocomplete="off">
+              <button type="button" class="btn btn-link text-decoration-none px-0 ms-3 d-md-none" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="search-loading status message d-none mt-3 text-center">Loading search index…</p>
+        <p class="search-no-recent message d-none mt-3 text-center">No recent searches</p>
+        <p class="search-no-results message d-none mt-3 text-center">No results for "<strong><span class="query-no-results">Query here</span></strong>"</p>
+        <div id="searchResults" class="search-results"></div>
+        <template>
+          <article class="search-result list-view">
+            <div class="card my-3">
+              <div class="card-body">
+                <header>
+                  <h2 class="h5 title title-submitted mb-0"><a class="stretched-link text-decoration-none text-reset" href="#">Title here</a></h2>
+                  <div class="submitted d-none"><time class="created-date">Date here</time></div>
+                </header>
+                <div class="content">Summary here</div>
+              </div>
+            </div>
+          </article>
+        </template>
+      </div>
+      <div class="modal-footer">
+        <ul class="list-inline me-auto d-none d-md-block">
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Enter key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M12 3.53088v3c0 1-1 2-2 2H4M7 11.53088l-3-3 3-3"></path></g></svg></kbd><span class="DocSearch-Label">to select</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow down" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 3.5v8M10.5 8.5l-3 3-3-3"></path></g></svg></kbd><kbd class="me-2"><svg width="15" height="15" aria-label="Arrow up" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M7.5 11.5v-8M10.5 6.5l-3-3-3 3"></path></g></svg></kbd><span class="DocSearch-Label">to navigate</span></li>
+          <li class="list-inline-item"><kbd class="me-2"><svg width="15" height="15" aria-label="Escape key" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"><path d="M13.6167 8.936c-.1065.3583-.6883.962-1.4875.962-.7993 0-1.653-.9165-1.653-2.1258v-.5678c0-1.2548.7896-2.1016 1.653-2.1016.8634 0 1.3601.4778 1.4875 1.0724M9 6c-.1352-.4735-.7506-.9219-1.46-.8972-.7092.0246-1.344.57-1.344 1.2166s.4198.8812 1.3445.9805C8.465 7.3992 8.968 7.9337 9 8.5c.032.5663-.454 1.398-1.4595 1.398C6.6593 9.898 6 9 5.963 8.4851m-1.4748.5368c-.2635.5941-.8099.876-1.5443.876s-1.7073-.6248-1.7073-2.204v-.4603c0-1.0416.721-2.131 1.7073-2.131.9864 0 1.6425 1.031 1.5443 2.2492h-2.956"></path></g></svg></kbd><span class="DocSearch-Label">to close</span></li>
+        </ul>
+        <p class="d-md-none">Search by <a class="text-decoration-none" href="https://github.com/nextapps-de/flexsearch">FlexSearch</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="wrap container-lg" role="document">
+      <div class="content">
+      
+        
+<article>
+  <div class="row justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-7748316956330968"
+        data-ad-slot="2971373181"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+      <div class="blog-header">
+        <h1>리눅스 잡 스케줄러 크론탭(crontab) 이해하기</h1>
+        <p>
+  <small>April 26, 2023<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>7&nbsp;minutes</span></small>
+</p>
+
+      </div>
+    </div>
+      <div class="col-md-12 col-lg-12">
+      
+      <p>안녕하세요?</p>
+<p>오늘은 제가 예전에 오라클 클라우드에 설치했던 Strapi 서버 관련하여 매주 일정 시간마다 자료를 업데이트하기 위해서 리눅스 cron 명령어에 대해 알아보겠습니다.</p>
+<p>cron이란 말은 리눅스에 있어 잡 스케줄링 유틸리티(job scheduling utility)인데요.</p>
+<p>거의 모든 유닉스 시스템에서는 cron이란 걸 씁니다.</p>
+<p>cron 명령어를 지정하면 서버는 1년 365일 작동하기 때문에 일정 시간, 혹은 일정 요일에 특정 명령을 실행 시킬수 있습니다.</p>
+<p>cron 명령어가 가장 많이 쓰이는 곳이 바로 시스템 로그파일을 로테이팅 하는 건데요.</p>
+<p>서버는 계속해서 로그파일을 만듭니다.</p>
+<p>근데 이 로그 파일이 텍스트 파일인데도 계속 크기가 커지는데요.</p>
+<p>그래서 cron을 이용해서 로그파일을 압축해서 보관하고 그럽니다.</p>
+<hr>
+<h2 id="우분투에서의-cron">우분투에서의 cron</h2>
+<p>이제 실전으로 들어가 볼까요?</p>
+<p>먼저 오라클 클라우드에 원격으로 ssh 접속하십시오.</p>
+<p>자신의 계정이 cron을 실행시킬 수 있는지 보기 위해서는 아래와 같이 명령어를 입력해 보기 바랍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@main-instance:~$ crontab -e
+</span></span><span class="line"><span class="cl">no crontab <span class="k">for</span> ubuntu - using an empty one
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Select an editor.  To change later, run <span class="s1">&#39;select-editor&#39;</span>.
+</span></span><span class="line"><span class="cl">  1. /bin/nano        &lt;---- easiest
+</span></span><span class="line"><span class="cl">  2. /usr/bin/vim.basic
+</span></span><span class="line"><span class="cl">  3. /usr/bin/vim.tiny
+</span></span><span class="line"><span class="cl">  4. /bin/ed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Choose 1-4 <span class="o">[</span>1<span class="o">]</span>:</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위를 보시면 에디터를 고르라고 하는데요.</p>
+<p>텍스트 에디터인데요. 왜냐하면 cron은 텍스트를 분석해서 작동하기 때문입니다.</p>
+<p>원하는 걸 고르면 아래와 같이 나옵니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Edit this file to introduce tasks to be run by cron.</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Each task to run has to be defined through a single line</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># indicating with different fields when the task will be run</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># and what command to run for the task</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># To define the time you can provide concrete values for</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># minute (m), hour (h), day of month (dom), month (mon),</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># and day of week (dow) or use &#39;*&#39; in these fields (for &#39;any&#39;).</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Notice that tasks will be started based on the cron&#39;s system</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># daemon&#39;s notion of time and timezones.</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Output of the crontab jobs (including errors) is sent through</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># email to the user the crontab file belongs to (unless redirected).</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># For example, you can run a backup of all your user accounts</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># at 5 a.m every week with:</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># For more information see the manual pages of crontab(5) and cron(8)</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># m h  dom mon dow   command</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 파일의 끝에다가 특정 규칙에 의해 cron 명령어를 추가하면 됩니다.</p>
+<p>cron의 규칙은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">* * * * * sh /path/to/script.sh</span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 각 별표 표시는(* * * * *)는 분, 시, 일, 달, 요일을 뜻합니다.</p>
+<table>
+  <thead>
+      <tr>
+          <th>규칙</th>
+          <th>값</th>
+          <th>설명</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>분</td>
+          <td>0-59</td>
+          <td>0분부터 59분부터</td>
+      </tr>
+      <tr>
+          <td>시</td>
+          <td>0-23</td>
+          <td>0시부터 23시까지</td>
+      </tr>
+      <tr>
+          <td>일</td>
+          <td>1-31</td>
+          <td>1일부터 31일까지</td>
+      </tr>
+      <tr>
+          <td>달</td>
+          <td>1-12</td>
+          <td>1월부터 12월까지</td>
+      </tr>
+      <tr>
+          <td>요일</td>
+          <td>0-6</td>
+          <td>0이 일요일, 6이 토요일</td>
+      </tr>
+  </tbody>
+</table>
+<p>그래서 &ldquo;30 21 * * 6&quot;이란 표현은 매주 토요일 저녁 9시 30분이란 뜻입니다.</p>
+<p>그리고 sh는 쉘을 뜻합니다.</p>
+<p>리눅스에서는 /bin/bash나 /bin/sh를 많이 씁니다.</p>
+<p>마지막으로 실행할 스크립트나 프로그램을 풀 경로로 넣으면 됩니다.</p>
+<p>이제 테스트해 볼까요?</p>
+<hr>
+<h2 id="테스트">테스트</h2>
+<p>일단 자신 계정의 홈 디렉터리에서 아래와 같은 파일을 만듭니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="sb">`</span>date<span class="sb">`</span> &gt;&gt; date-out.txt</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이 파일의 이름을 date-script.sh 이라고 저장합니다.</p>
+<p>그리고 아래처럼 실행 가능한 상태로 만드는데요.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chmod <span class="m">755</span> date-sript.sh</span></span></code></pre></div>
+  </figure>
+</div>
+<p>이제 실행해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@sub-instance:~$ ./date-script.sh
+</span></span><span class="line"><span class="cl">ubuntu@sub-instance:~$ cat date-out.txt
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:00:05 KST <span class="m">2023</span></span></span></code></pre></div>
+  </figure>
+</div>
+<p>위 스크립트는 현재의 시간을 텍스트 파일에 넣는 간단한 코드입니다.</p>
+<p>그럼, 이 파일을 crontab에 넣어 볼까요?</p>
+<p>여기서 crontab은 cron tables 이란 뜻인데요.</p>
+<p>바로 cron 명령어가 모여있는 테이블이란 뜻이죠.</p>
+<p>우분투에서는 아까처럼 crontab이란 명령어를 제공해 줍니다.</p>
+<p>그럼, 처음으로 돌아와서 <code>crontab -e</code> 명령어로 아래처럼 cron 명령어를 추가해 볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> <span class="c1"># Edit this file to introduce tasks to be run by cron.</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Each task to run has to be defined through a single line</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># indicating with different fields when the task will be run</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># and what command to run for the task</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># To define the time you can provide concrete values for</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># minute (m), hour (h), day of month (dom), month (mon),</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># and day of week (dow) or use &#39;*&#39; in these fields (for &#39;any&#39;).</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Notice that tasks will be started based on the cron&#39;s system</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># daemon&#39;s notion of time and timezones.</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># Output of the crontab jobs (including errors) is sent through</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># email to the user the crontab file belongs to (unless redirected).</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># For example, you can run a backup of all your user accounts</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># at 5 a.m every week with:</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># For more information see the manual pages of crontab(5) and cron(8)</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">#</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># m h  dom mon dow   command</span>
+</span></span><span class="line"><span class="cl"> */1 * * * * /bin/sh /home/ubuntu/date-script.sh</span></span></code></pre></div>
+  </figure>
+</div>
+<p>여기서 보면 이상한 게 있는데요.</p>
+<p>바로 첫번 째 별표가 */1 이라고 이상하게 되어 있습니다.</p>
+<p>첫번 째 별표는 분인데 그걸 나누기 1 한다는 얘기인데요.</p>
+<p>바로 매분이란 뜻입니다.</p>
+<p>즉, 매 1분 마다 /bin/sh 라는 쉘로 /home/ubuntu/date-script.sh 파일을 실행하라는 뜻입니다.</p>
+<p>아까 만들었던 date-script.sh 파일을 실행하라는 뜻입니다.</p>
+<p>저장하고 나와볼까요?</p>
+<hr>
+<p>cron 서버가 돌아가고 있는지 살펴보는 방법은 아래와 같습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@sub-instance:~$ sudo systemctl status cron.service
+</span></span><span class="line"><span class="cl">● cron.service - Regular background program processing daemon
+</span></span><span class="line"><span class="cl">     Loaded: loaded <span class="o">(</span>/lib/systemd/system/cron.service<span class="p">;</span> enabled<span class="p">;</span> vendor preset: enabled<span class="o">)</span>
+</span></span><span class="line"><span class="cl">     Active: active <span class="o">(</span>running<span class="o">)</span> since Sun 2023-03-12 17:29:35 KST<span class="p">;</span> <span class="m">1</span> month <span class="m">14</span> days ago
+</span></span><span class="line"><span class="cl">       Docs: man:cron<span class="o">(</span>8<span class="o">)</span>
+</span></span><span class="line"><span class="cl">   Main PID: <span class="m">844</span> <span class="o">(</span>cron<span class="o">)</span>
+</span></span><span class="line"><span class="cl">      Tasks: <span class="m">1</span> <span class="o">(</span>limit: 1074<span class="o">)</span>
+</span></span><span class="line"><span class="cl">     Memory: 2.1M
+</span></span><span class="line"><span class="cl">        CPU: 14.490s
+</span></span><span class="line"><span class="cl">     CGroup: /system.slice/cron.service
+</span></span><span class="line"><span class="cl">             └─844 /usr/sbin/cron -f -P
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:02:01 sub-instance CRON<span class="o">[</span>491414<span class="o">]</span>: <span class="o">(</span>ubuntu<span class="o">)</span> CMD <span class="o">(</span>/bin/sh /home/ubuntu/date-script.sh<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:02:01 sub-instance CRON<span class="o">[</span>491413<span class="o">]</span>: pam_unix<span class="o">(</span>cron:session<span class="o">)</span>: session closed <span class="k">for</span> user ubuntu
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:03:01 sub-instance CRON<span class="o">[</span>491442<span class="o">]</span>: pam_unix<span class="o">(</span>cron:session<span class="o">)</span>: session opened <span class="k">for</span> user ubuntu<span class="o">(</span><span class="nv">uid</span><span class="o">=</span>1001<span class="o">)</span> by <span class="o">(</span>uid&gt;
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:03:01 sub-instance CRON<span class="o">[</span>491443<span class="o">]</span>: <span class="o">(</span>ubuntu<span class="o">)</span> CMD <span class="o">(</span>/bin/sh /home/ubuntu/date-script.sh<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:03:01 sub-instance CRON<span class="o">[</span>491442<span class="o">]</span>: pam_unix<span class="o">(</span>cron:session<span class="o">)</span>: session closed <span class="k">for</span> user ubuntu
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:04:01 sub-instance CRON<span class="o">[</span>491472<span class="o">]</span>: pam_unix<span class="o">(</span>cron:session<span class="o">)</span>: session opened <span class="k">for</span> user ubuntu<span class="o">(</span><span class="nv">uid</span><span class="o">=</span>1001<span class="o">)</span> by <span class="o">(</span>uid&gt;
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:04:01 sub-instance CRON<span class="o">[</span>491472<span class="o">]</span>: pam_unix<span class="o">(</span>cron:session<span class="o">)</span>: session closed <span class="k">for</span> user ubuntu
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:05:01 sub-instance CRON<span class="o">[</span>491500<span class="o">]</span>: pam_unix<span class="o">(</span>cron:session<span class="o">)</span>: session opened <span class="k">for</span> user ubuntu<span class="o">(</span><span class="nv">uid</span><span class="o">=</span>1001<span class="o">)</span> by <span class="o">(</span>uid&gt;
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:05:01 sub-instance CRON<span class="o">[</span>491501<span class="o">]</span>: <span class="o">(</span>ubuntu<span class="o">)</span> CMD <span class="o">(</span>/bin/sh /home/ubuntu/date-script.sh<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Apr <span class="m">26</span> 21:05:01 sub-instance CRON<span class="o">[</span>491500<span class="o">]</span>: pam_unix<span class="o">(</span>cron:session<span class="o">)</span>: session closed <span class="k">for</span> user ubuntu</span></span></code></pre></div>
+  </figure>
+</div>
+<p>일단 잘 돌아가고 있네요.</p>
+<p>별도로 cron 명령어를 실행할 필요 없습니다.</p>
+<p>cron이 알아서 crontab을 참조해서 실행하니까요?</p>
+<p>그럼 1분, 2분 있다가 홈 폴더를 살펴보면 아래와 같이 cron job이 잘 실행되고 있습니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@sub-instance:~$ ls -l date*
+</span></span><span class="line"><span class="cl">-rw-rw-r-- <span class="m">1</span> ubuntu ubuntu <span class="m">203</span> Apr <span class="m">26</span> 21:06 date-out.txt
+</span></span><span class="line"><span class="cl">-rwxr-xr-x <span class="m">1</span> ubuntu ubuntu  <span class="m">39</span> Apr <span class="m">26</span> 20:29 date-script.sh
+</span></span><span class="line"><span class="cl">ubuntu@sub-instance:~$ cat date-out.txt
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:00:05 KST <span class="m">2023</span>
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:01:01 KST <span class="m">2023</span>
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:02:01 KST <span class="m">2023</span>
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:03:01 KST <span class="m">2023</span>
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:04:01 KST <span class="m">2023</span>
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:05:01 KST <span class="m">2023</span>
+</span></span><span class="line"><span class="cl">Wed Apr <span class="m">26</span> 21:06:01 KST <span class="m">2023</span></span></span></code></pre></div>
+  </figure>
+</div>
+<hr>
+<h2 id="내-cron-명령어는-어디에-저장되어-있나요">내 cron 명령어는 어디에 저장되어 있나요?</h2>
+<p>위치는 바로 /var/spool/cron/crontab 폴더입니다.</p>
+<p>이 폴더를 보기 위해서는 관리자 권한이 필요합니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@sub-instance:~$ sudo ls -l /var/spool/cron/crontabs/
+</span></span><span class="line"><span class="cl">total <span class="m">4</span>
+</span></span><span class="line"><span class="cl">-rw------- <span class="m">1</span> ubuntu crontab <span class="m">1138</span> Apr <span class="m">26</span> 20:28 ubuntu</span></span></code></pre></div>
+  </figure>
+</div>
+<p>위와 같이 제 계정인 ubuntu라는 이름이 보이는데요.</p>
+<p>이건 ubuntu 계정으로 cron 명령어가 있다는 뜻입니다.</p>
+<p>그럼, 이 파일을 열어볼까요?</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ubuntu@sub-instance:~$ sudo cat /var/spool/cron/crontabs/ubuntu
+</span></span><span class="line"><span class="cl"><span class="c1"># DO NOT EDIT THIS FILE - edit the master and reinstall.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># (/tmp/crontab.VZ1tqU/crontab installed on Wed Apr 26 20:28:12 2023)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Edit this file to introduce tasks to be run by cron.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Each task to run has to be defined through a single line</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># indicating with different fields when the task will be run</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># and what command to run for the task</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># To define the time you can provide concrete values for</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># minute (m), hour (h), day of month (dom), month (mon),</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># and day of week (dow) or use &#39;*&#39; in these fields (for &#39;any&#39;).</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Notice that tasks will be started based on the cron&#39;s system</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># daemon&#39;s notion of time and timezones.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Output of the crontab jobs (including errors) is sent through</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># email to the user the crontab file belongs to (unless redirected).</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># For example, you can run a backup of all your user accounts</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># at 5 a.m every week with:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># For more information see the manual pages of crontab(5) and cron(8)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># m h  dom mon dow   command</span>
+</span></span><span class="line"><span class="cl">*/1 * * * * /bin/sh /home/ubuntu/date-script.sh</span></span></code></pre></div>
+  </figure>
+</div>
+<p>아까 만들었던 cron 명령어가 저장되어 있습니다.</p>
+<hr>
+<h2 id="cron-지우기">cron 지우기</h2>
+<p>단순하게 <code>crontab -e</code> 명령어로 들어가서 지우면 됩니다.</p>
+<hr>
+<h2 id="기타">기타</h2>
+<p>crontab 명령어는 아래처럼 여러 가지 옵션이 있으니 참조 바랍니다.</p>
+
+
+
+<div class="expressive-code">
+  <figure class="frame is-terminal not-content">
+  <figcaption class="header">
+    <span class="title"></span>
+  </figcaption>
+  <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 작성</span>
+</span></span><span class="line"><span class="cl">crontab -e
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 현재 사용자의 cron job 보기</span>
+</span></span><span class="line"><span class="cl">crontab -l
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 사용자의 계정을 적어서 해당 사용자의 cron job 보기</span>
+</span></span><span class="line"><span class="cl">crontab -u username -l
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 사용자의 계정을 적어서 해당 사용자의 cron job 작성하기</span>
+</span></span><span class="line"><span class="cl">crontab -u username -e</span></span></code></pre></div>
+  </figure>
+</div>
+<h2 id="cron-guru">Cron Guru</h2>
+<p>아까 언제 실행되는지 별표로 작성하는 부분을 쉽게 이해해 주는 사이트가 있습니다.</p>
+<p>바로 cron guru인데요.</p>
+<p><a href="https://crontab.guru/">cronguru</a></p>
+<p>이 사이트에서 여러 가지 조합을 만들어 보시면 쉽게 이해할 수 있을 겁니다.</p>
+<p>그럼.</p>
+
+      <div class="tag-list-single">
+        <a class="btn btn-light" href="/tags/cron/" role="button">cron</a>
+        <a class="btn btn-light" href="/tags/crontab/" role="button">crontab</a>
+        <a class="btn btn-light" href="/tags/linux/" role="button">linux</a>
+        </div>
+      
+      <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="autorelaxed"
+          data-ad-client="ca-pub-7748316956330968"
+          data-ad-slot="4495825428"></ins>
+      <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+  </div>
+</article>
+
+      
+      </div>
+    </div>
+    
+    
+<div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/life/2024-09-15-why-do-supercomputers-prefer-linux/">왜 슈퍼컴퓨터는 리눅스를 선택할까? 강력한 선택의 이유</a></h2>
+                  <p>세계의 슈퍼컴퓨터들이 왜 리눅스를 선택하는지에 대해 알아보겠습니다.</p>
+                  <p>
+  <small>September 15, 2024<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>2&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="/blog/2022-08-15-understanding-show-and-mount-disks-on-linux-macos/">리눅스(Linux), macOS 같은 유닉스(Unix) 환경에서 디스크 관리 알아보기</a></h2>
+                  <p>유닉스(리눅스, MacOS) 환경에서 USB 외장 디스크 마운트 하기</p>
+                  <p>
+  <small>August 15, 2022<span class="stretched-link position-relative reading-time text-nowrap" title="Estimated reading time"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+        <path d="M12 7v5l3 3"></path>
+      </svg>5&nbsp;minutes</span></small>
+</p>
+</article>
+              </div>
+            </div>
+          </div>
+      </div>
+    </section>
+    <script src="https://utteranc.es/client.js"
+      repo="cpro95/utterances_mycodings_fly_dev"
+      issue-term="pathname"
+      theme="github-light"
+      label="blog-comment"
+      crossorigin="anonymous"
+    async>
+    </script>
+  </div>
+  
+    <footer class="footer text-muted">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-lg-8 text-center text-lg-start">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="text-muted" href="/about/">about</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-8 text-center text-lg-end">
+        <ul class="list-inline">
+          <li class="list-inline-item">Copyright (c) All Right Reserved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+    
+
+<script async
+  src="/js/app.19b73e0182301dd61c9211c2f6890104740e2eb9eb12fe4ba8d4f31435b22ed6.js"
+  integrity="sha256-Gbc&#43;AYIwHdYckhHC9okBBHQOLrnrEv5LqNTzFDWyLtY=">
+</script>
+
+
+
+
+
+<script async
+  src="/js/flexsearch.5dd6433c29c3e043627f046054aed58ff3790f58fdb8423f45125bbafdcad335.js"
+  integrity="sha256-XdZDPCnD4ENifwRgVK7Vj/N5D1j9uEI/RRJbuv3K0zU=">
+</script>
+<script async
+  src="/js/search-modal.96e662d8f691fe25c859a3437074b485f2d7bed0bca612725028c6cf4322e2f2.js"
+  integrity="sha256-luZi2PaR/iXIWaNDcHS0hfLXvtC8phJyUCjGz0Mi4vI=">
+</script>
+
+    <div class="d-inline-flex fixed-bottom-right pb-4 pe-4">
+  <button id="toTop" type="button" class="btn btn-primary rounded-circle ms-auto p-2"><span class="visually-hidden">Top</span><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M6 15l6 -6l6 6"></path></svg></button>
+</div>
+
+    
+  </body>
+</html>
