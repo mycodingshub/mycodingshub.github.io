@@ -9,7 +9,7 @@ rm -rf public
 
 # 2. 사이트 빌드
 echo "Building Hugo site..."
-hugo
+hugo --minify --gc
 
 # 3. GitHub Pages가 Jekyll을 무시하도록 .nojekyll 파일 생성
 cd public
